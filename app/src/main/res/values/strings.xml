@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">Trainer App</string>
+    <string name="energize_your_life">Energize</string>
+    <string name="splash_text_dummy">Lorem Ipsum is simply dummy text of the printing and \ntypesetting industry. Lorem Ipsum has been the industry\'s \nstandard dummy text ever since the 1500s,</string>
+    <string name="for_excellence">Excellence</string>
+    <string name="planning">Planning For</string>
+    <string name="sign_up">Sign up</string>
+    <string name="enter_your_email_and_password_to_get_naccess_your_account">Enter Your Email And Password to Get \nAccess Your Account.</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="register_account">Register Account</string>
+    <string name="enter_user_name">Enter User Name</string>
+    <string name="enter_your_user_name_and_password_to_nstart_your_new_account">Enter Your User Name And Password to\nStart Your New Account.</string>
+    <string name="enter_confirm_password">Confirm Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="forgot_passwword">Forgot Password</string>
+    <string name="enter_your_email_address_and_got_otp_nin_your_email_address">Enter your Email Address and Got OTP\nin your email address</string>
+    <string name="text_next">Continue</string>
+    <string name="select_sport">Select Sport</string>
+    <string name="first_up_which_sport_do_you_enjoy_the_most">First up, Which sport do you enjoy the most?</string>
+    <string name="profile">Profile</string>
+    <string name="basic_information">Basic Information</string>
+    <string name="sport_information">Sport Information</string>
+    <string name="continue_with_free_version">Continue with FREE version</string>
+    <string name="continue_with_premium_version">Continue with Premium version</string>
+    <string name="profile_premium_plan">Profile Premium Plan</string>
+    <string name="athlete_login">Athlete login</string>
+    <string name="add_refferal_code">Add Refferal Code</string>
+    <string name="next">Next</string>
+    <string name="birth_place">Birth Place</string>
+    <string name="address">Address</string>
+    <string name="fiscal_code">Fiscal Code</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hint_enter_test_name">Enter Test Name</string>
+    <string name="hint_enter_goal">Enter Goal</string>
+    <string name="hint_units">Units</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_apply">Apply</string>
+    <string name="hint_enter_interested_athletes">Enter Interested Athletes</string>
+    <string name="hint_select_test_date">Select Test Date</string>
+    <string name="action_save">Save</string>
+    <string name="error_enter_test_name">Please enter Test Name</string>
+    <string name="error_select_goal">Please select Goal</string>
+    <string name="error_enter_interested_athlete">Please enter Interested Athletes</string>
+    <string name="error_select_date">Please select date</string>
+    <string name="title_mark_attendance">Mark Attendance</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_">Activity</string>
+    <string name="add_planning">Edit Planning</string>
+    <string name="end_date">End Date</string>
+    <string name="add_period">Add Period</string>
+    <string name="invite_frnds">Libero Pharetra vehicula ipsum gravida faclisi isi dis Donec Pharetra,semper diam.</string>
+    <string name="msg_token_fmt">Message token Formate</string>
+
+    <string name="weight">Weight</string>
+    <string name="distance">HeightHeight</string>
+    <string name="set">Enter Set/Round No.</string>
+    <string name="time">Time</string>
+    <string name="reps">Reps</string>
+    <string name="pause_time">Pause Time</string>
+    <string name="pause_between">Pause Between Cycles</string>
+
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+</resources>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "340856878658",
+    "project_id": "trainer-12f97",
+    "storage_bucket": "trainer-12f97.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:340856878658:android:85011f072ba0b4ede31fdb",
+        "android_client_info": {
+          "package_name": "com.example.trainerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "340856878658-rtvuii7k8v0uvs1fgplp3q4ah0kr086i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.trainerapp",
+            "certificate_hash": "b5d7611e62258f63cb3bc365fd1c82fa00a2bb63"
+          }
+        },
+        {
+          "client_id": "340856878658-j8v5bnroi1kgdoinfibq0c462489tl9g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApvs1b3X2PYNhvPAnjrrf2bdckRkaoZgY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "340856878658-j8v5bnroi1kgdoinfibq0c462489tl9g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

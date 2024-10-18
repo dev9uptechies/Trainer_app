@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Text_14_White_Bebes_Regular">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/_13sdp</item>
+        <item name="android:fontFamily">@font/bebes_reguler</item>
+    </style>
+
+    <style name="Text_13_White_Poppins_Regular">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/_13sdp</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
+    <style name="Editext_Round_10">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textSize">@dimen/_13sdp</item>
+        <item name="android:background">@drawable/bg_et_round_corner_10</item>
+        <item name="android:paddingBottom">@dimen/_10sdp</item>
+        <item name="android:paddingTop">@dimen/_10sdp</item>
+        <item name="android:paddingEnd">@dimen/_12sdp</item>
+        <item name="android:paddingStart">@dimen/_12sdp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Editext_Round_10_Not_Clickable" parent="Editext_Round_10">
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:cursorVisible">false</item>
+    </style>
+
+    <style name="Text_15_White_Poppins_Medium">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:textSize">@dimen/_15sdp</item>
+    </style>
+
+    <style name="Btn_Text_13_Round_10_Light_Grey">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/_13sdp</item>
+        <item name="android:background">@drawable/bg_light_grey_round_corner_10</item>
+    </style>
+
+    <style name="Btn_Text_15_Round_10_Light_Grey">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/_13sdp</item>
+        <item name="android:background">@drawable/bg_light_grey_round_corner_10</item>
+    </style>
+
+    <style name="Btn_Round_10_Red">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/_13sdp</item>
+        <item name="android:background">@drawable/bg_red_round_corner_10</item>
+    </style>
+
+    <style name="Btn_Text_15_Round_10_Red">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/_13sdp</item>
+        <item name="android:background">@drawable/bg_red_round_corner_10</item>
+    </style>
+
+    <style name="Theme_Dialog" parent="android:Theme.Light">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="CustomDialogTheme" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme.Picker" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="colorControlNormal">@color/light_grey</item>
+    </style>
+
+    <style name="SpinnerStyle" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:divider">@color/white</item>
+        <item name="android:dividerHeight">0.5dp</item>
+    </style>
+
+    <style name="spinnerTheme">
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">@font/poppins_medium</item>
+        <item name="android:dropDownListViewStyle">@style/SpinnerStyle</item>
+    </style>
+
+    <style name="CircleView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10%</item>
+    </style>
+
+    <dimen name="_13sdp">13dp</dimen>
+    <dimen name="_10sdp">10dp</dimen>
+    <dimen name="_12sdp">12dp</dimen>
+    <dimen name="_15sdp">15</dimen>
+</resources>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_margin="@dimen/_5sdp"
+    android:layout_height="wrap_content">
+
+ <androidx.cardview.widget.CardView
+     android:layout_width="match_parent"
+     app:cardBackgroundColor="#1A929492"
+     app:cardCornerRadius="@dimen/_10sdp"
+     app:layout_constraintStart_toStartOf="parent"
+     app:layout_constraintTop_toTopOf="parent"
+     android:layout_marginTop="@dimen/_5sdp"
+     android:layout_height="@dimen/_80sdp">
+
+     <androidx.constraintlayout.widget.ConstraintLayout
+         android:id="@+id/click"
+         android:layout_width="match_parent"
+         android:padding="@dimen/_5sdp"
+         android:layout_height="match_parent">
+
+         <TextView
+             android:id="@+id/tv_program_name"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             app:layout_constraintTop_toTopOf="parent"
+             android:text="Program Name"
+             android:layout_marginStart="@dimen/_10sdp"
+             android:textColor="@color/white"
+             android:textSize="@dimen/_13sdp"
+             android:fontFamily="@font/poppins_semi_bold"/>
+
+
+         <ImageView
+             android:id="@+id/image"
+             android:layout_width="@dimen/_20sdp"
+             android:layout_height="@dimen/_30sdp"
+             app:layout_constraintTop_toTopOf="parent"
+             app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="@dimen/_10sdp"
+             android:src="@drawable/ic_favorite_red"/>
+
+         <TextView
+             android:id="@+id/goal"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Start: "
+             android:layout_marginStart="@dimen/_10sdp"
+             android:textColor="@color/dark_text"
+             app:layout_constraintTop_toBottomOf="@+id/tv_program_name"
+             android:textSize="@dimen/_11sdp"
+             android:fontFamily="@font/poppins_semi_bold"/>
+
+
+         <TextView
+             android:id="@+id/tv_edt_time"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="31 April, 2021"
+             android:layout_marginEnd="@dimen/_10sdp"
+             android:visibility="visible"
+             android:textColor="@color/dark_text"
+             android:layout_marginTop="@dimen/_10sdp"
+             app:layout_constraintTop_toBottomOf="@+id/tv_program_name"
+             app:layout_constraintEnd_toEndOf="parent"
+             android:textSize="@dimen/_11sdp"
+             android:fontFamily="@font/poppins_semi_bold"/>
+
+         <TextView
+             android:id="@+id/edt_time"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:fontFamily="@font/poppins_semi_bold"
+             android:text="End: "
+             android:textColor="@color/dark_text"
+             android:textSize="@dimen/_11sdp"
+             android:visibility="visible"
+             app:layout_constraintBottom_toBottomOf="@+id/tv_edt_time"
+             app:layout_constraintEnd_toStartOf="@+id/tv_edt_time"
+             app:layout_constraintTop_toTopOf="@+id/tv_edt_time" />
+
+         <TextView
+             android:id="@+id/tv_start_date"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="25 March, 2021"
+             android:layout_marginStart="@dimen/_5sdp"
+             android:textColor="@color/dark_text"
+             android:fontFamily="@font/poppins_semi_bold"
+             app:layout_constraintStart_toEndOf="@+id/goal"
+             android:textSize="@dimen/_11sdp"
+             app:layout_constraintTop_toTopOf="@+id/goal"
+             app:layout_constraintBottom_toBottomOf="@+id/goal"/>
+
+         <TextView
+             android:id="@+id/total_time"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Set Periods: "
+             android:layout_marginTop="@dimen/_8sdp"
+             android:layout_marginStart="@dimen/_10sdp"
+             android:textColor="@color/dark_text"
+             app:layout_constraintTop_toBottomOf="@+id/goal"
+             android:textSize="@dimen/_11sdp"
+             android:fontFamily="@font/poppins_semi_bold"/>
+
+         <TextView
+             android:id="@+id/tv_athelet_name"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Athletes Name"
+             android:layout_marginStart="@dimen/_5sdp"
+             android:textColor="@color/dark_text"
+             android:fontFamily="@font/poppins_semi_bold"
+             app:layout_constraintStart_toEndOf="@+id/total_time"
+             android:textSize="@dimen/_11sdp"
+             app:layout_constraintTop_toTopOf="@+id/total_time"
+             app:layout_constraintBottom_toBottomOf="@+id/total_time"/>
+
+     </androidx.constraintlayout.widget.ConstraintLayout>
+
+ </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

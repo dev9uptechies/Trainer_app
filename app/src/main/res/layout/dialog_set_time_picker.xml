@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_black_round_corner_10"
+    android:padding="@dimen/_10sdp"
+    android:elevation="@dimen/_10sdp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/hours"
+        style="@style/Text_15_White_Poppins_Medium"
+        android:layout_width="161dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="36dp"
+        android:gravity="center"
+        android:text="Hour"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.168"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/mint"
+        style="@style/Text_15_White_Poppins_Medium"
+        android:layout_width="161dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="36dp"
+        android:gravity="center"
+        android:text="Minute"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.744"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <NumberPicker
+        android:id="@+id/hour_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:divider="@color/white"
+        android:showDividers="beginning"
+        android:theme="@style/AppTheme.Picker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.285"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hours" />
+
+    <NumberPicker
+        android:id="@+id/mint_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:divider="@color/white"
+        android:showDividers="beginning"
+        android:theme="@style/AppTheme.Picker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.674"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hours" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="0dp"
+        style="@style/Btn_Text_13_Round_10_Light_Grey"
+        android:layout_height="wrap_content"
+        android:text="@string/action_cancel"
+        android:layout_marginEnd="@dimen/_10sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnApply"
+        app:layout_constraintTop_toBottomOf="@id/mint_num"
+        android:id="@+id/btnCancel"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="0dp"
+        style="@style/Btn_Round_10_Red"
+        android:text="@string/action_apply"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/btnCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="@dimen/_10sdp"
+        app:layout_constraintTop_toTopOf="@id/btnCancel"
+        app:layout_constraintBottom_toBottomOf="@id/btnCancel"
+        android:id="@+id/btnApply"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

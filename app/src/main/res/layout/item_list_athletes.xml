@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/_5sdp"
+    android:id="@+id/clAthlete"
+    android:layout_marginVertical="@dimen/_5sdp"
+    android:background="@drawable/bg_light_grey_round_corner_10"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.AppCompatCheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/ivAthlete"
+        app:layout_constraintBottom_toBottomOf="@id/ivAthlete"
+        app:layout_constraintStart_toStartOf="parent"
+        android:buttonTint="@color/splash_text_color"
+        android:id="@+id/cbAthleteName"/>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:src="@drawable/app_icon"
+        app:layout_constraintStart_toEndOf="@id/cbAthleteName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:shapeAppearanceOverlay="@style/CircleView"
+        android:id="@+id/ivAthlete"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/ivAthlete"
+        app:layout_constraintBottom_toBottomOf="@id/ivAthlete"
+        app:layout_constraintStart_toEndOf="@id/ivAthlete"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/tvAthleteName"
+        android:layout_marginHorizontal="@dimen/_10sdp"
+        style="@style/Text_13_White_Poppins_Regular"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

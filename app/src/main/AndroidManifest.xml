@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <application
+        android:allowBackup="true"
+        android:enableOnBackInvokedCallback="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TrainerApp"
+        android:usesCleartextTraffic="true"
+        android:windowSoftInputMode="adjustPan"
+        tools:targetApi="m">
+        <activity
+            android:name=".training_plan.micro.EditMicroCycleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".training_plan.micro.AddMicroCycleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".training_plan.micro.ViewMicroCycleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".training_plan.view_planning_cycle.EditMesocycleListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".performance_profile.mesocycle.AddMesocycleListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".training_plan.EditTrainingPlanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".training_plan.view_planning_cycle.ViewTrainingPlanListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".training_plan.ViewTrainingPlanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".training_plan.AddTrainingPlanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".training_plan.TrainingPlanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".performance_profile.view_all_graph.ViewAllPerformanceProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".performance_profile.view_graph.ViewPerformanceProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".performance_profile.EditTemplateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".performance_profile.ViewTemplateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".performance_profile.SelectTemplateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".performance_profile.CreateTemplateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".competition.ViewAnalysisDataActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view_analysis.ViewAnalysisActivity"
+            android:exported="false" />
+        <activity
+            android:name=".competition.ViewCompetitionAnalysisActivity"
+            android:exported="false" />
+        <activity
+            android:name=".competition.SelectEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".competition.CompetitionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".competition.MainHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".competition.MainHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".program_section.ViewProgramActivity"
+            android:exported="false" />
+        <activity
+            android:name=".timer_section.CreateNewTimerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".timer_section.CreateTimerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ViewTimerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ViewTimerDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LibraryActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.Comptetion_AnalysisActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.AthletesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Invite_friendActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ViewGraphActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PerformanceProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.CreateMesoCycleActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.EdiTimerActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.GroupDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.LessonAthleteActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.LessonEventActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.LessonTestActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.LessonListActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.AddPeriodActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.CreatePlanningActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.CreateGropActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.FavoriteActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.LessonOnlineActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.example.ViewLessonActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.example.EditProgramActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.Select_ExerciseActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.EditCycleActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.EdiExerciseActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".View_Exercise_Activity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".MainActivity2"
+            android:exported="false"
+            android:label="@string/title_activity_main2"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TrainerApp.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.CreateCycleActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.CreateExerciseActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.ExerciseActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.LoadProgramActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".GetAthletesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.LessonActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.Create_Event_Activity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.TestActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".program_section.New_Program_Activity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.CrateActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Home_Fragment_Activity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ApiClass.FinalRegisterActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ApiClass.EditProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".InAppPurchaseActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".SelectSportListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".SelectSportActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ForgetPasswordActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".SignInActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+    </application>
+
+</manifest>

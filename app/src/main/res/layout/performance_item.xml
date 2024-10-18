@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_10sdp"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:background="@drawable/round_item_per">
+
+        <TextView
+            android:id="@+id/performance_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Physical Area"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_11sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/chartPerformance"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/_9sdp"
+            android:src="@drawable/ic_chart_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/addPerformance"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/addPerformance"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/_9sdp"
+            android:src="@drawable/create_image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/editPerformance"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/editPerformance"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/_9sdp"
+            android:src="@drawable/ic_edit_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/deletePerformance"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/deletePerformance"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/_9sdp"
+            android:src="@drawable/ic_delete_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:background="@drawable/round_item_per"
+        android:orientation="vertical"
+        android:padding="@dimen/_2sdp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:background="@drawable/round_item_per_second"
+            android:orientation="horizontal">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="Quality"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_11sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:background="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center"
+                    android:text="Coach s."
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_11sdp" />
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    android:background="@color/white"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center"
+                    android:text="Athelete S."
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_11sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/performanceDetailsLinear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:orientation="vertical"
+            android:visibility="visible" />
+
+        <!--        <LinearLayout-->
+        <!--            android:id="@+id/performanceDetailsLinear1"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="@dimen/_40sdp"-->
+        <!--            android:layout_marginStart="@dimen/_5sdp"-->
+        <!--            android:layout_marginTop="@dimen/_3sdp"-->
+        <!--            android:layout_marginEnd="@dimen/_5sdp"-->
+        <!--            android:layout_marginBottom="@dimen/_2sdp"-->
+        <!--            android:background="@drawable/round_item_per_second"-->
+        <!--            android:orientation="horizontal"-->
+        <!--            android:visibility="gone">-->
+
+        <!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:layout_weight="1">-->
+
+        <!--                <TextView-->
+        <!--                    android:id="@+id/performance_data_name"-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    android:layout_gravity="center"-->
+        <!--                    android:fontFamily="@font/poppins_medium"-->
+        <!--                    android:text="Strength"-->
+        <!--                    android:textColor="@color/white"-->
+        <!--                    android:textSize="@dimen/_10sdp"-->
+        <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                    app:layout_constraintStart_toStartOf="parent"-->
+        <!--                    app:layout_constraintTop_toTopOf="parent" />-->
+
+        <!--                <View-->
+        <!--                    android:layout_width="1dp"-->
+        <!--                    android:layout_height="match_parent"-->
+        <!--                    android:layout_gravity="end"-->
+        <!--                    android:background="@color/white"-->
+        <!--                    app:layout_constraintEnd_toEndOf="parent" />-->
+        <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        <!--            <LinearLayout-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:layout_gravity="center"-->
+        <!--                android:layout_weight="1"-->
+        <!--                android:gravity="center">-->
+
+        <!--            </LinearLayout>-->
+
+        <!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:layout_gravity="center"-->
+        <!--                android:layout_weight="1"-->
+        <!--                android:gravity="center">-->
+
+        <!--                <View-->
+        <!--                    android:layout_width="1dp"-->
+        <!--                    android:layout_height="match_parent"-->
+        <!--                    android:layout_gravity="start"-->
+        <!--                    android:background="@color/white"-->
+        <!--                    app:layout_constraintStart_toStartOf="parent" />-->
+        <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        <!--        </LinearLayout>-->
+
+    </LinearLayout>
+
+</LinearLayout>
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="@dimen/_40sdp"-->
+    <!--android:layout_marginStart="@dimen/_5sdp"-->
+    <!--android:layout_marginEnd="@dimen/_5sdp"-->
+    <!--android:layout_marginBottom="@dimen/_5sdp"-->
+    <!--android:background="@drawable/round_item_per_second"-->
+    <!--android:orientation="horizontal">-->
+
+    <!--<androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="match_parent"-->
+    <!--    android:layout_weight="1">-->
+
+    <!--    <TextView-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_gravity="center"-->
+    <!--        android:fontFamily="@font/poppins_medium"-->
+    <!--        android:text="Endurance"-->
+    <!--        android:textColor="@color/white"-->
+    <!--        android:textSize="@dimen/_15sdp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--    <View-->
+    <!--        android:layout_width="1dp"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:layout_gravity="end"-->
+    <!--        android:background="@color/white"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent" />-->
+    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+
+    <!--<LinearLayout-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="match_parent"-->
+    <!--    android:layout_gravity="center"-->
+    <!--    android:gravity="center"-->
+    <!--    android:layout_weight="1">-->
+    <!--</LinearLayout>-->
+    <!--<androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="match_parent"-->
+    <!--    android:layout_gravity="center"-->
+    <!--    android:gravity="center"-->
+    <!--    android:layout_weight="1">-->
+    <!--    <View-->
+    <!--        android:layout_width="1dp"-->
+    <!--        android:layout_gravity="start"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:background="@color/white" />-->
+
+    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+
+    <!--</LinearLayout>-->

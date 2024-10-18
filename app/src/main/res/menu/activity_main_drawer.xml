@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/tv_notification"
+        android:icon="@drawable/ic_notification"
+        android:title="Notification" />
+
+    <item
+        android:id="@+id/tv_policy"
+        android:icon="@drawable/ic_privacy"
+        android:title="Privacy Policy" />
+
+<!--    <item-->
+<!--        android:id="@+id/tv_invited_friend"-->
+<!--        android:icon="@drawable/ic_invite_a_friend"-->
+<!--        android:title="Invite a Friend" />-->
+
+    <item
+        android:id="@+id/tv_library"
+        android:icon="@drawable/ic_library"
+        android:title="Library" />
+
+    <item
+        android:id="@+id/tv_favorite"
+        android:icon="@drawable/ic_favorite"
+        android:title="Favorite" />
+
+    <item
+        android:id="@+id/tv_athletes"
+        android:icon="@drawable/ic_athlete"
+        android:title="Athletes" />
+
+    <item
+        android:id="@+id/tv_view_analysis"
+        android:icon="@drawable/ic_competition"
+        android:title="View Analysis" />
+
+    <item
+        android:id="@+id/tv_profile"
+        android:icon="@drawable/ic_perfomance"
+        android:title="Performance Profile" />
+
+    <item
+        android:id="@+id/tv_analysis"
+        android:icon="@drawable/ic_competition"
+        android:title="Competition Analysis" />
+
+    <item
+        android:id="@+id/tv_personal_diary"
+        android:icon="@drawable/ic_diary"
+        android:title="Personal Diary" />
+
+    <item
+        android:id="@+id/tv_setting"
+        android:icon="@drawable/ic_setting"
+        android:title="Settings" />
+
+    <item
+        android:id="@+id/tv_remind"
+        android:icon="@drawable/ic_reminder"
+        android:title="Remind Me" />
+
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/logout"
+        android:title="Logout" />
+
+</menu>

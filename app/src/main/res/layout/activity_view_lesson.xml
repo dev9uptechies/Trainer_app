@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:orientation="vertical"
+    tools:context="com.example.ViewLessonActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/create_bg"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginTop="@dimen/_20sdp">
+
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:src="@drawable/back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium"
+                android:text="View Lesson"
+                android:textColor="@color/splash_text_color"
+                android:textSize="@dimen/_18sdp"
+                app:layout_constraintBottom_toBottomOf="@+id/back"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/back" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_150sdp">
+
+                <TextView
+                    android:id="@+id/lesson_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="test name"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/lesson_t_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="Total Time: 04:00:00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lesson_name"
+                    tools:layout_editor_absoluteX="0dp" />
+
+                <TextView
+                    android:id="@+id/lesson_s_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="Section Time: 04:00:00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lesson_t_time" />
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_save"
+                    android:layout_width="@dimen/_170sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    app:cardBackgroundColor="@color/splash_text_color"
+                    app:cardCornerRadius="@dimen/_8sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lesson_s_time">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Confirm Attendance"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_13sdp" />
+
+                </androidx.cardview.widget.CardView>
+
+                <ImageView
+                    android:id="@+id/line_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:src="@drawable/white_line"
+                    app:layout_constraintTop_toBottomOf="@+id/card_save" />
+
+                <TextView
+                    android:id="@+id/section"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="Selected Section"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/line_img" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_35sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    app:cardBackgroundColor="#1A929492"
+                    app:cardCornerRadius="@dimen/_8sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/section">
+
+                    <TextView
+                        android:id="@+id/tv_section"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:background="@drawable/card_select_1"
+                        android:fontFamily="@font/poppins_medium"
+                        android:padding="@dimen/_3sdp"
+                        android:text="physical preparation"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_10sdp" />
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/tv_select_program"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="Select Program"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/card" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rly_program"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_select_program" />
+
+                <TextView
+                    android:id="@+id/tv_select_exercise"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="Exercise List"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rly_program" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rly_exercise"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_select_exercise" />
+
+                <!--                <ImageView-->
+                <!--                    android:id="@+id/line_img1"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginTop="@dimen/_20sdp"-->
+                <!--                    android:src="@drawable/white_line"-->
+                <!--                    android:visibility="gone"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/rly_exercise"/>-->
+
+                <!--                <androidx.cardview.widget.CardView-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginTop="@dimen/_20sdp"-->
+                <!--                    app:cardBackgroundColor="#1A929492"-->
+                <!--                    app:cardCornerRadius="@dimen/_10sdp"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/line_img1">-->
+
+                <!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_margin="@dimen/_5sdp">-->
+
+                <!--                        <com.dhims.timerview.TimerTextView-->
+                <!--                            android:id="@+id/timer_text"-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:textSize="@dimen/_20sdp"-->
+                <!--                            android:textColor="@color/white"-->
+                <!--                            android:fontFamily="@font/poppins_semi_bold"-->
+                <!--                            app:layout_constraintStart_toStartOf="parent"-->
+                <!--                            app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                            app:layout_constraintTop_toTopOf="parent"-->
+                <!--                            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
+                <!--                        <androidx.cardview.widget.CardView-->
+                <!--                            android:layout_width="@dimen/_80sdp"-->
+                <!--                            android:layout_height="match_parent"-->
+                <!--                            app:cardBackgroundColor="#313131"-->
+                <!--                            app:cardCornerRadius="@dimen/_10sdp"-->
+                <!--                            app:layout_constraintStart_toStartOf="parent"-->
+                <!--                            app:layout_constraintTop_toTopOf="parent">-->
+
+                <!--                            <LinearLayout-->
+                <!--                                android:layout_width="match_parent"-->
+                <!--                                android:layout_height="match_parent"-->
+                <!--                                android:layout_margin="@dimen/_5sdp"-->
+                <!--                                android:orientation="vertical">-->
+
+                <!--                                <TextView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:text="Round No.:"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                                <TextView-->
+                <!--                                    android:id="@+id/tv_set"-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:text="01 Round"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                                <ImageView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="@dimen/_5sdp"-->
+                <!--                                    android:src="@drawable/white_line"-->
+                <!--                                    app:layout_constraintTop_toBottomOf="@+id/rly_exercise"/>-->
+
+                <!--                                <TextView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:layout_marginTop="@dimen/_5sdp"-->
+                <!--                                    android:text="Pause:"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                                <TextView-->
+                <!--                                    android:id="@+id/tv_pause"-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:text="01 min"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                                <ImageView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="@dimen/_5sdp"-->
+                <!--                                    android:src="@drawable/white_line"-->
+                <!--                                    app:layout_constraintTop_toBottomOf="@+id/rly_exercise"/>-->
+
+                <!--                                <TextView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:layout_marginTop="@dimen/_5sdp"-->
+                <!--                                    android:text="Weight:"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                                <TextView-->
+                <!--                                    android:id="@+id/tv_weight"-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:text="01 KG"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                            </LinearLayout>-->
+
+                <!--                        </androidx.cardview.widget.CardView>-->
+
+                <!--                        <androidx.cardview.widget.CardView-->
+                <!--                            android:layout_width="@dimen/_80sdp"-->
+                <!--                            android:layout_height="match_parent"-->
+                <!--                            app:cardBackgroundColor="#313131"-->
+                <!--                            app:cardCornerRadius="@dimen/_10sdp"-->
+                <!--                            app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                            app:layout_constraintTop_toTopOf="parent">-->
+
+                <!--                            <LinearLayout-->
+                <!--                                android:layout_width="match_parent"-->
+                <!--                                android:layout_height="match_parent"-->
+                <!--                                android:layout_margin="@dimen/_5sdp"-->
+                <!--                                android:orientation="vertical">-->
+
+                <!--                                <TextView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:text="Cycle No.:"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                                <TextView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:text="1"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                                <ImageView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="@dimen/_5sdp"-->
+                <!--                                    android:src="@drawable/white_line"-->
+                <!--                                    app:layout_constraintTop_toBottomOf="@+id/rly_exercise"/>-->
+
+                <!--                                <TextView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:layout_marginTop="@dimen/_5sdp"-->
+                <!--                                    android:text="Pause:"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                                <TextView-->
+                <!--                                    android:id="@+id/tv_pause_cycle"-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:text="01 min"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                                <ImageView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="@dimen/_5sdp"-->
+                <!--                                    android:src="@drawable/white_line"-->
+                <!--                                    app:layout_constraintTop_toBottomOf="@+id/rly_exercise"/>-->
+
+                <!--                                <TextView-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:layout_marginTop="@dimen/_5sdp"-->
+                <!--                                    android:text="Distance:"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                                <TextView-->
+                <!--                                    android:id="@+id/tv_distance"-->
+                <!--                                    android:layout_width="match_parent"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:text="01 ROund"-->
+                <!--                                    android:textAlignment="textStart"-->
+                <!--                                    android:textColor="@color/white"-->
+                <!--                                    android:textSize="@dimen/_13sdp"/>-->
+
+                <!--                            </LinearLayout>-->
+                <!--                        </androidx.cardview.widget.CardView>-->
+
+                <!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+                <!--                </androidx.cardview.widget.CardView>-->
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_online"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_margin="@dimen/_10sdp"
+        app:cardBackgroundColor="@color/splash_text_color"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Online"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_15sdp" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_duplicate"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_margin="@dimen/_10sdp"
+        app:cardBackgroundColor="@color/splash_text_color"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:layout_constraintBottom_toTopOf="@+id/card_online">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Duplicate"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_15sdp" />
+
+    </androidx.cardview.widget.CardView>
+
+    <ProgressBar
+        android:id="@+id/view_lesson_progress"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
