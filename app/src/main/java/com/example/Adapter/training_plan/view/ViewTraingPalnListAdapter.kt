@@ -3,6 +3,7 @@ package com.example.Adapter.training_plan.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,10 @@ class ViewTraingPalnListAdapter(
     var context: Context,
     val listener: OnItemClickListener.OnItemClickCallback,
     val type: String? = null,
-    val mainId: Int? = null
+    val mainId: Int? = null,
+    private var startDate: String? = null,
+    private var endDate: String? = null
+
 ) : RecyclerView.Adapter<ViewTraingPalnListAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -34,6 +38,8 @@ class ViewTraingPalnListAdapter(
         val item = splist?.get(position) ?: return
 
         holder.name.text = "Mesocycle " + (position + 1)
+
+        Log.e("errorrd", "onBindViewHolder: "+item.start_date  +"   " + item.end_date )
         holder.start_date.text = "Start Date: " + formatDate(item.start_date)
         holder.end_date.text = "End Date: " + formatDate(item.end_date)
         val periods = item.periods ?: 0
@@ -45,6 +51,43 @@ class ViewTraingPalnListAdapter(
             intent.putExtra("mainId", mainId)
             intent.putExtra("seasonId", item.id)
             intent.putExtra("CardType", type)
+            intent.putExtra("startDate", startDate)
+            intent.putExtra("endDate", endDate)
+            context.startActivity(intent)
+        }
+
+        holder.card.setOnClickListener {
+            listener.onItemClicked(it, position, position.toLong(), "pre_competitive")
+            val intent = Intent(context, ViewMicroCycleActivity::class.java)
+            intent.putExtra("mainId", mainId)
+            intent.putExtra("seasonId", item.id)
+            intent.putExtra("CardType", type)
+            intent.putExtra("startDate", startDate)
+            intent.putExtra("endDate", endDate)
+            context.startActivity(intent)
+        }
+
+
+        holder.card.setOnClickListener {
+            listener.onItemClicked(it, position, position.toLong(), "competitive")
+            val intent = Intent(context, ViewMicroCycleActivity::class.java)
+            intent.putExtra("mainId", mainId)
+            intent.putExtra("seasonId", item.id)
+            intent.putExtra("CardType", type)
+            intent.putExtra("startDate", startDate)
+            intent.putExtra("endDate", endDate)
+            context.startActivity(intent)
+        }
+
+
+        holder.card.setOnClickListener {
+            listener.onItemClicked(it, position, position.toLong(), "transition")
+            val intent = Intent(context, ViewMicroCycleActivity::class.java)
+            intent.putExtra("mainId", mainId)
+            intent.putExtra("seasonId", item.id)
+            intent.putExtra("CardType", type)
+            intent.putExtra("startDate", startDate)
+            intent.putExtra("endDate", endDate)
             context.startActivity(intent)
         }
     }

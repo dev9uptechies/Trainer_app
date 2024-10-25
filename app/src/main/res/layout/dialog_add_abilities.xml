@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_black_round_corner_10"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="24dp">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_black_round_corner_10"
+        android:gravity="center"
+        android:padding="@dimen/_6sdp"
+        android:orientation="vertical">
 
     <!-- Title -->
     <TextView
@@ -30,44 +32,58 @@
         android:textColor="@color/white"
         android:textSize="14sp" />
 
-    <!-- Input Field -->
-    <EditText
-        android:id="@+id/etAbilities"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/bg_view_trainingpaln_list"
-        android:hint="Enter Your Abilities"
-        android:padding="5dp"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white" />
-
-    <!-- Button Container -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-
-        <Button
-            android:id="@+id/btnCancel"
-            android:layout_width="0dp"
+        <EditText
+            android:id="@+id/etAbilities"
+            style="@style/Editext_Round_10"
+            android:layout_width="@dimen/_230sdp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/black"
-            android:text="Cancel"
-            android:textColor="@color/teal_700" />
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:background="@drawable/bg_view_trainingpaln_list"
+            android:hint="Enter Ability"
+            android:padding="5dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_select" />
 
-        <Button
-            android:id="@+id/btnAdd"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/black"
-            android:text="Add"
-            android:textColor="@color/teal_700" />
-    </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@color/white" />
 
-</LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_45sdp">
+
+                    <TextView
+                        android:id="@+id/btnCancel"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Cancel"
+                        android:textColor="@android:color/holo_blue_light"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/white" />
+
+                    <TextView
+                        android:id="@+id/btnAdd"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Add"
+                        android:textColor="@android:color/holo_blue_light"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+

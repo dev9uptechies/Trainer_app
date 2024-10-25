@@ -29,6 +29,15 @@
         android:windowSoftInputMode="adjustPan"
         tools:targetApi="m">
         <activity
+            android:name=".personal_diary.AddPersonalDIaryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".personal_diary.ViewPersonalDiaryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".performance_profile.view_average_graph.ViewPerformanesProfileAverageActivity"
+            android:exported="false" />
+        <activity
             android:name=".training_plan.micro.EditMicroCycleActivity"
             android:exported="false" />
         <activity
@@ -41,7 +50,7 @@
             android:name=".training_plan.view_planning_cycle.EditMesocycleListActivity"
             android:exported="false" />
         <activity
-            android:name=".performance_profile.mesocycle.AddMesocycleListActivity"
+            android:name=".training_plan.view_planning_cycle.AddMesocycleListActivity"
             android:exported="false" />
         <activity
             android:name=".training_plan.EditTrainingPlanActivity"

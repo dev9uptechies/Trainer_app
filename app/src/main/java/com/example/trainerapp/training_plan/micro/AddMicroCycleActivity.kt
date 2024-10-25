@@ -3,6 +3,7 @@ package com.example.trainerapp.training_plan.micro
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -41,6 +42,9 @@ import com.example.trainerapp.databinding.ActivityAddMicroCycleBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class AddMicroCycleActivity : AppCompatActivity() {
@@ -57,18 +61,23 @@ class AddMicroCycleActivity : AppCompatActivity() {
     private lateinit var apiClient: APIClient
     private var splist: MutableList<AbilityData> = mutableListOf()
 
-
     private val trainingPlanLayouts = mutableListOf<View>()
     private val selectedAbilityIds = mutableListOf<Int>()
 
     private val missingIndices = mutableListOf<Int>()
     private lateinit var adapter: AbilitiesAdapter
+    private var startdate: String? = null
+    private var endDate: String? = null
+
+    private var startdatesent:String? = null
+    private var enddatesent:String? = null
 
     private var preSeason: MutableList<AddMicrocyclePreSeason> = mutableListOf()
     private var preCompetitive: MutableList<AddMicrocyclePreCompatitive> = mutableListOf()
     private var competitive: MutableList<AddMicrocycleCompatitive> = mutableListOf()
     private var transient: MutableList<AddMicrocycleTransition> = mutableListOf()
 
+    private var startDateMillis: Long = 0
     override fun onResume() {
         checkUser()
         super.onResume()
@@ -79,10 +88,8 @@ class AddMicroCycleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         addMicroCycleBinding = ActivityAddMicroCycleBinding.inflate(layoutInflater)
         setContentView(addMicroCycleBinding.root)
-
         buttonclick()
         intialize()
-
     }
 
     private fun intialize() {
@@ -93,9 +100,14 @@ class AddMicroCycleActivity : AppCompatActivity() {
         preferenceManager = PreferencesManager(this)
 
         id = intent.getIntExtra("MainId", 0)
+        startdate = intent.getStringExtra("StartDate")
+        endDate = intent.getStringExtra("EndDate")
         cardType = intent.getStringExtra("CardType")
         Log.d("id", id.toString())
         Log.d("cardtype", cardType.toString())
+
+        addMicroCycleBinding.startDate.text = startdate
+        addMicroCycleBinding.endDate.text = endDate
     }
 
     private fun buttonclick() {
@@ -163,8 +175,8 @@ class AddMicroCycleActivity : AppCompatActivity() {
                             id = 0,
                             ps_mesocycle_id = id,
                             name = nameEditText.text.toString(),
-                            start_date = start,
-                            end_date = end,
+                            start_date = startdatesent.toString(),
+                            end_date = enddatesent.toString(),
                             workload = workloadProgress,
                             workload_color = colorCode,
                             ability_ids = selectedAbilityIds
@@ -249,8 +261,8 @@ class AddMicroCycleActivity : AppCompatActivity() {
                             id = 0,
                             pc_mesocycle_id = id,
                             name = nameEditText.text.toString(),
-                            start_date = start,
-                            end_date = end,
+                            start_date = startdatesent.toString(),
+                            end_date = enddatesent.toString(),
                             workload = workloadProgress,
                             workload_color = colorCode,
                             ability_ids = selectedAbilityIds
@@ -335,8 +347,8 @@ class AddMicroCycleActivity : AppCompatActivity() {
                             id = 0,
                             c_mesocycle_id = id,
                             name = nameEditText.text.toString(),
-                            start_date = start,
-                            end_date = end,
+                            start_date = startdatesent.toString(),
+                            end_date = enddatesent.toString(),
                             workload = workloadProgress,
                             workload_color = colorCode,
                             ability_ids = selectedAbilityIds
@@ -421,8 +433,8 @@ class AddMicroCycleActivity : AppCompatActivity() {
                             id = 0,
                             pt_mesocycle_id = id,
                             name = nameEditText.text.toString(),
-                            start_date = start,
-                            end_date = end,
+                            start_date = startdatesent.toString(),
+                            end_date = enddatesent.toString(),
                             workload = workloadProgress,
                             workload_color = colorCode,
                             ability_ids = selectedAbilityIds
@@ -466,7 +478,7 @@ class AddMicroCycleActivity : AppCompatActivity() {
                         }
 
                         override fun onFailure(p0: Call<GetMicrocycle>, p1: Throwable) {
-                            // Handle failure
+                            Toast.makeText(this@AddMicroCycleActivity, "Error:", Toast.LENGTH_SHORT).show()
                         }
                     })
             }
@@ -503,17 +515,18 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
         val startDateEditText: AppCompatEditText =
             newTrainingPlanLayout.findViewById(R.id.ent_start_date_liner)
-        startDateEditText.setOnClickListener { Utils.selectDate(this, startDateEditText) }
+        startDateEditText.setOnClickListener {  selectTrainingPlanStartDate(startDateEditText)}
 
         val startDateCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_start_date_list)
-        startDateCard.setOnClickListener { Utils.selectDate(this, startDateEditText) }
+        startDateCard.setOnClickListener {
+            selectTrainingPlanStartDate(startDateEditText)
+        }
 
-        val endDateEditText: AppCompatEditText =
-            newTrainingPlanLayout.findViewById(R.id.ent_ent_date_liner)
-        endDateEditText.setOnClickListener { Utils.selectDate(this, endDateEditText) }
+        val endDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_ent_date_liner)
+        endDateEditText.setOnClickListener {  selectTrainingPlanEndDate(endDateEditText) }
 
         val endDateCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_end_pick_list)
-        endDateCard.setOnClickListener { Utils.selectDate(this, endDateEditText) }
+        endDateCard.setOnClickListener { selectTrainingPlanEndDate(endDateEditText)}
 
         val seekBar: SeekBar = newTrainingPlanLayout.findViewById(R.id.seekbar_workload_layout)
         seekBar.isEnabled = false // Disable SeekBar in the layout
@@ -534,6 +547,25 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 }
             }, currentProgress)
         }
+
+
+        val gradientDrawable = GradientDrawable(
+            GradientDrawable.Orientation.LEFT_RIGHT,
+            intArrayOf(
+                Color.parseColor("#F3F3F3"),
+                Color.parseColor("#10E218"),
+                Color.parseColor("#E2C110"),
+                Color.parseColor("#F17A0B"),
+                Color.parseColor("#FF0000")
+            )
+        )
+
+        gradientDrawable.gradientType = GradientDrawable.LINEAR_GRADIENT
+        gradientDrawable.cornerRadius = 8f
+
+        seekBar.progressDrawable = gradientDrawable
+        seekBar.isEnabled = false
+
 
         trainingPlanLayouts.add(indexToAdd, newTrainingPlanLayout)
         trainingPlanContainer.addView(newTrainingPlanLayout, indexToAdd)
@@ -622,6 +654,79 @@ class AddMicroCycleActivity : AppCompatActivity() {
         }
     }
 
+    private fun selectTrainingPlanStartDate(editText: AppCompatEditText) {
+        // Get the main start and max end dates from the binding
+        val mainStartDate = addMicroCycleBinding.startDate.text.toString()
+        val maxStartDate = addMicroCycleBinding.endDate.text.toString()
+
+        // Check if mainStartDate and maxStartDate are valid dates
+        val minDateMillis =
+            if (mainStartDate.isNotEmpty()) formatDateToMillis(mainStartDate) else System.currentTimeMillis()
+        val maxDateMillis =
+            if (maxStartDate.isNotEmpty()) formatDateToMillis(maxStartDate) else Long.MAX_VALUE
+
+        // Call Utils.selectDate3 with the min and max dates
+        Utils.selectDate3(
+            this,
+            editText,
+            minDateMillis, // Minimum date for selection
+            maxDateMillis  // Maximum date for selection
+        ) { dateMillis ->
+            // When a date is selected, update startDateMillis and display the formatted date
+            startDateMillis = dateMillis
+
+            startdatesent = formatDate(dateMillis)
+            val formattedDate = formatDate2(dateMillis)
+            editText.setText(formattedDate)
+        }
+    }
+
+    private fun selectTrainingPlanEndDate(editText: AppCompatEditText) {
+
+        val mainStartDate = addMicroCycleBinding.startDate.text.toString()
+        val maxStartDate = addMicroCycleBinding.endDate.text.toString()
+
+        // Check if mainStartDate and maxStartDate are valid dates
+        val minDateMillis =
+            if (mainStartDate.isNotEmpty()) formatDateToMillis(mainStartDate) else System.currentTimeMillis()
+        val maxDateMillis =
+            if (maxStartDate.isNotEmpty()) formatDateToMillis(maxStartDate) else Long.MAX_VALUE
+
+        // Call Utils.selectDate3 with the min and max dates
+        Utils.selectDate3(
+            this,
+            editText,
+            minDateMillis, // Minimum date for selection
+            maxDateMillis  // Maximum date for selection
+        ) { dateMillis ->
+            // When a date is selected, update startDateMillis and display the formatted date
+            startDateMillis = dateMillis
+
+            enddatesent = formatDate(dateMillis)
+            val formattedDate = formatDate2(dateMillis)
+            editText.setText(formattedDate)
+        }
+    }
+
+    private fun formatDateToMillis(dateString: String): Long {
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return format.parse(dateString)?.time
+            ?: Long.MAX_VALUE // Return millis or a very high value if parsing fails
+    }
+
+
+    // Utility function to format the date to a readable format
+    private fun formatDate(dateMillis: Long): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return dateFormat.format(Date(dateMillis))
+    }
+
+
+    private fun formatDate2(dateMillis: Long): String {
+        val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+        return format.format(Date(dateMillis))
+    }
+
     private fun showWorkloadDialog(
         listener: OnItemClickListener.WorkloadDialogListener,
         currentProgress: Int
@@ -646,6 +751,23 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
             val applyButton: Button = dialog.findViewById(R.id.btn_apply)
             val closeButton: Button = dialog.findViewById(R.id.btn_cancel)
+
+            val gradientDrawable = GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                intArrayOf(
+                    Color.parseColor("#F3F3F3"), // Yellow
+                    Color.parseColor("#10E218"), // Orange
+                    Color.parseColor("#E2C110"), // Red
+                    Color.parseColor("#F17A0B"), // Purple
+                    Color.parseColor("#FF0000")  // Blue
+                )
+            )
+
+            gradientDrawable.gradientType = GradientDrawable.LINEAR_GRADIENT
+            gradientDrawable.cornerRadius = 8f
+
+            seekBar.progressDrawable = gradientDrawable
+
 
             applyButton.setOnClickListener {
                 val progress = seekBar.progress
@@ -761,24 +883,20 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
             val selectedAbilities = splist.filter { it.isSelected }
 
-            // Clear previous views in the ability container
             ablilityContainer.removeAllViews()
 
             Log.d("Selected Abilities", "Count: ${selectedAbilities.size}")
 
             selectedAbilityIds.clear()
-            selectedAbilityIds.addAll(selectedAbilities.map { it.id }) // Assuming `id` is a String, change if necessary
+            selectedAbilityIds.addAll(selectedAbilities.map { it.id })
 
             addMicroCycleBinding.card.visibility =
                 if (selectedAbilities.isNotEmpty()) View.VISIBLE else View.GONE
 
-            // Loop through the selected abilities and add them to the container
             for (ability in selectedAbilities) {
-                // Inflate the layout for each ability
                 val abilityLayout = LayoutInflater.from(this)
                     .inflate(R.layout.ability_item, ablilityContainer, false)
 
-                // Find the TextView and set its text to the ability name
                 val textView: TextView = abilityLayout.findViewById(R.id.ability_txt)
                 textView.text = ability.name
 
@@ -817,30 +935,27 @@ class AddMicroCycleActivity : AppCompatActivity() {
             dialog.show()
 
             val abilityName: EditText = dialog.findViewById(R.id.etAbilities)
-            val addButton: Button = dialog.findViewById(R.id.btnAdd)
+            val addButton: TextView = dialog.findViewById(R.id.btnAdd)
+            val canelButtob :TextView = dialog.findViewById(R.id.btnCancel)
+
+            canelButtob.setOnClickListener {
+                dialog.cancel()
+            }
 
             addButton.setOnClickListener {
                 val name = abilityName.text.toString().trim()
 
                 if (name.isNotEmpty()) {
                     apiInterface.Create_Abilities(name)
-                        ?.enqueue(object : Callback<AddAblilityClass> {
+                        ?.enqueue(object : Callback<AbilityData> {
                             override fun onResponse(
-                                call: Call<AddAblilityClass>,
-                                response: Response<AddAblilityClass>
+                                call: Call<AbilityData>,
+                                response: Response<AbilityData>
                             ) {
                                 Log.d("APIResponse", "Response: ${response.code()}")
 
                                 if (response.isSuccessful) {
-                                    val message =
-                                        response.body()?.message ?: "Ability added successfully"
-                                    Toast.makeText(
-                                        this@AddMicroCycleActivity,
-                                        message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    dialog.dismiss()
-                                } else {
+                                    Toast.makeText(this@AddMicroCycleActivity, "Ability Added", Toast.LENGTH_SHORT).show()                                } else {
                                     val errorBody =
                                         response.errorBody()?.string() ?: "Unknown error"
                                     Log.e("API Error", "Response: ${response.code()} - $errorBody")
@@ -852,7 +967,7 @@ class AddMicroCycleActivity : AppCompatActivity() {
                                 }
                             }
 
-                            override fun onFailure(call: Call<AddAblilityClass>, t: Throwable) {
+                            override fun onFailure(call: Call<AbilityData>, t: Throwable) {
                                 Log.e("API Error", "Error: ${t.message}")
                                 Toast.makeText(
                                     this@AddMicroCycleActivity,
@@ -869,4 +984,5 @@ class AddMicroCycleActivity : AppCompatActivity() {
             Log.e("Exception", "Error showing dialog: ${e.message}")
         }
     }
+
 }

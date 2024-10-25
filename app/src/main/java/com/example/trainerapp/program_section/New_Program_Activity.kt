@@ -86,7 +86,6 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         super.onCreate(savedInstanceState)
         newProgramBinding = ActivityNewProgramBinding.inflate(layoutInflater)
         setContentView(newProgramBinding.root)
-
         initView()
         getData()
 

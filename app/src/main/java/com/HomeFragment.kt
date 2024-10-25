@@ -31,6 +31,7 @@ import com.example.trainerapp.Utils
 import com.example.trainerapp.Work_Out
 import com.example.trainerapp.competition.CompetitionActivity
 import com.example.trainerapp.databinding.FragmentHomeBinding
+import com.example.trainerapp.personal_diary.ViewPersonalDiaryActivity
 import com.example.trainerapp.view_analysis.ViewAnalysisActivity
 import com.google.android.material.navigation.NavigationView
 import retrofit2.Call
@@ -93,7 +94,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         homeFragmentBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         homeFragmentBinding.sidemenu.isClickable = true
-        homeFragmentBinding.sidemenu.isFocusable = true
         homeFragmentBinding.sidemenu.setOnClickListener {
             Log.d("TAG", "onCreateView: Touch Side Menu")
             homeFragmentBinding.drawerLayout.openDrawer(GravityCompat.START)
@@ -182,7 +182,9 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             return true
         } else if (item.itemId == R.id.tv_personal_diary) {
             homeFragmentBinding.drawerLayout.closeDrawer(GravityCompat.START)
-            Toast.makeText(requireContext(), "Personal Diary", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), ViewPersonalDiaryActivity::class.java)
+            startActivity(intent)
+//            Toast.makeText(requireContext(), "Personal Diary", Toast.LENGTH_SHORT).show()
             return true
         } else if (item.itemId == R.id.tv_setting) {
             homeFragmentBinding.drawerLayout.closeDrawer(GravityCompat.START)

@@ -128,7 +128,9 @@ class ViewPerformanceProfileActivity : AppCompatActivity() {
     }
 
     private fun getQualityData(catId: String, athleteId: String) {
+
         try {
+
             qualityData.clear()
             viewPerformanceProfileBinding.ProgressBar.visibility = View.VISIBLE
             apiInterface.GetPerformanceQuality(
@@ -266,10 +268,9 @@ class ViewPerformanceProfileActivity : AppCompatActivity() {
         options.plotOptions = plotOptions
         chart.backgroundColor = HIColor.initWithRGB(0, 0, 0)
 
-        val athleteData =
-            competitionProgress.mapNotNull { it.athelet_score?.toFloat() }
-        val coachData =
-            competitionProgress.mapNotNull { it.coach_score?.toFloat() }
+        val athleteData = competitionProgress.mapNotNull { it.athelet_score?.toFloat() }
+        val coachData = competitionProgress.mapNotNull { it.coach_score?.toFloat() }
+
         Log.d("athlete data :-", "$athleteData")
         Log.d("coach data :-", "$coachData")
         val hiTitle = HITitle()

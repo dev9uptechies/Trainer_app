@@ -105,6 +105,12 @@
         <item name="cornerSize">10%</item>
     </style>
 
+    <style name="CustomDatePickerTheme" parent="android:Widget.Material.DatePicker">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:editTextColor">@android:color/white</item>
+    </style>
+
     <dimen name="_13sdp">13dp</dimen>
     <dimen name="_10sdp">10dp</dimen>
     <dimen name="_12sdp">12dp</dimen>

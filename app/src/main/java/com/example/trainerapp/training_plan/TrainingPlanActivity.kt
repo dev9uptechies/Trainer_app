@@ -154,6 +154,10 @@ class TrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItemClic
     }
 
     private fun setAdapter(trainingData: MutableList<TrainingPlanData.TrainingPlan>) {
+
+        try {
+
+
         if (trainingData.isNotEmpty()) {
             trainingPlanBinding.recyclerViewTrainingPlan.visibility = View.VISIBLE
             viewTraining = VewTrainingPlanAdapter(trainingData, this, this)
@@ -161,6 +165,9 @@ class TrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItemClic
             trainingPlanBinding.recyclerViewTrainingPlan.adapter = viewTraining
         } else {
             trainingPlanBinding.recyclerViewTrainingPlan.visibility = View.GONE
+        }
+        }catch (e:Exception){
+            Log.d("error",e.message.toString())
         }
     }
 

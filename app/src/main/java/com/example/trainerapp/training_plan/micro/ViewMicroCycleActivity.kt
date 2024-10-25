@@ -40,6 +40,10 @@ class ViewMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         viewMicroCycleBinding = ActivityViewMicroCycleBinding.inflate(layoutInflater)
         setContentView(viewMicroCycleBinding.root)
 
+
+        startDate = intent.getStringExtra("startDate")
+        endDate = intent.getStringExtra("endDate")
+
         initViews()
         setupListeners()
         refreshData()
@@ -50,21 +54,21 @@ class ViewMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         }
 
 
-        viewMicroCycleBinding.add.setOnClickListener {
+        viewMicroCycleBinding.EditMicrocycle.setOnClickListener {
             if (programData.isEmpty()) {
                 showToast("Pleases Add Mesocycle")
                 return@setOnClickListener
             } else {
+                Log.d("SUJALDATE", "onCreate: $startDate  End : $endDate")
                 val intent = Intent(this@ViewMicroCycleActivity, EditMicroCycleActivity::class.java)
                 intent.putExtra("mainId", mainId)
                 intent.putExtra("SeasonId", seasonId)
-                intent.putExtra("startDate", startDate)
-                intent.putExtra("endDate", endDate)
+                intent.putExtra("StartDate", startDate)
+                intent.putExtra("EndDate", endDate)
                 intent.putExtra("CardType", cardType)
                 startActivity(intent)
             }
         }
-
     }
 
     private fun initViews() {
@@ -75,11 +79,9 @@ class ViewMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         mainId = intent.getIntExtra("mainId", 0)
         seasonId = intent.getIntExtra("seasonId", 0)
         cardType = intent.getStringExtra("CardType")
-        val intent = intent
-        startDate = intent.getStringExtra("startDate") ?: "No Start"
-        endDate = intent.getStringExtra("endDate") ?: "No End Date"
 
-        Log.d("dates:-", "startDate: $startDate, endDate: $endDate  cardType: $cardType")
+
+        Log.d("KKKKKKKKKK:-", "startDate: $startDate, endDate: $endDate  cardType: $cardType")
 
         Log.d("viewmicro", "$mainId     $seasonId    $cardType")
 
@@ -89,6 +91,8 @@ class ViewMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         viewMicroCycleBinding.addLayout.setOnClickListener {
             val intent = Intent(this, AddMicroCycleActivity::class.java)
             intent.putExtra("MainId", seasonId)
+            intent.putExtra("StartDate", startDate)
+            intent.putExtra("EndDate", endDate)
             intent.putExtra("CardType", cardType)
             startActivity(intent)
         }

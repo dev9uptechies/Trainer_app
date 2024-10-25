@@ -26,7 +26,11 @@ import com.example.model.performance_profile.performance.quality.add.AddQuality
 import com.example.model.performance_profile.performance.quality.add_qual_response.PerformanceQualityAdd
 import com.example.model.performance_profile.performance.quality.update.UpdateQuality
 import com.example.model.performance_profile.template.CreateTemplate
+import com.example.model.personal_diary.GetPersonalDiaryData
+import com.example.model.personal_diary.TrainingAssessment
+import com.example.model.personal_diary.TrainingSession
 import com.example.model.trainer_plan.TrainingPlanSubClass
+import com.example.model.training_plan.MicroCycle.AbilityData
 import com.example.model.training_plan.MicroCycle.AddAblilityClass
 import com.example.model.training_plan.MicroCycle.AddMicrocycleCompatitive
 import com.example.model.training_plan.MicroCycle.AddMicrocyclePreCompatitive
@@ -608,8 +612,7 @@ interface APIInterface {
     ): Call<GetMessocyclePreSession>
 
     @POST("abilitie")
-    fun Create_Abilities(@Query("name") name: String?): Call<AddAblilityClass>?
-
+    fun Create_Abilities(@Query("name") name: String?): Call<AbilityData>?
 
     @GET("abilitie")
     fun Get_Abilitiees(): Call<AddAblilityClass>?
@@ -630,7 +633,7 @@ interface APIInterface {
     fun AddMicrocyclePreSeeion(@Body trainingPlanClass: List<AddMicrocyclePreSeason>): Call<GetMicrocycle>?
 
     @POST("pre_competitive_microcycle")
-    fun AddMicrocyclePreCompatitive(@Body trainingPlanClass: List<AddMicrocyclePreCompatitive>): Call<GetMicrocycle>?
+    fun AddMicrocyclePreCompatitive(@Body trainingPlanClass: MutableList<AddMicrocyclePreCompatitive>): Call<GetMicrocycle>?
 
     @POST("competitive_microcycle")
     fun AddMicrocycleCompatitive(@Body trainingPlanClass: List<AddMicrocycleCompatitive>): Call<GetMicrocycle>?
@@ -676,6 +679,9 @@ interface APIInterface {
         @Query("id") id: Int?,
         @Query("pt_mesocycle_id") psid: Int?,
     ): Call<GetMicrocycle>
+
+    @POST("personal_diary/add")
+    fun AddPersonalDIaryData(@Body personalDiaryData: TrainingSession): Call<GetPersonalDiaryData>?
 
 
 }

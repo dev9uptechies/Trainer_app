@@ -11,6 +11,7 @@ data class AddMicrocyclePreSeason(
     val ability_ids: List<Int>
 )
 
+
 data class AddMicrocyclePreCompatitive(
     val id: Int?,
     val pc_mesocycle_id: Int,

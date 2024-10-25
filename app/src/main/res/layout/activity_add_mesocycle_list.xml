@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".performance_profile.mesocycle.AddMesocycleListActivity">
+    tools:context=".training_plan.view_planning_cycle.AddMesocycleListActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout2"

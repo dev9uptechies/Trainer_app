@@ -16,8 +16,6 @@ import com.example.trainerapp.ApiClass.RegisterData
 import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityViewTrainingPlanListBinding
-import com.example.trainerapp.performance_profile.mesocycle.AddMesocycleListActivity
-import com.example.trainerapp.training_plan.micro.ViewMicroCycleActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -173,7 +171,7 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
         startDate = intent.getStringExtra("startDate")
         endDate = intent.getStringExtra("endDate")
 
-        Log.d("dates:-", "startDate: $startDate, endDate: $endDate")
+        Log.d("viewmesocycledates:-", "startDate: $startDate, endDate: $endDate")
 
         Log.d("ViewTraining data :-", "main Id: $mainId, CardType: $cardType,season Id: $seasonId")
     }
@@ -375,6 +373,9 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
     }
 
     private fun getPreSessionData(id: Int) {
+        try {
+
+
         viewTrainingPlanBinding.progresBar.visibility = View.VISIBLE
 
         programData.clear()
@@ -444,65 +445,37 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
                     call.cancel()
                 }
             })
+        }catch (e:Exception){
+            Log.d("error",e.message.toString())
+        }
     }
 
     private fun setAdapter() {
+        try {
+
         if (programData.isNotEmpty()) {
             viewTrainingPlanBinding.addLayout.visibility = View.GONE
             viewTrainingPlanBinding.recyclerView.visibility = View.VISIBLE
             viewTrainingPlanBinding.recyclerView.layoutManager = LinearLayoutManager(this)
-            adapter = ViewTraingPalnListAdapter(programData, this, this, cardType, mainId)
+            adapter = ViewTraingPalnListAdapter(programData, this, this, cardType, mainId,startDate,endDate)
             viewTrainingPlanBinding.recyclerView.adapter = adapter
         } else {
             viewTrainingPlanBinding.addLayout.visibility = View.VISIBLE
             viewTrainingPlanBinding.recyclerView.visibility = View.GONE
             showToast("No data available for the selected training plan.")
         }
+        }catch (e:Exception){
+            Log.d("Exss",e.message.toString())
+        }
     }
+
+
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
-        val intent = Intent(this, ViewMicroCycleActivity::class.java)
 
-        val trainingData = programData.get(position)
-
-        when (string) {
-            "pre_session" -> {
-                intent.putExtra("seasonId", trainingData.id)
-                intent.putExtra("mainId", mainId)
-                intent.putExtra("CardType", cardType)
-                intent.putExtra("startDate", startDate)
-                intent.putExtra("endDate", endDate)
-            }
-
-            "pre_competitive" -> {
-                intent.putExtra("seasonId", seasonId)
-                intent.putExtra("mainId", mainId)
-                intent.putExtra("CardType", cardType)
-                intent.putExtra("startDate", startDate)
-                intent.putExtra("endDate", endDate)
-            }
-
-            "competitive" -> {
-                intent.putExtra("seasonId", seasonId)
-                intent.putExtra("mainId", trainingData.id)
-                intent.putExtra("CardType", cardType)
-                intent.putExtra("startDate", startDate)
-                intent.putExtra("endDate", endDate)
-            }
-
-            "transition" -> {
-                intent.putExtra("seasonId", seasonId)
-                intent.putExtra("mainId", mainId)
-                intent.putExtra("CardType", cardType)
-                intent.putExtra("startDate", startDate)
-                intent.putExtra("endDate", endDate)
-            }
-        }
-        intent.putExtra("CardType", string)
-        startActivity(intent)
     }
 }

@@ -1,6 +1,9 @@
 package com.example.Adapter.training_plan.view
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.OnItemClickListener
 import com.example.model.training_plan.MicroCycle.GetMicrocycle
 import com.example.trainerapp.R
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ViewMicrocycleListAdapter(
     private var splist: MutableList<GetMicrocycle.Data>?,
@@ -32,10 +37,29 @@ class ViewMicrocycleListAdapter(
         val item = splist?.get(position) ?: return
         holder.progress.isEnabled = false
         holder.name.text = item.name
-        holder.start_date.text = item.start_date
-        holder.end_date.text = item.end_date
+        holder.start_date.text = formatDate(item.startDate)
+        holder.end_date.text = formatDate(item.endDate)
         holder.progress.progress = item.workload ?: 0
-        
+
+
+        val gradientDrawable = GradientDrawable(
+            GradientDrawable.Orientation.LEFT_RIGHT,
+            intArrayOf(
+                Color.parseColor("#F3F3F3"),
+                Color.parseColor("#10E218"), // Orange
+                Color.parseColor("#E2C110"), // Red
+                Color.parseColor("#F17A0B"), // Purple
+                Color.parseColor("#FF0000")  // Blue
+            )
+        )
+
+        gradientDrawable.gradientType = GradientDrawable.LINEAR_GRADIENT
+        gradientDrawable.cornerRadius = 8f
+
+        holder.progress.progressDrawable = gradientDrawable
+        holder.progress.isEnabled = false
+
+
     }
 
     override fun getItemCount(): Int {
@@ -49,6 +73,18 @@ class ViewMicrocycleListAdapter(
         var progress: SeekBar = view.findViewById(R.id.seekbar_workload)
         var card: CardView = view.findViewById(R.id.card_one)
 
+    }
+
+    @SuppressLint("NewApi")
+    private fun formatDate(dateString: String?): String {
+        return if (!dateString.isNullOrEmpty()) {
+            val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val outputFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy")
+            val date = LocalDate.parse(dateString, inputFormatter)
+            date.format(outputFormatter)
+        } else {
+            "N/A"
+        }
     }
 
 }

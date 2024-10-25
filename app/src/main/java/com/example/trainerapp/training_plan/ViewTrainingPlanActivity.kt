@@ -20,6 +20,8 @@ import com.example.trainerapp.training_plan.view_planning_cycle.ViewTrainingPlan
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
     lateinit var viewTrainingPlanBinding: ActivityViewTrainingPlanBinding
@@ -159,16 +161,23 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
     }
 
     private fun setProgramDataset(data: List<TrainingPlanData.TrainingPlan>) {
+
+        val startDateMillis = formatDateToMillis2(data[0].start_date)
+        val formattedStartDate = formatMillisToDateString(startDateMillis)
+
+        val endDateInMillis = formatDateToMillis2(data[0].competition_date)
+        val formattedEndDate = formatMillisToDateString(endDateInMillis)
+
+
         viewTrainingPlanBinding.edtProgramName.setText(data[0].name)
-        viewTrainingPlanBinding.edtStartDate.setText(data[0].start_date)
-        viewTrainingPlanBinding.edtEndDate.setText(data[0].competition_date)
-        viewTrainingPlanBinding.days.text = data[0].mesocycle + " Days"
+        viewTrainingPlanBinding.edtStartDate.setText(formattedStartDate)
+        viewTrainingPlanBinding.edtEndDate.setText(formattedEndDate)
+        viewTrainingPlanBinding.days.text = data[0].mesocycle
 
         initRecyclerView(arrayListOf(data[0]))
     }
 
     private fun initRecyclerView(programExercises: ArrayList<TrainingPlanData.TrainingPlan>) {
-
         viewTrainingPlanBinding.recyclerView.layoutManager = LinearLayoutManager(this)
         viewTraining = ViewTrainingAdapter(programExercises, this, this)
         viewTrainingPlanBinding.recyclerView.adapter = viewTraining
@@ -182,6 +191,25 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
         id = intent.getIntExtra("Id", 0)
     }
 
+
+    // Method to convert date strings to milliseconds
+    private fun formatDateToMillis2(dateString: String?): Long {
+        return try {
+            val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date = format.parse(dateString)
+            date?.time ?: System.currentTimeMillis() // Fallback to current time if parsing fails
+        } catch (e: Exception) {
+            Log.e("DateConversion", "Error converting date: ${e.message}")
+            System.currentTimeMillis() // Fallback to current time
+        }
+    }
+
+    // Method to format milliseconds into the desired date format
+    private fun formatMillisToDateString(millis: Long): String {
+        val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+        return format.format(millis)
+    }
+
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
         val intent = Intent(this, ViewTrainingPlanListActivity::class.java)
 //
@@ -190,7 +218,7 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
         when (string) {
             "pre_session" -> {
                 intent.putExtra("seasonId", trainingData.pre_season?.id)
-                intent.putExtra("mainId", trainingData.id)
+                intent.putExtra("mainId", id)
                 intent.putExtra("startDate", trainingData.start_date)
                 intent.putExtra("endDate", trainingData.competition_date)
             }

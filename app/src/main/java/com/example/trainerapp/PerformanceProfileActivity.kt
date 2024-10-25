@@ -44,6 +44,7 @@ import com.example.trainerapp.databinding.ActivityPerformanceProfileBinding
 import com.example.trainerapp.performance_profile.CreateTemplateActivity
 import com.example.trainerapp.performance_profile.SelectTemplateActivity
 import com.example.trainerapp.performance_profile.view_all_graph.ViewAllPerformanceProfileActivity
+import com.example.trainerapp.performance_profile.view_average_graph.ViewPerformanesProfileAverageActivity
 import com.example.trainerapp.performance_profile.view_graph.ViewPerformanceProfileActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import retrofit2.Call
@@ -73,6 +74,10 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
         super.onCreate(savedInstanceState)
         performanceProfileBinding = ActivityPerformanceProfileBinding.inflate(layoutInflater)
         setContentView(performanceProfileBinding.root)
+
+        try {
+
+
         initViews()
         resetData()
         checkButtonClick()
@@ -113,6 +118,15 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                 putExtra("athleteId", "${athleteId.id}")
                 putExtra("catName", "All Area Performance")
             })
+        }
+        performanceProfileBinding.viewAverageGraph.setOnClickListener {
+            startActivity(Intent(this, ViewPerformanesProfileAverageActivity::class.java).apply {
+                putExtra("athleteId", "${athleteId.id}")
+                putExtra("catName", "All Area Performance")
+            })
+        }
+        }catch (e:Exception){
+            Log.d("errroOnCreate",e.message.toString())
         }
     }
 
@@ -381,6 +395,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
     private fun checkButtonClick() {
         performanceProfileBinding.edtAthletes.setOnClickListener {
             val list = athleteData.map { it.name }
+            Log.d("ida","${it.id}")
             val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_list, null)
             val popupWindow = PopupWindow(
@@ -420,6 +435,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                     performanceProfileBinding.viewQualityGraph
                 )
                 athleteId.id = athleteData.filter { it.name == selectedItem }.first().id!!
+                Log.d("idl","${it.id}")
                 println("Selected item: $selectedItem")
                 popupWindow.dismiss()
                 categoryData.clear()
@@ -484,6 +500,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
 
                                     // Now load performance quality only after categories are loaded
                                     categoryData.forEach {
+                                        Log.d("idp","${it.id}")
                                         loadPerformanceQuailty(id, it.id)
                                     }
                                 } else {
@@ -611,8 +628,10 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                             if (response.isSuccessful && response.body() != null) {
                                 Log.d("Get Profile Data ", "${response.body()}")
                                 val data = response.body()!!.data
-                                for (i in data!!) {
-                                    performanceTempData.add(i)
+                                if (data != null) {
+                                    for (i in data) {
+                                        performanceTempData.add(i)
+                                    }
                                 }
                             }
                         } else if (code == 403) {
@@ -729,6 +748,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
             "view_chart" -> {
                 try {
                     val category = categoryData.firstOrNull { it.id == type.toInt() }
+                    Log.d("catData:","${category!!.id}")
                     startActivity(
                         Intent(
                             this@PerformanceProfileActivity,

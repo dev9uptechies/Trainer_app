@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
             android:gravity="center"
-            android:text="You can create Mesocycle between"
+            android:text="You can create Microcycle between"
             android:textColor="@color/white"
             android:textSize="@dimen/_12sdp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -185,8 +185,8 @@
                         android:id="@+id/card"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_10sdp"
-                        android:visibility="visible"
+                        android:layout_margin="@dimen/_15sdp"
+                        android:visibility="gone"
                         app:cardBackgroundColor="@color/card_colour"
                         app:cardCornerRadius="@dimen/_10sdp"
                         app:layout_constraintTop_toBottomOf="@+id/linearLayout6">
@@ -200,12 +200,20 @@
                                 android:id="@+id/chvvp"
                                 android:layout_width="match_parent"
                                 android:layout_height="100sp"
+                                android:visibility="visible"
                                 android:layout_gravity="center_vertical"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal"
                                 app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
 
+
                         </HorizontalScrollView>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
 
                     </androidx.cardview.widget.CardView>
 
