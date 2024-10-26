@@ -53,6 +53,9 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                     val code = response.code()
                     if (code == 200) {
                         Log.d("Get Profile Data ", "${response.body()}")
+//                        GetProgram()
+//                        libraryBinding.cardProgram.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
+//                        libraryBinding.cardLesson.setCardBackgroundColor(resources.getColor(R.color.light_grey))
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@LibraryActivity)
                     } else {
@@ -91,6 +94,8 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
         libraryBinding = ActivityLibraryBinding.inflate(layoutInflater)
         setContentView(libraryBinding.root)
 
+        try {
+
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
         preferencesManager = PreferencesManager(this)
@@ -121,9 +126,15 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
             libraryBinding.cardExercise.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
             libraryBinding.cardLesson.setCardBackgroundColor(resources.getColor(R.color.light_grey))
         }
+
+        }catch (e:Exception){
+            Log.d("Catch OnC","Catch Run")
+        }
     }
 
     private fun GetTestList() {
+        try {
+
         apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
             override fun onResponse(call: Call<TestListData?>, response: Response<TestListData?>) {
                 Log.d("TAG", response.code().toString() + "")
@@ -171,9 +182,14 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
             }
 
         })
+
+        }catch (e:Exception){
+            Log.d("Catch","Catch Run")
+        }
     }
 
     private fun GetLessionList() {
+        try {
         apiInterface.GetLession()?.enqueue(object : Callback<LessonData?> {
             override fun onResponse(call: Call<LessonData?>, response: Response<LessonData?>) {
                 Log.d("TAG", response.code().toString() + "")
@@ -184,7 +200,10 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                     val Message: String = resource.message!!
                     if (Success) {
                         lessonData = resource.data!!
+
                         if (resource.data!!.isNotEmpty()) {
+
+
                             libraryBinding.rcvLibrarylist.layoutManager =
                                 LinearLayoutManager(this@LibraryActivity)
                             adapter_lesson =
@@ -193,6 +212,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                                     this@LibraryActivity,
                                     this@LibraryActivity
                                 )
+                            Log.e("MMMMM", "onResponse: "+resource.data!!.get(0).user_id )
                             libraryBinding.rcvLibrarylist.adapter = adapter_lesson
                         } else {
                             Toast.makeText(
@@ -222,9 +242,13 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
             }
         })
 
+        }catch (e:Exception){
+            Log.d("Catch","Catch Run")
+        }
     }
 
     private fun GetProgram() {
+        try {
         apiInterface.GetProgam()?.enqueue(object : Callback<ProgramListData?> {
             override fun onResponse(
                 call: Call<ProgramListData?>,
@@ -275,15 +299,20 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                 call.cancel()
             }
         })
+
+        }catch (e:Exception){
+            Log.d("Catch","Catch Run")
+        }
     }
 
     private fun getEvent() {
+        try {
         apiInterface.GetEvent()?.enqueue(object : Callback<EventListData?> {
             override fun onResponse(
                 call: Call<EventListData?>,
                 response: Response<EventListData?>
             ) {
-                Log.d("TAG", response.code().toString() + "")
+
                 val code = response.code()
                 if (code == 200) {
                     val resource: EventListData? = response.body()
@@ -328,9 +357,15 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                 call.cancel()
             }
         })
+
+        }catch (e:Exception){
+            Log.d("Catch","Catch Run")
+        }
     }
 
     private fun GetExerciseList() {
+        try {
+
         apiInterface.GetExercise()?.enqueue(object : Callback<ExcerciseData?> {
             override fun onResponse(
                 call: Call<ExcerciseData?>,
@@ -382,6 +417,10 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                 call.cancel()
             }
         })
+
+        }catch (e:Exception){
+            Log.d("Catch","Catch Run")
+        }
     }
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {

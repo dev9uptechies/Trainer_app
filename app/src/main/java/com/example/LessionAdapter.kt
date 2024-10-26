@@ -39,7 +39,7 @@ class LessionAdapter(
         holder.tvTime.text = movie.date
         holder.tvTime1.text = "Time: " + movie.time
         for (i in movie.lesson_goal!!) {
-            goal.add(i.goal!!.goal_name!!)
+            goal.add(i.goal!!.name!!)
         }
         holder.tvgoal.text = "Goal: " + goal.joinToString(", ")
         if (movie.is_favourite!! == 1) {

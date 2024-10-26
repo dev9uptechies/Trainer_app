@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.model.newClass.lesson.Goal
 import com.example.trainerapp.ApiClass.ProgramListData
 import com.google.gson.annotations.SerializedName
 
@@ -52,8 +53,8 @@ class LessonData {
         @SerializedName("updated_at")
         var updated_at: String? = null
 
-        @SerializedName("goal")
-        var goal: Goal? = null
+        @SerializedName("lesson_goal")
+        var goal: ArrayList<Goals>? = null
 
         @SerializedName("lesson_programs")
         var lesson_programs: ArrayList<Lesson_Programs>? = null
@@ -144,7 +145,7 @@ class LessonData {
         var is_favourite: Int? = null
 
         @SerializedName("goal")
-        var goal: Goal? = null
+        var goal: Goals? = null
 
     }
 
@@ -165,7 +166,7 @@ class LessonData {
 
     }
 
-    class Goal {
+    class Goals {
 
         @SerializedName("id")
         var id: Int? = null
@@ -178,6 +179,9 @@ class LessonData {
 
         @SerializedName("updated_at")
         var updated_at: String? = null
+
+        @SerializedName("goal")
+        var goal: Goal? = null
 
     }
 

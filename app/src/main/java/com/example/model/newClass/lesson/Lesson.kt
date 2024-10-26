@@ -62,7 +62,7 @@ class Lesson {
         val created_at: String? = null
 
         @SerializedName("goal")
-        val goal: Exercise.Goal? = null
+        val goal: Goal? = null
 
         @SerializedName("goal_id")
         val goal_id: String? = null

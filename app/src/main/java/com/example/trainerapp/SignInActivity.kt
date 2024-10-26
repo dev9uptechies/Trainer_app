@@ -144,10 +144,12 @@ class SignInActivity : AppCompatActivity() {
                         response: Response<RegisterData?>
                     ) {
                         Log.d("TAG", response.code().toString() + "")
+
                         val code = response.code()
                         if (code == 200) {
                             val resource: RegisterData? = response.body()
                             val Success: Boolean = resource?.status!!
+
                             val Message: String = resource.message!!
                             preferenceManager.setToken(resource.token)
                             preferenceManager.setUserId(response.body()!!.data!!.id.toString())
@@ -155,12 +157,15 @@ class SignInActivity : AppCompatActivity() {
                             if (Success.equals(true)) {
                                 progress_bar.visibility = View.GONE
                                 if (resource.data!!.user_sports!!.size == 0) {
+
                                     startActivity(
                                         Intent(
                                             this@SignInActivity,
                                             SelectSportActivity::class.java
                                         )
                                     )
+
+
                                     finish()
                                 } else {
 //                                val intent =

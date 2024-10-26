@@ -533,7 +533,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                 }
             }
 
-
             val trainingPlanRequest = TrainingPlanSubClass(
                 id = id?.toInt() ?: 0,
                 name = addTrainingPlanBinding.edtProgramName.text.toString(),

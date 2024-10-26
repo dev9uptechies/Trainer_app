@@ -1071,7 +1071,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         lessonBinding.edtTime.setText(lessonDatabase.time)
         lessonBinding.tvSelectionTime.setText(lessonDatabase.section_time)
         try {
-            lessonBinding.edtGoal.setText(lessonDatabase.lesson_goal!![0].goal!!.goal_name)
+            lessonBinding.edtGoal.setText(lessonDatabase.lesson_goal!![0].goal!!.name)
             goalId.id = lessonDatabase.lesson_goal[0].goal_id!!.toInt()
             sectionId.id = lessonDatabase.section_id!!.toInt()
             sectionAdapter.updateSelectedId(sectionId.id!!)

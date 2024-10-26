@@ -56,6 +56,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     ): View {
         homeFragmentBinding = FragmentHomeBinding.inflate(inflater, container, false)
         initViews()
+
+        homeFragmentBinding.sidemenu.setOnClickListener { setDrawerToggle() }
         setDrawerToggle()
         setContent()
 
@@ -93,7 +95,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         homeFragmentBinding.drawerLayout.addDrawerListener(actionBarDrawerToggle!!)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         homeFragmentBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-        homeFragmentBinding.sidemenu.isClickable = true
         homeFragmentBinding.sidemenu.setOnClickListener {
             Log.d("TAG", "onCreateView: Touch Side Menu")
             homeFragmentBinding.drawerLayout.openDrawer(GravityCompat.START)

@@ -65,7 +65,7 @@ class EventListData {
         var created_at: String? = null
 
         @SerializedName("updated_at")
-        var is_login: String? = null
+        var updated_at: String? = null
 
         @SerializedName("athlete")
         var athlete: Athlete? = null

@@ -1,6 +1,7 @@
 package com.example
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,7 +42,9 @@ class Library_LessonAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val movie = splist!![position]
         holder.tvFname.text = movie.name
-        holder.tvgoal.text = movie.goal!!.name
+
+        holder.tvgoal.text = movie.goal!!.get(0).goal!!.name
+
         holder.time.text = movie.time
         if (movie.is_favourite!! == "1") {
             holder.image.setImageResource(R.drawable.ic_favorite_select)

@@ -771,8 +771,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun selectTrainingPlanStartDate(editText: AppCompatEditText) {
         val minDateMillis = if (startDateMillis > 0) startDateMillis else System.currentTimeMillis()
         Utils.selectDate3(this, editText, minDateMillis, Long.MAX_VALUE) { dateMillis ->
@@ -792,9 +790,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             editText.setText(formattedDateDisplay)
         }
     }
-
-
-
 
     override fun onResume() {
         checkUser()

@@ -10,7 +10,9 @@ import com.example.trainerapp.ApiClass.ProgramListData
 import com.example.trainerapp.R
 
 
-class Library_programAdapter(private var splist: ArrayList<ProgramListData.testData>?, var context: Context, val listener: OnItemClickListener.OnItemClickCallback) :
+class Library_programAdapter(private var splist: ArrayList<ProgramListData.testData>?,
+                             var context: Context,
+                             val listener: OnItemClickListener.OnItemClickCallback) :
     RecyclerView.Adapter<Library_programAdapter.MyViewHolder>(){
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -50,8 +52,6 @@ class Library_programAdapter(private var splist: ArrayList<ProgramListData.testD
         holder.img_edit.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "Edit"))
         holder.img_delete.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "Delete"))
         holder.img_copy.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "Copy"))
-
-
 
     }
 

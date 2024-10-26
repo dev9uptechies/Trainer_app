@@ -26,6 +26,8 @@ import com.example.model.performance_profile.performance.quality.add.AddQuality
 import com.example.model.performance_profile.performance.quality.add_qual_response.PerformanceQualityAdd
 import com.example.model.performance_profile.performance.quality.update.UpdateQuality
 import com.example.model.performance_profile.template.CreateTemplate
+import com.example.model.personal_diary.GetDiaryDataForEdit
+import com.example.model.personal_diary.GetPersonalDiary
 import com.example.model.personal_diary.GetPersonalDiaryData
 import com.example.model.personal_diary.TrainingAssessment
 import com.example.model.personal_diary.TrainingSession
@@ -683,6 +685,11 @@ interface APIInterface {
     @POST("personal_diary/add")
     fun AddPersonalDIaryData(@Body personalDiaryData: TrainingSession): Call<GetPersonalDiaryData>?
 
+    @GET("personal_diary/list")
+    fun GetPersonalDiaryListData(): Call<GetPersonalDiary>?
+
+    @GET("personal_diary")
+    fun GetPersonalDiaryData(@Query("date") date: String): Call<GetDiaryDataForEdit>?
 
 }
 

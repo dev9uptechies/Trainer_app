@@ -94,14 +94,13 @@
 
             <TextView
                 android:id="@+id/intrested_athelets"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_125sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:fontFamily="@font/poppins_semi_bold"
                 android:text="01 day"
                 android:textColor="@color/dark_text"
                 android:textSize="@dimen/_11sdp"
-                app:layout_constraintBottom_toBottomOf="@+id/total_time"
                 app:layout_constraintStart_toEndOf="@+id/total_time"
                 app:layout_constraintTop_toTopOf="@+id/total_time" />
 

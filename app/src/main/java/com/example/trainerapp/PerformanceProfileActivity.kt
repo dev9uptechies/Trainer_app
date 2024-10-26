@@ -77,7 +77,6 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
 
         try {
 
-
         initViews()
         resetData()
         checkButtonClick()

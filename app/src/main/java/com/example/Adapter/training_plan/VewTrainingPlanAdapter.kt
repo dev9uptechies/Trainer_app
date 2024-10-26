@@ -70,6 +70,7 @@ class VewTrainingPlanAdapter(
 
 
         holder.card.setOnClickListener {
+            listener.onItemClicked(it, position, movie.id!!.toLong(), "EditDiary")
             val intent = Intent(context, ViewTrainingPlanActivity::class.java)
             intent.putExtra("Id", splist!![position].id)
             context.startActivity(intent)

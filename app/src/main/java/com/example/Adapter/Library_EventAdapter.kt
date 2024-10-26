@@ -1,6 +1,7 @@
 package com.example
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,20 +37,39 @@ class Library_EventAdapter(private var splist: ArrayList<EventListData.testData>
         var img_delete: ImageView = view.findViewById<View>(R.id.img_delete) as ImageView
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int)  {
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val movie = splist!![position]
         holder.tveventname.text = movie.title
-        holder.tvtype.text =movie.type
-        holder.tvintrestedathelets.text = movie.event_athletes?.get(position)?.athlete?.name
-        if(movie.is_favourite!! == "1"){
-            holder.image.setImageResource(R.drawable.ic_favorite_select)
+        holder.tvtype.text = movie.type
 
-        }else{
+        // Check if event_athletes has data and display all athlete names
+        if (!movie.event_athletes.isNullOrEmpty()) {
+            val athleteNames = StringBuilder()
+            for (eventAthlete in movie.event_athletes!!) {
+                eventAthlete.athlete?.name?.let {
+                    athleteNames.append(it).append(", ")
+                }
+            }
+
+            // Remove the trailing comma and space if names were added
+            if (athleteNames.isNotEmpty()) {
+                athleteNames.setLength(athleteNames.length - 2)
+            }
+
+            holder.tvintrestedathelets.text = athleteNames.toString()
+        } else {
+            holder.tvintrestedathelets.text = "No Athlete Data" // Default text if no athletes
+        }
+
+        // Set the favorite icon based on the is_favourite value
+        if (movie.is_favourite == "1") {
+            holder.image.setImageResource(R.drawable.ic_favorite_select)
+        } else {
             holder.image.setImageResource(R.drawable.ic_favorite_red)
         }
-        holder.img_edit.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "Edit"))
-        holder.img_delete.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "Delete"))
 
+        holder.img_edit.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong(), "Edit"))
+        holder.img_delete.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong(), "Delete"))
     }
 
 }
