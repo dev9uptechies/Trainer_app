@@ -153,7 +153,7 @@ class AddPersonalDIaryActivity : AppCompatActivity() {
             )
 
 
-            Log.e("Kirtiiii", "saveDiary: "+personalDiaryData )
+
             // Make the API call
             apiInterface.AddPersonalDIaryData(personalDiaryData)?.enqueue(object : Callback<GetPersonalDiaryData> {
                 override fun onResponse(call: Call<GetPersonalDiaryData>, response: Response<GetPersonalDiaryData>) {

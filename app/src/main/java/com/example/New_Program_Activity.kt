@@ -10,10 +10,17 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.model.Ecercise_data_list
 import com.example.trainerapp.ApiClass.*
 import com.example.trainerapp.PreferencesManager
@@ -23,9 +30,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.activity_create_exercise.*
-import kotlinx.android.synthetic.main.activity_new_program.*
-import kotlinx.android.synthetic.main.activity_new_program.back
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -44,6 +48,19 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
     private lateinit var id: ArrayList<Int>
     lateinit var etEnterGoal: AppCompatSpinner
     lateinit var spselect_lesson: AppCompatSpinner
+    lateinit var etSelectTestDate: AppCompatEditText
+    lateinit var reset: ImageView
+    lateinit var back: ImageView
+    lateinit var edt_program_name: EditText
+    lateinit var edt_time: EditText
+    lateinit var card_save: CardView
+    lateinit var card_create_exercise: CardView
+    lateinit var progres_bar: ProgressBar
+    lateinit var exercise_recycler: RecyclerView
+    lateinit var exercise_select_recycler: RecyclerView
+    lateinit var error_program: TextView
+    lateinit var error_date: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_program)
@@ -403,9 +420,9 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
             edt_time.setText(exercise_list[0].time)
             exercise_select_recycler.visibility = View.VISIBLE
             exercise_select_recycler.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false)
-            adapter1 =
-                Exercise_select_Adapter(exercise_list, this)
-            exercise_select_recycler.adapter = adapter1
+//            adapter1 =
+//                Exercise_select_Adapter(exercise_list, this)
+//            exercise_select_recycler.adapter = adapter1
 
         }
 

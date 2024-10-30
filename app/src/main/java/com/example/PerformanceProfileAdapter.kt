@@ -28,7 +28,7 @@ class PerformanceProfileAdapter(
     override fun onBindViewHolder(holder: PerformanceProfileAdapter.MyViewHolder, position: Int) {
         val movie = splist!![position]
         holder.performance_name.text = movie
-        holder.view_graph.setOnClickListener(OnItemClickListener(position, listener, 1L , "program"))
+//        holder.view_graph.setOnClickListener(OnItemClickListener(position, listener, 1L , "program"))
     }
 
     override fun getItemCount(): Int {
@@ -37,6 +37,6 @@ class PerformanceProfileAdapter(
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var performance_name: TextView = view.findViewById<View>(R.id.performance_name) as TextView
-        var view_graph: TextView = view.findViewById<View>(R.id.view_graph) as TextView
+//        var view_graph: TextView = view.findViewById<View>(R.id.view_graph) as TextView
     }
 }

@@ -3,6 +3,7 @@ package com.example
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,9 +27,10 @@ class LessonAdapter(
 
     override fun onBindViewHolder(holder: LessonAdapter.MyViewHolder, position: Int) {
         val movie = data!![position]
-        holder.group_name.text = movie.lession!!.name
-        holder.tv_start_date.text = movie.lession!!.time
-        holder.itemView.setOnClickListener(OnItemClickListener(position,listener,movie.id!!.toLong(),"lesson"))
+        Log.e("JJJJJ", "onBindViewHolder: "+movie.lession!!.name.toString() )
+//        holder.group_name.text = movie.lession!!.name
+//        holder.tv_start_date.text = movie.lession!!.time
+//        holder.itemView.setOnClickListener(OnItemClickListener(position,listener,movie.id!!.toLong(),"lesson"))
     }
 
     override fun getItemCount(): Int {

@@ -55,6 +55,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                     val Message: String = resource.message!!
                     groupDetailBinding.progressDetail.visibility = View.GONE
                     if (Success) {
+
                         groupDetailBinding.tvGroupName.text = resource.data!![position!!].name
                         groupDetailBinding.tvMember.text =
                             resource.data!![position!!].group_members!!.size.toString() + " Members"
@@ -75,8 +76,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                         val lessondata = resource.data!![position!!].group_lessions
                         val eventdata = resource.data!![position!!].group_events
                         initPlanningData(planningdata)
-                        initLessonData(lessondata)
-                        initEventData(eventdata)
+
+                        Log.e("LLLLLLLLLL", "onResponse: "+lessondata!!.get(2).lession!!.name )
+
+//                        initLessonData(lessondata)
+//                        initEventData(eventdata)
 
                     } else {
                         groupDetailBinding.progressDetail.visibility = View.GONE
@@ -108,6 +112,8 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
             LessonAdapter(lessondata, this, this)
         groupDetailBinding.lessionRly.adapter = lessonadapter
     }
+
+
 
     private fun initPlanningData(data: ArrayList<GroupListData.GroupPlanning>?) {
         groupDetailBinding.planningRly.layoutManager = LinearLayoutManager(this)

@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_margin="@dimen/_5sdp"
     android:layout_height="wrap_content">
@@ -13,7 +14,7 @@
      app:layout_constraintStart_toStartOf="parent"
      app:layout_constraintTop_toTopOf="parent"
      android:layout_marginTop="@dimen/_5sdp"
-     android:layout_height="@dimen/_80sdp">
+     android:layout_height="@dimen/_50sdp">
 
      <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/click"
@@ -40,18 +41,34 @@
              app:layout_constraintTop_toTopOf="parent"
              app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="@dimen/_10sdp"
+             android:visibility="gone"
              android:src="@drawable/ic_favorite_red"/>
+
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:weightSum="2"
+             app:layout_constraintTop_toBottomOf="@+id/tv_program_name"
+             tools:ignore="MissingConstraints">
+
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:orientation="horizontal">
 
          <TextView
              android:id="@+id/goal"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:text="Start: "
-             android:layout_marginStart="@dimen/_10sdp"
              android:textColor="@color/dark_text"
              app:layout_constraintTop_toBottomOf="@+id/tv_program_name"
              android:textSize="@dimen/_11sdp"
              android:fontFamily="@font/poppins_semi_bold"/>
+
+
 
 
          <TextView
@@ -62,11 +79,20 @@
              android:layout_marginEnd="@dimen/_10sdp"
              android:visibility="visible"
              android:textColor="@color/dark_text"
-             android:layout_marginTop="@dimen/_10sdp"
              app:layout_constraintTop_toBottomOf="@+id/tv_program_name"
              app:layout_constraintEnd_toEndOf="parent"
              android:textSize="@dimen/_11sdp"
              android:fontFamily="@font/poppins_semi_bold"/>
+
+             </LinearLayout>
+
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_weight="1"
+             android:layout_gravity="end"
+             android:gravity="end"
+             android:orientation="horizontal">
 
          <TextView
              android:id="@+id/edt_time"
@@ -81,18 +107,22 @@
              app:layout_constraintEnd_toStartOf="@+id/tv_edt_time"
              app:layout_constraintTop_toTopOf="@+id/tv_edt_time" />
 
-         <TextView
-             android:id="@+id/tv_start_date"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="25 March, 2021"
-             android:layout_marginStart="@dimen/_5sdp"
-             android:textColor="@color/dark_text"
-             android:fontFamily="@font/poppins_semi_bold"
-             app:layout_constraintStart_toEndOf="@+id/goal"
-             android:textSize="@dimen/_11sdp"
-             app:layout_constraintTop_toTopOf="@+id/goal"
-             app:layout_constraintBottom_toBottomOf="@+id/goal"/>
+
+             <TextView
+                 android:id="@+id/tv_start_date"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_marginStart="@dimen/_5sdp"
+                 android:fontFamily="@font/poppins_semi_bold"
+                 android:text="25 March, 2021"
+                 android:textColor="@color/dark_text"
+                 android:textSize="@dimen/_11sdp"
+                 app:layout_constraintBottom_toBottomOf="@+id/goal"
+                 app:layout_constraintStart_toEndOf="@+id/goal"
+                 app:layout_constraintTop_toTopOf="@+id/goal" />
+         </LinearLayout>
+
+         </LinearLayout>
 
          <TextView
              android:id="@+id/total_time"
@@ -104,6 +134,7 @@
              android:textColor="@color/dark_text"
              app:layout_constraintTop_toBottomOf="@+id/goal"
              android:textSize="@dimen/_11sdp"
+             android:visibility="gone"
              android:fontFamily="@font/poppins_semi_bold"/>
 
          <TextView
@@ -116,6 +147,7 @@
              android:fontFamily="@font/poppins_semi_bold"
              app:layout_constraintStart_toEndOf="@+id/total_time"
              android:textSize="@dimen/_11sdp"
+             android:visibility="gone"
              app:layout_constraintTop_toTopOf="@+id/total_time"
              app:layout_constraintBottom_toBottomOf="@+id/total_time"/>
 

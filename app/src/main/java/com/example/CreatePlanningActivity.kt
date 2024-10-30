@@ -85,6 +85,7 @@ class CreatePlanningActivity : AppCompatActivity() {
 
     private fun callApi() {
         createPlanningBinding.planningProgress.visibility = View.VISIBLE
+        createPlanningBinding.planningProgress.visibility = View.GONE
         apiInterface.Get_Planning()?.enqueue(object : Callback<PlanningData> {
             override fun onResponse(
                 call: Call<PlanningData>,
