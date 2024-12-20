@@ -21,6 +21,6 @@
         android:id="@+id/cbSelectAbility"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:buttonTint="@android:color/white" />
+        android:buttonTint="@color/red" />
 
 </LinearLayout>

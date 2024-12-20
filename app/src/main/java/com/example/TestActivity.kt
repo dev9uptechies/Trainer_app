@@ -1,6 +1,7 @@
 package com.example
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -29,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.model.SelectedValue
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
+import com.example.trainerapp.ApiClass.EventListData
 import com.example.trainerapp.ApiClass.RegisterData
 import com.example.trainerapp.GetAthletesActivity
 import com.example.trainerapp.PreferencesManager
@@ -44,6 +46,10 @@ import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.Calendar
+import java.util.Locale
 
 
 class TestActivity : AppCompatActivity(), View.OnClickListener,
@@ -59,6 +65,17 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var name: ArrayList<String>
     lateinit var adapter: TestDataAdapter
     var timeId = ""
+    var testid: String = ""
+    var nameFirst: String = ""
+    var athletename: String = ""
+    var athleteid: String = ""
+    var date: String = ""
+    var goal: String = ""
+    var unit: String = ""
+    var fromDay: Boolean = false
+
+    lateinit var AthleteId: ArrayList<Int>
+    lateinit var AthleteName: ArrayList<String>
 
     lateinit var goalData: MutableList<TestListData.testData>
     var Goal = ArrayList<String>()
@@ -78,11 +95,13 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun getGoalData() {
+        testBinding.progressbar.visibility = View.VISIBLE
         goalData = mutableListOf()
         apiInterface.GetGoal()?.enqueue(object : Callback<TestListData> {
             override fun onResponse(call: Call<TestListData>, response: Response<TestListData>) {
                 val code = response.code()
                 if (code == 200) {
+                    testBinding.progressbar.visibility = View.GONE
                     if (response.isSuccessful) {
                         val data = response.body()!!.data
                         if (data!! != null) {
@@ -110,6 +129,7 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
 //                    )
 //                    finish()
                 } else {
+                    testBinding.progressbar.visibility = View.GONE
                     val message = response.message()
                     Toast.makeText(this@TestActivity, "" + message, Toast.LENGTH_SHORT)
                         .show()
@@ -118,6 +138,7 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
             }
 
             override fun onFailure(call: Call<TestListData>, t: Throwable) {
+                testBinding.progressbar.visibility = View.GONE
                 Log.d("TAG Goal", t.message.toString() + "")
             }
 
@@ -130,14 +151,32 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
         super.onCreate(savedInstanceState)
         testBinding = ActivityTestBinding.inflate(layoutInflater)
         setContentView(testBinding.root)
+
         initViews()
         loadData()
+
         if (preferenceManager.getselectAthelete()) {
             name = getObject(this, "setAthleteName") as ArrayList<String>
             id = getObjectJson(this, "setAthlete") as ArrayList<Int>
         }
         checkChangeValue()
-//        updateUI(testBinding.btnSaveTest)
+
+        fromDay = intent.getBooleanExtra("fromday", false)
+        nameFirst = intent.getStringExtra("name").toString()
+        athletename = intent.getStringExtra("athletename1").toString()
+        date = intent.getStringExtra("date").toString()
+        goal = intent.getStringExtra("goal").toString()
+        unit = intent.getStringExtra("unit").toString()
+        athleteid = intent.getStringExtra("athleteId").toString()
+
+        if (fromDay == true) {
+            Log.e("KIRTIIIIIIIIII", "initViews: " + athletename)
+            testBinding.etTestName.setText(nameFirst)
+            testBinding.edtGoal.setText(goal)
+            testBinding.edtUnits.setText(unit)
+            testBinding.etInterestedAtheletes.setText(athletename)
+            testBinding.etSelectTestDate.setText(date.take(10))
+        }
 
 //        for (i in 0..100) {
 //            if (i == 0) {
@@ -215,13 +254,22 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
 
 
         testBinding.btnSaveTest.setOnClickListener {
-            if (type == "create") {
-                saveData()
-            } else if (type == "edit") {
-                updateData()
-            }
+            when {
+                type == "edit" || fromDay -> {
+                    updateData()
+                }
 
+                type == "create" -> {
+                    // Save new data
+                    saveData()
+                }
+
+                else -> {
+                    Toast.makeText(this, "Invalid operation", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
+
     }
 
     private fun updateData() {
@@ -236,8 +284,15 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
             }
             val goal = testBinding.edtGoal.text.toString()
             val unit = testBinding.edtUnits.text.toString()
+
+            val idToUse = if (timeId.isNullOrEmpty()) {
+                testid.toString()
+            } else {
+                timeId.toInt().toString()
+            }
+
             val jsonObject = JsonObject()
-            jsonObject.addProperty("id", timeId.toInt())
+            jsonObject.addProperty("id", idToUse)
             jsonObject.addProperty("name", testBinding.etTestName.text.toString())
             jsonObject.addProperty("goal", goal)
             jsonObject.addProperty("unit", unit)
@@ -407,7 +462,7 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
     private fun resetData() {
         type = "create"
         testBinding.btnSaveTest.isEnabled = false
-        testBinding.btnSaveTest.setCardBackgroundColor(resources.getColor(R.color.grey)) // Disabled color
+        testBinding.btnSaveTest.setCardBackgroundColor(resources.getColor(R.color.grey))
         testBinding.etTestName.text!!.clear()
         testBinding.edtGoal.text!!.clear()
         testBinding.edtUnits.text!!.clear()
@@ -522,7 +577,6 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
                 android.R.color.white
             )
         )
-
     }
 
     private fun initViews() {
@@ -532,34 +586,50 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
         id = ArrayList<Int>()
         TestList = ArrayList()
         name = ArrayList()
-        id = ArrayList()
+        AthleteId = ArrayList()
+        AthleteName = ArrayList()
+
+        testid = intent.getStringExtra("id") ?: ""
+        AthleteId = intent.getIntegerArrayListExtra("athleteid") ?: arrayListOf()
+        AthleteName = intent.getStringArrayListExtra("athletename") ?: arrayListOf()
+
+        Log.e("KIRTIIIIIIIIII", "initViews: " + intent.getBooleanExtra("fromday", false))
+
+        Log.d("TestActivity", "Received testId: $testid")
+        Log.d("TestActivity", "Received Athlete IDs: $AthleteId")
+        Log.d("TestActivity", "Received Athlete Names: $AthleteName")
+
     }
 
     private fun GetTestList() {
-        TestList.clear()
-        testBinding.progressbar.visibility = View.VISIBLE
-        apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
-            override fun onResponse(call: Call<TestListData?>, response: Response<TestListData?>) {
-                Log.d("TAG", response.code().toString() + "")
-                val code = response.code()
-                if (code == 200) {
-                    val resource: TestListData? = response.body()
-                    val Success: Boolean = resource?.status!!
-                    val Message: String = resource.message!!
-                    if (Success == true) {
-                        try {
-                            if (resource.data!! != null) {
-                                TestList = resource.data!!
-                                initrecycler(resource.data)
+        try {
+            TestList.clear()
+            testBinding.progressbar.visibility = View.VISIBLE
+            apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
+                override fun onResponse(
+                    call: Call<TestListData?>,
+                    response: Response<TestListData?>
+                ) {
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: TestListData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success == true) {
+                            try {
+                                if (resource.data!! != null) {
+                                    TestList = resource.data!!
+                                    initrecycler(resource.data)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                        } else {
+                            testBinding.progressbar.visibility = View.GONE
                         }
-                    } else {
-                        testBinding.progressbar.visibility = View.GONE
-                    }
-                } else if (response.code() == 403) {
-                    Utils.setUnAuthDialog(this@TestActivity)
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(this@TestActivity)
 //                    val message = response.message()
 //                    Toast.makeText(
 //                        this@TestActivity,
@@ -575,29 +645,34 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
 //                        )
 //                    )
 //                    finish()
-                } else {
-                    val message = response.message()
-                    Toast.makeText(this@TestActivity, "" + message, Toast.LENGTH_SHORT)
+                    } else {
+                        testBinding.progressbar.visibility = View.GONE
+                        val message = response.message()
+                        Toast.makeText(this@TestActivity, "" + message, Toast.LENGTH_SHORT)
+                            .show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<TestListData?>, t: Throwable) {
+                    testBinding.progressbar.visibility = View.GONE
+                    Toast.makeText(this@TestActivity, "" + t.message, Toast.LENGTH_SHORT)
                         .show()
                     call.cancel()
                 }
-            }
-
-            override fun onFailure(call: Call<TestListData?>, t: Throwable) {
-                testBinding.progressbar.visibility = View.GONE
-                Toast.makeText(this@TestActivity, "" + t.message, Toast.LENGTH_SHORT)
-                    .show()
-                call.cancel()
-            }
-        })
+            })
+        } catch (e: Exception) {
+            testBinding.progressbar.visibility = View.GONE
+            Toast.makeText(this, "ERROR:- " + e.message.toString(), Toast.LENGTH_SHORT).show()
+            Log.d("ERROR", "GetTestList: ${e.message.toString()}")
+        }
 
     }
 
     private fun initrecycler(testdatalist: ArrayList<TestListData.testData>?) {
         testBinding.progressbar.visibility = View.GONE
         testBinding.textListRly.layoutManager = LinearLayoutManager(this)
-        adapter =
-            TestDataAdapter(testdatalist, this, this)
+        adapter = TestDataAdapter(testdatalist, this, this)
         testBinding.textListRly.adapter = adapter
     }
 
@@ -615,9 +690,29 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.etSelectTestDate -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Utils.selectDate(this, testBinding.etSelectTestDate)
-                }
+                val calendar = Calendar.getInstance()
+
+                val year = calendar.get(Calendar.YEAR)
+                val month = calendar.get(Calendar.MONTH)
+                val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+                // Create a DatePickerDialog
+                val datePickerDialog = DatePickerDialog(
+                    this,
+                    { _, selectedYear, selectedMonth, selectedDay ->
+                        calendar.set(selectedYear, selectedMonth, selectedDay)
+
+                        // Format the date in yyyy-MM-dd format
+                        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        val formattedDate = dateFormat.format(calendar.time)
+
+                        // Set the formatted date to the EditText
+                        testBinding.etSelectTestDate.setText(formattedDate)
+                    },
+                    year, month, dayOfMonth
+                )
+
+                datePickerDialog.show()
             }
 
         }
@@ -864,6 +959,10 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
             val date = TestList[position].updated_at!!.split("T")[0]
             id.clear()
             name.clear()
+
+            Log.d("TestActivityAAAA", "Received Athlete Names: $timeId")
+            Log.d("TestActivityAAAA", "Received Athlete Names: $testid")
+
             for (i in TestList[position].data!!) {
                 id.add(i.athlete!!.id!!)
                 name.add(i.athlete!!.name!!)
@@ -875,11 +974,54 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
                 str[i] = name.get(i)
                 array.add(name.get(i))
             }
+
             val str1 = convertStringArrayToString(str, ",")
             testBinding.etInterestedAtheletes.setText(str1)
             testBinding.etSelectTestDate.setText(date)
         }
+    }
 
+
+    private fun EditData(testId: String) {
+        Log.d("EditData", "Looking for test with ID: $testId")
+
+        val selectedTest = TestList.find { it.id == testId.toInt() }
+
+        if (selectedTest != null) {
+            testid = selectedTest.id!!.toString()
+
+            testBinding.etTestName.setText(selectedTest.title)
+            testBinding.edtGoal.setText(selectedTest.goal?.toString() ?: "")
+            testBinding.edtUnits.setText(selectedTest.unit?.toString() ?: "")
+
+            val date = selectedTest.updated_at?.split("T")?.get(0) ?: ""
+            testBinding.etSelectTestDate.setText(date)
+
+            AthleteId.clear()
+            AthleteName.clear()
+
+            selectedTest.data?.forEach { dataItem ->
+                dataItem.athlete?.let { athlete ->
+                    AthleteId.add(athlete.id!!)
+                    AthleteName.add(athlete.name!!)
+                }
+            }
+
+            val str = arrayOfNulls<String>(AthleteName.size)
+            val array = JsonArray()
+
+            for (i in 0 until AthleteName.size) {
+                str[i] = AthleteName.get(i)
+                array.add(AthleteName.get(i))
+            }
+
+            val str1 = convertStringArrayToString(str, ",")
+            testBinding.etInterestedAtheletes.setText(str1)
+            testBinding.etSelectTestDate.setText(date)
+        } else {
+            Log.d("EditData", "No test found with ID: $testId")
+            Toast.makeText(this, "Test with ID $testId not found", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun checkUser() {

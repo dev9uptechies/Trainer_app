@@ -48,6 +48,7 @@ class EventListData {
         @SerializedName("event_athletes")
         var event_athletes: ArrayList<test_athletes>? = null
 
+
     }
 
     class test_athletes {

@@ -1,6 +1,7 @@
 package com.example
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,8 +48,21 @@ class Library_ExerciseAdapter(private var splist: ArrayList<ExcerciseData.Exerci
         }else{
             holder.image.setImageResource(R.drawable.ic_favorite_red)
         }
-        holder.img_edit.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "Edit"))
-        holder.img_delete.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "Delete"))
+
+        holder.img_edit.setOnClickListener {
+            Log.d("TAG", "onBindViewHolder: " + movie.id)
+            holder.img_edit.setOnClickListener(
+                OnItemClickListener(
+                    position,
+                    listener,
+                    movie.id!!.toLong(),
+                    "EditExercise",
+                )
+            )
+        }
+
+//        holder.img_edit.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "EditExercise"))
+        holder.img_delete.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "DeleteExercise"))
 
 
 

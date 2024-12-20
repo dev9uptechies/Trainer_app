@@ -26,8 +26,8 @@
 
         <ImageView
             android:id="@+id/back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginStart="35dp"
             android:layout_marginTop="20dp"
             android:src="@drawable/back"
@@ -42,7 +42,7 @@
             android:fontFamily="@font/poppins_semi_bold"
             android:text="@string/profile"
             android:textColor="@color/splash_text_color"
-            android:textSize="33dp"
+            android:textSize="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -302,7 +302,7 @@
                 android:fontFamily="@font/poppins_semi_bold"
                 android:text="@string/continue_with_premium_version"
                 android:textColor="@color/white"
-                android:textSize="20dp" />
+                android:textSize="16dp" />
 
         </androidx.cardview.widget.CardView>
 
@@ -327,7 +327,7 @@
                 android:fontFamily="@font/poppins_semi_bold"
                 android:text="@string/continue_with_free_version"
                 android:textColor="@color/white"
-                android:textSize="20dp" />
+                android:textSize="16dp" />
 
         </androidx.cardview.widget.CardView>
 

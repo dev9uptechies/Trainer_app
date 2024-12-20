@@ -26,12 +26,15 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:fontFamily="@font/poppins_medium"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center"
             android:text="Analysis"
             android:textColor="@color/splash_text_color"
             android:textSize="@dimen/_18sdp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.418"
             app:layout_constraintStart_toEndOf="@+id/back"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -175,6 +178,7 @@
         android:layout_margin="@dimen/_10sdp"
         app:cardBackgroundColor="#535353"
         app:cardCornerRadius="@dimen/_10sdp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView

@@ -1,11 +1,22 @@
 package com
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import android.widget.PopupMenu
+import android.widget.PopupWindow
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.Adapter.template.profile.PerformanceProfileAdapter
 import com.example.FavoriteAdapter
 import com.example.FavoriteeventAdapter
 import com.example.FavoriteexerciseAdapter
@@ -16,6 +27,7 @@ import com.example.OnItemClickListener
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
+import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityFavoriteBinding
 import retrofit2.Call
@@ -83,21 +95,99 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         setContentView(favoriteBinding.root)
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
-        favoriteBinding.lyExercise.visibility = View.GONE
-        favoriteBinding.lyProgram.visibility = View.GONE
-        favoriteBinding.lyLesson.visibility = View.GONE
-        favoriteBinding.lyEvent.visibility = View.GONE
-        favoriteBinding.lyTest.visibility = View.GONE
+        favoriteBinding.lyExercise.visibility = View.VISIBLE
+        favoriteBinding.lyProgram.visibility = View.VISIBLE
+        favoriteBinding.lyLesson.visibility = View.VISIBLE
+        favoriteBinding.lyEvent.visibility = View.VISIBLE
+        favoriteBinding.lyTest.visibility = View.VISIBLE
+
         callApi()
+        showAll()
 
         favoriteBinding.selectFavorite.setOnClickListener {
-            showAll()
+//            showPopupMenu(favoriteBinding.textSpinner)
+            val list = type
+
+            val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val popupView = inflater.inflate(R.layout.popup_list, null)
+            val popupWindow = PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true // Focusable to allow outside clicks to dismiss
+            )
+            popupWindow.setBackgroundDrawable(
+                ContextCompat.getDrawable(
+                    this@FavoriteActivity,
+                    R.drawable.popup_background
+                )
+            )
+            popupWindow.elevation = 10f
+
+            val listView = popupView.findViewById<ListView>(R.id.listView)
+
+            val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
+                override fun getView(
+                    position: Int,
+                    convertView: View?,
+                    parent: ViewGroup
+                ): View {
+                    val view = super.getView(position, convertView, parent) as TextView
+                    view.setTextColor(Color.WHITE) // Set text color to white
+                    return view
+                }
+            }
+            listView.adapter = adapter
+
+            listView.setOnItemClickListener { _, _, position, _ ->
+                val selectedItem = list[position]
+                favoriteBinding.textSpinner.setText(selectedItem)
+                handleTypeSelection(selectedItem)
+                popupWindow.dismiss()
+            }
+
+
+
+            popupWindow.showAsDropDown(it)
+            popupWindow.setBackgroundDrawable(
+                AppCompatResources.getDrawable(
+                    this,
+                    android.R.color.white
+                )
+            )
+
         }
+
+
+
 
         favoriteBinding.back.setOnClickListener {
             finish()
         }
 
+    }
+
+    private fun handleTypeSelection(selectedType: String) {
+        when (selectedType) {
+            "All Favorite Items" -> {
+                showAll()
+            }
+            "Program" -> {
+               showProgram()
+            }
+            "Lesson" -> {
+               showLesson()
+            }
+            "Test" -> {
+                showTest()
+            }
+            "Event" -> {
+                showEvent()
+            }
+            "Exercise" -> {
+                showExercise()
+            }
+        }
     }
 
     private fun callApi() {
@@ -113,10 +203,16 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                         val Success: Boolean = resource?.status!!
                         val Message: String = resource.message!!
                         if (Success) {
-                            favoriteBinding.lyProgram.visibility = View.VISIBLE
+//                            favoriteBinding.lyProgram.visibility = View.VISIBLE
+
+                            for (data in resource.data!!){
+                                Log.d("DATA_PROGRAM","program :- ${data.program!!.name}")
+                            }
                             if (resource.data!!.isNotEmpty()) {
                                 initProgramRecyclerView(resource.data)
                             } else {
+                                    // Show RecyclerView and hide "No Data Found" message
+                                NoData()
                                 Toast.makeText(
                                     this@FavoriteActivity,
                                     "No data found",
@@ -124,7 +220,7 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                                 ).show()
                             }
                         } else {
-                            favoriteBinding.lyProgram.visibility = View.GONE
+//                            favoriteBinding.lyProgram.visibility = View.GONE
                         }
 
                         getFavLesson()
@@ -160,8 +256,14 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                         val Success: Boolean = resource?.status!!
                         val Message: String = resource.message!!
                         if (Success) {
-                            favoriteBinding.lyLesson.visibility = View.VISIBLE
+//                            favoriteBinding.lyLesson.visibility = View.VISIBLE
                             val data = resource.data
+
+                            if (data != null) {
+                                for (datas in data){
+                                    Log.d("DATA_PROGRAM","program :- ${datas.lesson!!.name}")
+                                }
+                            }
                             if (data!!.isNotEmpty()) {
                                 initLessonRecyclerView(resource.data)
                             } else {
@@ -171,9 +273,11 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
+                                NoData()
+
                             }
                         } else {
-                            favoriteBinding.lyLesson.visibility = View.GONE
+//                            favoriteBinding.lyLesson.visibility = View.GONE
                         }
                         getFavEvent()
                     } else if (response.code() == 403) {
@@ -207,10 +311,11 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                         val Success: Boolean = resource?.status!!
                         val Message: String = resource.message!!
                         if (Success) {
-                            favoriteBinding.lyEvent.visibility = View.VISIBLE
+//                            favoriteBinding.lyEvent.visibility = View.VISIBLE
                             if (resource.data!!.isNotEmpty()) {
                                 initEventRecyclerView(resource.data)
                             } else {
+                                NoData()
                                 Toast.makeText(
                                     this@FavoriteActivity,
                                     "No data found",
@@ -218,7 +323,7 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                                 ).show()
                             }
                         } else {
-                            favoriteBinding.lyEvent.visibility = View.GONE
+//                            favoriteBinding.lyEvent.visibility = View.GONE
                         }
 
                         getFavTest()
@@ -253,10 +358,11 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                         val Success: Boolean = resource?.status!!
                         val Message: String = resource.message!!
                         if (Success) {
-                            favoriteBinding.lyTest.visibility = View.VISIBLE
+//                            favoriteBinding.lyTest.visibility = View.VISIBLE
                             if (resource.data!!.isNotEmpty()) {
                                 initTestRecyclerView(resource.data)
                             } else {
+                                NoData()
                                 Toast.makeText(
                                     this@FavoriteActivity,
                                     "No data found",
@@ -264,7 +370,7 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                                 ).show()
                             }
                         } else {
-                            favoriteBinding.lyTest.visibility = View.GONE
+//                            favoriteBinding.lyTest.visibility = View.GONE
                         }
 
                         getFavExercise()
@@ -300,10 +406,11 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                         val Message: String = resource.message!!
                         favoriteBinding.favoriteProgress.visibility = View.GONE
                         if (Success) {
-                            favoriteBinding.lyExercise.visibility = View.VISIBLE
+//                            favoriteBinding.lyExercise.visibility = View.VISIBLE
                             if (resource.data!!.isNotEmpty()) {
                                 initExerciseRecyclerView(resource.data)
                             } else {
+                                NoData()
                                 Toast.makeText(
                                     this@FavoriteActivity,
                                     "No data found",
@@ -311,7 +418,7 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                                 ).show()
                             }
                         } else {
-                            favoriteBinding.lyExercise.visibility = View.GONE
+//                            favoriteBinding.lyExercise.visibility = View.GONE
                         }
                     } else if (response.code() == 403) {
                         Utils.setUnAuthDialog(this@FavoriteActivity)
@@ -637,6 +744,19 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         favoriteBinding.lyLesson.visibility = View.VISIBLE
         favoriteBinding.lyEvent.visibility = View.VISIBLE
         favoriteBinding.lyTest.visibility = View.VISIBLE
+        favoriteBinding.tvNodata.visibility = View.GONE
+
     }
+
+    private fun NoData() {
+        favoriteBinding.lyExercise.visibility = View.GONE
+        favoriteBinding.lyProgram.visibility = View.GONE
+        favoriteBinding.lyLesson.visibility = View.GONE
+        favoriteBinding.lyEvent.visibility = View.GONE
+        favoriteBinding.lyTest.visibility = View.GONE
+        favoriteBinding.tvNodata.visibility = View.VISIBLE
+
+    }
+
 
 }

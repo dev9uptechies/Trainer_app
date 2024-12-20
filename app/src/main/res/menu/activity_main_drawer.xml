@@ -48,8 +48,8 @@
 
     <item
         android:id="@+id/tv_personal_diary"
-        android:icon="@drawable/ic_diary"
-        android:title="Personal Diary" />
+        android:title="Personal Diary"
+        android:icon="@drawable/ic_diaryy"/>
 
     <item
         android:id="@+id/tv_setting"

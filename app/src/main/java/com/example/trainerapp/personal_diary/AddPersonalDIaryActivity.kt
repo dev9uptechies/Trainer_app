@@ -50,6 +50,35 @@ class AddPersonalDIaryActivity : AppCompatActivity() {
         initView()
         setupButtonClickListeners()
         setUpEnergyTextWatcher(addPersonalDiaryBinding.EnergyBT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.EnergyAT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.EnergyDT)
+
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.SatisfationBT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.SatisfationDT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.SatisfationAT)
+
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.HapinessBT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.HapinessDT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.HapinessAT)
+
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.IrritabilityBT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.IrritabilityDT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.IrritabilityAT)
+
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.DeterminationBT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.DeterminationDT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.DeterminationAT)
+
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.AnxietyBT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.AnxietyDT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.AnxietyAT)
+
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.TirednessBT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.TirednessDT)
+        setUpEnergyTextWatcher(addPersonalDiaryBinding.TirednessAT)
+
+        addPersonalDiaryBinding.back.setOnClickListener { finish() }
+
 
     }
 
@@ -82,7 +111,7 @@ class AddPersonalDIaryActivity : AppCompatActivity() {
 
         addPersonalDiaryBinding.editTime.setOnClickListener { setTimerDialog() }
 
-        addPersonalDiaryBinding.back.setOnClickListener { finish() }
+
         addPersonalDiaryBinding.cardSave.setOnClickListener { saveDiary() }
     }
 
@@ -217,7 +246,6 @@ class AddPersonalDIaryActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        // Any initialization logic goes here
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
         preferenceManager = PreferencesManager(this)
@@ -225,14 +253,12 @@ class AddPersonalDIaryActivity : AppCompatActivity() {
     }
 
 
-    // Function to change DatePicker's spinner text color
     private fun showDatePickerDialog(onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.custom_date_picker)
 
-        // Set dialog width to 90% of screen width
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val width = (displayMetrics.widthPixels * 0.9f).toInt()

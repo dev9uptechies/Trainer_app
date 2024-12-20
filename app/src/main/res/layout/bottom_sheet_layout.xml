@@ -5,6 +5,7 @@
     android:layout_gravity="center"
     android:gravity="center"
     android:orientation="vertical"
+    android:background="@drawable/rounded_bottom_sheet_background"
     android:padding="16dp">
 
     <TextView
@@ -12,7 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:textColor="@color/black"
         android:padding="12dp"
+        android:fontFamily="@font/poppins_medium"
         android:text="Create Performance Template"
         android:textSize="18sp" />
 
@@ -22,6 +25,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="12dp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/poppins_medium"
         android:text="Select Template"
         android:textSize="18sp" />
 
@@ -30,6 +35,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:textColor="@color/black"
+        android:fontFamily="@font/poppins_medium"
         android:padding="12dp"
         android:text="Create Custom Profile"
         android:textSize="18sp" />
@@ -40,6 +47,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="12dp"
+        android:fontFamily="@font/poppins_medium"
         android:text="Cancel"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="18sp" />

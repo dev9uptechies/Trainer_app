@@ -2,6 +2,7 @@ package com.example
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -55,6 +56,9 @@ import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback,
     SectionLessonAdapter.OnItemClickListener {
@@ -75,9 +79,21 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
     var Goal = ArrayList<String>()
     var section = ArrayList<String>()
     var goalId = SelectedValue(null)
+    var goalIds = SelectedValue(null)
     var sectionId = SelectedValue(null)
     var lessonType = "create"
     var lessonId = ""
+
+    private lateinit var Lid: ArrayList<Int>
+    private lateinit var Lname: ArrayList<String>
+    var lessonid: String = ""
+    var title: String = ""
+    var goal: String = ""
+    var date: String = ""
+    var ATime: String = ""
+    var PTime: String = ""
+    var fromDay: Boolean = false
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,6 +104,31 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         loadData()
         checkButtonTap()
         checkUpdateUI()
+
+    }
+
+    private fun getData(){
+
+        lessonid = intent.getIntExtra("id", 0).toString()
+        fromDay = intent.getBooleanExtra("fromday", false)
+        title = intent.getStringExtra("name").toString()
+        goal = intent.getStringExtra("goal").toString()
+        date = intent.getStringExtra("date").toString().take(10)
+        ATime = intent.getStringExtra("AvailableTime").toString()
+        PTime = intent.getStringExtra("PortialTime").toString()
+        Lid = intent.getIntegerArrayListExtra("lessonId") ?: arrayListOf()
+        Lname = intent.getStringArrayListExtra("lesson") ?: arrayListOf()
+
+        if (fromDay == true) {
+            Log.e("KIRTIIIIIIIIII", "initViews: " + lessonid)
+            lessonBinding.edtLessonName.setText(title)
+            val namesString = Lname.joinToString(", ")
+            lessonBinding.edtGoal.setText(namesString)
+            lessonBinding.tvSelectionTime.setText(ATime)
+            lessonBinding.edtTime.setText(PTime)
+            lessonBinding.etSelectTestDate.setText(date)
+            updateUI(lessonBinding.cardSave)
+        }
     }
 
     private fun checkUpdateUI() {
@@ -183,6 +224,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         getSection()
         getGoalData()
         GetLessionList()
+        getData()
     }
 
     private fun resetData() {
@@ -221,9 +263,27 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
             }
         }
         lessonBinding.etSelectTestDate.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Utils.selectDate(this, lessonBinding.etSelectTestDate)
-            }
+            val calendar = Calendar.getInstance()
+
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+            val datePickerDialog = DatePickerDialog(
+                this,
+                { _, selectedYear, selectedMonth, selectedDay ->
+                    calendar.set(selectedYear, selectedMonth, selectedDay)
+
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val formattedDate = dateFormat.format(calendar.time)
+
+                    lessonBinding.etSelectTestDate.setText(formattedDate)
+                },
+                year, month, dayOfMonth
+            )
+
+            datePickerDialog.show()
+
         }
         lessonBinding.cardDuplicate.setOnClickListener {
             goalDialog()
@@ -232,13 +292,17 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
         lessonBinding.cardSave.setOnClickListener {
             Log.d("lesson type :-", "$lessonType")
-            when (lessonType) {
-                "create" -> {
+            when {
+                lessonType == "edit" || fromDay -> {
+                    editData()
+                }
+
+                lessonType == "create" -> {
                     saveData()
                 }
 
-                "edit" -> {
-                    editData()
+                else -> {
+                    Toast.makeText(this, "Invalid operation", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -273,46 +337,55 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
     }
 
     private fun editData() {
+
         if (isValidate) {
             id.clear()
+
+            val LidToUse = if (id.isNullOrEmpty()) {
+                Lid
+            } else {
+                id
+            }
+
             for (i in 0 until exercise_list.size) {
                 id.add(exercise_list[i].id!!.toInt())
             }
 
-            val str = arrayOfNulls<Int>(id.size)
             val array = JsonArray()
-
             for (i in 0 until id.size) {
-                str[i] = id.get(i)
                 array.add(id.get(i))
             }
 
+            // Prepare goalArray for goal_ids (replace goalId.id with LidToUse)
             val goalArray = JsonArray()
-
-            for (i in 0..0) {
-                goalArray.add(goalId.id)
+            for (i in 0 until LidToUse.size) {
+                goalArray.add(LidToUse[i])
             }
 
+            // Use lessonId or lessonid (fallback to lessonid if lessonId is null or empty)
+            val idToUse = if (lessonId.isNullOrEmpty()) {
+                lessonid
+            } else {
+                lessonId.toInt().toString()
+            }
+
+            // Create the JSON object to send to the API
             val jsonObject = JsonObject()
-            jsonObject.addProperty("id", lessonId.toInt())
+            jsonObject.addProperty("id", idToUse)
             jsonObject.addProperty("name", lessonBinding.edtLessonName.text.toString())
             jsonObject.add("goal_ids", goalArray)
             jsonObject.addProperty("time", lessonBinding.edtTime.text.toString())
             jsonObject.addProperty("section_time", lessonBinding.tvSelectionTime.text.toString())
             jsonObject.addProperty("section_id", sectionId.id)
-            jsonObject.add("program_ids", array)
+            jsonObject.add("program_ids", array)  // Add program_ids from id
             jsonObject.addProperty("date", lessonBinding.etSelectTestDate.text.toString())
 
             Log.d("Lesson Data :- ", jsonObject.toString())
 
+            // Show progress while API call is being made
             lessonBinding.lessionProgress.visibility = View.VISIBLE
-            apiInterface.EditLesson(
-                jsonObject
-            )?.enqueue(object : Callback<LessonData?> {
-                override fun onResponse(
-                    call: Call<LessonData?>,
-                    response: Response<LessonData?>
-                ) {
+            apiInterface.EditLesson(jsonObject)?.enqueue(object : Callback<LessonData?> {
+                override fun onResponse(call: Call<LessonData?>, response: Response<LessonData?>) {
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
@@ -566,37 +639,109 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
     }
 
+//    private fun getGoalData() {
+//        goalData = mutableListOf()
+//        goalData.clear()
+//        apiInterface.GetGoal()?.enqueue(object : Callback<TestListData> {
+//            override fun onResponse(call: Call<TestListData>, response: Response<TestListData>) {
+//                val code = response.code()
+//                if (code == 200) {
+//                    if (response.isSuccessful) {
+//                        val data = response.body()!!.data
+//                        if (data!! != null) {
+//                            goalData.addAll(data.toMutableList())
+//                            for (i in goalData) {
+//                                Goal.add(i.name!!)
+//                            }
+//                        }
+//                    }
+//                } else if (code == 403) {
+//                    Utils.setUnAuthDialog(this@LessonActivity)
+//                } else {
+//                    Toast.makeText(this@LessonActivity, "" + response.message(), Toast.LENGTH_SHORT)
+//                        .show()
+//                    call.cancel()
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<TestListData>, t: Throwable) {
+//                Log.d("TAG Goal", t.message.toString() + "")
+//            }
+//
+//        })
+//    }
+
+
     private fun getGoalData() {
         goalData = mutableListOf()
         goalData.clear()
         apiInterface.GetGoal()?.enqueue(object : Callback<TestListData> {
             override fun onResponse(call: Call<TestListData>, response: Response<TestListData>) {
                 val code = response.code()
-                if (code == 200) {
-                    if (response.isSuccessful) {
-                        val data = response.body()!!.data
-                        if (data!! != null) {
-                            goalData.addAll(data.toMutableList())
-                            for (i in goalData) {
-                                Goal.add(i.name!!)
-                            }
+                if (code == 200 && response.isSuccessful) {
+                    val data = response.body()?.data
+                    if (data != null && data.isNotEmpty()) {
+                        goalData.addAll(data)
+                        for (i in goalData) {
+                            Goal.add(i.name!!)
                         }
+                        lessonBinding.tvNodata.visibility = View.GONE
+                    } else {
+                        lessonBinding.tvNodata.visibility = View.VISIBLE
                     }
-                } else if (code == 403) {
-                    Utils.setUnAuthDialog(this@LessonActivity)
                 } else {
-                    Toast.makeText(this@LessonActivity, "" + response.message(), Toast.LENGTH_SHORT)
-                        .show()
-                    call.cancel()
+                    lessonBinding.tvNodata.visibility = View.VISIBLE
+                    Toast.makeText(this@LessonActivity, response.message(), Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<TestListData>, t: Throwable) {
-                Log.d("TAG Goal", t.message.toString() + "")
+                lessonBinding.tvNodata.visibility = View.VISIBLE
+                Log.d("TAG Goal", t.message.toString())
             }
-
         })
     }
+
+
+//    private fun GetLessionList() {
+//        lessonBinding.lessionProgress.visibility = View.VISIBLE
+//        apiInterface.GetLession1().enqueue(object : Callback<Lesson> {
+//            override fun onResponse(call: Call<Lesson>, response: Response<Lesson>) {
+//                Log.d("TAG Lesson:", response.code().toString() + "")
+//                lessonBinding.lessionProgress.visibility = View.GONE
+//                val code = response.code()
+//                if (code == 200) {
+//                    val resource = response.body()!!
+//                    val Success: Boolean = resource.status!!
+//                    val Message: String = resource.message!!
+//                    if (Success) {
+//                        if (resource.data!! != null) {
+//                            Log.d("Lesson Data :-", "$Success $Message \t ${resource.data}")
+//                            lession_data1.addAll(resource.data!!)
+//                            initRecyclerview(resource.data!!)
+//                        }
+//                    }
+//                } else if (code == 403) {
+//                    Utils.setUnAuthDialog(this@LessonActivity)
+//                } else {
+//                    Toast.makeText(this@LessonActivity, "" + response.message(), Toast.LENGTH_SHORT)
+//                        .show()
+//                    call.cancel()
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<Lesson>, t: Throwable) {
+//                Toast.makeText(
+//                    this@LessonActivity,
+//                    "" + t.message,
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//                call.cancel()
+//            }
+//
+//        })
+//
+//    }
 
     private fun GetLessionList() {
         lessonBinding.lessionProgress.visibility = View.VISIBLE
@@ -606,37 +751,45 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                 lessonBinding.lessionProgress.visibility = View.GONE
                 val code = response.code()
                 if (code == 200) {
-                    val resource = response.body()!!
-                    val Success: Boolean = resource.status!!
-                    val Message: String = resource.message!!
-                    if (Success) {
-                        if (resource.data!! != null) {
-                            Log.d("Lesson Data :-", "$Success $Message \t ${resource.data}")
-                            lession_data1.addAll(resource.data!!)
-                            initRecyclerview(resource.data!!)
+                    val resource = response.body()
+                    if (resource != null) {
+                        val success: Boolean = resource.status ?: false
+                        val message: String = resource.message ?: "No message"
+                        if (success) {
+                            // Safe null check for 'data'
+                            val data = resource.data
+                            if (!data.isNullOrEmpty()) {
+                                Log.d("Lesson Data :-", "$success $message \t $data")
+                                lession_data1.addAll(data)
+                                initRecyclerview(data)
+                            } else {
+                                // Handle empty or null data
+                                Toast.makeText(this@LessonActivity, "No lessons available", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            // Handle unsuccessful response if needed
+                            Toast.makeText(this@LessonActivity, "Error: $message", Toast.LENGTH_SHORT).show()
                         }
+                    } else {
+                        // Handle null response body
+                        Toast.makeText(this@LessonActivity, "Empty response body", Toast.LENGTH_SHORT).show()
                     }
                 } else if (code == 403) {
                     Utils.setUnAuthDialog(this@LessonActivity)
                 } else {
-                    Toast.makeText(this@LessonActivity, "" + response.message(), Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this@LessonActivity, response.message(), Toast.LENGTH_SHORT).show()
                     call.cancel()
                 }
             }
 
             override fun onFailure(call: Call<Lesson>, t: Throwable) {
-                Toast.makeText(
-                    this@LessonActivity,
-                    "" + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@LessonActivity, "Error: " + t.message, Toast.LENGTH_SHORT).show()
                 call.cancel()
             }
-
         })
-
     }
+
+
 
     private fun initRecyclerview(data: ArrayList<Lesson.LessonDatabase>) {
         lessonBinding.exerciseRecycler.layoutManager = LinearLayoutManager(this)
@@ -982,7 +1135,9 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                 })
         } else if (string == "View") {
             startActivity(
-                Intent(this, ViewLessonActivity::class.java).putExtra("id", type.toString())
+                Intent(this, ViewLessonActivity::class.java)
+                    .putExtra("id", lession_data1[position].id)
+                    .putExtra("type", type.toString())
                     .putExtra("total_time", lession_data1[position].time)
                     .putExtra("section_time", lession_data1[position].section_time)
                     .putExtra("name", lession_data1[position].name)

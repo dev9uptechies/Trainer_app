@@ -40,14 +40,12 @@ class ViewMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         viewMicroCycleBinding = ActivityViewMicroCycleBinding.inflate(layoutInflater)
         setContentView(viewMicroCycleBinding.root)
 
-
         startDate = intent.getStringExtra("startDate")
         endDate = intent.getStringExtra("endDate")
 
         initViews()
         setupListeners()
         refreshData()
-
 
         viewMicroCycleBinding.back.setOnClickListener {
             finish()

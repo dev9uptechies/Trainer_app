@@ -24,6 +24,7 @@ class LessonAdapter(val context: Context, val list: ArrayList<LessonModel>) : Re
         holder.binding.tvProgramName.text = list[position].name.toString()
         holder.binding.tvGoal.text = list[position].goalId.toString()+"Program"
         holder.binding.tvTotalTime.text = list[position].time.toString()
+
         if (list[position].isFavourite?.equals(0) == true) {
             holder.binding.image.setImageResource(R.drawable.ic_favorite_select)
         } else {

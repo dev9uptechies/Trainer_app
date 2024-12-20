@@ -9,7 +9,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/_100sdp"
         android:layout_marginTop="@dimen/_5sdp"
         app:cardBackgroundColor="#1A929492"
         app:cardCornerRadius="@dimen/_10sdp"
@@ -43,16 +43,47 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+
+            <TextView
+                android:id="@+id/tv_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="45dp"
+                android:layout_marginEnd="52dp"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:text="Unit:"
+                android:textColor="@color/dark_text"
+                android:textSize="@dimen/_13sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/tv_unit_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="45dp"
+                android:layout_marginEnd="5dp"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:text="kg"
+                android:textColor="@color/dark_text"
+                android:textSize="@dimen/_13sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.31"
+                app:layout_constraintStart_toEndOf="@+id/tv_unit"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <ImageView
                 android:id="@+id/img_edit"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_25sdp"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:layout_marginTop="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/image"
-                app:layout_constraintHorizontal_bias="0.925"
+                app:layout_constraintHorizontal_bias="0.929"
                 app:layout_constraintStart_toEndOf="@+id/tv_goal"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0"
+                app:layout_constraintVertical_bias="0.813"
                 app:srcCompat="@drawable/img_edit"
                 app:tint="@color/red" />
 
@@ -94,7 +125,7 @@
 
             <TextView
                 android:id="@+id/tv_intrest_ath"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_100sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:fontFamily="@font/poppins_semi_bold"
@@ -111,6 +142,7 @@
                 android:layout_height="27dp"
                 android:layout_marginEnd="16dp"
                 app:tint="@color/red"
+                android:layout_marginTop="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"

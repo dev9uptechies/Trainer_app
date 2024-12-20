@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_black_round_corner_10"
+    android:elevation="@dimen/_10sdp"
+    android:orientation="vertical"
+    android:padding="@dimen/_10sdp">
+
+    <TextView
+        android:id="@+id/title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="Add Athlete State"
+        android:textColor="@color/white"
+        android:layout_gravity="center_horizontal"
+        android:textSize="@dimen/_15sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/Date_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:textSize="@dimen/_12sdp"
+        android:textColor="@color/white"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ly_Date"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        app:cardBackgroundColor="@color/card_colour"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@+id/cycle_count">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edt_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:background="@null"
+                android:focusable="false"
+                android:singleLine="true"
+                android:hint="Enter Date"
+                android:textColorHint="#BBBBBB"
+                android:textColor="#BBBBBB"
+                android:textSize="@dimen/_13sdp" />
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:src="@drawable/ic_calendar" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <TextView
+        android:id="@+id/Height_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Height in cm"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:textSize="@dimen/_12sdp"
+        android:textColor="@color/white"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ly_pause_time"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        app:cardBackgroundColor="@color/card_colour"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@+id/cycle_count">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/Height_edt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:inputType="number"
+                android:background="@null"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:hint="Enter Height"
+                android:textColorHint="#BBBBBB"
+                android:textColor="#BBBBBB"
+                android:textSize="@dimen/_13sdp" />
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/Weight_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weight in kg"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:textSize="@dimen/_12sdp"
+        android:textColor="@color/white"/>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ly_pause_cycle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        app:cardBackgroundColor="@color/card_colour"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@+id/cycle_count">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/Weight_edt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:background="@null"
+                android:singleLine="true"
+                android:inputType="number"
+                android:hint="Enter Weight"
+                android:textColorHint="#BBBBBB"
+                android:textColor="#BBBBBB"
+                android:textSize="@dimen/_13sdp" />
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+  <TextView
+        android:id="@+id/Fat_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fat in percentage"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:textSize="@dimen/_12sdp"
+        android:textColor="@color/white"/>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ly_fat_card"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        app:cardBackgroundColor="@color/card_colour"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@+id/cycle_count">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/Fat_edt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:hint="Enter Fat"
+                android:background="@null"
+                android:textColorHint="#BBBBBB"
+                android:textColor="#BBBBBB"
+                android:inputType="number"
+                android:textSize="@dimen/_13sdp" />
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="@dimen/_260sdp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:orientation="horizontal">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/crad_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_weight="1"
+            app:cardBackgroundColor="@color/grey"
+            app:cardCornerRadius="@dimen/_10sdp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Cancel"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14sdp" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_add"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_weight="1"
+            app:cardBackgroundColor="@color/navigation"
+            app:cardCornerRadius="@dimen/_10sdp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Apply"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14sdp" />
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+</LinearLayout>

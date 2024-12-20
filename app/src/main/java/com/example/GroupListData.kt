@@ -398,6 +398,9 @@ class GroupListData {
         @SerializedName("date")
         var date: String? = null
 
+        @SerializedName("is_favourite")
+        var is_favourite: Int? = null
+
         @SerializedName("test_athletes")
         var test_athletes: ArrayList<Test_Athletes>? = null
 

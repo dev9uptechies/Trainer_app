@@ -36,10 +36,14 @@ class ViewProgramActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         viewProgramBinding = ActivityViewProgramBinding.inflate(layoutInflater)
         setContentView(viewProgramBinding.root)
+
+//        Log.e("KIRTICHECK", "onCreate: "+intent.getStringExtra("position") )
+//        Log.e("KIRTICHECK", "onCreate: "+intent.getStringExtra("id") )
         initViews()
         initRecyclerView(excList)
         loadData()
         checkButtonClick()
+        viewProgramBinding.back.setOnClickListener(View.OnClickListener { finish() })
     }
 
     private fun checkButtonClick() {

@@ -60,20 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_45sdp">
 
-        <TextView
-            android:id="@+id/addButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Add"
-            android:textColor="@android:color/holo_blue_light"
-            android:textSize="18sp" />
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/white" />
 
         <TextView
             android:id="@+id/cancelButton"
@@ -82,8 +69,26 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Cancel"
-            android:textColor="@android:color/holo_blue_light"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:textColor="@color/white"
             android:textSize="18sp" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+
+        <TextView
+            android:id="@+id/addButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Add"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:textColor="@color/red"
+            android:textSize="18sp" />
+
+
     </LinearLayout>
 
 </LinearLayout>

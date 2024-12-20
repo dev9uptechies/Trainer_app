@@ -39,7 +39,6 @@ class EventDataAdapter(
 
         val athletesNames = StringBuilder()
 
-        // Loop through the event_athletes list
         for (eventAthlete in movie.event_athletes!!) {
             val athleteName = eventAthlete.athlete?.name
             if (athleteName != null) {

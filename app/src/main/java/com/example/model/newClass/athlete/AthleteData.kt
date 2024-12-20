@@ -85,4 +85,7 @@ class AthleteData {
         @SerializedName("zipcode")
         val zipcode: String? = null
     }
+
+
+
 }

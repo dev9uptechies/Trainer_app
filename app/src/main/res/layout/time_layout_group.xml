@@ -23,7 +23,6 @@
             android:layout_height="match_parent"
             android:layout_marginEnd="@dimen/_10sdp"
             android:layout_weight="1"
-            android:onClick="SetDialog_start"
             app:cardBackgroundColor="#1A929492"
             app:cardCornerRadius="@dimen/_10sdp">
 
@@ -36,8 +35,11 @@
                 android:background="@null"
                 android:fontFamily="@font/poppins_medium"
                 android:maxLines="1"
+                android:enabled="false"
+                android:focusable="true"
+                android:clickable="false"
                 android:inputType="numberDecimal"
-                android:hint="03 : 05"
+                android:hint="start date"
                 android:singleLine="true"
                 android:textColor="@color/dark_text"
                 android:textColorHint="@color/dark_text"
@@ -50,7 +52,6 @@
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_weight="1"
-            android:onClick="SetDialog_end"
             app:cardBackgroundColor="#1A929492"
             app:cardCornerRadius="@dimen/_10sdp">
 
@@ -62,7 +63,10 @@
                 android:layout_marginStart="@dimen/_12sdp"
                 android:background="@null"
                 android:maxLines="1"
-                android:hint="05 : 06"
+                android:hint="end date"
+                android:focusable="true"
+                android:enabled="false"
+                android:clickable="false"
                 android:inputType="numberDecimal"
                 android:singleLine="true"
                 android:fontFamily="@font/poppins_medium"

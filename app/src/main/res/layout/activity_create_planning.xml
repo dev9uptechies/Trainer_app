@@ -35,7 +35,7 @@
                 android:fontFamily="@font/poppins_semi_bold"
                 android:text="@string/add_planning"
                 android:textColor="@color/splash_text_color"
-                android:textSize="@dimen/_18sdp"
+                android:textSize="@dimen/_16sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -890,6 +890,7 @@
         android:layout_marginEnd="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"
         app:cardBackgroundColor="@color/grey"
+        android:visibility="gone"
         app:cardCornerRadius="@dimen/_10sdp"
         app:layout_constraintBottom_toBottomOf="parent">
 

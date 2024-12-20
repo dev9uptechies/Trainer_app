@@ -11,21 +11,70 @@
     import androidx.recyclerview.widget.LinearLayoutManager
     import com.example.trainerapp.ApiClass.APIClient
     import com.example.trainerapp.ApiClass.APIInterface
+    import com.example.trainerapp.ApiClass.RegisterData
     import com.example.trainerapp.PreferencesManager
     import com.example.trainerapp.SignInActivity
+    import com.example.trainerapp.Utils
     import com.example.trainerapp.databinding.FragmentGroupBinding
     import retrofit2.Call
     import retrofit2.Callback
     import retrofit2.Response
 
     class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
-        //    lateinit var recycler_view: RecyclerView
         lateinit var apiInterface: APIInterface
         lateinit var apiClient: APIClient
         lateinit var preferenceManager: PreferencesManager
         lateinit var groupadapter: GroupAdapter
+        private var receivedId: String = ""
+        private var groupList: ArrayList<GroupListData.groupData> = ArrayList()
 
-        //    lateinit var group_progress: ProgressBar
+
+        override fun onResume() {
+            checkUser()
+            super.onResume()
+        }
+
+        private fun checkUser() {
+            try {
+                apiInterface.ProfileData()?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        val code = response.code()
+                        if (code == 200) {
+                            callGroupApi()
+                            Log.d("Get Profile Data ", "${response.body()}")
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(requireContext())
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "" + response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        Toast.makeText(
+                            requireContext(),
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                })
+            } catch (e: Exception) {
+                Log.d("Exception", "${e.message}")
+            }
+        }
+
+
+    //    lateinit var group_progress: ProgressBar
     //    lateinit var create_group: ImageView
         lateinit var groupBinding: FragmentGroupBinding
         override fun onCreateView(
@@ -33,6 +82,10 @@
             savedInstanceState: Bundle?
         ): View {
             groupBinding = FragmentGroupBinding.inflate(layoutInflater, container, false)
+
+            receivedId = arguments?.getString("isd").toString()
+            Log.d("GroupFragment", "Received ID: $receivedId")
+
     //        recycler_view = view.findViewById(R.id.group_rly)
     //        group_progress = view.findViewById(R.id.group_progress)
     //        create_group = view.findViewById(R.id.create_group)
@@ -62,20 +115,14 @@
 
                         if (Success) {
                             groupBinding.groupProgress.visibility = View.GONE
+                            groupList = resource.data!! // Populate the groupList here
                             initrecycler(resource.data!!)
                         } else {
                             groupBinding.groupProgress.visibility = View.GONE
-                            Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
                         }
                     } else if (response.code() == 403) {
                         groupBinding.groupProgress.visibility = View.GONE
                         val message = response.message()
-                        Toast.makeText(
-                            requireContext(),
-                            "" + message,
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
                         call.cancel()
                         preferenceManager.setUserLogIn(false)
                         startActivity(
@@ -106,23 +153,28 @@
         }
 
         private fun initrecycler(data: ArrayList<GroupListData.groupData>) {
-            groupBinding.groupRly.setLayoutManager(
-                LinearLayoutManager(requireActivity())
-            )
-            groupadapter =
-                GroupAdapter(data, requireContext(), this)
+            if (!isAdded) {
+                Log.e("GroupFragment", "Fragment is not attached to an activity.")
+                return
+            }
+
+            groupBinding.groupRly.layoutManager = LinearLayoutManager(requireActivity())
+            groupadapter = GroupAdapter(data, requireContext(), this)
             groupBinding.groupRly.adapter = groupadapter
         }
 
         override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
+            val groupId = groupList[position].id
 
             startActivity(
-                Intent(requireContext(), GroupDetailActivity::class.java).putExtra(
-                    "position",
-                    position
-                )
-            )
+                Intent(requireContext(), GroupDetailActivity::class.java).apply {
+                    putExtra("id", groupList[position].id)
+                    putExtra("group_id", groupId)
+                    putExtra("position", position)
+                }
 
+            )
         }
+
 
     }

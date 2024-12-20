@@ -51,7 +51,6 @@ class Library_EventAdapter(private var splist: ArrayList<EventListData.testData>
                 }
             }
 
-            // Remove the trailing comma and space if names were added
             if (athleteNames.isNotEmpty()) {
                 athleteNames.setLength(athleteNames.length - 2)
             }
@@ -68,8 +67,14 @@ class Library_EventAdapter(private var splist: ArrayList<EventListData.testData>
             holder.image.setImageResource(R.drawable.ic_favorite_red)
         }
 
-        holder.img_edit.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong(), "Edit"))
-        holder.img_delete.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong(), "Delete"))
+        holder.img_edit.setOnClickListener {
+
+            Log.e("lolllolol", "onBindViewHolder: "+movie.id )
+            listener.onItemClicked(it, position, movie.id!!.toLong(), "EditEvent")
+        }
+
+//        holder.img_edit.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong(), "EditEvent"))
+        holder.img_delete.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong(), "DeleteEvent"))
     }
 
 }

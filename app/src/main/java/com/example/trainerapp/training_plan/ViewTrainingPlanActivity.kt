@@ -29,6 +29,7 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
     private lateinit var preferenceManager: PreferencesManager
     private lateinit var apiClient: APIClient
     var id: Int? = null
+    var idforgroup: Int? = null
     lateinit var programData: MutableList<TrainingPlanData.TrainingPlan>
     lateinit var viewTraining: ViewTrainingAdapter
 
@@ -44,6 +45,7 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
                     call: Call<RegisterData?>,
                     response: Response<RegisterData?>
                 ) {
+
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
@@ -93,6 +95,7 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
 
     private fun loadData() {
         programData.clear()
+
         try {
             GetProgramData()
         } catch (e: Exception) {
@@ -148,7 +151,6 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
                         .show()
                     call.cancel()
                 }
-
             }
 
             override fun onFailure(call: Call<TrainingPlanData?>, t: Throwable) {
@@ -189,6 +191,11 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
         preferenceManager = PreferencesManager(this)
         programData = mutableListOf()
         id = intent.getIntExtra("Id", 0)
+        Log.e("FAFFAFFAFAFAF", "loadData: "+id )
+
+        val planningId = intent.getIntExtra("Id", 0)
+        Log.d("PlanningID", "Received Planning ID: $planningId")
+
     }
 
 

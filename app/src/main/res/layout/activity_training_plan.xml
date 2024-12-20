@@ -12,8 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/create_bg"
-        android:paddingBottom="@dimen/_20sdp"
-        app:layout_constraintBottom_toTopOf="@+id/card_add">
+        android:paddingBottom="@dimen/_20sdp">
 
         <LinearLayout
             android:layout_width="match_parent"

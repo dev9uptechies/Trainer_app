@@ -302,72 +302,134 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         })
     }
 
+//    private fun getExerciseData() {
+//        exerciselist.clear()
+//        generallist.clear()
+//        specificlist.clear()
+//        apiInterface.GetExerciseData().enqueue(
+//            object : Callback<Exercise> {
+//                override fun onResponse(call: Call<Exercise>, response: Response<Exercise>) {
+//                    exerciseBinding.ProgressBar.visibility = View.GONE
+//                    val code = response.code()
+//                    if (code == 200) {
+//                        Log.d("Response :- ", "${response.body()}")
+//                        Log.d("Response :- ", "${response.code()}")
+//
+//                        if (response.isSuccessful) {
+//                            if (response.body()!!.data!! != null) {
+//                                exerciselist.addAll(response.body()!!.data!!.toMutableList())
+//                                for (i in 0 until exerciselist.size) {
+//                                    if (exerciselist[i].type == "General") {
+//                                        generallist.add(exerciselist[i])
+//                                    } else {
+//                                        specificlist.add(exerciselist[i])
+//                                    }
+//                                }
+//                                if (selecteValue.id == null) {
+//                                    if (generallist != null) {
+//                                        initrecycler(generallist)
+//                                    }
+//                                } else {
+//                                    effectRecycler(selecteValue)
+//                                }
+//                                Log.d(
+//                                    "Values :-",
+//                                    "$exerciselist $generallist $specificlist \n ${exerciselist.size} ${generallist.size} ${specificlist.size}"
+//                                )
+//                            }
+//                        } else {
+//                            Toast.makeText(
+//                                this@ExerciseActivity,
+//                                "" + response.message(),
+//                                Toast.LENGTH_SHORT
+//                            )
+//                                .show()
+//                        }
+//                    } else if (code == 403) {
+//                        Utils.setUnAuthDialog(this@ExerciseActivity)
+//                    } else {
+//                        Toast.makeText(
+//                            this@ExerciseActivity,
+//                            "" + response.message(),
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                        call.cancel()
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<Exercise>, t: Throwable) {
+//                    exerciseBinding.ProgressBar.visibility = View.GONE
+//                    Toast.makeText(this@ExerciseActivity, "" + t.message, Toast.LENGTH_SHORT)
+//                        .show()
+//                    call.cancel()
+//                }
+//
+//            }
+//        )
+//    }
+
     private fun getExerciseData() {
         exerciselist.clear()
         generallist.clear()
         specificlist.clear()
-        apiInterface.GetExerciseData().enqueue(
-            object : Callback<Exercise> {
-                override fun onResponse(call: Call<Exercise>, response: Response<Exercise>) {
-                    exerciseBinding.ProgressBar.visibility = View.GONE
-                    val code = response.code()
-                    if (code == 200) {
-                        Log.d("Response :- ", "${response.body()}")
-                        Log.d("Response :- ", "${response.code()}")
-                        Log.d("Response :- ", "${response.body()!!.data!!.size}")
-                        Log.d("Response :- ", "${response.isSuccessful}")
-                        if (response.isSuccessful) {
-                            if (response.body()!!.data!! != null) {
-                                exerciselist.addAll(response.body()!!.data!!.toMutableList())
-                                for (i in 0 until exerciselist.size) {
-                                    if (exerciselist[i].type == "General") {
-                                        generallist.add(exerciselist[i])
-                                    } else {
-                                        specificlist.add(exerciselist[i])
-                                    }
-                                }
-                                if (selecteValue.id == null) {
-                                    if (generallist != null) {
-                                        initrecycler(generallist)
-                                    }
-                                } else {
-                                    effectRecycler(selecteValue)
-                                }
-                                Log.d(
-                                    "Values :-",
-                                    "$exerciselist $generallist $specificlist \n ${exerciselist.size} ${generallist.size} ${specificlist.size}"
-                                )
-                            }
-                        } else {
-                            Toast.makeText(
-                                this@ExerciseActivity,
-                                "" + response.message(),
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                        }
-                    } else if (code == 403) {
-                        Utils.setUnAuthDialog(this@ExerciseActivity)
-                    } else {
-                        Toast.makeText(
-                            this@ExerciseActivity,
-                            "" + response.message(),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        call.cancel()
-                    }
-                }
 
-                override fun onFailure(call: Call<Exercise>, t: Throwable) {
-                    exerciseBinding.ProgressBar.visibility = View.GONE
-                    Toast.makeText(this@ExerciseActivity, "" + t.message, Toast.LENGTH_SHORT)
-                        .show()
+        exerciseBinding.ProgressBar.visibility = View.VISIBLE
+
+        apiInterface.GetExerciseData().enqueue(object : Callback<Exercise> {
+            override fun onResponse(call: Call<Exercise>, response: Response<Exercise>) {
+                exerciseBinding.ProgressBar.visibility = View.GONE
+                val code = response.code()
+
+                if (code == 200) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        val data = responseBody.data
+                        if (!data.isNullOrEmpty()) {
+                            exerciselist.addAll(data.toMutableList())
+                            for (exercise in exerciselist) {
+                                if (exercise.type == "General") {
+                                    generallist.add(exercise)
+                                } else {
+                                    specificlist.add(exercise)
+                                }
+                            }
+
+                            if (selecteValue.id == null) {
+                                if (generallist.isNotEmpty()) {
+                                    initrecycler(generallist)
+                                }
+                            } else {
+                                effectRecycler(selecteValue)
+                            }
+
+                            Log.d(
+                                "Values :-",
+                                "$exerciselist $generallist $specificlist \n ${exerciselist.size} ${generallist.size} ${specificlist.size}"
+                            )
+                        } else {
+                            // Handle empty data
+                            Toast.makeText(this@ExerciseActivity, "No exercise data available", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        // Handle null response body
+                        Toast.makeText(this@ExerciseActivity, "Empty response from server", Toast.LENGTH_SHORT).show()
+                    }
+                } else if (code == 403) {
+                    Utils.setUnAuthDialog(this@ExerciseActivity)
+                } else {
+                    Toast.makeText(this@ExerciseActivity, response.message(), Toast.LENGTH_SHORT).show()
                     call.cancel()
                 }
-
             }
-        )
+
+            override fun onFailure(call: Call<Exercise>, t: Throwable) {
+                exerciseBinding.ProgressBar.visibility = View.GONE
+                Toast.makeText(this@ExerciseActivity, t.message ?: "Error", Toast.LENGTH_SHORT).show()
+                call.cancel()
+            }
+        })
     }
+
 
 //    private fun GetCategories() {
 //        exerciseBinding.ProgressBar.visibility = View.VISIBLE

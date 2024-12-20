@@ -62,6 +62,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.WeekFields
 import java.util.Date
 import java.util.Locale
+import kotlin.math.E
 
 class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
     lateinit var createEventBinding: ActivityCreateEventBinding
@@ -72,9 +73,21 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
     lateinit var preferenceManager: PreferencesManager
     var calendarView: CalendarView? = null
     private lateinit var id: ArrayList<Int>
+    private lateinit var Aid: ArrayList<Int>
     private lateinit var name: ArrayList<String>
+    private lateinit var Aname: ArrayList<String>
     var eventId = ""
+
+    var eventid: String = ""
+    var title: String = ""
+    var athletename: String = ""
+    var date: String = ""
+    var typed: String = ""
+    var fromDay: Boolean = false
+
     var type = "create"
+    private var types: String? = ""
+    private var position1: Int? = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
     private val today = LocalDate.now()
@@ -102,8 +115,25 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         createEventBinding = ActivityCreateEventBinding.inflate(layoutInflater)
         setContentView(createEventBinding.root)
 
+//        position1 = intent.getIntExtra("position", 0)
+//        types = intent.getStringExtra("type")
+
+        val position1 = intent.getIntExtra("position", 0)
+        val types = intent.getStringExtra("type")
+        Log.e("CXXCXCXCXC", "Position: $position1, Type: $types")
+        Log.e("CXXCXCXCXC", "onCreate: " + types)
+
         initViews()
         loadData()
+
+        Log.d("SDSBSBSBS", "onCreate: $eventid")
+
+        if (types != null) {
+            Log.e("HBBHBHBHBH", "onCreate: " + types)
+            eventId = types.toString()
+            setEventData(EventList[position1!!])
+        }
+
 
         if (preferenceManager.getselectAthelete()) {
             name = getObject(this, "setAthleteName") as ArrayList<String>
@@ -113,14 +143,46 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         textChangeListener()
         checkButtonClick()
 
-        if (savedInstanceState == null) {
-            calendarView!!.post {
-                selectDate(today)
+        if (fromDay == false){
+            if (savedInstanceState == null) {
+                calendarView!!.post {
+                    selectDate(today)
+                }
             }
         }
 
 
     }
+
+    @SuppressLint("NewApi")
+    private fun getData() {
+        eventid = intent.getIntExtra("id", 0).toString()
+        fromDay = intent.getBooleanExtra("fromday", false)
+        title = intent.getStringExtra("name").toString()
+        athletename = intent.getStringExtra("athlete").toString()
+        date = intent.getStringExtra("date").toString().take(10)
+        typed = intent.getStringExtra("typed").toString()
+        Aid = intent.getIntegerArrayListExtra("athleteId") ?: arrayListOf()
+        Aname = intent.getStringArrayListExtra("athlete") ?: arrayListOf()
+
+        Log.d("SHSHSHSH", "getData: $date")
+
+        if (fromDay == true) {
+            Log.e("KIRTIIIIIIIIII", "initViews: " + date)
+            createEventBinding.eventName.setText(title)
+            createEventBinding.edtTest.setText(typed)
+            val namesString = Aname.joinToString(", ")
+            createEventBinding.tvAthelate.setText(namesString)
+
+            val date = date!!.split("T")[0]
+
+            selectDate(LocalDate.parse(date))
+
+            updateUI(createEventBinding.saveEvent)
+
+        }
+    }
+
 
     private fun textChangeListener() {
         createEventBinding.eventName.addTextChangedListener(object : TextWatcher {
@@ -170,21 +232,23 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         )
     }
 
+
     private fun areAllFieldsFilled(): Boolean {
-        return (createEventBinding.edtTest.text.toString() != "Select Type" &&
-                createEventBinding.tvAthelate.text.toString() != "Enter Intrested Atheletes" &&
+        return (createEventBinding.edtTest.text.toString().isNotEmpty() &&
+                createEventBinding.tvAthelate.text.toString().isNotEmpty() &&
                 !createEventBinding.eventName.text.isNullOrEmpty())
     }
 
     private fun updateUI(addButton: CardView) {
         if (areAllFieldsFilled()) {
             addButton.isEnabled = true
-            addButton.setCardBackgroundColor(resources.getColor(R.color.splash_text_color)) // Change to your desired color
+            addButton.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
         } else {
             addButton.isEnabled = false
-            addButton.setCardBackgroundColor(resources.getColor(R.color.grey)) // Disabled color
+            addButton.setCardBackgroundColor(resources.getColor(R.color.grey))
         }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun loadData() {
@@ -192,6 +256,7 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         setUnitData()
         geteventlist()
         setUpCalendar()
+        getData()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -268,35 +333,7 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
                             }
                         }
                     }
-//                    when (day.date) {
-//                        today -> {
-//                            with(textView) {
-//                                setTextColor(resources.getColor(R.color.white))
-//                                setBackgroundResource(R.drawable.img_todaydate)
-//                            }
-//                        }
-//
-//                        selectedDate -> {
-//                            with(textView) {
-//                                setTextColor(resources.getColor(R.color.splash_text_color))
-//                                setBackgroundResource(R.drawable.date_select)
-//                            }
-//                        }
-//
-//                        else -> {
-//                            with(textView) {
-//                                setTextColor(resources.getColor(R.color.white))
-//                                setBackgroundColor(0x1A000000)
-//                            }
-//                        }
-//
-////                         selectedDate-> {
-////                            with(textView) {
-////                                setTextColor(resources.getColor(R.color.splash_text_color))
-////                                setBackgroundResource(R.drawable.date_select)
-////                            }
-////                        }
-//                    }
+
                 } else {
                     textView.setTextColor(resources.getColor(R.color.grey))
                 }
@@ -363,11 +400,18 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         }
 
         createEventBinding.saveEvent.setOnClickListener {
+            when {
+                type == "edit" || fromDay -> {
+                    updateData()
+                }
 
-            if (type == "create") {
-                saveData()
-            } else if (type == "edit") {
-                updateData()
+                type == "create" -> {
+                    saveData()
+                }
+
+                else -> {
+                    Toast.makeText(this, "Invalid operation", Toast.LENGTH_SHORT).show()
+                }
             }
 
         }
@@ -376,15 +420,30 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
     private fun updateData() {
         createEventBinding.progressBar.visibility = View.VISIBLE
         if (!createEventBinding.eventName.text.isEmpty() && !createEventBinding.tvAthelate.text.isEmpty()) {
-            val str = arrayOfNulls<Int>(id.size)
+
+
+            val AidToUse = if (id.isNullOrEmpty()) {
+                Aid
+            } else {
+                id
+            }
+
+            val str = arrayOfNulls<Int>(AidToUse.size)
             val array = JsonArray()
 
-            for (i in 0 until id.size) {
-                str[i] = id.get(i)
-                array.add(id.get(i))
+            for (i in 0 until AidToUse.size) {
+                str[i] = AidToUse.get(i)
+                array.add(AidToUse.get(i))
             }
+
+            val idToUse = if (eventId.isNullOrEmpty()) {
+                eventid
+            } else {
+                eventId.toInt().toString()
+            }
+
             val jsonObject = JsonObject()
-            jsonObject.addProperty("id", eventId.toInt())
+            jsonObject.addProperty("id", idToUse.toInt())
             jsonObject.addProperty("name", createEventBinding.eventName.text.toString())
             jsonObject.addProperty("type", createEventBinding.edtTest.text.toString())
             jsonObject.add("athlete_ids", array)
@@ -534,10 +593,13 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
     private fun initViews() {
         preferenceManager = PreferencesManager(this)
         id = ArrayList<Int>()
+        Aid = ArrayList<Int>()
         name = ArrayList<String>()
+        Aname = ArrayList<String>()
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
         calendarView = findViewById(R.id.calenderView)
+        EventList = ArrayList()
     }
 
     private fun geteventlist() {
@@ -594,10 +656,11 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun selectDate(date: LocalDate) {
+        Log.e("SUJALLLLLLL", "selectDate: "+date )
         if (selectedDate != date) {
+
             val oldDate = selectedDate
             selectedDate = date
-
 
             Log.d(
                 "Select Date month:-",
@@ -769,6 +832,7 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
                     call.cancel()
                 }
             })
+
         } else if (string == "unfav") {
             createEventBinding.progressBar.visibility = View.VISIBLE
             apiInterface.DeleteFavourite_Event(type.toInt())
@@ -826,10 +890,14 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
                     }
                 })
         } else {
+
+            Log.e("TRTRTRTTTTTRTRR", "onItemClicked: " + eventId)
+            Log.e("TRTRTRTTTTTRTRR", "onItemClicked: " + EventList)
             this@Create_Event_Activity.type = "edit"
             eventId = EventList[position].id!!.toString()
             setEventData(EventList[position])
         }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -858,6 +926,7 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
 //        createEventBinding.saveEvent.isEnabled = true
 //        createEventBinding.saveEvent.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
     }
+
 
     private fun checkUser() {
         try {

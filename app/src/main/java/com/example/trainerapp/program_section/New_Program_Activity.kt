@@ -79,6 +79,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
     var goalId = SelectedValue(null)
     var sectionId = SelectedValue(null)
     var programId: Int? = null
+    var idd: String? = null
     var excId: MutableList<Int> = mutableListOf()
 
     var typeData = "create"
@@ -89,6 +90,8 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         initView()
         getData()
 
+        idd = intent.getStringExtra("ids")
+        Log.e("TAGexcId", "onCreate: " + idd)
         newProgramBinding.edtSection.setOnClickListener {
             showPopup(it, sectionData, newProgramBinding.edtSection, section, sectionId)
         }
@@ -552,7 +555,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                 call: Call<ProgramListData?>,
                 response: Response<ProgramListData?>
             ) {
-                Log.d("TAG", response.code().toString() + "")
+                Log.d("TAG", response.code().toString())
                 val code = response.code()
                 if (code == 200) {
                     val resource: ProgramListData? = response.body()
@@ -560,11 +563,16 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                     val Message: String = resource.message!!
                     newProgramBinding.progresBar.visibility = View.GONE
                     Log.d("TAG", resource.data.toString())
+
                     if (Success) {
                         try {
-                            if (resource.data == null) {
-                                initRecyclerview(arrayListOf())
+                            if (resource.data == null || resource.data!!.isEmpty()) {
+                                // Show "No Data Found" if data is null or empty
+                                newProgramBinding.tvNodata.visibility = View.VISIBLE
+                                initRecyclerview(arrayListOf())  // You can initialize an empty list or handle it based on your needs
                             } else {
+                                // Hide "No Data Found" and show the data
+                                newProgramBinding.tvNodata.visibility = View.GONE
                                 programData.addAll(resource.data!!)
                                 initRecyclerview(resource.data!!)
                             }
@@ -572,33 +580,18 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                             e.printStackTrace()
                         }
                     } else {
-                        Toast.makeText(this@New_Program_Activity, "" + Message, Toast.LENGTH_SHORT)
+                        Toast.makeText(this@New_Program_Activity, Message, Toast.LENGTH_SHORT)
                             .show()
                     }
                 } else if (response.code() == 403) {
                     Utils.setUnAuthDialog(this@New_Program_Activity)
-//                    val message = response.message()
-//                    Toast.makeText(
-//                        this@New_Program_Activity,
-//                        "" + message,
-//                        Toast.LENGTH_SHORT
-//                    )
-//                        .show()
-//                    call.cancel()
-//                    startActivity(
-//                        Intent(
-//                            this@New_Program_Activity,
-//                            SignInActivity::class.java
-//                        )
-//                    )
-//                    finish()
                 } else {
                     val message = response.message()
-                    Toast.makeText(this@New_Program_Activity, "" + message, Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this@New_Program_Activity, message, Toast.LENGTH_SHORT).show()
                     call.cancel()
                 }
             }
+
 
             override fun onFailure(call: Call<ProgramListData?>, t: Throwable) {
                 newProgramBinding.progresBar.visibility = View.GONE
@@ -705,57 +698,105 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         getExerciseData()
     }
 
+    //    private fun getExerciseData() {
+//        exerciseData.clear()
+//        apiInterface.GetExercise()?.enqueue(object : Callback<ExcerciseData?> {
+//            override fun onResponse(
+//                call: Call<ExcerciseData?>,
+//                response: Response<ExcerciseData?>
+//            ) {
+//                Log.d("TAG", response.code().toString() + "")
+//                val code = response.code()
+//                if (code == 200) {
+//                    val resource: ExcerciseData? = response.body()
+//                    val Success: Boolean = resource?.status!!
+//                    val Message: String = resource.message!!
+//
+//                    if (Success == true) {
+//                        if (resource.data!! != null) {
+//                            exerciseData = resource.data!!
+//                        }
+//                    }
+//                } else if (response.code() == 403) {
+//                    Utils.setUnAuthDialog(this@New_Program_Activity)
+////                    val message = response.message()
+////                    Toast.makeText(
+////                        this@New_Program_Activity,
+////                        "" + message,
+////                        Toast.LENGTH_SHORT
+////                    )
+////                        .show()
+////                    call.cancel()
+////                    startActivity(
+////                        Intent(
+////                            this@New_Program_Activity,
+////                            SignInActivity::class.java
+////                        )
+////                    )
+////                    finish()
+//                } else {
+//                    val message = response.message()
+//                    Toast.makeText(this@New_Program_Activity, "" + message, Toast.LENGTH_SHORT)
+//                        .show()
+//                    call.cancel()
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<ExcerciseData?>, t: Throwable) {
+//                Toast.makeText(this@New_Program_Activity, "" + t.message, Toast.LENGTH_SHORT)
+//                    .show()
+//                call.cancel()
+//            }
+//        })
+//    }
     private fun getExerciseData() {
+        try {
         exerciseData.clear()
         apiInterface.GetExercise()?.enqueue(object : Callback<ExcerciseData?> {
             override fun onResponse(
                 call: Call<ExcerciseData?>,
                 response: Response<ExcerciseData?>
             ) {
-                Log.d("TAG", response.code().toString() + "")
+                Log.d("TAG", response.code().toString())
                 val code = response.code()
                 if (code == 200) {
                     val resource: ExcerciseData? = response.body()
-                    val Success: Boolean = resource?.status!!
-                    val Message: String = resource.message!!
+                    val success: Boolean = resource?.status ?: false
+                    val message: String = resource?.message ?: "Unknown error"
 
-                    if (Success == true) {
-                        if (resource.data!! != null) {
-                            exerciseData = resource.data!!
+                    if (success) {
+                        exerciseData = ArrayList(resource?.data ?: emptyList())
+                        if (exerciseData.isEmpty()) {
+                            Log.d("TAG", "No exercise data available.")
                         }
+                    } else {
+                        Toast.makeText(this@New_Program_Activity, message, Toast.LENGTH_SHORT)
+                            .show()
                     }
                 } else if (response.code() == 403) {
                     Utils.setUnAuthDialog(this@New_Program_Activity)
-//                    val message = response.message()
-//                    Toast.makeText(
-//                        this@New_Program_Activity,
-//                        "" + message,
-//                        Toast.LENGTH_SHORT
-//                    )
-//                        .show()
-//                    call.cancel()
-//                    startActivity(
-//                        Intent(
-//                            this@New_Program_Activity,
-//                            SignInActivity::class.java
-//                        )
-//                    )
-//                    finish()
                 } else {
                     val message = response.message()
-                    Toast.makeText(this@New_Program_Activity, "" + message, Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this@New_Program_Activity, message, Toast.LENGTH_SHORT).show()
                     call.cancel()
                 }
             }
 
             override fun onFailure(call: Call<ExcerciseData?>, t: Throwable) {
-                Toast.makeText(this@New_Program_Activity, "" + t.message, Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    this@New_Program_Activity,
+                    t.message ?: "Unknown error",
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 call.cancel()
             }
         })
+        }catch (e: Exception){
+            Log.d("CATCH", "getExerciseData: ${e.message.toString()}")
+        }
     }
+
 
     private fun GetGoal() {
         newProgramBinding.progresBar.visibility = View.VISIBLE

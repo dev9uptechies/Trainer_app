@@ -26,6 +26,7 @@ class ProfileActivity : AppCompatActivity() {
     lateinit var preferenceManager: PreferencesManager
     private lateinit var user: ArrayList<String>
     lateinit var adapter: ShowSportAdaper
+
     private lateinit var Sportlist: java.util.ArrayList<Sport_list>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

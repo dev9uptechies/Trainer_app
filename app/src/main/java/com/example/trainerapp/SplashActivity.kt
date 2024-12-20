@@ -19,12 +19,24 @@ class SplashActivity : AppCompatActivity() {
     lateinit var apiClient: APIClient
     lateinit var preferenceManager: PreferencesManager
     lateinit var splashBinding: ActivitySplashBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        splashBinding = ActivitySplashBinding.inflate(layoutInflater)
-        setContentView(splashBinding.root)
-        initViews()
-        checkLogin()
+
+        // Initialize preferences
+        preferenceManager = PreferencesManager(this)
+
+        // Check login status
+        if (preferenceManager.UserLogIn()) {
+            // User is logged in, load MainActivity directly
+            navigateToMainActivity()
+        } else {
+            // User is not logged in, continue with splash screen
+            splashBinding = ActivitySplashBinding.inflate(layoutInflater)
+            setContentView(splashBinding.root)
+            initViews()
+            checkLogin()
+        }
     }
 
     private fun checkLogin() {
@@ -44,29 +56,25 @@ class SplashActivity : AppCompatActivity() {
     private fun initViews() {
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
-        preferenceManager = PreferencesManager(this)
     }
 
     private fun apiCall() {
         splashBinding.progress.visibility = View.VISIBLE
         apiInterface.ProfileData()?.enqueue(object : Callback<RegisterData?> {
             override fun onResponse(call: Call<RegisterData?>, response: Response<RegisterData?>) {
+                splashBinding.progress.visibility = View.GONE
                 Log.d("TAG", response.code().toString() + "")
 
                 val code = response.code()
                 if (code == 200) {
                     val resource: RegisterData? = response.body()
-                    if (resource!!.data!!.user_sports!!.size == 0) {
-                        val intent =
-                            Intent(this@SplashActivity, SelectSportActivity::class.java)
+                    if (resource?.data?.userSports.isNullOrEmpty()) {
+                        val intent = Intent(this@SplashActivity, SelectSportActivity::class.java)
                         startActivity(intent)
-                        finish()
                     } else {
-                        val intent = Intent(this@SplashActivity, HomeActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                        navigateToMainActivity()
                     }
-                    Log.d("Get Profile Data ", "${response.body()}")
+                    finish()
                 } else if (code == 403) {
                     Utils.setUnAuthDialog(this@SplashActivity)
                 } else {
@@ -74,53 +82,24 @@ class SplashActivity : AppCompatActivity() {
                         this@SplashActivity,
                         "" + response.message(),
                         Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    val intent = Intent(this@SplashActivity, MainActivity::class.java)
-                    startActivity(intent)
+                    ).show()
+                    navigateToMainActivity()
                     call.cancel()
                 }
-
-
-//                if (!response.code().equals(403)) {
-//                    val resource: RegisterData? = response.body()
-//                    val Success: Boolean = resource?.status!!
-//                    val Message: String = resource.message!!
-//                    splashBinding.progress.visibility = View.GONE
-//                    if (Message != "Unauthorized.") {
-//                        if (!Success) {
-//                            val intent = Intent(this@SplashActivity, MainActivity::class.java)
-//                            startActivity(intent)
-//                        } else {
-//                            if (resource.data!!.user_sports!!.size == 0) {
-//                                val intent =
-//                                    Intent(this@SplashActivity, SelectSportActivity::class.java)
-//                                startActivity(intent)
-//                                finish()
-//                            } else {
-//                                val intent = Intent(this@SplashActivity, HomeActivity::class.java)
-//                                startActivity(intent)
-//                                finish()
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    Utils.setUnAuthDialog(this@SplashActivity)
-////                    preferenceManager.setUserLogIn(false)
-////                    val intent = Intent(this@SplashActivity, MainActivity::class.java)
-////                    startActivity(intent)
-//                }
-
             }
 
             override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                val intent = Intent(this@SplashActivity, MainActivity::class.java)
-                startActivity(intent)
-                Toast.makeText(this@SplashActivity, "" + t.message, Toast.LENGTH_SHORT)
-                    .show()
-                call.cancel()
                 splashBinding.progress.visibility = View.GONE
+                Toast.makeText(this@SplashActivity, "" + t.message, Toast.LENGTH_SHORT).show()
+                navigateToMainActivity()
+                call.cancel()
             }
         })
+    }
+
+    private fun navigateToMainActivity() {
+        val intent = Intent(this@SplashActivity, HomeActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

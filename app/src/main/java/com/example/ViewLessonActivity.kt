@@ -1,3 +1,5 @@
+
+
 package com.example
 
 import android.app.Dialog
@@ -16,6 +18,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.LessonOnlineActivity
 import com.example.model.SelectedValue
+import com.example.model.training_plan.TrainingPlanData
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.ProgramListData
@@ -29,62 +32,49 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback,
     Excercise_list_Adapter.OnItemClickListener {
     lateinit var viewLessonBinding: ActivityViewLessonBinding
     lateinit var apiInterface: APIInterface
-    private lateinit var lession_data: ArrayList<LessonData.lessionData>
+    private lateinit var lessonData: ArrayList<LessonData.lessionData>
     lateinit var apiClient: APIClient
     lateinit var lessAdapter: ViewLessionAdapter
     lateinit var excAdapter: Excercise_list_Adapter
     var position: Int? = null
+    var id: Int? = null
+    var idforviewlesson: Int? = null
 
     var excId = SelectedValue(null)
     var proId = SelectedValue(null)
 
     override fun onResume() {
-        checkUser()
         super.onResume()
+        checkUser()
     }
 
     private fun checkUser() {
-        try {
-            apiInterface.ProfileData()?.enqueue(object : Callback<RegisterData?> {
-                override fun onResponse(
-                    call: Call<RegisterData?>,
-                    response: Response<RegisterData?>
-                ) {
-                    Log.d("TAG", response.code().toString() + "")
-                    val code = response.code()
-                    if (code == 200) {
-                        Log.d("Get Profile Data ", "${response.body()}")
-                    } else if (code == 403) {
-                        Utils.setUnAuthDialog(this@ViewLessonActivity)
-                    } else {
-                        Toast.makeText(
-                            this@ViewLessonActivity,
-                            "" + response.message(),
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        call.cancel()
-                    }
-                }
+        apiInterface.ProfileData()?.enqueue(object : Callback<RegisterData?> {
+            override fun onResponse(call: Call<RegisterData?>, response: Response<RegisterData?>) {
+                handleProfileResponse(response)
+            }
 
-                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                    Toast.makeText(
-                        this@ViewLessonActivity,
-                        "" + t.message,
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    call.cancel()
-                }
-            })
-        } catch (e: Exception) {
-            Log.d("Exception", "${e.message}")
+            override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                showToast(t.message)
+                call.cancel()
+            }
+        })
+    }
+
+    private fun handleProfileResponse(response: Response<RegisterData?>) {
+        when (response.code()) {
+            200 -> Log.d("Get Profile Data", "${response.body()}")
+            403 -> Utils.setUnAuthDialog(this)
+            else -> showToast(response.message())
         }
+    }
+
+    private fun showToast(message: String?) {
+        Toast.makeText(this, message ?: "An error occurred", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,179 +82,175 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         viewLessonBinding = ActivityViewLessonBinding.inflate(layoutInflater)
         setContentView(viewLessonBinding.root)
         initViews()
-        GetLessionList()
+        getLessonList()
     }
 
     private fun initViews() {
-        lession_data = ArrayList()
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
 
-        excId = SelectedValue(null)
-        proId = SelectedValue(null)
-
-        val id_lesson = intent.getStringExtra("id")
+        id = intent.getIntExtra("lessonId", 0)
+        idforviewlesson = intent.getIntExtra("id", 0)
         position = intent.getIntExtra("position", 0)
-        val total_time = intent.getStringExtra("total_time")
-        val section_time = intent.getStringExtra("section_time")
+        val totalTime = intent.getStringExtra("total_time")
+        val sectionTime = intent.getStringExtra("section_time")
         val name = intent.getStringExtra("name")
 
+        Log.d("CCVCVCVVCVCV", "initViews: "+ id)
+        Log.d("CCVCVCVVCVCV", "initViews: "+ position)
+        Log.d("CCVCVCVVCVCV", "initViews: "+ idforviewlesson)
+
+        lessonData = ArrayList()
+
         viewLessonBinding.lessonName.text = name
-        viewLessonBinding.lessonTTime.text = "Total Time : " + total_time
-        viewLessonBinding.lessonSTime.text = "Section Time : " + section_time
+        viewLessonBinding.lessonTTime.text = "Total Time : $totalTime"
+        viewLessonBinding.lessonSTime.text = "Section Time : $sectionTime"
 
-        viewLessonBinding.back.setOnClickListener {
-            finish()
-        }
-
+        viewLessonBinding.back.setOnClickListener { finish() }
         viewLessonBinding.cardOnline.setOnClickListener {
-            val intent = Intent(this@ViewLessonActivity, LessonOnlineActivity::class.java)
-            intent.putExtra("total_time", total_time)
-            startActivity(intent)
+            startActivity(Intent(this@ViewLessonActivity, LessonOnlineActivity::class.java).apply {
+                putExtra("total_time", totalTime)
+            })
         }
 
-        viewLessonBinding.cardDuplicate.setOnClickListener {
-            val dialog = Dialog(this, R.style.Theme_Dialog)
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setCancelable(true)
-            dialog.setCanceledOnTouchOutside(false)
-            dialog.setContentView(R.layout.dialog_number_picker)
-            val displayMetrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            val width = (displayMetrics.widthPixels * 0.9f).toInt()
-            val height = WindowManager.LayoutParams.WRAP_CONTENT
-            dialog.window!!.setLayout(width, height)
-            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            dialog.show()
-            val cancel = dialog.findViewById<CardView>(R.id.card_cancel)
-            val card_apply = dialog.findViewById<CardView>(R.id.card_apply)
-
-            cancel.setOnClickListener {
-                dialog.hide()
-            }
-
-            card_apply.setOnClickListener {
-                dialog.hide()
-                viewLessonBinding.viewLessonProgress.visibility = View.VISIBLE
-                val id: MultipartBody.Part =
-                    MultipartBody.Part.createFormData("id", id_lesson!!)
-                apiInterface.Duplicate_lession(id)
-                    ?.enqueue(object : Callback<LessonData?> {
-                        override fun onResponse(
-                            call: Call<LessonData?>,
-                            response: Response<LessonData?>
-                        ) {
-                            viewLessonBinding.viewLessonProgress.visibility = View.GONE
-                            val code = response.code()
-                            if (code == 200) {
-                                val resource: LessonData? = response.body()
-                                val Success: Boolean = resource?.status!!
-                                val Message: String = resource.message!!
-                                viewLessonBinding.viewLessonProgress.visibility = View.GONE
-                                finish()
-                            } else if (code == 403) {
-                                Utils.setUnAuthDialog(this@ViewLessonActivity)
-                            } else {
-                                Toast.makeText(
-                                    this@ViewLessonActivity,
-                                    "" + response.message(),
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                call.cancel()
-                            }
-                        }
-
-                        override fun onFailure(call: Call<LessonData?>, t: Throwable) {
-                            Toast.makeText(
-                                this@ViewLessonActivity,
-                                "" + t.message,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            call.cancel()
-                        }
-                    })
-            }
-
-        }
-
+        viewLessonBinding.cardDuplicate.setOnClickListener { showDuplicateDialog() }
     }
 
-    private fun GetLessionList() {
+    private fun showDuplicateDialog() {
+        val dialog = Dialog(this, R.style.Theme_Dialog).apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setCancelable(true)
+            setCanceledOnTouchOutside(false)
+            setContentView(R.layout.dialog_number_picker)
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            window?.setLayout((displayMetrics.widthPixels * 0.9f).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
+            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        dialog.show()
+        dialog.findViewById<CardView>(R.id.card_cancel).setOnClickListener { dialog.dismiss() }
+        dialog.findViewById<CardView>(R.id.card_apply).setOnClickListener {
+            dialog.dismiss()
+            duplicateLesson()
+        }
+    }
+
+    private fun duplicateLesson() {
         viewLessonBinding.viewLessonProgress.visibility = View.VISIBLE
-        apiInterface.GetLession()?.enqueue(object : Callback<LessonData?> {
+        val idPart = MultipartBody.Part.createFormData("id", intent.getStringExtra("id")!!)
+        apiInterface.Duplicate_lession(idPart)?.enqueue(object : Callback<LessonData?> {
             override fun onResponse(call: Call<LessonData?>, response: Response<LessonData?>) {
-                Log.d("TAG", response.code().toString() + "")
                 viewLessonBinding.viewLessonProgress.visibility = View.GONE
-                val code = response.code()
-                if (code == 200) {
-                    val resource: LessonData? = response.body()
-                    val Success: Boolean = resource?.status!!
-                    val Message: String = resource.message!!
-                    if (Success) {
-                        lession_data = resource.data!!
-                        if (lession_data != null) {
-                            viewLessonBinding.tvSection.text =
-                                lession_data[position!!].section!!.name
-
-                            if (lession_data[position!!].lesson_programs != null) {
-                                val program = lession_data[position!!].lesson_programs
-                                if (program != null && program.size != 0) {
-                                    proId = SelectedValue(program.firstOrNull()?.id)
-                                    initRecyclerview(program, proId.id)
-
-                                    val exc = program[0].program!!.program_exercises!!
-                                    if (exc.size != 0 && exc != null) {
-                                        excId = SelectedValue(exc.firstOrNull()?.id)
-                                        initRecycler(exc, excId.id)
-
-                                    }
-                                } else {
-                                    Toast.makeText(
-                                        this@ViewLessonActivity,
-                                        "Program Data Not Found",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            } else {
-                                Toast.makeText(
-                                    this@ViewLessonActivity,
-                                    "Program Data Not Found",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        } else {
-                            Toast.makeText(
-                                this@ViewLessonActivity,
-                                "Program Data Not Found",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                } else if (code == 403) {
-                    Utils.setUnAuthDialog(this@ViewLessonActivity)
-                } else {
-                    Toast.makeText(
-                        this@ViewLessonActivity,
-                        "" + response.message(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    call.cancel()
-                }
-
+                handleDuplicateLessonResponse(response)
             }
 
             override fun onFailure(call: Call<LessonData?>, t: Throwable) {
+                showToast(t.message)
                 viewLessonBinding.viewLessonProgress.visibility = View.GONE
-                Toast.makeText(
-                    this@ViewLessonActivity,
-                    "" + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-                call.cancel()
             }
         })
+    }
 
+    private fun handleDuplicateLessonResponse(response: Response<LessonData?>) {
+        if (response.code() == 200 && response.body()?.status == true) {
+            finish()
+        } else {
+            showToast(response.message())
+        }
+    }
+
+    private fun getLessonList() {
+        viewLessonBinding.viewLessonProgress.visibility = View.VISIBLE
+        apiInterface.GetLession()?.enqueue(object : Callback<LessonData?> {
+            override fun onResponse(call: Call<LessonData?>, response: Response<LessonData?>) {
+                viewLessonBinding.viewLessonProgress.visibility = View.GONE
+                if (response.isSuccessful) {
+                    response.body()?.data?.let { data ->
+
+                        val idToUse = if ((id as? String)?.isNullOrEmpty() == true || id == 0) {
+                            idforviewlesson
+                        } else {
+                            id
+                        }
+
+                        Log.d("DJDJDJDJDJDJ", "onResponse: $idToUse")
+
+                        val filteredData = data.filter { it.id == idToUse }
+
+                        try {
+                            if (position != null && position!! >= 0 && position!! < lessonData.size) {
+                                val program = lessonData[position!!].lesson_programs
+                                if (program != null && program.isNotEmpty()) {
+                                    proId = SelectedValue(program.firstOrNull()?.id)
+                                    Log.d("FFFFFFFFF", "onResponse: ${proId.id}")
+                                    initRecyclerview(program, proId.id)
+                                }
+                            } else {
+                                Log.d("LessonData", "Position: $position, LessonData size: ${lessonData.size}")
+                            }
+                        } catch (e: Exception) {
+                            Log.d("cat", "onResponse: ERROR:___" + e.message.toString())
+                        }
+
+                        if (filteredData.isNotEmpty()) {
+                            setProgramDataset(filteredData)
+                        } else {
+                            showToast("No lesson data found for this lesson ID.")
+                        }
+                    } ?: showToast("Lesson data is empty.")
+                } else {
+                    showToast("Failed to fetch lesson data: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<LessonData?>, t: Throwable) {
+                showToast(t.message)
+                viewLessonBinding.viewLessonProgress.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun setProgramDataset(data: List<LessonData.lessionData>) {
+        if (data.isNotEmpty()) {
+            val lesson = data[0]
+            viewLessonBinding.lessonName.text = lesson.name
+            viewLessonBinding.lessonTTime.text = lesson.time
+            viewLessonBinding.lessonSTime.text = lesson.section_time
+
+            Log.d("LessonData", "Lesson: ${lesson.name}, Programs: ${lesson.lesson_programs?.size}")
+
+            val program = lesson.lesson_programs
+            Log.d("ProgramData", "Program: ${program!!.firstOrNull()?.program}, ID: ${program.firstOrNull()?.id}")
+
+            if (program != null && program.isNotEmpty()) {
+
+                proId = SelectedValue(program.firstOrNull()?.id)
+
+                Log.d("SSSSSSSS", "setProgramDataset: ${proId.id}")
+                initRecyclerview(program, proId.id)
+
+                val exc = program[0].program?.program_exercises
+                if (exc != null && exc.isNotEmpty()) {
+                    excId = SelectedValue(exc.firstOrNull()?.id)
+                    initRecycler(exc, excId.id)
+                }
+
+            } else {
+                Toast.makeText(
+                    this@ViewLessonActivity,
+                    "Program Data Not Found",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } else {
+            // If the data list is empty, show a Toast message
+            Toast.makeText(
+                this@ViewLessonActivity,
+                "Lesson Data Not Found",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     private fun initRecyclerview(
@@ -278,30 +264,26 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         viewLessonBinding.rlyProgram.adapter = lessAdapter
     }
 
+
+    private fun initRecycler(
+        data: ArrayList<ProgramListData.Program>,
+        initialSelectId: Int?
+    ) {
+        viewLessonBinding.rlyExercise.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        excAdapter = Excercise_list_Adapter(data, this, this, initialSelectId)
+        viewLessonBinding.rlyExercise.adapter = excAdapter
+    }
+
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
         if (string == "Click") {
             proId.id = type.toInt()
         }
     }
 
-    private fun initRecycler(
-        programExercises: ArrayList<ProgramListData.Program>,
-        initialSelectId: Int?
-    ) {
-        viewLessonBinding.rlyExercise.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        excAdapter =
-            Excercise_list_Adapter(programExercises, this, this, initialSelectId)
-        viewLessonBinding.rlyExercise.adapter = excAdapter
-    }
-
     override fun onItemClick(id: Int, name: String, position: Int) {
         excId.id = id
-
-        val intent = Intent(this, View_Exercise_Activity::class.java)
-        intent.putExtra("position", position)
-        intent.putExtra("id", id)
-        startActivity(intent)
+        startActivity(Intent(this, View_Exercise_Activity::class.java).apply {
+            putExtra("id", excId.id)
+        })
     }
-
 }

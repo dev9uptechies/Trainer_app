@@ -22,12 +22,13 @@
         android:id="@+id/tv_credit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:fontFamily="@font/poppins_medium"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/poppins_semi_bold"
         android:text="Performance Profile"
         android:textColor="@color/splash_text_color"
-        android:textSize="@dimen/_18sdp"
+        android:textSize="@dimen/_16sdp"
         app:layout_constraintEnd_toStartOf="@+id/createPerformance"
+        app:layout_constraintHorizontal_bias="0.428"
         app:layout_constraintStart_toEndOf="@+id/back"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -103,6 +104,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_select" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/tv_nodata"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins_medium"
+            android:gravity="center"
+            android:text="No Data Found"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/performance_rly"
             android:layout_width="match_parent"
@@ -113,6 +131,8 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:visibility="gone"
             tools:listitem="@layout/performance_item" />
+
+    </LinearLayout>
 
     </LinearLayout>
 

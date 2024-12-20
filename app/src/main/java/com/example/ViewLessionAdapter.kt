@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.trainerapp.R
 
 class ViewLessionAdapter(
-    private var splist: ArrayList<LessonData.Lesson_Programs>,
+    private var splist: List<LessonData.Lesson_Programs>,
     var context: Context,
     val listener: OnItemClickListener.OnItemClickCallback,
     private var selectId: Int? = null

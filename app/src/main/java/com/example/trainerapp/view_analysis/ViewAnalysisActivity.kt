@@ -3,6 +3,7 @@ package com.example.trainerapp.view_analysis
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,10 @@ class ViewAnalysisActivity : AppCompatActivity() {
     lateinit var athleteData: ArrayList<AthleteData.Athlete>
     lateinit var competitionData: MutableList<Competition.CompetitionData>
     lateinit var viewAnalysisAdapter: ViewAnalysisAdapter
+    var aid:Int = 0
+    var Name:String? = null
+
+
 
     private fun checkUser() {
         try {
@@ -92,7 +97,14 @@ class ViewAnalysisActivity : AppCompatActivity() {
         initViews()
         loadData()
         setDefaultRecycler()
-        checkButtonClick()
+//        checkButtonClick()
+
+        if (aid != 0 || Name != null){
+            checkButtonClick2()
+        }else{
+            checkButtonClick()
+        }
+        viewAnalysisBinding.back.setOnClickListener { finish() }
     }
 
     private fun setDefaultRecycler() {
@@ -101,9 +113,8 @@ class ViewAnalysisActivity : AppCompatActivity() {
         viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAdapter
     }
 
-    private
+    private fun checkButtonClick() {
 
-    fun checkButtonClick() {
         viewAnalysisBinding.edtAthletes.setOnClickListener {
             val list = athleteData.map { it.name }
             val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -112,7 +123,7 @@ class ViewAnalysisActivity : AppCompatActivity() {
                 popupView,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                true // Focusable to allow outside clicks to dismiss
+                true
             )
             popupWindow.setBackgroundDrawable(
                 ContextCompat.getDrawable(
@@ -124,6 +135,7 @@ class ViewAnalysisActivity : AppCompatActivity() {
 
             val listView = popupView.findViewById<ListView>(R.id.listView)
 
+
             val adapter =
                 object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
                     override fun getView(
@@ -132,19 +144,23 @@ class ViewAnalysisActivity : AppCompatActivity() {
                         parent: ViewGroup
                     ): View {
                         val view = super.getView(position, convertView, parent) as TextView
-                        view.setTextColor(Color.WHITE) // Set text color to white
+                        view.setTextColor(Color.WHITE)
                         return view
                     }
                 }
-            listView.adapter = adapter
-            listView.setOnItemClickListener { _, _, position, _ ->
-                val selectedItem = list[position]
-                viewAnalysisBinding.edtAthletes.setText(selectedItem)
-                athleteId.id = athleteData.filter { it.name == selectedItem }.first().id!!
-                println("Selected item: $selectedItem")
-                popupWindow.dismiss()
-                setRecyclerView(athleteId.id!!)
-            }
+
+                listView.adapter = adapter
+                listView.setOnItemClickListener { _, _, position, _ ->
+                    val selectedItem = list[position]
+                    viewAnalysisBinding.edtAthletes.visibility = View.VISIBLE
+
+                    viewAnalysisBinding.edtAthletes.setText(selectedItem)
+                    athleteId.id = athleteData.filter { it.name == selectedItem }.first().id!!
+                    Log.d("DDGGDGDGD", "checkButtonClick: Selected item: $selectedItem")
+                    popupWindow.dismiss()
+                    setRecyclerView(athleteId.id!!)
+                }
+
             popupWindow.showAsDropDown(it)
             popupWindow.setBackgroundDrawable(
                 AppCompatResources.getDrawable(
@@ -155,26 +171,99 @@ class ViewAnalysisActivity : AppCompatActivity() {
         }
     }
 
-    private fun setRecyclerView(id: Int) {
-        viewAnalysisBinding.recViewAnalysis.visibility = View.VISIBLE
-        val data = competitionData.filter { it.athlete_id!!.toInt() == id }
-        viewAnalysisAdapter = ViewAnalysisAdapter(data.toMutableList(), this)
-        viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAdapter
+    private fun checkButtonClick2() {
+        // Check if athleteData is empty before proceeding
+        if (athleteData.isEmpty()) {
+            Log.e("PopupError", "Athlete data is empty, cannot display athlete name")
+            return // Exit the method early if no athletes are found
+        }
+
+        Log.d("DDDDJDJDJDJD", "checkButtonClick2: $aid")
+
+        // Safely find the selected athlete by name
+        val selectedAthlete = athleteData.find { it.name == Name }
+
+        // Hide the EditText field regardless of whether an athlete is selected
+        viewAnalysisBinding.edtAthletes.visibility = View.GONE
+
+        if (selectedAthlete != null) {
+            // Assign the athlete's ID to aid
+            aid = selectedAthlete.id!!
+
+            // Proceed to set the RecyclerView with the selected athlete's ID
+            setRecyclerView(aid)
+        } else {
+            // Log an error if no athlete is found by the name
+            Log.e("PopupError", "No athlete found with the specified name: $Name")
+        }
     }
 
+
+    private fun setRecyclerView(id: Int) {
+        // Filter competition data by athlete ID
+        val filteredData = competitionData.filter { it.athlete_id!!.toInt() == id }
+
+        Log.d("SetRecyclerView", "Selected Athlete ID: $id")
+        Log.d("SetRecyclerView", "Filtered Data: $filteredData")
+
+        if (filteredData.isEmpty()) {
+            viewAnalysisBinding.tvNodata.visibility = View.VISIBLE
+            viewAnalysisBinding.recViewAnalysis.visibility = View.GONE
+        } else {
+            viewAnalysisBinding.tvNodata.visibility = View.GONE
+            viewAnalysisBinding.recViewAnalysis.visibility = View.VISIBLE
+
+            // Set the adapter with the filtered competition data
+            viewAnalysisAdapter = ViewAnalysisAdapter(filteredData.toMutableList(), this)
+            viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAdapter
+        }
+    }
+
+
+    //    private fun setRecyclerView(id: Int) {
+//        viewAnalysisBinding.recViewAnalysis.visibility = View.VISIBLE
+//        val data = competitionData.filter { it.athlete_id!!.toInt() == id }
+//        viewAnalysisAdapter = ViewAnalysisAdapter(data.toMutableList(), this)
+//        viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAdapter
+//    }
+//
     private fun initViews() {
         preferenceManager = PreferencesManager(this)
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
         athleteData = arrayListOf()
         competitionData = mutableListOf()
+
+       aid = intent.getIntExtra("athleteId",0)
+       Name = intent.getStringExtra("athleteName")
+       Log.d("aidssss","aid:-  $aid")
+       Log.d("aidssss","aid:-  $Name")
+
+
     }
 
     private fun loadData() {
         resetData()
         getCompetitionData()
         getAthleteData()
+
+        if (competitionData.isEmpty()) {
+            viewAnalysisBinding.tvNodata.visibility = View.VISIBLE
+            viewAnalysisBinding.recViewAnalysis.visibility = View.GONE
+        } else {
+            viewAnalysisBinding.tvNodata.visibility = View.GONE
+            viewAnalysisBinding.recViewAnalysis.visibility = View.VISIBLE
+        }
     }
+
+
+//    private fun loadData() {
+//        resetData()
+//        getCompetitionData()
+//        getAthleteData()
+//    }
+
+
 
     private fun getCompetitionData() {
         try {
@@ -202,6 +291,7 @@ class ViewAnalysisActivity : AppCompatActivity() {
                                         "${i.category} \n ${i.athlete!!.name}"
                                     )
                                     competitionData.add(i)
+
                                 }
                                 Log.d("Competition Data :-", "${competitionData}")
                             }

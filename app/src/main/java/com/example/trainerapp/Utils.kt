@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
+import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -137,23 +138,23 @@ class Utils {
         }
 
         @SuppressLint("NewApi")
-        fun selectDate(context: Context?, etDate: AppCompatEditText) {
-            val myCalendar = Calendar.getInstance()
-            val myFormat = "YYYY-MM-dd"
-            val dateFormat = SimpleDateFormat(myFormat, Locale.US)
-            val date = OnDateSetListener { view1: DatePicker?, year: Int, month: Int, day: Int ->
-                myCalendar[Calendar.YEAR] = year
-                myCalendar[Calendar.MONTH] = month
-                myCalendar[Calendar.DAY_OF_MONTH] = day
-                etDate.setText(dateFormat.format(myCalendar.time))
-            }
-            DatePickerDialog(
-                context!!,
-                date,
-                myCalendar[Calendar.YEAR],
-                myCalendar[Calendar.MONTH],
-                myCalendar[Calendar.DAY_OF_MONTH]
-            ).show()
+        fun selectDate(context: Context, dateedt: EditText) {
+            val calendar = Calendar.getInstance()
+
+            val datePickerDialog = DatePickerDialog(
+                context,
+                { _, year, monthOfYear, dayOfMonth ->
+                    calendar.set(year, monthOfYear, dayOfMonth)
+                    val dateFormat = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+                    val formattedDate = dateFormat.format(calendar.time)
+                    dateedt.setText(formattedDate)
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            )
+
+            datePickerDialog.show()
         }
 
 
@@ -191,6 +192,24 @@ class Utils {
                 preferenceManager.setUserLogIn(false)
                 val intent = Intent(context, MainActivity::class.java)
                 context.startActivity(intent)
+                dialogLayout.dismiss()
+            }
+            dialogLayout.show()
+        }
+
+
+        fun setUnAuthDialog1(context: Context?) {
+            val preferenceManager: PreferencesManager = PreferencesManager(context!!)
+            val dialogLayout = Dialog(context)
+            dialogLayout.setContentView(R.layout.invalid_auth)
+            dialogLayout.window?.setBackgroundDrawableResource(android.R.color.transparent)
+//            dialogLayout.window?.setLayout(
+//                WindowManager.LayoutParams.MATCH_PARENT,  // Set width to match parent
+//                WindowManager.LayoutParams.WRAP_CONTENT   // Set height to wrap content
+//            )
+            val btnOk = dialogLayout.findViewById<TextView>(R.id.btnOk)
+            btnOk.setOnClickListener {
+                preferenceManager.setUserLogIn(false)
                 dialogLayout.dismiss()
             }
             dialogLayout.show()

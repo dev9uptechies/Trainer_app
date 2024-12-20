@@ -40,6 +40,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class CreateNewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
+
     lateinit var createNewTimerBinding: ActivityCreateNewTimerBinding
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient

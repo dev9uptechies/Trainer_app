@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SignInActivity::class.java))
             preferencesManager.SetFlage("Athlete")
         }
+
     }
 
     private fun initViews() {

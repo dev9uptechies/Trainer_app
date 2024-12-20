@@ -36,8 +36,13 @@ class SignInActivity : AppCompatActivity() {
         setContentView(signInBinding.root)
 
         initViews()
+//        signInBinding.edtEmail.setText("gaurav.bhattacharya7@gmail.com")
+//        signInBinding.edtPassword.setText("Gaurav@7613")
+//        signInBinding.edtEmail.setText("testusernew@gmail.com")
+//        signInBinding.edtPassword.setText("Testing@112")
         signInBinding.edtEmail.setText("4trainersapp@gmail.com")
         signInBinding.edtPassword.setText("4Trainersapp!")
+
         checkFieldValue()
         checkButtonClick()
         checkChangeListner()
@@ -47,7 +52,6 @@ class SignInActivity : AppCompatActivity() {
         signInBinding.edtEmail.addTextChangedListener(object : TextWatcher {
 
             override fun afterTextChanged(s: Editable) {
-
             }
 
             override fun beforeTextChanged(
@@ -143,52 +147,60 @@ class SignInActivity : AppCompatActivity() {
                         call: Call<RegisterData?>,
                         response: Response<RegisterData?>
                     ) {
-                        Log.d("TAG", response.code().toString() + "")
+//                        Log.d("GHGHGHGHGHGH", response.code().toString() + "")
 
                         val code = response.code()
                         if (code == 200) {
                             val resource: RegisterData? = response.body()
                             val Success: Boolean = resource?.status!!
+                            Log.e("QWQWQWQWWQW", "" + resource.status)
+                            if (resource.status == true) {
+                                val Message: String = resource.message!!
+                                preferenceManager.setToken(resource.token)
+                                preferenceManager.setUserId(response.body()!!.data!!.id.toString())
+                                preferenceManager.setUserLogIn(true)
+                                if (Success.equals(true)) {
+                                    progress_bar.visibility = View.GONE
+                                    if (resource.data!!.userSports!!.size == 0) {
 
-                            val Message: String = resource.message!!
-                            preferenceManager.setToken(resource.token)
-                            preferenceManager.setUserId(response.body()!!.data!!.id.toString())
-                            preferenceManager.setUserLogIn(true)
-                            if (Success.equals(true)) {
-                                progress_bar.visibility = View.GONE
-                                if (resource.data!!.user_sports!!.size == 0) {
-
-                                    startActivity(
-                                        Intent(
-                                            this@SignInActivity,
-                                            SelectSportActivity::class.java
+                                        startActivity(
+                                            Intent(
+                                                this@SignInActivity,
+                                                SelectSportActivity::class.java
+                                            )
                                         )
-                                    )
 
 
-                                    finish()
-                                } else {
+                                        finish()
+                                    } else {
 //                                val intent =
 //                                    Intent(this@SignInActivity, MainHomeActivity::class.java)
 //                                startActivity(intent)
 //                                finish()
-                                    startActivity(
-                                        Intent(
-                                            this@SignInActivity,
-                                            HomeActivity::class.java
+                                        startActivity(
+                                            Intent(
+                                                this@SignInActivity,
+                                                HomeActivity::class.java
+                                            )
                                         )
+                                        finish()
+                                    }
+                                } else {
+                                    progress_bar.visibility = View.GONE
+                                    Toast.makeText(
+                                        this@SignInActivity,
+                                        "" + Message,
+                                        Toast.LENGTH_SHORT
                                     )
-                                    finish()
+                                        .show()
                                 }
                             } else {
                                 progress_bar.visibility = View.GONE
-                                Toast.makeText(
-                                    this@SignInActivity,
-                                    "" + Message,
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
+                                Utils.setUnAuthDialog1(this@SignInActivity)
+
                             }
+
+
                         } else if (response.code() == 403) {
                             Utils.setUnAuthDialog(this@SignInActivity)
 //                            val message = response.message()

@@ -1,9 +1,22 @@
 package com.example.trainerapp.personal_diary
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.DatePicker
+import android.widget.EditText
+import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import com.example.model.personal_diary.GetDiaryDataForEdit
 import com.example.model.personal_diary.GetPersonalDiary
 import com.example.model.personal_diary.GetPersonalDiaryData
@@ -12,11 +25,13 @@ import com.example.model.personal_diary.TrainingSession
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.PreferencesManager
+import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityEditPersonalDiaryDataBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Calendar
 
 class EditPersonalDiaryDataActivity : AppCompatActivity() {
 
@@ -39,9 +54,67 @@ class EditPersonalDiaryDataActivity : AppCompatActivity() {
         loadData()
         setupButtonClickListeners()
 
+        setUpEnergyTextWatcher(binding.EnergyBT)
+        setUpEnergyTextWatcher(binding.EnergyAT)
+        setUpEnergyTextWatcher(binding.EnergyDT)
+
+        setUpEnergyTextWatcher(binding.SatisfationBT)
+        setUpEnergyTextWatcher(binding.SatisfationDT)
+        setUpEnergyTextWatcher(binding.SatisfationAT)
+
+        setUpEnergyTextWatcher(binding.HapinessBT)
+        setUpEnergyTextWatcher(binding.HapinessDT)
+        setUpEnergyTextWatcher(binding.HapinessAT)
+
+        setUpEnergyTextWatcher(binding.IrritabilityBT)
+        setUpEnergyTextWatcher(binding.IrritabilityDT)
+        setUpEnergyTextWatcher(binding.IrritabilityAT)
+
+        setUpEnergyTextWatcher(binding.DeterminationBT)
+        setUpEnergyTextWatcher(binding.DeterminationDT)
+        setUpEnergyTextWatcher(binding.DeterminationAT)
+
+        setUpEnergyTextWatcher(binding.AnxietyBT)
+        setUpEnergyTextWatcher(binding.AnxietyDT)
+        setUpEnergyTextWatcher(binding.AnxietyAT)
+
+        setUpEnergyTextWatcher(binding.TirednessBT)
+        setUpEnergyTextWatcher(binding.TirednessDT)
+        setUpEnergyTextWatcher(binding.TirednessAT)
+
+        binding.back.setOnClickListener { finish() }
+
+    }
+
+    fun setUpEnergyTextWatcher(editText: EditText) {
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                // Convert the input to an integer, default to 0 if it's not a valid integer
+                val input = s.toString().toIntOrNull() ?: 0
+                if (input > 5) {
+                    // Clear the text if the input exceeds 5
+                    editText.setText("")
+                    // Move the cursor to the end of the EditText
+                    editText.setSelection(editText.text.length)
+                }
+            }
+        })
     }
 
     private fun setupButtonClickListeners() {
+
+        binding.editDate.setOnClickListener {
+            showDatePickerDialog {dayOfMonth, month, year ->
+                val selectedDate = "$dayOfMonth-${month + 1}-$year"
+                binding.dateTextView.text = selectedDate
+            }
+        }
+
+        binding.editTime.setOnClickListener { setTimerDialog() }
         binding.back.setOnClickListener { finish() }
 
         binding.cardSave.setOnClickListener{ saveDiaryData() }
@@ -262,6 +335,105 @@ class EditPersonalDiaryDataActivity : AppCompatActivity() {
         }
     }
 
+    // Function to change DatePicker's spinner text color
+    private fun showDatePickerDialog(onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit) {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.custom_date_picker)
 
+        // Set dialog width to 90% of screen width
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val width = (displayMetrics.widthPixels * 0.9f).toInt()
+        dialog.window?.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val datePicker = dialog.findViewById<DatePicker>(R.id.datePicker)
+        val cancelButton = dialog.findViewById<Button>(R.id.btnCancel)
+        val applyButton = dialog.findViewById<Button>(R.id.btnApply)
+
+
+        // Default date (today)
+        val calendar = Calendar.getInstance()
+        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(
+            Calendar.DAY_OF_MONTH), null)
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+
+        applyButton.setOnClickListener {
+            val selectedYear = datePicker.year
+            val selectedMonth = datePicker.month
+            val selectedDay = datePicker.dayOfMonth
+            onDateSelected(selectedYear, selectedMonth, selectedDay)
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    // Function to show the custom timer dialog
+    private fun setTimerDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_set_full_time_picker)
+
+        // Set dialog width to 90% of screen width
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val width = (displayMetrics.widthPixels * 0.9f).toInt()
+        dialog.window?.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val title = dialog.findViewById<AppCompatTextView>(R.id.tvTitle)
+        val hourPicker = dialog.findViewById<NumberPicker>(R.id.hour_num)
+        val minutePicker = dialog.findViewById<NumberPicker>(R.id.mint_num)
+        val secondPicker = dialog.findViewById<NumberPicker>(R.id.second_num)
+        val btnApply = dialog.findViewById<Button>(R.id.btnApply)
+        val btnCancel = dialog.findViewById<Button>(R.id.btnCancel)
+
+        if (title != null) title.text = "Time Picker"
+
+        var hourNumber = 0
+        var minuteNumber = 0
+        var secondNumber = 0
+
+        // Initialize the pickers
+        hourPicker?.apply {
+            minValue = 0
+            maxValue = 12
+            wrapSelectorWheel = true
+            setOnValueChangedListener { _, _, newVal -> hourNumber = newVal }
+        }
+
+        minutePicker?.apply {
+            minValue = 0
+            maxValue = 59
+            wrapSelectorWheel = true
+            setOnValueChangedListener { _, _, newVal -> minuteNumber = newVal }
+        }
+
+        secondPicker?.apply {
+            minValue = 0
+            maxValue = 59
+            wrapSelectorWheel = true
+            setOnValueChangedListener { _, _, newVal -> secondNumber = newVal }
+        }
+
+        // Cancel button
+        btnCancel?.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // Apply button
+        btnApply?.setOnClickListener {
+            val formattedTime = String.format("%02d:%02d:%02d", hourNumber, minuteNumber, secondNumber)
+            binding.sleepHoursTextView.text = formattedTime
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
 
 }

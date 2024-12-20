@@ -40,6 +40,7 @@
                 android:layout_height="@dimen/_30sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:src="@drawable/ic_favorite_red"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

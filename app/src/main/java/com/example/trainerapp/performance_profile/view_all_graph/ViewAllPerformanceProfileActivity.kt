@@ -67,23 +67,12 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@ViewAllPerformanceProfileActivity)
                     } else {
-                        Toast.makeText(
-                            this@ViewAllPerformanceProfileActivity,
-                            "" + response.message(),
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+
                         call.cancel()
                     }
                 }
 
                 override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                    Toast.makeText(
-                        this@ViewAllPerformanceProfileActivity,
-                        "" + t.message,
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
                     call.cancel()
                 }
             })
@@ -105,10 +94,9 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
         initView()
         ButtonClick()
 
-        if (athleteId.toString() != "null" || athleteId.toString() != "") {
+        if (athleteId != null && athleteId.toString().isNotEmpty() && athleteId.toString() != "null") {
             loadPerformance(athleteId.toInt())
         }
-
 
 
     }
@@ -171,22 +159,14 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
                         } else if (code == 403) {
                             Utils.setUnAuthDialog(this@ViewAllPerformanceProfileActivity)
                         } else {
-                            Toast.makeText(
-                                this@ViewAllPerformanceProfileActivity,
-                                "" + response.message(),
-                                Toast.LENGTH_SHORT
-                            ).show()
+
                             call.cancel()
                         }
                     }
 
                     override fun onFailure(call: Call<PerformanceCategory>, t: Throwable) {
                         viewAllPerformanceProfileBinding.ProgressBar.visibility = View.GONE
-                        Toast.makeText(
-                            this@ViewAllPerformanceProfileActivity,
-                            "" + t.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+
                         call.cancel()
                     }
                 })
@@ -237,11 +217,6 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<PerformanceQuality>, t: Throwable) {
-                        Toast.makeText(
-                            this@ViewAllPerformanceProfileActivity,
-                            "" + t.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
                         call.cancel()
                         onComplete() // Notify to proceed even on failure
                     }

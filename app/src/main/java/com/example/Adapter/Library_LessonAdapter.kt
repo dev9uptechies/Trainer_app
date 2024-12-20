@@ -52,12 +52,14 @@ class Library_LessonAdapter(
         } else {
             holder.image.setImageResource(R.drawable.ic_favorite_red)
         }
+
+
         holder.img_edit.setOnClickListener(
             OnItemClickListener(
                 position,
                 listener,
                 movie.id!!.toLong(),
-                "Edit"
+                "EditLession"
             )
         )
         holder.img_delete.setOnClickListener(
@@ -65,7 +67,7 @@ class Library_LessonAdapter(
                 position,
                 listener,
                 movie.id!!.toLong(),
-                "Delete"
+                "DeleteLession"
             )
         )
 

@@ -273,7 +273,7 @@ class CompetitionActivity : AppCompatActivity() {
         competitionBinding.edtDate.text!!.clear()
         competitionBinding.edtArea.text.clear()
         competitionBinding.cardNext.isEnabled = false
-        competitionBinding.cardNext.setBackgroundResource(R.drawable.card_unselect_1)
+//        competitionBinding.cardNext.setBackgroundResource(R.drawable.card_unselect_1)
     }
 
     private fun checkButtonClick() {
@@ -597,7 +597,6 @@ class CompetitionActivity : AppCompatActivity() {
             } else {
                 competitionBinding.errorSelectArea.visibility = View.GONE
             }
-
             return true
         }
 
@@ -654,7 +653,6 @@ class CompetitionActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun convertStringArrayToString(strArr: Array<String?>, deLimiter: String): String? {
         val sb = StringBuilder()

@@ -35,6 +35,7 @@ class GetAthletesActivity : AppCompatActivity() {
 
     private fun checkUser() {
         try {
+
             apiInterface.ProfileData()?.enqueue(object : Callback<RegisterData?> {
                 override fun onResponse(
                     call: Call<RegisterData?>,

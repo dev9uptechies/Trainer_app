@@ -26,7 +26,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:buttonTint="@color/white" />
+                android:buttonTint="@color/red" />
 
             <TextView
                 android:id="@+id/titleText"
@@ -55,7 +55,8 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="@dimen/_17sdp"
-                android:src="@drawable/ic_edit_white" />
+                android:src="@drawable/img_edit"
+                app:tint="@color/white" />
 
             <ImageView
                 android:id="@+id/imgDelete"

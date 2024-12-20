@@ -23,10 +23,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
-        android:fontFamily="@font/poppins_medium"
+        android:fontFamily="@font/poppins_semi_bold"
         android:text="Create Template"
         android:textColor="@color/splash_text_color"
-        android:textSize="@dimen/_18sdp"
+        android:textSize="@dimen/_16sdp"
         app:layout_constraintEnd_toStartOf="@+id/createTemplate"
         app:layout_constraintStart_toEndOf="@+id/back"
         app:layout_constraintTop_toTopOf="parent" />

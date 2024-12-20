@@ -1,0 +1,1417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context="com.SelectDayActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/create_bg"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginTop="@dimen/_20sdp">
+
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:src="@drawable/back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_creditit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Selected Day"
+                android:textColor="@color/splash_text_color"
+                android:textSize="@dimen/_18sdp"
+                app:layout_constraintBottom_toBottomOf="@+id/back"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/back" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/ly_lesson"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_10sdp"
+                                android:layout_marginTop="@dimen/_20sdp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/poppins_semi_bold"
+                                android:text="Lesson List"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_16sdp" />
+
+                            <ImageView
+                                android:id="@+id/add"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_25sdp"
+                                android:layout_marginTop="@dimen/_20sdp"
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                android:src="@drawable/ic_plus" />
+
+                        </LinearLayout>
+
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/fav_lesson_rly"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginEnd="@dimen/_10sdp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ly_event"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_10sdp"
+                                android:layout_marginTop="@dimen/_20sdp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/poppins_semi_bold"
+                                android:text="Event List"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_16sdp" />
+
+                            <ImageView
+                                android:id="@+id/event_add"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_25sdp"
+                                android:layout_marginTop="@dimen/_20sdp"
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                android:src="@drawable/ic_plus" />
+
+                        </LinearLayout>
+
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/fav_event_rly"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginEnd="@dimen/_10sdp" />
+                    </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ly_program"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_20sdp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/poppins_semi_bold"
+                            android:text="Program List"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_16sdp" />
+
+                        <ImageView
+                            android:id="@+id/add_program"
+                            android:layout_width="@dimen/_25sdp"
+                            android:layout_height="@dimen/_25sdp"
+                            android:layout_marginTop="@dimen/_20sdp"
+                            android:layout_marginEnd="@dimen/_10sdp"
+                            android:src="@drawable/ic_plus" />
+
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/fav_program_rly"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:layout_marginEnd="@dimen/_10sdp" />
+
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                        android:id="@+id/ly_test"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_10sdp"
+                                android:layout_marginTop="@dimen/_20sdp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/poppins_semi_bold"
+                                android:text="Test List"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_16sdp" />
+
+                            <ImageView
+                                android:id="@+id/add_test"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_25sdp"
+                                android:layout_marginTop="@dimen/_20sdp"
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                android:src="@drawable/ic_plus" />
+
+                        </LinearLayout>
+
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/fav_test_rly"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginEnd="@dimen/_10sdp" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_20sdp"
+                        android:orientation="vertical">
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_10sdp"
+                                android:layout_marginTop="@dimen/_20sdp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/poppins_semi_bold"
+                                android:text="Personal Diary"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_16sdp" />
+
+                            <ImageView
+                                android:id="@+id/add_Diary"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_25sdp"
+                                android:layout_marginTop="@dimen/_20sdp"
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                android:src="@drawable/ic_plus" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_33sdp"
+                            android:layout_marginStart="@dimen/_7sdp"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginEnd="@dimen/_7sdp"
+                            android:layout_marginBottom="@dimen/_5sdp"
+                            android:background="@drawable/round_item_per_second"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Assess Your \n Level of"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:background="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Before \n Training"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </LinearLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="During \n Training"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="After \n Training"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_marginStart="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_7sdp"
+                            android:layout_marginBottom="@dimen/_2sdp"
+                            android:background="@drawable/round_item_per_second"
+                            android:baselineAligned="false"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Energy"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:background="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <EditText
+                                    android:id="@+id/Energy_BT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </LinearLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Energy_DT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Energy_AT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_marginStart="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_7sdp"
+                            android:layout_marginBottom="@dimen/_2sdp"
+                            android:background="@drawable/round_item_per_second"
+                            android:baselineAligned="false"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Satisfaction"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:background="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <EditText
+                                    android:id="@+id/Satisfation_BT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </LinearLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Satisfation_DT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Satisfation_AT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_marginStart="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_7sdp"
+                            android:layout_marginBottom="@dimen/_2sdp"
+                            android:background="@drawable/round_item_per_second"
+                            android:baselineAligned="false"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Hapiness"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:background="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <EditText
+                                    android:id="@+id/Hapiness_BT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </LinearLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Hapiness_DT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Hapiness_AT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_marginStart="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_7sdp"
+                            android:layout_marginBottom="@dimen/_2sdp"
+                            android:background="@drawable/round_item_per_second"
+                            android:baselineAligned="false"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Irritability"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:background="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <EditText
+                                    android:id="@+id/Irritability_BT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </LinearLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Irritability_DT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Irritability_AT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_marginStart="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_7sdp"
+                            android:layout_marginBottom="@dimen/_2sdp"
+                            android:background="@drawable/round_item_per_second"
+                            android:baselineAligned="false"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Determination"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_9sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:background="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <EditText
+                                    android:id="@+id/Determination_BT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </LinearLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Determination_DT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Determination_AT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_marginStart="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_7sdp"
+                            android:layout_marginBottom="@dimen/_2sdp"
+                            android:background="@drawable/round_item_per_second"
+                            android:baselineAligned="false"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Anxiety"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:background="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <EditText
+                                    android:id="@+id/Anxiety_BT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+
+                            </LinearLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Anxiety_DT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Anxiety_AT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_marginStart="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_7sdp"
+                            android:layout_marginBottom="@dimen/_2sdp"
+                            android:background="@drawable/round_item_per_second"
+                            android:baselineAligned="false"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Tiredness"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:background="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <EditText
+                                    android:id="@+id/Tiredness_BT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </LinearLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Tiredness_DT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Tiredness_AT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:maxLength="1"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_45sdp"
+                            android:layout_marginStart="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_7sdp"
+                            android:layout_marginBottom="@dimen/_2sdp"
+                            android:background="@drawable/round_item_per_second"
+                            android:baselineAligned="false"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Nutrition And Hydration"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:background="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Nutrition_And_Hydration"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_40sdp"
+                            android:layout_marginStart="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_7sdp"
+                            android:layout_marginBottom="@dimen/_7sdp"
+                            android:background="@drawable/round_item_per_second"
+                            android:baselineAligned="false"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:baselineAligned="false">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text="Notes"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:background="@color/white"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:background="@color/white"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <EditText
+                                    android:id="@+id/Notes"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@null"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:gravity="center"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_10sdp" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progres_bar"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

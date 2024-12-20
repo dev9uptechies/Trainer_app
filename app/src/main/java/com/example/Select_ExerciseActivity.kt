@@ -163,16 +163,24 @@ class Select_ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemC
                 if (code == 200) {
                     Log.d("TAG", response.code().toString() + "")
                     val resource: ExcerciseData? = response.body()
-                    val Success: Boolean = resource?.status!!
-                    val Message: String = resource.message!!
+                    val success = resource?.status ?: false
+                    val Message: String = resource?.message!!
                     selectExerciseBinding.progressBar.visibility = View.GONE
 
-                    if (Success == true) {
-                        if (resource.data!!.isNotEmpty()) {
-                            exerciselist = resource.data!!
+                    if (success) {
+                        val data = resource?.data
+                        if (!data.isNullOrEmpty()) {
+                            exerciselist = data
                             initRecycler(exerciselist)
+                        } else {
+                            Toast.makeText(
+                                this@Select_ExerciseActivity,
+                                "No exercise data found",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
+
                 } else if (response.code() == 403) {
                     Utils.setUnAuthDialog(this@Select_ExerciseActivity)
 //                    val message = response.message()

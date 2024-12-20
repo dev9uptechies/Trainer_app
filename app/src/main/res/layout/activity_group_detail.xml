@@ -52,7 +52,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none"
@@ -110,14 +110,14 @@
                             app:layout_constraintTop_toBottomOf="@+id/tv_group_name"/>
 
                         <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView4"
                             android:layout_width="@dimen/_60sdp"
                             android:layout_height="@dimen/_22sdp"
-                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_marginBottom="@dimen/_5sdp"
                             app:cardBackgroundColor="#1AFFFFFF"
                             app:cardCornerRadius="@dimen/_5sdp"
-                            app:layout_constraintStart_toStartOf="@+id/tv_group_name"
-                            android:layout_marginBottom="@dimen/_5sdp"
-                            app:layout_constraintBottom_toBottomOf="@+id/rounded_img">
+                            app:layout_constraintBottom_toBottomOf="@+id/rounded_img"
+                            app:layout_constraintStart_toStartOf="@+id/tv_group_name">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -126,9 +126,20 @@
                                 android:gravity="center"
                                 android:text="Edit Profile"
                                 android:textColor="@color/white"
-                                android:textSize="@dimen/_8sdp"/>
+                                android:textSize="@dimen/_8sdp" />
 
                         </androidx.cardview.widget.CardView>
+
+                        <ImageView
+                            android:id="@+id/delete_group"
+                            android:layout_width="@dimen/_17sdp"
+                            android:layout_height="@dimen/_17sdp"
+                            android:src="@drawable/img_delete"
+                            android:layout_marginEnd="@dimen/_10sdp"
+                            app:layout_constraintBottom_toBottomOf="@+id/cardView4"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/cardView4"
+                            app:tint="@color/red" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
@@ -209,11 +220,60 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/event_rly"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Test List"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_14sdp"/>
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:src="@drawable/ic_plus"/>
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/test_rly"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Athlete List"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_14sdp"/>
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/athelete_rly"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
     </LinearLayout>
 

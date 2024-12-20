@@ -14,11 +14,13 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 
     <application
         android:allowBackup="true"
         android:enableOnBackInvokedCallback="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
@@ -28,6 +30,39 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan"
         tools:targetApi="m">
+        <activity
+            android:name="com.example.trainerappAthlete.ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditGroupActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.AddSelectedActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.SelectDayActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.SelectGroupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RemindMe.ViewRemindMeActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.NewsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notification.NotificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".privacy_policy.PrivacyPolicyActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.ViewAthleteStatusActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.ViewAetleteActivity"
+            android:exported="false" />
         <activity
             android:name=".personal_diary.EditPersonalDiaryDataActivity"
             android:exported="false" />
@@ -102,9 +137,6 @@
             android:exported="false" />
         <activity
             android:name=".competition.CompetitionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".competition.MainHomeActivity"
             android:exported="false" />
         <activity
             android:name=".competition.MainHomeActivity"
@@ -344,6 +376,20 @@
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:label="file_provider"
+            android:permission="android.permission.MANAGE_EXTERNAL_STORAGE"
+            android:readPermission="android.permission.READ_EXTERNAL_STORAGE"
+            android:writePermission="android.permission.WRITE_EXTERNAL_STORAGE">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

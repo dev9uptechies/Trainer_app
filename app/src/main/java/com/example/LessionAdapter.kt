@@ -41,7 +41,9 @@ class LessionAdapter(
         for (i in movie.lesson_goal!!) {
             goal.add(i.goal!!.name!!)
         }
+
         holder.tvgoal.text = "Goal: " + goal.joinToString(", ")
+
         if (movie.is_favourite!! == 1) {
             holder.image.setImageResource(R.drawable.ic_favorite_select)
         } else {

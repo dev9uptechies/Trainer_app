@@ -28,10 +28,10 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_medium"
             android:text="Personal Diary"
             android:textColor="@color/splash_text_color"
-            android:textSize="@dimen/_18sdp"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:textSize="@dimen/_16sdp"
             app:layout_constraintBottom_toBottomOf="@+id/back"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -108,7 +108,7 @@
                                     android:id="@+id/edit_Date"
                                     android:layout_width="@dimen/_17sdp"
                                     android:layout_height="@dimen/_17sdp"
-                                    android:src="@drawable/ic_edit_white"
+                                    android:src="@drawable/img_edit"
                                     app:tint="@android:color/white" />
                             </LinearLayout>
 
@@ -140,7 +140,7 @@
                                     android:id="@+id/edit_Time"
                                     android:layout_width="@dimen/_17sdp"
                                     android:layout_height="@dimen/_17sdp"
-                                    android:src="@drawable/ic_edit_white"
+                                    android:src="@drawable/img_edit"
                                     app:tint="@android:color/white" />
                             </LinearLayout>
                         </LinearLayout>

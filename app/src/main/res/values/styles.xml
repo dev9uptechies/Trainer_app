@@ -115,4 +115,11 @@
     <dimen name="_10sdp">10dp</dimen>
     <dimen name="_12sdp">12dp</dimen>
     <dimen name="_15sdp">15</dimen>
+
+    <style name="DrawerMenuTextAppearance">
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>

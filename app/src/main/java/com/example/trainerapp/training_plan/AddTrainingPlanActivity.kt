@@ -382,10 +382,24 @@ class AddTrainingPlanActivity : AppCompatActivity() {
     }
 
     private fun updateTrainingPlanIndices() {
+        // Define a list of default names
+        val defaultNames = listOf("Pre Season", "Pre Competititve", "Compatitive","Transition")
+
         for (i in trainingPlanLayouts.indices) {
             val layout = trainingPlanLayouts[i]
             val indexTextView: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
-            indexTextView.hint = ""
+
+            // Get the current name from the EditText
+            val currentName = indexTextView.text?.toString()
+
+            // Check if the name is null or empty
+            if (currentName.isNullOrEmpty()) {
+                // Set the corresponding default name, or a fallback if out of range
+                val defaultName = if (i < defaultNames.size) defaultNames[i] else "Default Text"
+                indexTextView.setText(defaultName)
+            }
+
+            // Update the hint with training plan details
             indexTextView.hint = getTrainingPlanDetails(i + 1)
         }
 
@@ -394,6 +408,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             "Updated indices for ${trainingPlanLayouts.size} training plans."
         )
     }
+
 
     private fun getTrainingPlanDetails(planNumber: Int): String {
         return when (planNumber) {
@@ -491,11 +506,10 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
                 val mesocycle = mesocycleValue.toIntOrNull()
 
-                // Check for empty fields
                 if (name.isEmpty() || startdatesentlist.equals(null) || enddatesentlist!!.isEmpty()) {
                     Toast.makeText(
                         this,
-                        "Please fill in all fields for plan ${i + 1}",
+                        "Please fill in all fields",
                         Toast.LENGTH_SHORT
                     ).show()
                     return
@@ -609,10 +623,10 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             val startDate = format.parse(start)
             val endDate = format.parse(end)
             val difference = endDate.time - startDate.time
-            (difference / (1000 * 60 * 60 * 24)).toInt()  // Convert milliseconds to days
+            (difference / (1000 * 60 * 60 * 24)).toInt()
         } catch (e: Exception) {
             Log.e("DateCalculation", "Error calculating days: ${e.message}")
-            0  // Return 0 if there's an error to avoid crashes
+            0
         }
     }
 
@@ -668,6 +682,9 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             val statdateList = startDateEditText.text.toString()
             val enddateList = endDateEditText.text.toString()
 
+            if (nameEditText == null || nameEditText.equals("")){
+
+            }
 
             if (statdateList == "") {
                 layout.findViewById<TextView>(R.id.error_start_date_list).visibility = View.VISIBLE

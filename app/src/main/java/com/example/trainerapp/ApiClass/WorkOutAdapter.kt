@@ -9,12 +9,24 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.OnItemClickListener
 import com.example.trainerapp.R
 import com.example.trainerapp.Sport_list
 import com.example.trainerapp.Work_Out
 
-class WorkOutAdapter(private var splist: ArrayList<Work_Out>, var context: Context) :
-    RecyclerView.Adapter<WorkOutAdapter.MyViewHolder>() {
+
+class WorkOutAdapter(
+    private var splist: ArrayList<Work_Out>,
+    private val context: Context,
+    private val listener: OnItemClickListener.OnItemClickCallback
+) : RecyclerView.Adapter<WorkOutAdapter.MyViewHolder>() {
+
+    private var selectedPosition: Int = 2
+
+    init {
+        // Reverse the list
+        splist.reverse()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -22,12 +34,26 @@ class WorkOutAdapter(private var splist: ArrayList<Work_Out>, var context: Conte
         return MyViewHolder(itemView)
     }
 
-    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val movie = splist[position]
+        val movie = splist[holder.adapterPosition]
         holder.tv_instruction.text = movie.Sport_title
+
+        if (holder.adapterPosition == selectedPosition) {
+            holder.card.setCardBackgroundColor(Color.parseColor("#FF0000")) // Highlight color
+        } else {
+            holder.card.setCardBackgroundColor(Color.parseColor("#1AFFFFFF")) // Default color
+        }
+
         holder.card.setOnClickListener {
-            holder.card.setCardBackgroundColor(Color.parseColor("#FF0000"))
+            val previousPosition = selectedPosition
+            selectedPosition = holder.adapterPosition
+
+            if (previousPosition != RecyclerView.NO_POSITION) {
+                notifyItemChanged(previousPosition)
+            }
+            notifyItemChanged(selectedPosition)
+
+            listener.onItemClicked(it, position, position.toLong(), "click")
         }
     }
 
@@ -36,8 +62,7 @@ class WorkOutAdapter(private var splist: ArrayList<Work_Out>, var context: Conte
     }
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var tv_instruction: TextView = view.findViewById<View>(R.id.tv_instruction) as TextView
-        var card: CardView = view.findViewById<View>(R.id.card) as CardView
+        val tv_instruction: TextView = view.findViewById(R.id.tv_instruction)
+        val card: CardView = view.findViewById(R.id.card)
     }
-
 }

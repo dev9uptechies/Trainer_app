@@ -27,9 +27,4 @@ class OnItemClickListener(
         fun onWorkloadProgressSelected(progress: Int, colorCode: String)
     }
 
-    interface AbilityNameCallback {
-        fun onAbilityNameFetched(abilityId: Int, abilityName: String)
-    }
-
-
 }

@@ -35,6 +35,8 @@ class LoadProgramActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
         GetTestList()
 
+        loadProgramBinding.back.setOnClickListener { finish() }
+
         loadProgramBinding.cardSave.setOnClickListener {
             preferenceManager.setexercisedata(true)
             finish()
@@ -167,7 +169,7 @@ class LoadProgramActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 //        loadProgramBinding.programRly.adapter = adapter
     }
 
-//    private fun initRecyclerView(user: ArrayList<AthleteData.Athlete>) {
+//    private fun initRecyclerView(user: ArrayList<com.example.model.AthleteDataPackage.AthleteData.Athlete>) {
 //        getAthletesBinding.rvAllAthletes.layoutManager = LinearLayoutManager(this)
 //
 //        if (timeIds.size != 0) {

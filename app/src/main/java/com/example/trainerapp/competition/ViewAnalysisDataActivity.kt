@@ -76,6 +76,8 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         //getAnalysisData()
         setDefaultRecycler()
         setData()
+
+        viewAnalysisBinding.back.setOnClickListener(View.OnClickListener { finish() })
     }
 
     private fun setDefaultRecycler() {

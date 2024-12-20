@@ -4,6 +4,14 @@ import com.example.ChateData
 import com.example.GroupChateListData
 import com.example.GroupListData
 import com.example.LessonData
+import com.example.model.AddSelectDayModel
+import com.example.model.AthleteDataPackage.AthleteDatas
+import com.example.model.AthleteDataPackage.AthleteDatass
+import com.example.model.AthleteDataPackage.AthleteDetails
+import com.example.model.AthleteDataPackage.AthltepersonaldiaryModel
+import com.example.model.HomeFragment.NewsModel
+import com.example.model.PrivacyPolicy.privacypolicy
+import com.example.model.SelectedDaysModel
 import com.example.model.base_class.BaseClass
 import com.example.model.base_class.PerformanceBase
 import com.example.model.competition.CompetitionData
@@ -18,6 +26,7 @@ import com.example.model.newClass.delete.DeleteBase
 import com.example.model.newClass.excercise.Exercise
 import com.example.model.newClass.lesson.Lesson
 import com.example.model.newClass.timer.Timer
+import com.example.model.notification.NotificationModel
 import com.example.model.performance_profile.PerformanceProfileData
 import com.example.model.performance_profile.performance.category.PerformanceCategory
 import com.example.model.performance_profile.performance.category.add_cat_response.PerformanceCategoryAdd
@@ -29,7 +38,6 @@ import com.example.model.performance_profile.template.CreateTemplate
 import com.example.model.personal_diary.GetDiaryDataForEdit
 import com.example.model.personal_diary.GetPersonalDiary
 import com.example.model.personal_diary.GetPersonalDiaryData
-import com.example.model.personal_diary.TrainingAssessment
 import com.example.model.personal_diary.TrainingSession
 import com.example.model.trainer_plan.TrainingPlanSubClass
 import com.example.model.training_plan.MicroCycle.AbilityData
@@ -49,6 +57,8 @@ import com.example.trainerapp.TestListData
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -59,6 +69,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.QueryMap
 
@@ -126,18 +137,43 @@ interface APIInterface {
 
     @Multipart
     @POST("group")
-    fun AddGroup(
-        @Part sport_id: MultipartBody.Part,
-        @Part name: MultipartBody.Part,
+    fun addGroup(
+        @Part("sport_id") sportId: RequestBody,
+        @Part("name") name: RequestBody,
         @Part image: MultipartBody.Part,
-        @Part lession_ids: MultipartBody.Part,
-        @Part athlete_ids: MultipartBody.Part,
-        @Part event_ids: MultipartBody.Part,
-        @Part planning_ids: MultipartBody.Part,
-        @Part test_ids: MultipartBody.Part,
-        @Part program_ids: MultipartBody.Part,
-        @Part schedule: MultipartBody.Part
-    ): Call<CycleData>?
+        @Part("lession_ids") lessonIds: RequestBody,
+        @Part("athlete_ids") athleteIds: RequestBody,
+        @Part("event_ids") eventIds: RequestBody,
+        @Part("planning_ids") planningIds: RequestBody,
+        @Part("test_ids") testIds: RequestBody,
+        @Part("program_ids") programIds: RequestBody,
+        @Part("days") days: RequestBody,
+        @Part("timing") timing: RequestBody
+    ): Call<ResponseBody>
+
+    @Multipart
+    @POST("group")
+    fun editGroupWithImage(
+        @Part("_method") method: RequestBody,
+        @Part("id") id: RequestBody,
+        @Part("sport_id") sport_id: RequestBody,
+        @Part("name") name: RequestBody,
+        @Part("lession_ids") lession_ids: RequestBody,
+        @Part("athlete_ids") athlete_ids: RequestBody,
+        @Part("event_ids") event_ids: RequestBody,
+        @Part("planning_ids") planning_ids: RequestBody,
+        @Part("test_ids") test_ids: RequestBody,
+        @Part("program_ids") program_ids: RequestBody,
+        @Part("days") days: RequestBody,
+        @Part("timing") timing: RequestBody,
+        @Part image: MultipartBody.Part?
+    ): Call<Any>
+
+
+
+
+    @DELETE("group")
+    fun DeleteGroup(@Query("id") id: Int?): Call<GroupListData>?
 
     @Multipart
     @POST("favourite/program")
@@ -201,7 +237,7 @@ interface APIInterface {
         @Part id: MultipartBody.Part
     ): Call<RegisterData>?
 
-    @DELETE("favourite/exercise")
+//    @DELETE("favourite/exercise")
     fun DeleteFavourite_Exercise(@Query("id") id: Int?): Call<RegisterData>?
 
     @DELETE("favourite/event")
@@ -299,6 +335,15 @@ interface APIInterface {
     @GET("athlete")
     fun AthleteList(): Call<AthleteDatalist>?
 
+    @POST("athlete/athlete_data/add")
+    fun addAthleteData(@Body addAthleteDataModel: com.example.model.AthleteDataPackage.AthleteData): Call<AthleteDatass>?
+
+    @POST("athlete/athlete_data")
+    fun GetAthleteData(@Query("athlete_id") id: Int): Call<AthleteDatas>
+
+    @POST("athlete/details")
+    fun GetAthleteDetails(@Query("athlete_id") id: Int): Call<AthleteDetails>
+
     @GET("profile")
     fun ProfileData(): Call<RegisterData>?
 
@@ -309,7 +354,15 @@ interface APIInterface {
     @POST("profile")
     fun EditProfile(
         @Field("name") name: String?,
-        @Field("email") email: String?
+        @Field("email") email: String?,
+    ): Call<RegisterData>?
+
+    @Multipart
+    @POST("profile")
+    fun EditProfileAthlete(
+        @Part("name") name: RequestBody?,
+        @Part("email") email: RequestBody?,
+        @Part image: MultipartBody.Part
     ): Call<RegisterData>?
 
 
@@ -688,8 +741,41 @@ interface APIInterface {
     @GET("personal_diary/list")
     fun GetPersonalDiaryListData(): Call<GetPersonalDiary>?
 
+    @POST("personal_diary/share/detail")
+    fun GetPersonalDiaryListShareData(@Query("athlete_id") id: Int): Call<AthltepersonaldiaryModel>?
+
     @GET("personal_diary")
     fun GetPersonalDiaryData(@Query("date") date: String): Call<GetDiaryDataForEdit>?
+
+    //privacy policy
+    @GET("privacy_policy")
+    fun GetPrivacyPolicy(): Call<privacypolicy>?
+
+    //notification
+    @GET("notification")
+    fun GetNewNotification(): Call<NotificationModel>?
+
+
+    //instraction
+    @GET("instruction")
+    fun GetInstraction(): Call<privacypolicy>?
+
+    //news
+    @GET("news")
+    fun GetNews(): Call<NewsModel>?
+
+    //selected Days
+    @POST("select-day")
+    fun GetSelectedDays(
+        @Query("date") date: String?,
+        @Query("group_id") gid: String?
+    ): Call<SelectedDaysModel>?
+
+
+    //Add Selected day
+    @POST("select-day/add")
+    fun AddSelectedDayData(@Body addSelectDayModel: AddSelectDayModel): Call<SelectedDaysModel>?
+
 
 }
 

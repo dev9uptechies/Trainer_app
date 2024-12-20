@@ -51,10 +51,11 @@
             android:layout_width="@dimen/_18sdp"
             android:layout_height="match_parent"
             android:layout_marginEnd="@dimen/_9sdp"
-            android:src="@drawable/ic_edit_white"
+            android:src="@drawable/img_edit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/deletePerformance"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
 
         <ImageView
             android:id="@+id/deletePerformance"

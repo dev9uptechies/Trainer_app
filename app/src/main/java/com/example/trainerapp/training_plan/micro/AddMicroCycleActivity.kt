@@ -123,7 +123,6 @@ class AddMicroCycleActivity : AppCompatActivity() {
         addMicroCycleBinding.cardSave.setOnClickListener { loadData() }
     }
 
-
     private fun loadData() {
         Log.d("Card Type :-", "$cardType")
         when (cardType) {

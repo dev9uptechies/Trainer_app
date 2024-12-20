@@ -74,6 +74,7 @@
                         android:id="@+id/image_upload"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
                         android:visibility="gone" />
 
                     <LinearLayout
@@ -151,6 +152,8 @@
                         android:fontFamily="@font/poppins_medium"
                         android:hint="Enter Sport"
                         android:maxLines="1"
+                        android:focusable="false"
+                        android:clickable="true"
                         android:singleLine="true"
                         android:textColor="#BBBBBB"
                         android:textColorHint="#BBBBBB"
@@ -200,11 +203,20 @@
 
                 </androidx.cardview.widget.CardView>
 
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rly_planning"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    app:layout_constraintTop_toBottomOf="@+id/ly_planning" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    app:layout_constraintTop_toBottomOf="@+id/ly_planning">
+                    app:layout_constraintTop_toBottomOf="@+id/rly_planning">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -219,7 +231,8 @@
                     <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:ignore="MissingConstraints">
+                        tools:ignore="MissingConstraints"
+                        android:scrollbars="none">
 
                         <LinearLayout
                             android:id="@+id/linear_list"
@@ -444,16 +457,16 @@
                         android:id="@+id/mon_add_schedule_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:gravity="end"
+                        android:gravity="center_horizontal"
                         android:orientation="horizontal"
                         android:visibility="gone">
 
                         <ImageView
                             android:layout_width="@dimen/_20sdp"
                             android:layout_height="@dimen/_20sdp"
-                            android:layout_gravity="center"
+                            android:layout_gravity="center_vertical"
                             android:src="@drawable/ic_plus" />
 
                         <TextView
@@ -472,9 +485,9 @@
                         android:id="@+id/tue_add_schedule_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:gravity="end"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="gone">
 
@@ -500,9 +513,9 @@
                         android:id="@+id/wed_add_schedule_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:gravity="end"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="gone">
 
@@ -528,9 +541,9 @@
                         android:id="@+id/thu_add_schedule_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:gravity="end"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="gone">
 
@@ -556,9 +569,9 @@
                         android:id="@+id/fri_add_schedule_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:gravity="end"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="gone">
 
@@ -584,9 +597,9 @@
                         android:id="@+id/sat_add_schedule_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:gravity="end"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="gone">
 
@@ -612,9 +625,9 @@
                         android:id="@+id/sun_add_schedule_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:gravity="end"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="gone">
 
@@ -635,7 +648,6 @@
                             android:textSize="@dimen/_15sdp" />
 
                     </LinearLayout>
-
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/btn_add_lesson"
@@ -678,6 +690,15 @@
 
                     </androidx.cardview.widget.CardView>
 
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rly_lesson"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        app:layout_constraintTop_toBottomOf="@+id/btn_add_lesson" />
+
                     <androidx.cardview.widget.CardView
                         android:id="@+id/btn_add_test"
                         android:layout_width="match_parent"
@@ -718,6 +739,15 @@
                         </LinearLayout>
 
                     </androidx.cardview.widget.CardView>
+
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rly_test"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@+id/btn_add_test" />
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/btn_add_event"
@@ -760,6 +790,16 @@
 
                     </androidx.cardview.widget.CardView>
 
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rly_event"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@+id/btn_add_event" />
+
                     <androidx.cardview.widget.CardView
                         android:id="@+id/btn_add_athlete"
                         android:layout_width="match_parent"
@@ -800,6 +840,15 @@
                         </LinearLayout>
 
                     </androidx.cardview.widget.CardView>
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rly_athlete"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        app:layout_constraintTop_toBottomOf="@+id/ly_planning" />
 
                 </LinearLayout>
 

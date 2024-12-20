@@ -170,25 +170,47 @@
                         android:layout_marginTop="@dimen/_8sdp"
                         android:layout_marginEnd="@dimen/_5sdp">
 
-                        <ImageView
-                            android:id="@+id/image"
+                        <LinearLayout
+                            android:id="@+id/image_lay"
                             android:layout_width="@dimen/_20sdp"
                             android:layout_height="@dimen/_20sdp"
-                            android:layout_alignParentEnd="true"
-                            android:src="@drawable/ic_favorite_red"
-                            tools:ignore="ContentDescription" />
+                            android:layout_alignParentEnd="true">
+
+
+                            <ImageView
+                                android:id="@+id/image"
+                                android:layout_width="@dimen/_20sdp"
+                                android:layout_height="@dimen/_20sdp"
+                                android:src="@drawable/ic_favorite_red"
+                                tools:ignore="ContentDescription" />
+
+
+                            <CheckBox
+                                android:id="@+id/myCheckBox"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:buttonTint="@color/red"
+                                android:visibility="gone"
+                                android:layout_marginBottom="@dimen/_3sdp"
+                                android:layout_marginStart="@dimen/_10sdp"/>
+
+                        </LinearLayout>
+
 
                         <TextView
                             android:id="@+id/tv_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/_2sdp"
-                            android:layout_toStartOf="@+id/image"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:layout_toStartOf="@+id/image_lay"
                             android:fontFamily="@font/poppins_medium"
                             android:paddingStart="@dimen/_10sdp"
                             android:text="Date"
                             android:textColor="#BBBBBB"
                             android:textSize="@dimen/_14sdp" />
+
+
 
                     </RelativeLayout>
 

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_margin="@dimen/_5sdp"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        app:cardBackgroundColor="#1A929492"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_height="@dimen/_70sdp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/click"
+            android:layout_width="match_parent"
+            android:padding="@dimen/_5sdp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_program_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="-"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13sdp"
+                android:fontFamily="@font/poppins_semi_bold"/>
+
+            <TextView
+                android:id="@+id/edt_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:text="Invaild Date "
+                android:textColor="@color/dark_text"
+                android:textSize="@dimen/_11sdp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/image"
+                app:layout_constraintEnd_toStartOf="@+id/image"
+                app:layout_constraintTop_toTopOf="@+id/image" />
+
+
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_30sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:visibility="visible"
+                android:src="@drawable/ic_favorite_red"/>
+
+            <TextView
+                android:id="@+id/Unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:text="Unit: "
+                android:textColor="@color/dark_text"
+                android:textSize="@dimen/_11sdp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@+id/edt_date"
+                app:layout_constraintTop_toTopOf="@+id/tv_edit_Unit" />
+
+            <TextView
+                android:id="@+id/tv_edit_Unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:text=""
+                android:textColor="@color/dark_text"
+                android:textSize="@dimen/_11sdp"
+                android:visibility="gone"
+                app:layout_constraintStart_toEndOf="@+id/Unit"
+                app:layout_constraintTop_toBottomOf="@+id/edt_date"
+                tools:layout_editor_absoluteX="261dp" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                app:layout_constraintTop_toBottomOf="@+id/tv_program_name"
+                tools:ignore="MissingConstraints"
+                tools:layout_editor_absoluteX="7dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/goal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_semi_bold"
+                        android:text="Goal: "
+                        android:textColor="@color/dark_text"
+                        android:textSize="@dimen/_11sdp"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_program_name" />
+
+
+                    <TextView
+                        android:id="@+id/tv_edt_goal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:fontFamily="@font/poppins_semi_bold"
+                        android:text=""
+                        android:textColor="@color/dark_text"
+                        android:textSize="@dimen/_11sdp"
+                        android:visibility="visible"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_program_name" />
+
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
+                tools:layout_editor_absoluteX="7dp">
+
+                <TextView
+                    android:id="@+id/total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="Total Time: "
+                    android:textColor="@color/dark_text"
+                    android:textSize="@dimen/_11sdp"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_program_name" />
+
+                <TextView
+                    android:id="@+id/tv_edit_total_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="31 April, 2021"
+                    android:textColor="@color/dark_text"
+                    android:textSize="@dimen/_11sdp"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_program_name" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

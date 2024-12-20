@@ -453,9 +453,6 @@ class EditMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                 removeTrainingPlan(newTrainingPlanLayout, mesocycle!!.id!!)
             }
 
-
-
-
             val gradientDrawable = GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
                 intArrayOf(
@@ -472,8 +469,6 @@ class EditMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
             seekBar.progressDrawable = gradientDrawable
             seekBar.isEnabled = false
-
-
 
             if (mesocycle != null) {
                 val startDateMillis = formatDateToMillis2(mesocycle.startDate)
@@ -1501,7 +1496,6 @@ class EditMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                         if (!abilityDataList.isNullOrEmpty()) {
                             splist.clear()
                             splist.addAll(abilityDataList)
-
 
                             Log.d("success", "${splist}")
 

@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_8sdp"
             android:layout_marginTop="@dimen/_30sdp"
-            android:buttonTint="@color/splash_text_color"
+            android:buttonTint="@color/red"
             android:gravity="center_vertical"
             android:paddingHorizontal="@dimen/_5sdp"
             android:paddingTop="@dimen/_3sdp"

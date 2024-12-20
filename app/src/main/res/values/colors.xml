@@ -22,5 +22,9 @@
     <color name="card_background">#1A929492</color>
     <color name="yellow">#FBC152</color>
     <color name="gray">#616161</color>
+    <color name="unselect_card_color">#1A929492</color>
+
+
+
 
 </resources>

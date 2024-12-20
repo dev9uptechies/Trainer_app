@@ -107,10 +107,9 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
         initView()
         ButtonClick()
 
-        if (athleteId.toString() != "null" || athleteId.toString() != "") {
+        if (athleteId != null && athleteId.toString().isNotEmpty() && athleteId.toString() != "null") {
             loadPerformance(athleteId.toInt())
         }
-
 
     }
 

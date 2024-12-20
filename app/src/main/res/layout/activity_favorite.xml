@@ -224,6 +224,7 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_marginStart="@dimen/_10sdp"/>
 
+
             </LinearLayout>
 
         </LinearLayout>
@@ -231,6 +232,19 @@
         </ScrollView>
 
     </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/tv_nodata"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:fontFamily="@font/poppins_medium"
+        android:gravity="center"
+        android:text="No Data Found"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
 
     <ProgressBar
         android:layout_width="@dimen/_50sdp"
@@ -241,5 +255,6 @@
         android:layout_height="@dimen/_50sdp"
         android:visibility="gone"
         android:id="@+id/favorite_progress"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

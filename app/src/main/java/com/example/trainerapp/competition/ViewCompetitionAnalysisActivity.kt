@@ -181,6 +181,8 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                 saveCompetitionData(dataList)
             }
         }
+
+        viewCompetitionAnalysisBinding.back.setOnClickListener { finish() }
     }
 
     private fun saveCompetitionData(data: MutableList<RatingData>) {

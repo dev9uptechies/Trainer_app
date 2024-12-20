@@ -117,6 +117,7 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
+                        loadData()
                         Log.d("Get Profile Data ", "${response.body()}")
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@CreateExerciseActivity)
@@ -152,6 +153,7 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
     }
 
     private fun getTimerData() {
+        try {
         timerData = mutableListOf()
         apiInterface.GetTimerData().enqueue(
             object : Callback<Timer> {
@@ -159,13 +161,22 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                     val code = response.code()
                     if (code == 200) {
                         if (response.isSuccessful) {
-                            val data = response.body()!!.data
-                            if (data!!.isNotEmpty()) {
-                                timerData.addAll(data.toMutableList())
-                                for (i in timerData) {
-                                    timer.add(i.name!!)
+                            if (response.body() != null) {
+                                val data = response.body()!!.data
+                                if (!data.isNullOrEmpty()) { // Safe check for null and empty
+                                    timerData.addAll(data.toMutableList())
+                                    for (i in timerData) {
+                                        timer.add(i.name ?: "") // Handle potential nulls in `name`
+                                    }
                                 }
+                            } else {
+                                Toast.makeText(
+                                    this@CreateExerciseActivity,
+                                    "Response body is null",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
+
                         }
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@CreateExerciseActivity)
@@ -184,9 +195,15 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                 }
             }
         )
+        }catch (e:Exception){
+            Toast.makeText(this, e.message.toString(), Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     private fun getCategoryData() {
+        try {
+
         categoryData = mutableListOf()
         apiInterface.GetCategoriesData()?.enqueue(object : Callback<TestListData> {
             override fun onResponse(call: Call<TestListData>, response: Response<TestListData>) {
@@ -218,9 +235,14 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             }
 
         })
+        }catch (e:Exception){
+            Toast.makeText(this, e.message.toString(), Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     private fun getGoalData() {
+        try {
         goalData = mutableListOf()
         apiInterface.GetGoal()?.enqueue(object : Callback<TestListData> {
             override fun onResponse(call: Call<TestListData>, response: Response<TestListData>) {
@@ -251,6 +273,10 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             }
 
         })
+        }catch (e:Exception){
+            Toast.makeText(this, e.message.toString(), Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     fun bitmapToFile(bitmap: Bitmap, context: Context): File {
@@ -276,13 +302,7 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
         //createExerciseBinding.youtubePlayerView.initialize()
 
-
-        getGoalData()
-        getTimerData()
-        getCategoryData()
-        getTypeData()
-        getSection()
-        GetEquipment()
+        loadData()
 
 //        createExerciseBinding.videoUpload.setOnClickListener {
 //            createExerciseBinding.videoUpload.start()
@@ -497,6 +517,15 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                 override fun afterTextChanged(s: Editable?) {}
             }
         )
+    }
+
+    private fun loadData(){
+        getGoalData()
+        getTimerData()
+        getCategoryData()
+        getTypeData()
+        getSection()
+        GetEquipment()
     }
 
     private fun areAllFieldsFilled(): Boolean {

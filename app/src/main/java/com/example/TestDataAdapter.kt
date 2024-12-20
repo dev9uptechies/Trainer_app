@@ -36,6 +36,7 @@ class TestDataAdapter(
 
 
     override fun onBindViewHolder(holder: TestDataAdapter.MyViewHolder, position: Int) {
+
         holder.time1.visibility = View.GONE
         val movie = splist!![position]
         apiClient = APIClient(context)
@@ -49,13 +50,14 @@ class TestDataAdapter(
         holder.tvtime.text = convertDate(movie.date!!)
         holder.img_edit.setOnClickListener {
             holder.swipe.close(true)
-            listener.onItemClicked(it, position, movie.id!!.toLong(), "Edit")
+            listener.onItemClicked(it, position, movie.id!!.toLong(), "EditTest")
         }
 
         holder.img_delete.setOnClickListener {
             holder.swipe.close(true)
-            listener.onItemClicked(it, position, movie.id!!.toLong(), "Delete")
+            listener.onItemClicked(it, position, movie.id!!.toLong(), "DeleteTest")
         }
+
 //        holder.img_edit.setOnClickListener(
 //            OnItemClickListener(
 //                position,
@@ -72,6 +74,7 @@ class TestDataAdapter(
 //                "Delete"
 //            )
 //        )
+
         if (movie.is_favourite!!.equals(1)) {
             holder.image.setImageResource(R.drawable.ic_favorite_select)
 

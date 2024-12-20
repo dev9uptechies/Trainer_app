@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="@id/ivAthlete"
         app:layout_constraintBottom_toBottomOf="@id/ivAthlete"
         app:layout_constraintStart_toStartOf="parent"
-        android:buttonTint="@color/splash_text_color"
+        android:buttonTint="@color/red"
         android:id="@+id/cbAthleteName"/>
 
     <com.google.android.material.imageview.ShapeableImageView

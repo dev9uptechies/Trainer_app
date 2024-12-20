@@ -117,6 +117,9 @@ class TestListData {
         @SerializedName("ref_code")
         var ref_code: String? = null
 
+        @SerializedName("ref_user_id")
+        var ref_user_id: String? = null
+
         @SerializedName("is_login")
         var is_login: String? = null
 

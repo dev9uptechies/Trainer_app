@@ -31,6 +31,7 @@
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
+                android:id="@+id/tv_credit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semi_bold"
@@ -45,12 +46,44 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@id/recycler"
             android:layout_width="match_parent"
             android:layout_marginStart="@dimen/_10sdp"
-            tools:listitem="@layout/exercise_data_item"
+            tools:listitem="@layout/item_list_selected_day"
             android:layout_marginEnd="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_20sdp"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_save"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_margin="@dimen/_10sdp"
+        app:cardBackgroundColor="@color/splash_text_color"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Save"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_15sdp" />
+
+
+    </androidx.cardview.widget.CardView>
+
+    <ProgressBar
+        android:id="@+id/progres_bar"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
