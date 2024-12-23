@@ -13,6 +13,7 @@ import com.example.Adapter.selected_day.testAdapter
 import com.example.AddSelectedActivity
 import com.example.OnItemClickListener
 import com.example.model.SelectedDaysModel
+import com.example.model.personal_diary.GetDiaryDataForEdit
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
@@ -97,6 +98,7 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         ButtonCLick()
         loadData()
+        getPersonalDiaryData(date.toString())
 
     }
 
@@ -200,6 +202,171 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             Log.e("Catch", "CatchError :- ${e.message}")
         }
     }
+
+    private fun getPersonalDiaryData(date: String) {
+        try {
+            apiInterface.GetPersonalDiaryData(date)?.enqueue(object : Callback<GetDiaryDataForEdit> {
+                override fun onResponse(
+                    call: Call<GetDiaryDataForEdit>,
+                    response: Response<GetDiaryDataForEdit>
+                ) {
+                    Log.d("TAG", "Response code: ${response.code()}")
+
+                    when (response.code()) {
+                        200 -> {
+                            // Check if the response is successful and the body is not null
+                            response.body()?.let { responseBody ->
+                                val diaryData = responseBody.data
+
+                                if (diaryData != null) {
+                                    Log.d("DATA", "Date: ${diaryData.date}")
+
+                                    // Access the personal_dairie_detaile list
+                                    val personalDiaryDetails = diaryData.personalDiaryDetails
+                                    personalDiaryDetails?.forEach { detail ->
+                                        Log.d(
+                                            "DETAIL",
+                                            "Assess Level: ${detail.assessYourLevelOf}, " +
+                                                    "Before: ${detail.beforeTraining}, " +
+                                                    "During: ${detail.duringTraining}, " +
+                                                    "After: ${detail.afterTraining}"
+                                        )
+                                    }
+
+                                    // Pass the data to a method to update the UI
+                                    SetData(diaryData)
+                                } else {
+                                    Log.e("ERROR", "Data is null")
+                                    Toast.makeText(
+                                        this@SelectDayActivity,
+                                        "No diary data available",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } ?: run {
+                                Log.e("ERROR", "Response body is null")
+                                Toast.makeText(
+                                    this@SelectDayActivity,
+                                    "Failed to retrieve data",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                        403 -> {
+                            Utils.setUnAuthDialog(this@SelectDayActivity)
+                        }
+                        else -> {
+                            Log.e("ERROR", "Error: ${response.message()}")
+                            Toast.makeText(
+                                this@SelectDayActivity,
+                                "Error: ${response.message()}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<GetDiaryDataForEdit>, t: Throwable) {
+                    Log.e("Error", "Network Error: ${t.message}")
+                    Toast.makeText(
+                        this@SelectDayActivity,
+                        "Network error: ${t.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+        } catch (e: Exception) {
+            Log.e("error", "Exception: ${e.message}")
+            Toast.makeText(
+                this@SelectDayActivity,
+                "Unexpected error: ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun SetData(data: GetDiaryDataForEdit.Data) {
+        // Set basic details
+//        binding.dateTextView.text = data.date ?: ""
+//        binding.sleepHoursTextView.text = data.sleepHours ?: ""
+        binding.NutritionAndHydration.setText(data.nutritionAndHydration ?: "")
+        binding.Notes.setText(data.notes ?: "")
+
+        // Check if personalDiaryDetails is empty or null
+        if (data.personalDiaryDetails.isNullOrEmpty() || data.personalDiaryDetails.equals("0")) {
+            // Set all values to empty string if no details available
+            binding.EnergyBT.setText("")
+            binding.EnergyDT.setText("")
+            binding.EnergyAT.setText("")
+
+            binding.SatisfationBT.setText("")
+            binding.SatisfationDT.setText("")
+            binding.SatisfationAT.setText("")
+
+            binding.HapinessBT.setText("")
+            binding.HapinessDT.setText("")
+            binding.HapinessAT.setText("")
+
+            binding.IrritabilityBT.setText("")
+            binding.IrritabilityDT.setText("")
+            binding.IrritabilityAT.setText("")
+
+            binding.DeterminationBT.setText("")
+            binding.DeterminationDT.setText("")
+            binding.DeterminationAT.setText("")
+
+            binding.AnxietyBT.setText("")
+            binding.AnxietyDT.setText("")
+            binding.AnxietyAT.setText("")
+
+            binding.TirednessBT.setText("")
+            binding.TirednessDT.setText("")
+            binding.TirednessAT.setText("")
+        } else {
+            // Iterate through personal diary details list and set each value as needed
+            data.personalDiaryDetails.forEach { detail ->
+                when (detail.assessYourLevelOf) {
+                    "Energy" -> {
+                        binding.EnergyBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                        binding.EnergyDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                        binding.EnergyAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                    }
+                    "Satisfaction" -> {
+                        binding.SatisfationBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                        binding.SatisfationDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                        binding.SatisfationAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                    }
+                    "Happiness" -> {
+                        binding.HapinessBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                        binding.HapinessDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                        binding.HapinessAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                    }
+                    "Irritability" -> {
+                        binding.IrritabilityBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                        binding.IrritabilityDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                        binding.IrritabilityAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                    }
+                    "Determination" -> {
+                        binding.DeterminationBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                        binding.DeterminationDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                        binding.DeterminationAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                    }
+                    "Anxiety" -> {
+                        binding.AnxietyBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                        binding.AnxietyDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                        binding.AnxietyAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                    }
+                    "Tiredness" -> {
+                        binding.TirednessBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                        binding.TirednessDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                        binding.TirednessAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                    }
+                }
+            }
+        }
+    }
+
 
     private fun initLessonRecyclerView(programs: List<SelectedDaysModel.Lesson>) {
         binding.favLessonRly.layoutManager = LinearLayoutManager(this)

@@ -16,6 +16,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.Adapter.groups.GetTestListAdapterGroup
+import com.example.Adapter.groups.SetTestInGroup
+import com.example.OnItemClickListener
+import com.example.TestDataAdapter
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
@@ -24,6 +29,8 @@ import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.ShowSportAdaper
 import com.example.trainerapp.Sport_list
+import com.example.trainerapp.TestListData
+import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.FragmentHomeBinding
 import com.example.trainerapp.databinding.FragmentProfileBinding
 import com.makeramen.roundedimageview.RoundedTransformationBuilder
@@ -37,7 +44,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
 
     lateinit var binding: FragmentProfileBinding
 
@@ -47,6 +54,8 @@ class ProfileFragment : Fragment() {
     private lateinit var Container: LinearLayout
     private lateinit var Sportlist: java.util.ArrayList<Sport_list>
     private var selectedImageUri: Uri? = null
+    lateinit var adapterTest: SetTestInGroup
+
 
 
     override fun onCreateView(
@@ -59,7 +68,7 @@ class ProfileFragment : Fragment() {
         GetProfile()
         checkBoxManage()
         buttonClick()
-
+        GetTestList()
 
         return binding.root
     }
@@ -304,4 +313,66 @@ class ProfileFragment : Fragment() {
                 }
             })
     }
+
+    private fun GetTestList() {
+        try {
+
+            binding.progressBar.visibility = View.VISIBLE
+            apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
+                override fun onResponse(
+                    call: Call<TestListData?>,
+                    response: Response<TestListData?>
+                ) {
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: TestListData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success == true) {
+                            try {
+                                if (resource.data!! != null) {
+                                    initrecyclerTest(resource.data)
+                                } else {
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        } else {
+                            binding.progressBar.visibility = View.GONE
+                        }
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(requireContext())
+
+                    } else {
+                        val message = response.message()
+                        Log.d("ERRROR", "onResponse: $message")
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<TestListData?>, t: Throwable) {
+                    binding.progressBar.visibility = View.GONE
+                    Log.d("ERRROR", "onFailure: ${t.message}")
+                    call.cancel()
+                }
+            })
+
+        } catch (e: Exception) {
+            Log.d("ERROR", "GetTestList Catch: ${e.message.toString()}")
+        }
+
+    }
+
+    private fun initrecyclerTest(testdatalist: ArrayList<TestListData.testData>?) {
+        binding.progressBar.visibility = View.GONE
+        binding.rcvtest.layoutManager = LinearLayoutManager(requireContext())
+        adapterTest = SetTestInGroup(testdatalist, requireContext(), this)
+        binding.rcvtest.adapter = adapterTest
+    }
+
+    override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
+        TODO("Not yet implemented")
+    }
+
 }

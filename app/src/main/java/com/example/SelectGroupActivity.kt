@@ -25,7 +25,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SelectGroupActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCallback {
+class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
 
     private lateinit var binding: ActivitySelectGroupBinding
 
@@ -33,11 +33,11 @@ class SelectGroupActivity : AppCompatActivity(),OnItemClickListener.OnItemClickC
     lateinit var preferenceManager: PreferencesManager
     lateinit var apiClient: APIClient
     lateinit var groupadapter: selectGroupAdapter
-    var selectedGroupId:String = ""
+    var selectedGroupId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         binding = ActivitySelectGroupBinding.inflate(layoutInflater)
+        binding = ActivitySelectGroupBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initView()
         BUttonClick()
@@ -54,14 +54,24 @@ class SelectGroupActivity : AppCompatActivity(),OnItemClickListener.OnItemClickC
         binding.back.setOnClickListener { finish() }
 
         binding.cardSave.setOnClickListener {
-            selectedGroupId = groupadapter.getSelectedGroupId().toString()
-            Log.d("SelectedGroup", "Selected Group ID: $selectedGroupId")
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.putExtra("idddd", selectedGroupId)
-            startActivity(intent)
-            finish()
+            try {
+                val selectedGroupId = groupadapter.getSelectedGroupId()
 
+                if (selectedGroupId == null) {
+                    Toast.makeText(this, "Please select a group", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                Log.d("SelectedGroup", "Selected Group ID: $selectedGroupId")
+                val intent = Intent(this, HomeActivity::class.java)
+                intent.putExtra("idddd", selectedGroupId.toString())
+                startActivity(intent)
+                finish()
+            } catch (e: Exception) {
+                Log.d("GHHGHGH", "BUttonClick: ${e.message.toString()}")
+            }
         }
+
     }
 
     private fun callGroupApi() {
@@ -83,7 +93,8 @@ class SelectGroupActivity : AppCompatActivity(),OnItemClickListener.OnItemClickC
                         initrecycler(resource.data!!)
                     } else {
                         binding.groupProgress.visibility = View.GONE
-                        Toast.makeText(this@SelectGroupActivity, "" + Message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@SelectGroupActivity, "" + Message, Toast.LENGTH_SHORT)
+                            .show()
                     }
                 } else if (response.code() == 403) {
                     binding.groupProgress.visibility = View.GONE

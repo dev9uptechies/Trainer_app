@@ -84,16 +84,26 @@ class SelectTemplateActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                 response: Response<PerformanceProfileData>
             ) {
                 selectTemplateBinding.ProgressBar.visibility = View.GONE
-                Log.d("TAG", response.code().toString() + "")
+                Log.d("TAG", response.code().toString())
                 val code = response.code()
                 if (code == 200) {
                     if (response.isSuccessful && response.body() != null) {
                         Log.d("Get Profile Data ", "${response.body()}")
                         val data = response.body()!!.data
-                        for (i in data!!) {
-                            performanceData.add(i)
+                        if (data != null) { // Check if data is not null
+                            for (i in data) {
+                                performanceData.add(i)
+                            }
+                            setProfileTemplateRecycler()
+                        } else {
+                            // Handle the case where 'data' is null
+                            Log.e("getTemplatesData", "Data is null.")
+                            Toast.makeText(
+                                this@SelectTemplateActivity,
+                                "No data available.",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                        setProfileTemplateRecycler()
                     }
                 } else if (code == 403) {
                     Utils.setUnAuthDialog(this@SelectTemplateActivity)
@@ -113,8 +123,7 @@ class SelectTemplateActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                     this@SelectTemplateActivity,
                     "" + t.message,
                     Toast.LENGTH_SHORT
-                )
-                    .show()
+                ).show()
                 call.cancel()
             }
 

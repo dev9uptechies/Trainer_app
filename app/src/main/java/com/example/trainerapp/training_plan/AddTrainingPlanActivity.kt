@@ -381,7 +381,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             }
         }
 
-
         startdatecard.setOnClickListener {
             val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
             activeLayoutIndex = layoutIndex
@@ -396,12 +395,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                 val maxDateMillis = formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
 
                 showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis, layoutIndex) { start, end ->
-
-                    val sharedPreferences = getSharedPreferences("mysharedprefs", Context.MODE_PRIVATE)
-                    val editor = sharedPreferences.edit()
-                    editor.putBoolean("isFromStartDate", true)
-                    editor.apply()
-
 
                     startDateMillis = start
                     endDateMillis = end
@@ -509,26 +502,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         }
 
     }
-
-    private fun isDateOverlapping(start: Long?, end: Long?): Boolean {
-        for ((existingStart, existingEnd) in selectedDateRanges) {
-            if (start != null && end != null) {
-                if (start < existingEnd && end > existingStart) {
-                    return true
-                }
-            } else if (start != null) {
-                if (start in existingStart..existingEnd) {
-                    return true
-                }
-            } else if (end != null) {
-                if (end in existingStart..existingEnd) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
 
     private fun updateTrainingPlanIndices() {
         hyy = true
@@ -651,17 +624,31 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             }
 
             calendarView.state().edit()
-                .setMinimumDate(CalendarDay.from(minCalendar))  // Use Calendar instance
-                .setMaximumDate(CalendarDay.from(maxCalendar))  // Use Calendar instance
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
 
-            // Temporarily disable ranges except for the active layout
+
             calendarView.addDecorator(object : DayViewDecorator {
                 override fun shouldDecorate(day: CalendarDay?): Boolean {
                     return day?.let {
                         val dateInMillis = it.calendar.timeInMillis
-                        // Skip disabling if editing the current layout
+                        // Disable the dates outside the min/max range
+                        dateInMillis < minDateMillis || dateInMillis > maxDateMillis
+                    } ?: false
+                }
+
+                override fun decorate(view: DayViewFacade?) {
+                    view?.addSpan(ForegroundColorSpan(Color.GRAY))  // Disabled color
+                    view?.setDaysDisabled(true)
+                }
+            })
+
+
+
+            calendarView.addDecorator(object : DayViewDecorator {
+                override fun shouldDecorate(day: CalendarDay?): Boolean {
+                    return day?.let {
+                        val dateInMillis = it.calendar.timeInMillis
                         selectedDateRanges.forEachIndexed { index, range ->
                             if (layoutIndex != index && dateInMillis in range.first..range.second) {
                                 return true
@@ -673,9 +660,8 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
                 override fun decorate(view: DayViewFacade?) {
                     view?.addSpan(ForegroundColorSpan(Color.GRAY))
-                    view?.setDaysDisabled(true)
                     view?.areDaysDisabled()
-
+                    view?.setDaysDisabled(true)
                 }
             })
 

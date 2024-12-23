@@ -29,6 +29,7 @@
     import com.example.SelectGroupActivity
     import com.example.model.HomeFragment.NewsModel
     import com.example.model.PrivacyPolicy.privacypolicy
+    import com.example.model.personal_diary.GetDiaryDataForEdit
     import com.example.trainerapp.ApiClass.APIClient
     import com.example.trainerapp.ApiClass.APIInterface
     import com.example.trainerapp.ApiClass.RegisterData
@@ -85,6 +86,7 @@
         private var receivedIds: String = ""
         var formattedDate:String?= null
 
+
         private val sharedPreferences by lazy {
             requireContext().getSharedPreferences("RemindMePrefs", MODE_PRIVATE)
         }
@@ -100,8 +102,6 @@
         private val titleFormatter = DateTimeFormatter.ofPattern("MMM yyyy")
 
         @RequiresApi(Build.VERSION_CODES.O)
-
-
         override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -120,15 +120,21 @@
             setUpCalendar()
 
 
+
             val userType = preferenceManager.GetFlage()
+
 
             if (userType == "Athlete") {
                 homeFragmentBinding.navigationView.menu.findItem(R.id.tv_library).isVisible = false
                 homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = false
+
+
             } else {
                 homeFragmentBinding.navigationView.menu.findItem(R.id.tv_library).isVisible = true
                 homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = true
             }
+
+
             val receivedIdInt = receivedIds.toIntOrNull()
             if (receivedIdInt != null) {
                 callGroupApi(receivedIdInt)
@@ -257,32 +263,40 @@
                         }
                     }
 
-                    // Handle the click event for the day
                     container.view.setOnClickListener {
                         if (day.owner == DayOwner.THIS_MONTH) {
                             selectDate(day.date)
                             formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-                            // Check if the receivedId is valid before proceeding
                             val receivedIdInt = receivedIds.toIntOrNull()
 
                             Log.e("DJDJDJDJDJJDJDJDJ", "bind: $receivedIdInt")
 
-                            if (receivedIdInt != null && receivedIdInt != 0) {
-                                val intent = Intent(requireContext(), SelectDayActivity::class.java).apply {
-                                    putExtra("id", receivedIdInt)
-                                    putExtra("date", formattedDate) // Send the formatted date
+                            val userType = preferenceManager.GetFlage()
+
+                            if (userType == "Athlete") {
+                                homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+
+                                Log.d("FORMATTEDDATE", "bind: ${formattedDate.toString()}")
+
+                                getPersonalDiaryData(formattedDate.toString())
+                            }else{
+                                if (receivedIdInt != null && receivedIdInt != 0) {
+                                    val intent = Intent(requireContext(), SelectDayActivity::class.java).apply {
+                                        putExtra("id", receivedIdInt)
+                                        putExtra("date", formattedDate)
+                                    }
+                                    context!!.startActivity(intent)
+                                } else {
+                                    Toast.makeText(requireContext(), "Please Select Group First", Toast.LENGTH_SHORT).show()
                                 }
-                                context!!.startActivity(intent)
-                            } else {
-                                Toast.makeText(requireContext(), "Please Select Group First", Toast.LENGTH_SHORT).show()
                             }
+
                         }
                     }
                 }
             }
 
-            // Handle month scroll listener to show month with short day names (Mon, Tue, Wed, etc.)
             homeFragmentBinding.exSevenCalendar!!.monthScrollListener = {
                 if (it.year == today.year) {
                     titleSameYearFormatter.format(it.yearMonth)
@@ -311,9 +325,6 @@
                 }
             }
         }
-
-
-
 
         @RequiresApi(Build.VERSION_CODES.O)
         private fun selectDate(date: LocalDate) {
@@ -600,6 +611,174 @@
 
             homeFragmentBinding.descriptionPp.text = descriptionPlainText
         }
+
+
+
+        private fun getPersonalDiaryData(date: String) {
+            try {
+                apiInterface.GetPersonalDiaryData(date)?.enqueue(object : Callback<GetDiaryDataForEdit> {
+                    override fun onResponse(
+                        call: Call<GetDiaryDataForEdit>,
+                        response: Response<GetDiaryDataForEdit>
+                    ) {
+                        Log.d("TAG", "Response code: ${response.code()}")
+
+                        when (response.code()) {
+                            200 -> {
+                                // Check if the response is successful and the body is not null
+                                response.body()?.let { responseBody ->
+                                    val diaryData = responseBody.data
+
+                                    if (diaryData != null) {
+                                        Log.d("DATA", "Date: ${diaryData.date}")
+
+                                        // Access the personal_dairie_detaile list
+                                        val personalDiaryDetails = diaryData.personalDiaryDetails
+                                        personalDiaryDetails?.forEach { detail ->
+                                            Log.d(
+                                                "DETAIL",
+                                                "Assess Level: ${detail.assessYourLevelOf}, " +
+                                                        "Before: ${detail.beforeTraining}, " +
+                                                        "During: ${detail.duringTraining}, " +
+                                                        "After: ${detail.afterTraining}"
+                                            )
+                                        }
+
+                                        // Pass the data to a method to update the UI
+                                        SetData(diaryData)
+                                    } else {
+                                        Log.e("ERROR", "Data is null")
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "No diary data available",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                } ?: run {
+                                    Log.e("ERROR", "Response body is null")
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Failed to retrieve data",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                            403 -> {
+                                Utils.setUnAuthDialog(requireContext())
+                            }
+                            else -> {
+                                Log.e("ERROR", "Error: ${response.message()}")
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Error: ${response.message()}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                call.cancel()
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<GetDiaryDataForEdit>, t: Throwable) {
+                        Log.e("Error", "Network Error: ${t.message}")
+                        Toast.makeText(
+                            requireContext(),
+                            "Network error: ${t.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+            } catch (e: Exception) {
+                Log.e("error", "Exception: ${e.message}")
+                Toast.makeText(
+                    requireContext(),
+                    "Unexpected error: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        private fun SetData(data: GetDiaryDataForEdit.Data) {
+            // Set basic details
+//        binding.dateTextView.text = data.date ?: ""
+//        binding.sleepHoursTextView.text = data.sleepHours ?: ""
+            homeFragmentBinding.NutritionAndHydration.setText(data.nutritionAndHydration ?: "")
+            homeFragmentBinding.Notes.setText(data.notes ?: "")
+
+            // Check if personalDiaryDetails is empty or null
+            if (data.personalDiaryDetails.isNullOrEmpty() || data.personalDiaryDetails.equals("0")) {
+                // Set all values to empty string if no details available
+                homeFragmentBinding.EnergyBT.setText("")
+                homeFragmentBinding.EnergyDT.setText("")
+                homeFragmentBinding.EnergyAT.setText("")
+
+                homeFragmentBinding.SatisfationBT.setText("")
+                homeFragmentBinding.SatisfationDT.setText("")
+                homeFragmentBinding.SatisfationAT.setText("")
+
+                homeFragmentBinding.HapinessBT.setText("")
+                homeFragmentBinding.HapinessDT.setText("")
+                homeFragmentBinding.HapinessAT.setText("")
+
+                homeFragmentBinding.IrritabilityBT.setText("")
+                homeFragmentBinding.IrritabilityDT.setText("")
+                homeFragmentBinding.IrritabilityAT.setText("")
+
+                homeFragmentBinding.DeterminationBT.setText("")
+                homeFragmentBinding.DeterminationDT.setText("")
+                homeFragmentBinding.DeterminationAT.setText("")
+
+                homeFragmentBinding.AnxietyBT.setText("")
+                homeFragmentBinding.AnxietyDT.setText("")
+                homeFragmentBinding.AnxietyAT.setText("")
+
+                homeFragmentBinding.TirednessBT.setText("")
+                homeFragmentBinding.TirednessDT.setText("")
+                homeFragmentBinding.TirednessAT.setText("")
+            } else {
+                // Iterate through personal diary details list and set each value as needed
+                data.personalDiaryDetails.forEach { detail ->
+                    when (detail.assessYourLevelOf) {
+                        "Energy" -> {
+                            homeFragmentBinding.EnergyBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.EnergyDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.EnergyAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                        }
+                        "Satisfaction" -> {
+                            homeFragmentBinding.SatisfationBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.SatisfationDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.SatisfationAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                        }
+                        "Happiness" -> {
+                            homeFragmentBinding.HapinessBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.HapinessDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.HapinessAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                        }
+                        "Irritability" -> {
+                            homeFragmentBinding.IrritabilityBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.IrritabilityDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.IrritabilityAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                        }
+                        "Determination" -> {
+                            homeFragmentBinding.DeterminationBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.DeterminationDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.DeterminationAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                        }
+                        "Anxiety" -> {
+                            homeFragmentBinding.AnxietyBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.AnxietyDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.AnxietyAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                        }
+                        "Tiredness" -> {
+                            homeFragmentBinding.TirednessBT.setText(detail.beforeTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.TirednessDT.setText(detail.duringTraining ?: "") // Use setText for EditText
+                            homeFragmentBinding.TirednessAT.setText(detail.afterTraining ?: "") // Use setText for EditText
+                        }
+                    }
+                }
+            }
+        }
+
+
 
         override fun onNavigationItemSelected(item: MenuItem): Boolean {
             if (item.itemId == R.id.tv_notification) {

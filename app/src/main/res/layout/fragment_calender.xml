@@ -264,5 +264,4 @@
         android:visibility="gone"
         android:id="@+id/progress_calender"/>
 
-
 </FrameLayout>

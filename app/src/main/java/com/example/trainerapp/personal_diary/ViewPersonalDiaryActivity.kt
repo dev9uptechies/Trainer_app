@@ -34,7 +34,6 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
     private var mainId: Int = 0
 
 
-
     override fun onResume() {
         checkUser()
         super.onResume()
@@ -226,6 +225,8 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
                     response: Response<GetPersonalDiary>
                 ) {
                     binding.progresBar.visibility = View.GONE
+                    binding.swipeReferesh.isRefreshing = false  // Stop the refresh animation
+
                     Log.d("TAG", "Response code: ${response.code()}")
 
                     when (response.code()) {
@@ -254,6 +255,8 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
 
                 override fun onFailure(call: Call<GetPersonalDiary>, t: Throwable) {
                     binding.progresBar.visibility = View.GONE
+                    binding.swipeReferesh.isRefreshing = false  // Stop the refresh animation
+
                     Log.d("TAG Category", "Error: ${t.message}")
                     Toast.makeText(
                         this@ViewPersonalDiaryActivity,
@@ -264,6 +267,7 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
             })
         } catch (e: Exception) {
             binding.progresBar.visibility = View.GONE
+            binding.swipeReferesh.isRefreshing = false
             Log.d("Exception", "Error: ${e.message}")
         }
     }
@@ -301,10 +305,9 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
     // Function to get the shared personal diary data
     private fun getpersonaldiaryshare(id: Int) {
         try {
-            diaryData.clear()  // Assuming diaryData is a list of type Data or similar
+            diaryData.clear()
             binding.progresBar.visibility = View.VISIBLE
 
-            // Ensure the parameter name matches the function signature
             apiInterface.GetPersonalDiaryListShareData(id)?.enqueue(object : Callback<AthltepersonaldiaryModel> {
                 override fun onResponse(
                     call: Call<AthltepersonaldiaryModel>,

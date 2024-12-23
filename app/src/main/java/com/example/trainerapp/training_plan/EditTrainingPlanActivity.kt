@@ -1,11 +1,16 @@
 package com.example.trainerapp.training_plan
 
+import android.app.Dialog
+import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -27,10 +32,16 @@ import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityEditTrainingPlanBinding
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import com.prolificinteractive.materialcalendarview.CalendarMode
+import com.prolificinteractive.materialcalendarview.DayViewDecorator
+import com.prolificinteractive.materialcalendarview.DayViewFacade
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -47,16 +58,21 @@ class EditTrainingPlanActivity : AppCompatActivity() {
     private lateinit var trainingPlanContainer: LinearLayout
     private var trainingPlanLayouts = mutableListOf<View>()
     private var missingIndices = mutableListOf<Int>()
-    private var startDateMillis: Long = 0
-    private var endDateMillis: Long = 0
+    private var startDateMilliss: Long = 0
+    private var endDateMilliss: Long = 0
 
     lateinit var adapter: EditeTrainingPlanAdapter
 
     private var startdatesent:String? = null
     private var enddatesent:String? = null
 
+
     private var startdatesentlist:String? = null
     private var enddatesentlist:String? = null
+
+    private val selectedDateRanges = mutableListOf<Pair<Long, Long>>()
+    private var activeLayoutIndex: Int? = null
+
 
     private var competitive: Competitive = Competitive("", "", "", "")
     private var preSeason = PreSeason("", "", "", "")
@@ -221,6 +237,143 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         })
     }
 
+    fun showDateRangePickerDialog(
+        context: Context,
+        minDateMillis: Long,
+        maxDateMillis: Long,
+        layoutIndex: Int?,
+        callback: (start: Long, end: Long) -> Unit
+    ) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.date_range_picker_dialog)
+
+        val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
+        val textView = dialog.findViewById<TextView>(R.id.textView)
+        val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
+        val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
+
+        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_RANGE)
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+
+        val minCalendar = Calendar.getInstance().apply {
+            timeInMillis = minDateMillis
+        }
+
+        val maxCalendar = Calendar.getInstance().apply {
+            timeInMillis = maxDateMillis
+        }
+
+        calendarView.state().edit()
+            .setCalendarDisplayMode(CalendarMode.MONTHS)
+            .commit()
+
+
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day?.let {
+                    val dateInMillis = it.calendar.timeInMillis
+                    // Disable the dates outside the min/max range
+                    dateInMillis < minDateMillis || dateInMillis > maxDateMillis
+                } ?: false
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.GRAY))
+                view?.setDaysDisabled(true)
+            }
+        })
+
+
+
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day?.let {
+                    val dateInMillis = it.calendar.timeInMillis
+                    selectedDateRanges.forEachIndexed { index, range ->
+                        if (layoutIndex != index && dateInMillis in range.first..range.second) {
+                            return true
+                        }
+                    }
+                    false
+                } ?: false
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.GRAY))
+                view?.areDaysDisabled()
+                view?.setDaysDisabled(true)
+            }
+        })
+
+        // Inside the showDateRangePickerDialog function
+        confirmButton.setOnClickListener {
+            val selectedDates = calendarView.selectedDates
+
+            if (selectedDates.size >= 2) {
+                val startDate = selectedDates.first().calendar
+                val endDate = selectedDates.last().calendar
+
+                startDate.set(Calendar.HOUR_OF_DAY, 0)
+                startDate.set(Calendar.MINUTE, 0)
+                startDate.set(Calendar.SECOND, 0)
+                startDate.set(Calendar.MILLISECOND, 0)
+
+                endDate.set(Calendar.HOUR_OF_DAY, 23)
+                endDate.set(Calendar.MINUTE, 59)
+                endDate.set(Calendar.SECOND, 59)
+                endDate.set(Calendar.MILLISECOND, 999)
+
+                // Check if layoutIndex is valid and then update or add to selectedDateRanges
+                if (layoutIndex != null && layoutIndex < selectedDateRanges.size) {
+                    selectedDateRanges[layoutIndex] = startDate.timeInMillis to endDate.timeInMillis
+                } else {
+                    selectedDateRanges.add(startDate.timeInMillis to endDate.timeInMillis)
+                }
+
+                callback(startDate.timeInMillis, endDate.timeInMillis)
+                dialog.dismiss()
+            } else {
+                textView.text = "Please select both start and end dates"
+            }
+        }
+
+
+        dialog.show()
+    }
+
+    private fun disablePreviouslySelectedRanges(
+        calendarView: MaterialCalendarView,
+        selectedDateRanges: MutableList<Pair<Long, Long>>
+    ) {
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                day?.let {
+                    selectedDateRanges.forEach { range ->
+                        if (it.dateInRange(range.first, range.second)) {
+
+                            return true
+                        }
+                    }
+                }
+                return false
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.apply {
+
+                    view.addSpan(setDaysDisabled(true))
+                    view.addSpan(areDaysDisabled())
+                    view.addSpan(ForegroundColorSpan(Color.GRAY))
+                }
+            }
+        })
+    }
+
+    fun CalendarDay.dateInRange(startMillis: Long, endMillis: Long): Boolean {
+        val selectedDateMillis = this.calendar.timeInMillis
+        return selectedDateMillis in startMillis..endMillis
+    }
 
     private fun EditeProgramData() {
         if (!isValidate()) return
@@ -488,9 +641,19 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         phaseType: String
     ) {
         trainingPlanCount++
+
+        val indexToAdd = if (missingIndices.isNotEmpty()) {
+            val reusedIndex = missingIndices.removeAt(0) // Reuse the first missing index
+            Log.d("AddTrainingPlan", "Reusing missing index: $reusedIndex")
+            reusedIndex
+        } else {
+            trainingPlanLayouts.size // Append at the end if no missing indices
+        }
+
+
         val trainingPlanView = layoutInflater.inflate(R.layout.add_training_plan_list, null)
 
-        val nameEditText: AppCompatEditText = trainingPlanView.findViewById(R.id.ent_pre_sea_name)
+        var nameEditText: AppCompatEditText = trainingPlanView.findViewById(R.id.ent_pre_sea_name)
         val startDateEditText: AppCompatEditText = trainingPlanView.findViewById(R.id.ent_start_date_liner)
         val endDateEditText: AppCompatEditText = trainingPlanView.findViewById(R.id.ent_ent_date_liner)
         val delete: ImageView = trainingPlanView.findViewById(R.id.img_delete)
@@ -498,8 +661,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         val enddatecard: CardView = trainingPlanView.findViewById(R.id.card_end_pick_list)
         val mesocycles: TextView = trainingPlanView.findViewById(R.id.linear_days_list)
 
-
-        // Initialize fields safely
 
         val startDateMillis = formatDateToMillis2(startDate)
         val formattedStartDate = formatMillisToDateString(startDateMillis)
@@ -511,6 +672,12 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         startDateEditText.setText(formattedStartDate)
         endDateEditText.setText(formattedEndDate)
         mesocycles.setText(mesocycle)
+
+
+
+        nameEditText = trainingPlanView.findViewById(R.id.ent_pre_sea_name)
+        nameEditText.hint = getTrainingPlanDetails(indexToAdd)
+
 
         val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
         val errorEndDateMillis = parseFormattedDateToMillis(formattedEndDate)
@@ -553,14 +720,140 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         })
 
 
+//        startDateEditText.setOnClickListener {
+//            selectTrainingPlanStartDate(startDateEditText)
+//            updateDaysTextViewlist()
+//        }
+//
+//        endDateEditText.setOnClickListener {
+//            selectTrainingPlanEndDate(endDateEditText)
+//            updateDaysTextViewlist()
+//        }
+
+
         startDateEditText.setOnClickListener {
-            selectTrainingPlanStartDate(startDateEditText)
-            updateDaysTextViewlist()
+            val layoutIndex = trainingPlanContainer.indexOfChild(trainingPlanView)
+            activeLayoutIndex = layoutIndex
+
+            if (editTrainingPlanBinding.edtStartDate.text.isNullOrEmpty()) {
+                Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
+            } else {
+                val minDateMillis = formatDateToMillis(editTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis = formatDateToMillis(editTrainingPlanBinding.edtEndDate.text.toString())
+
+                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis, layoutIndex) { start, end ->
+                    startDateMilliss = start
+                    endDateMilliss = end
+                    val formattedStartDate = formatDate(start)
+                    val formattedStartDate2 = formatDate2(start)
+                    val formattedEndDate = formatDate(end)
+                    val formattedEndDate2 = formatDate2(end)
+
+                    startDateEditText.setText(formattedStartDate2)
+                    endDateEditText.setText(formattedEndDate2)
+                    startdatesentlist = formattedStartDate
+                    enddatesentlist = formattedEndDate
+                    updateDaysTextView()
+                }
+            }
+        }
+
+        startdatecard.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(trainingPlanView)
+            activeLayoutIndex = layoutIndex
+
+            if (editTrainingPlanBinding.edtStartDate.text.isNullOrEmpty()) {
+                Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            } else {
+//                selectTrainingPlanStartDate(startDateEditText)
+//                selectTrainingPlanStartAndEndDates(startDateEditText,endDateEditText)
+                val minDateMillis = formatDateToMillis(editTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis = formatDateToMillis(editTrainingPlanBinding.edtEndDate.text.toString())
+
+                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis, layoutIndex) { start, end ->
+
+                    val sharedPreferences = getSharedPreferences("mysharedprefs", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putBoolean("isFromStartDate", true)
+                    editor.apply()
+
+
+                    startDateMilliss = start
+                    endDateMilliss = end
+                    val formattedStartDate = formatDate(start)
+                    val formattedStartDate2 = formatDate2(start)
+                    val formattedEndDate = formatDate(end)
+                    val formattedEndDate2 = formatDate2(end)
+
+                    startDateEditText.setText(formattedStartDate2)
+                    endDateEditText.setText(formattedEndDate2)
+                    startdatesentlist = formattedStartDate
+                    enddatesentlist = formattedEndDate
+                    selectedDateRanges.add(startDateMilliss to endDateMilliss)
+                    updateDaysTextView()
+
+                }
+
+            }
+
         }
 
         endDateEditText.setOnClickListener {
-            selectTrainingPlanEndDate(endDateEditText)
-            updateDaysTextViewlist()
+            val layoutIndex = trainingPlanContainer.indexOfChild(trainingPlanView)
+            activeLayoutIndex = layoutIndex
+            if (editTrainingPlanBinding.edtEndDate.text.isNullOrEmpty()) {
+                Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            } else {
+                val minDateMillis = formatDateToMillis(editTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis = formatDateToMillis(editTrainingPlanBinding.edtEndDate.text.toString())
+
+                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis,layoutIndex) { start, end ->
+                    startDateMilliss = start
+                    endDateMilliss = end
+                    val formattedStartDate = formatDate(start)
+                    val formattedStartDate2 = formatDate2(start)
+                    val formattedEndDate = formatDate(end)
+                    val formattedEndDate2 = formatDate2(end)
+
+                    startDateEditText.setText(formattedStartDate2)
+                    endDateEditText.setText(formattedEndDate2)
+                    startdatesentlist = formattedStartDate
+                    enddatesentlist = formattedEndDate
+                    selectedDateRanges.add(startDateMilliss to endDateMilliss)
+                    updateDaysTextView()
+                }
+            }
+        }
+
+        enddatecard.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(trainingPlanView)
+            activeLayoutIndex = layoutIndex
+            if (editTrainingPlanBinding.edtEndDate.text.isNullOrEmpty()) {
+                Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            } else {
+                val minDateMillis = formatDateToMillis(editTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis = formatDateToMillis(editTrainingPlanBinding.edtEndDate.text.toString())
+
+                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis,layoutIndex) { start, end ->
+                    startDateMilliss = start
+                    endDateMilliss = end
+                    val formattedStartDate = formatDate(start)
+                    val formattedStartDate2 = formatDate2(start)
+                    val formattedEndDate = formatDate(end)
+                    val formattedEndDate2 = formatDate2(end)
+
+                    startDateEditText.setText(formattedStartDate2)
+                    endDateEditText.setText(formattedEndDate2)
+                    startdatesentlist = formattedStartDate
+                    enddatesentlist = formattedEndDate
+                    selectedDateRanges.add(startDateMilliss to endDateMilliss)
+                    updateDaysTextView()
+
+                }
+            }
         }
 
         startDateEditText.setOnFocusChangeListener { _, _ -> updateDaysTextViewlist() }
@@ -572,7 +865,48 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         trainingPlanContainer.addView(trainingPlanView)
         trainingPlanLayouts.add(trainingPlanView)
 
+        updateTrainingPlanIndices()
+
         Log.d("AddTrainingPlan", "Training plan added for phase: $phaseType")
+    }
+
+    private fun updateTrainingPlanIndices() {
+        // Define a list of default names
+        val defaultNames = listOf("Pre Season", "Pre Competititve", "Compatitive","Transition")
+
+        for (i in trainingPlanLayouts.indices) {
+            val layout = trainingPlanLayouts[i]
+            val indexTextView: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
+
+            // Get the current name from the EditText
+            val currentName = indexTextView.text?.toString()
+
+            // Check if the name is null or empty
+            if (currentName.isNullOrEmpty()) {
+                // Set the corresponding default name, or a fallback if out of range
+                val defaultName = if (i < defaultNames.size) defaultNames[i] else "Default Text"
+                indexTextView.setText(defaultName)
+            }
+
+            // Update the hint with training plan details
+            indexTextView.hint = getTrainingPlanDetails(i + 1)
+        }
+
+        Log.d(
+            "UpdateTrainingPlan",
+            "Updated indices for ${trainingPlanLayouts.size} training plans."
+        )
+    }
+
+
+    private fun getTrainingPlanDetails(planNumber: Int): String {
+        return when (planNumber) {
+            1 -> "Enter Pre Season Name"
+            2 -> "Enter Pre Competitive Name"
+            3 -> "Enter Competitive Name"
+            4 -> "Enter Transition Name"
+            else -> "Training Plan #:"
+        }
     }
 
     private fun formatDate(dateMillis: Long): String {
@@ -584,6 +918,16 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
         return format.format(Date(dateMillis))
     }
+
+    private fun formatDateToMillis(dateString: String): Long {
+        val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+        return try {
+            format.parse(dateString)?.time ?: Long.MAX_VALUE
+        } catch (e: Exception) {
+            Long.MAX_VALUE // Return max value in case of error
+        }
+    }
+
 
 
     // Method to convert date strings to milliseconds
@@ -641,7 +985,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 updateDaysTextView()
-//                updateUI(addTrainingPlanBinding.cardSave)
+//                updateUI(editTrainingPlanBinding.cardSave)
             }
         })
 
@@ -650,7 +994,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 updateDaysTextView()
-//                updateUI(addTrainingPlanBinding.cardSave)
+//                updateUI(editTrainingPlanBinding.cardSave)
             }
         })
     }
@@ -740,12 +1084,12 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                 System.currentTimeMillis(), // Minimum date: now
                 Long.MAX_VALUE // Maximum date: infinity
             ) { dateMillis ->
-                startDateMillis = dateMillis
+                startDateMilliss = dateMillis
                 val formattedDateDisplay = formatDate2(dateMillis)
 
                 startdatesent = formatDate(dateMillis)
                 editTrainingPlanBinding.edtStartDate.setText(formattedDateDisplay)
-                endDateMillis = 0
+                endDateMilliss = 0
             }
         }
     }
@@ -754,7 +1098,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
     private fun selectEndDate() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val maxDateMillis = Long.MAX_VALUE // Set max date to infinity
-            val minDateMillis = if (startDateMillis > 0) startDateMillis else System.currentTimeMillis() // Use the start date or current time
+            val minDateMillis = if (startDateMilliss > 0) startDateMilliss else System.currentTimeMillis() // Use the start date or current time
 
             Utils.selectDate3(
                 this,
@@ -762,7 +1106,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                 minDateMillis,
                 maxDateMillis
             ) { dateMillis ->
-                endDateMillis = dateMillis
+                endDateMilliss = dateMillis
                 val formattedDateDisplay = formatDate2(dateMillis)
 
                 enddatesent = formatDate(dateMillis)
@@ -772,9 +1116,9 @@ class EditTrainingPlanActivity : AppCompatActivity() {
     }
 
     private fun selectTrainingPlanStartDate(editText: AppCompatEditText) {
-        val minDateMillis = if (startDateMillis > 0) startDateMillis else System.currentTimeMillis()
+        val minDateMillis = if (startDateMilliss > 0) startDateMilliss else System.currentTimeMillis()
         Utils.selectDate3(this, editText, minDateMillis, Long.MAX_VALUE) { dateMillis ->
-            startDateMillis = dateMillis
+            startDateMilliss = dateMillis
             val formattedDateDisplay = formatDate2(dateMillis)
             startdatesentlist = formatDate(dateMillis)
             editText.setText(formattedDateDisplay)
@@ -782,9 +1126,9 @@ class EditTrainingPlanActivity : AppCompatActivity() {
     }
 
     private fun selectTrainingPlanEndDate(editText: AppCompatEditText) {
-        val minDateMillis = if (startDateMillis > 0) startDateMillis else System.currentTimeMillis()
+        val minDateMillis = if (startDateMilliss > 0) startDateMilliss else System.currentTimeMillis()
         Utils.selectDate3(this, editText, minDateMillis, Long.MAX_VALUE) { dateMillis ->
-            endDateMillis = dateMillis
+            endDateMilliss = dateMillis
             val formattedDateDisplay = formatDate2(dateMillis)
             enddatesentlist = formatDate(dateMillis)
             editText.setText(formattedDateDisplay)

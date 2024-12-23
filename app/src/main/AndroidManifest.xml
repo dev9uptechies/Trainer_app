@@ -30,6 +30,7 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan"
         tools:targetApi="m">
+
         <activity
             android:name="com.example.trainerappAthlete.ProfileActivity"
             android:exported="false" />
