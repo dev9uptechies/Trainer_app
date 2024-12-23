@@ -17,6 +17,7 @@ import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatEditText
 import java.text.SimpleDateFormat
@@ -130,12 +131,98 @@ class Utils {
                 myCalendar[Calendar.DAY_OF_MONTH]
             )
 
-            // Set the minimum and maximum date for the DatePicker
             datePickerDialog.datePicker.minDate = minDate
             datePickerDialog.datePicker.maxDate = maxDate
 
             datePickerDialog.show()
         }
+
+        @SuppressLint("NewApi")
+        fun selectDate4(
+            context: Context,
+            etDate: AppCompatEditText,
+            minDate: Long,
+            maxDate: Long,
+            disabledRanges: List<Pair<Long, Long>>, // List of date ranges to disable
+            callback: (Long) -> Unit
+        ) {
+            val myCalendar = Calendar.getInstance()
+            val myFormat = "yyyy-MM-dd"
+            val dateFormat = SimpleDateFormat(myFormat, Locale.US)
+
+            val date = DatePickerDialog.OnDateSetListener { _, year, month, day ->
+                myCalendar.set(Calendar.YEAR, year)
+                myCalendar.set(Calendar.MONTH, month)
+                myCalendar.set(Calendar.DAY_OF_MONTH, day)
+                val selectedDateMillis = myCalendar.timeInMillis
+
+                // Check if the selected date is within a disabled range
+                val isDisabled = disabledRanges.any { (start, end) ->
+                    selectedDateMillis in start..end // Include the end date in the range
+                }
+
+                if (!isDisabled && selectedDateMillis in minDate..maxDate) {
+                    etDate.setText(dateFormat.format(myCalendar.time))
+                    callback(selectedDateMillis) // Return the valid selected date
+                }
+            }
+
+            val datePickerDialog = DatePickerDialog(
+                context,
+                date,
+                myCalendar[Calendar.YEAR],
+                myCalendar[Calendar.MONTH],
+                myCalendar[Calendar.DAY_OF_MONTH]
+            )
+
+            datePickerDialog.datePicker.minDate = minDate
+            datePickerDialog.datePicker.maxDate = maxDate
+
+            datePickerDialog.setOnShowListener {
+                val datePicker = datePickerDialog.datePicker
+
+                // Disable dates and change their color immediately when the dialog is opened
+                try {
+                    val dpv = datePicker.javaClass.getDeclaredField("mDayPickerView")
+                    dpv.isAccessible = true
+                    val dayPickerView = dpv.get(datePicker)
+
+                    // Access the mDayOfWeekViews properly.
+                    val mDayOfWeekViewsField = dayPickerView.javaClass.getDeclaredField("mDayOfWeekViews")
+                    mDayOfWeekViewsField.isAccessible = true
+
+                    // Here, the `mDayOfWeekViews` should be an array of day views (could be View[] or something else)
+                    val dayOfWeekViews = mDayOfWeekViewsField.get(dayPickerView) as Array<*>
+
+                    // Iterate through all days and disable those in the disabledRanges
+                    for (dayView in dayOfWeekViews) {
+                        val dayViewInstance = dayView as View
+                        val dayMillis = dayViewInstance.tag as Long // Assuming the tag stores the date in milliseconds
+
+                        // Check if the current day is within any disabled range
+                        val isDisabled = disabledRanges.any { (start, end) ->
+                            dayMillis in start..end // Ensure the end date is included
+                        }
+
+                        if (isDisabled) {
+                            dayViewInstance.setBackgroundColor(Color.GRAY)
+                            dayViewInstance.isEnabled = false // Disable the day
+                        } else {
+                            dayViewInstance.setBackgroundColor(Color.WHITE)
+                            dayViewInstance.isEnabled = true
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            datePickerDialog.show()
+        }
+
+
+
 
         @SuppressLint("NewApi")
         fun selectDate(context: Context, dateedt: EditText) {

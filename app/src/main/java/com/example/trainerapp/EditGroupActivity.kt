@@ -610,7 +610,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 //            }
 //        }
 
-
     private val getContent =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
@@ -620,25 +619,23 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 binding.selectUploadLy.visibility = View.GONE
                 binding.imageUpload.visibility = View.VISIBLE
 
-                // Store the selected image URI in SharedPreferences
                 val sharedPreferences = binding.root.context.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
                 sharedPreferences.edit().putString("imageUrll", uri.toString()).apply()
 
-                // Use Picasso to load the image into the ImageView
                 Picasso.get()
-                    .load(uri) // Load the URI
-                    .error(R.drawable.app_icon) // Fallback image
+                    .load(uri)
+                    .error(R.drawable.app_icon)
                     .into(binding.imageUpload, object : com.squareup.picasso.Callback {
                         override fun onSuccess() {
                             Log.d("Picasso", "Image loaded successfully")
 
-                            // Process the image for the API call
                             val imagePart = processImage(binding.root.context, uri)
 
                             if (imagePart != null) {
                                 Log.d("ImagePart", "Image file created: ${imagePart.body.contentType()}")
                                 // Call the API with the image part
-                                editGroupWithImageApiCall(binding.root.context, uri)
+                                selectedImageUri = uri
+//                                editGroupWithImageApiCall(binding.root.context, uri)
                             } else {
                                 Log.e("ImagePart", "Failed to create image file from URI")
                             }
@@ -714,11 +711,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 //        pid = intent.getIntArrayExtra("planningIds") ?: intArrayOf()
 //        Log.d("UIUIIUIUI", "initView: ${pid!!.joinToString ()}")
 //
-
         val pid: IntArray = intent.getIntArrayExtra("planningIds") ?: intArrayOf()
         Log.d("UIUIIUIUI", "Received planningIds: ${pid.joinToString()}")
-
-
 
         planningId = intent.getIntArrayExtra("planningId") ?: intArrayOf()
         Log.d("GHGHGHHG", "planning: ${planningId.joinToString()}")
@@ -728,7 +722,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         Log.d("IDDDDDDDD", "athlete: ${athleteId.joinToString()}")
 
         mergeIdsAndSave()
-
 
         if (lessonId != null) {
             binding.rlyLesson.visibility = View.VISIBLE
@@ -771,7 +764,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         } else {
             binding.rlyAthlete.visibility = View.GONE
         }
-
     }
 
     override fun onDestroy() {
@@ -864,7 +856,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                             Log.e("SelectedGroup", "onResponse: " + selectedGroup.image)
                             Log.e("SelectedGroup", "onResponse: " + selectedGroup.coach_id)
 
-                            // Prepare the image URL (replace with your base URL if needed)
                             val imageUrl =
                                 "https://trainers.codefriend.in" + (selectedGroup.image ?: "")
                             Log.d("ImageURL", "URL: $imageUrl")
@@ -910,6 +901,14 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                     when (day.lowercase()) {
                                         "monday" -> {
                                             showDefaultDay() // Ensure Monday is default
+
+                                            toggleDay(
+                                                "monday",
+                                                binding.weekMon,
+                                                mon_linearLayour,
+                                                binding.monAddScheduleTime
+                                            )
+
                                             addViewForDay(
                                                 binding.MonLinearLayout,
                                                 schedule.day ?: "",
@@ -919,6 +918,12 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                         }
 
                                         "tue", "tuesday" -> {
+                                            toggleDay(
+                                                "tuesday",
+                                                binding.weekMon,
+                                                mon_linearLayour,
+                                                binding.monAddScheduleTime
+                                            )
                                             binding.TueLinearLayout.visibility =
                                                 View.GONE // Hide initially
                                             addViewForDay(
@@ -930,8 +935,14 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                         }
 
                                         "wed", "wednesday" -> {
+                                            toggleDay(
+                                                "wednesday",
+                                                binding.weekMon,
+                                                mon_linearLayour,
+                                                binding.monAddScheduleTime
+                                            )
                                             binding.WedLinearLayout.visibility =
-                                                View.GONE // Hide initially
+                                                View.GONE
                                             addViewForDay(
                                                 binding.WedLinearLayout,
                                                 schedule.day ?: "",
@@ -941,6 +952,12 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                         }
 
                                         "thu", "thursday" -> {
+                                            toggleDay(
+                                                "thursday",
+                                                binding.weekMon,
+                                                mon_linearLayour,
+                                                binding.monAddScheduleTime
+                                            )
                                             binding.ThuLinearLayout.visibility =
                                                 View.GONE // Hide initially
                                             addViewForDay(
@@ -952,6 +969,12 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                         }
 
                                         "fri", "friday" -> {
+                                            toggleDay(
+                                                "friday",
+                                                binding.weekMon,
+                                                mon_linearLayour,
+                                                binding.monAddScheduleTime
+                                            )
                                             binding.FriLinearLayout.visibility =
                                                 View.GONE // Hide initially
                                             addViewForDay(
@@ -963,6 +986,12 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                         }
 
                                         "sat", "saturday" -> {
+                                            toggleDay(
+                                                "saturday",
+                                                binding.weekMon,
+                                                mon_linearLayour,
+                                                binding.monAddScheduleTime
+                                            )
                                             binding.SatLinearLayout.visibility =
                                                 View.GONE // Hide initially
                                             addViewForDay(
@@ -974,8 +1003,14 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                         }
 
                                         "sun", "sunday" -> {
+                                            toggleDay(
+                                                "sunday",
+                                                binding.weekMon,
+                                                mon_linearLayour,
+                                                binding.monAddScheduleTime
+                                            )
                                             binding.SunLinearLayout.visibility =
-                                                View.GONE // Hide initially
+                                                View.GONE
                                             addViewForDay(
                                                 binding.SunLinearLayout,
                                                 schedule.day ?: "",
@@ -1297,7 +1332,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             Log.e("EditGroup", "Image part created successfully: ${imagePart.body.contentType()}")
         }
 
-        // API call to update group with the image
         apiInterface.editGroupWithImage(
             method, idbody, sport_id, name, lession_ids, athlete_ids,
             event_ids, planning_ids, test_ids, program_ids, days, timing, imagePart
@@ -1389,13 +1423,13 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         return imageUrl?.let { Uri.parse(it) }
     }
 
-
     suspend fun convertUrlToFile(context: Context, imageUrl: String): File? {
         return withContext(Dispatchers.IO) {
             try {
                 val fileName = imageUrl.substringAfterLast("/")
                 val file = File(context.cacheDir, fileName)
 
+                Log.d("TAG", "convertUrlToFile: ")
                 // Check if the file already exists
                 if (file.exists()) {
                     Log.d("ConvertUrlToFile", "File already exists: ${file.absolutePath}")
@@ -1499,6 +1533,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     /**
      * Get the file name from the URI.
      */
+
     fun getFileNameFromUri(context: Context, uri: Uri): String? {
         return if (uri.scheme == "content") {
             context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
@@ -1738,7 +1773,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             selectedDays.remove(day)
             linearLayout.visibility = View.GONE
             addScheduleTime.visibility = View.GONE
-            hasChanges = true // Track changes when deselecting a day
+            hasChanges = true
         } else {
             selectedDays.add(day)
             linearLayout.visibility = View.VISIBLE
