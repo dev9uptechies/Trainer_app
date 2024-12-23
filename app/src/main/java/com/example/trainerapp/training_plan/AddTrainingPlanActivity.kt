@@ -673,6 +673,9 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
                 override fun decorate(view: DayViewFacade?) {
                     view?.addSpan(ForegroundColorSpan(Color.GRAY))
+                    view?.setDaysDisabled(true)
+                    view?.areDaysDisabled()
+
                 }
             })
 
