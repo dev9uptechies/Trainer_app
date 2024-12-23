@@ -644,106 +644,114 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         }
     }
 
-        fun showDateRangePickerDialog(
-            context: Context,
-            minDateMillis: Long,
-            maxDateMillis: Long,
-            layoutIndex: Int?,
-            callback: (start: Long, end: Long) -> Unit
-        ) {
-            val dialog = Dialog(context)
-            dialog.setContentView(R.layout.date_range_picker_dialog)
+    fun showDateRangePickerDialog(
+        context: Context,
+        minDateMillis: Long,
+        maxDateMillis: Long,
+        layoutIndex: Int?,
+        callback: (start: Long, end: Long) -> Unit
+    ) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.date_range_picker_dialog)
 
-            val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
-            val textView = dialog.findViewById<TextView>(R.id.textView)
-            val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
-            val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
+        val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
+        val textView = dialog.findViewById<TextView>(R.id.textView)
+        val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
+        val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
 
-            calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_RANGE)
+        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_RANGE)
 
-            cancelButton.setOnClickListener { dialog.dismiss() }
+        cancelButton.setOnClickListener { dialog.dismiss() }
 
-            val minCalendar = Calendar.getInstance().apply {
-                timeInMillis = minDateMillis
+        val minCalendar = Calendar.getInstance().apply {
+            timeInMillis = minDateMillis
+        }
+
+        val maxCalendar = Calendar.getInstance().apply {
+            timeInMillis = maxDateMillis
+        }
+
+        calendarView.state().edit()
+            .setCalendarDisplayMode(CalendarMode.MONTHS)
+            .commit()
+
+        // First decorator: Disable dates outside the min/max range
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day?.let {
+                    val dateInMillis = it.calendar.timeInMillis
+                    // Disable the dates outside the min/max range
+                    dateInMillis < minDateMillis || dateInMillis > maxDateMillis
+                } ?: false
             }
 
-            val maxCalendar = Calendar.getInstance().apply {
-                timeInMillis = maxDateMillis
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.GRAY))  // Disabled color
+                view?.setDaysDisabled(true)
             }
+        })
 
-            calendarView.state().edit()
-                .setCalendarDisplayMode(CalendarMode.MONTHS)
-                .commit()
-
-
-            calendarView.addDecorator(object : DayViewDecorator {
-                override fun shouldDecorate(day: CalendarDay?): Boolean {
-                    return day?.let {
-                        val dateInMillis = it.calendar.timeInMillis
-                        // Disable the dates outside the min/max range
-                        dateInMillis < minDateMillis || dateInMillis > maxDateMillis
-                    } ?: false
-                }
-
-                override fun decorate(view: DayViewFacade?) {
-                    view?.addSpan(ForegroundColorSpan(Color.GRAY))  // Disabled color
-                    view?.setDaysDisabled(true)
-                }
-            })
-
-            calendarView.addDecorator(object : DayViewDecorator {
-                override fun shouldDecorate(day: CalendarDay?): Boolean {
-                    return day?.let {
-                        val dateInMillis = it.calendar.timeInMillis
-                        selectedDateRanges.forEachIndexed { index, range ->
-                            if (layoutIndex != index && dateInMillis in range.first..range.second) {
+        // Second decorator: Disable dates that overlap with other plans
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day?.let {
+                    val dateInMillis = it.calendar.timeInMillis
+                    selectedDateRanges.forEachIndexed { index, range ->
+                        // If the current plan being edited (layoutIndex) is not the one being selected, disable the date
+                        if (layoutIndex != null && layoutIndex != index) {
+                            if (dateInMillis in range.first..range.second) {
                                 return true
                             }
                         }
-                        false
-                    } ?: false
-                }
-
-                override fun decorate(view: DayViewFacade?) {
-                    view?.addSpan(ForegroundColorSpan(Color.GRAY))
-                    view?.areDaysDisabled()
-                    view?.setDaysDisabled(true)
-                }
-            })
-
-            confirmButton.setOnClickListener {
-                val selectedDates = calendarView.selectedDates
-
-                if (selectedDates.size >= 2) {
-                    val startDate = selectedDates.first().calendar
-                    val endDate = selectedDates.last().calendar
-
-                    startDate.set(Calendar.HOUR_OF_DAY, 0)
-                    startDate.set(Calendar.MINUTE, 0)
-                    startDate.set(Calendar.SECOND, 0)
-                    startDate.set(Calendar.MILLISECOND, 0)
-
-                    endDate.set(Calendar.HOUR_OF_DAY, 23)
-                    endDate.set(Calendar.MINUTE, 59)
-                    endDate.set(Calendar.SECOND, 59)
-                    endDate.set(Calendar.MILLISECOND, 999)
-
-                    if (layoutIndex != null && layoutIndex < selectedDateRanges.size) {
-                        selectedDateRanges[layoutIndex] = startDate.timeInMillis to endDate.timeInMillis
-                    } else {
-                        selectedDateRanges.add(startDate.timeInMillis to endDate.timeInMillis)
                     }
-
-                    callback(startDate.timeInMillis, endDate.timeInMillis)
-                    dialog.dismiss()
-                } else {
-                    textView.text = "Please select both start and end dates"
-                }
+                    return false
+                } ?: false
             }
 
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.GRAY))  // Gray color for disabled dates
+                view?.setDaysDisabled(true)  // Disable these dates
+            }
+        })
 
-            dialog.show()
+        confirmButton.setOnClickListener {
+            val selectedDates = calendarView.selectedDates
+
+            if (selectedDates.size >= 2) {
+                val startDate = selectedDates.first().calendar
+                val endDate = selectedDates.last().calendar
+
+                // Set time for start and end date
+                startDate.set(Calendar.HOUR_OF_DAY, 0)
+                startDate.set(Calendar.MINUTE, 0)
+                startDate.set(Calendar.SECOND, 0)
+                startDate.set(Calendar.MILLISECOND, 0)
+
+                endDate.set(Calendar.HOUR_OF_DAY, 23)
+                endDate.set(Calendar.MINUTE, 59)
+                endDate.set(Calendar.SECOND, 59)
+                endDate.set(Calendar.MILLISECOND, 999)
+
+                // If this is an existing plan, update its date range
+                if (layoutIndex != null && layoutIndex < selectedDateRanges.size) {
+                    selectedDateRanges[layoutIndex] = startDate.timeInMillis to endDate.timeInMillis
+                } else {
+                    // Add new plan's date range
+                    selectedDateRanges.add(startDate.timeInMillis to endDate.timeInMillis)
+                }
+
+                callback(startDate.timeInMillis, endDate.timeInMillis)
+                dialog.dismiss()
+            } else {
+                textView.text = "Please select both start and end dates"
+            }
         }
+
+        dialog.show()
+    }
+
+
+
 
     private fun disablePreviouslySelectedRanges(
         calendarView: MaterialCalendarView,
@@ -864,7 +872,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                     ).show()
                     return
                 }
-
 
                 when (i) {
                     0 -> preSeason = PreSeason(
