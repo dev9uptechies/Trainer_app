@@ -72,6 +72,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
     private var startDateMillis: Long = 0
     private var endDateMillis: Long = 0
+    private var activeLayoutIndex: Int? = null
 
     var hyy:Boolean = false
 
@@ -354,18 +355,16 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         })
 
         startDateEditText.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
+            activeLayoutIndex = layoutIndex
 
             if (addTrainingPlanBinding.edtStartDate.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
             } else {
-//                selectTrainingPlanStartDate(startDateEditText)
-//                selectTrainingPlanStartAndEndDates(startDateEditText,endDateEditText)
                 val minDateMillis = formatDateToMillis(addTrainingPlanBinding.edtStartDate.text.toString())
                 val maxDateMillis = formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
 
-                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start, end ->
-                    // Format and set the selected start and end dates in the EditTexts
+                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis, layoutIndex) { start, end ->
                     startDateMillis = start
                     endDateMillis = end
                     val formattedStartDate = formatDate(start)
@@ -377,15 +376,15 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                     endDateEditText.setText(formattedEndDate2)
                     startdatesentlist = formattedStartDate
                     enddatesentlist = formattedEndDate
-                    selectedDateRanges.add(startDateMillis to endDateMillis)
                     updateDaysTextView()
-
                 }
-
             }
         }
 
+
         startdatecard.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
+            activeLayoutIndex = layoutIndex
 
             if (addTrainingPlanBinding.edtStartDate.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
@@ -396,7 +395,14 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                 val minDateMillis = formatDateToMillis(addTrainingPlanBinding.edtStartDate.text.toString())
                 val maxDateMillis = formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
 
-                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start, end ->
+                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis, layoutIndex) { start, end ->
+
+                    val sharedPreferences = getSharedPreferences("mysharedprefs", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putBoolean("isFromStartDate", true)
+                    editor.apply()
+
+
                     startDateMillis = start
                     endDateMillis = end
                     val formattedStartDate = formatDate(start)
@@ -418,6 +424,8 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         }
 
         endDateEditText.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
+            activeLayoutIndex = layoutIndex
             if (addTrainingPlanBinding.edtEndDate.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -425,7 +433,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                 val minDateMillis = formatDateToMillis(addTrainingPlanBinding.edtStartDate.text.toString())
                 val maxDateMillis = formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
 
-                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start, end ->
+                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis,layoutIndex) { start, end ->
                     startDateMillis = start
                     endDateMillis = end
                     val formattedStartDate = formatDate(start)
@@ -444,6 +452,8 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         }
 
         enddatecard.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
+            activeLayoutIndex = layoutIndex
             if (addTrainingPlanBinding.edtEndDate.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -451,7 +461,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                 val minDateMillis = formatDateToMillis(addTrainingPlanBinding.edtStartDate.text.toString())
                 val maxDateMillis = formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
 
-                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start, end ->
+                showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis,layoutIndex) { start, end ->
                     startDateMillis = start
                     endDateMillis = end
                     val formattedStartDate = formatDate(start)
@@ -613,98 +623,94 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("NewApi")
-    fun showDateRangePickerDialog(
-        context: Context,
-        minDateMillis: Long,
-        maxDateMillis: Long,
-        callback: (start: Long, end: Long) -> Unit
-    ) {
-        val dialog = Dialog(context)
-        dialog.setContentView(R.layout.date_range_picker_dialog)
+        fun showDateRangePickerDialog(
+            context: Context,
+            minDateMillis: Long,
+            maxDateMillis: Long,
+            layoutIndex: Int?,
+            callback: (start: Long, end: Long) -> Unit
+        ) {
+            val dialog = Dialog(context)
+            dialog.setContentView(R.layout.date_range_picker_dialog)
 
-        val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
-        val textView = dialog.findViewById<TextView>(R.id.textView)
-        val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
-        val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
+            val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
+            val textView = dialog.findViewById<TextView>(R.id.textView)
+            val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
+            val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
 
-        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_RANGE)
+            calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_RANGE)
 
-        cancelButton.setOnClickListener { dialog.dismiss() }
+            cancelButton.setOnClickListener { dialog.dismiss() }
 
-        val currentDate = Calendar.getInstance()
-        calendarView.setCurrentDate(CalendarDay.from(currentDate))
+            val minCalendar = Calendar.getInstance().apply {
+                timeInMillis = minDateMillis
+            }
 
-        calendarView.state().edit()
-            .setCalendarDisplayMode(CalendarMode.MONTHS)
-            .commit()
+            val maxCalendar = Calendar.getInstance().apply {
+                timeInMillis = maxDateMillis
+            }
 
-        calendarView.addDecorator(object : DayViewDecorator {
-            override fun shouldDecorate(day: CalendarDay?): Boolean {
-                day?.let {
-                    val dateInMillis = it.calendar.timeInMillis
+            calendarView.state().edit()
+                .setMinimumDate(CalendarDay.from(minCalendar))  // Use Calendar instance
+                .setMaximumDate(CalendarDay.from(maxCalendar))  // Use Calendar instance
+                .setCalendarDisplayMode(CalendarMode.MONTHS)
+                .commit()
 
-                    return dateInMillis < minDateMillis || dateInMillis > maxDateMillis
+            // Temporarily disable ranges except for the active layout
+            calendarView.addDecorator(object : DayViewDecorator {
+                override fun shouldDecorate(day: CalendarDay?): Boolean {
+                    return day?.let {
+                        val dateInMillis = it.calendar.timeInMillis
+                        // Skip disabling if editing the current layout
+                        selectedDateRanges.forEachIndexed { index, range ->
+                            if (layoutIndex != index && dateInMillis in range.first..range.second) {
+                                return true
+                            }
+                        }
+                        false
+                    } ?: false
                 }
-                return false
-            }
 
-            override fun decorate(view: DayViewFacade?) {
-                view?.apply {
-                    view.addSpan(setDaysDisabled(true))
-                    view.addSpan(areDaysDisabled())
-                    view.addSpan(ForegroundColorSpan(Color.GRAY))
+                override fun decorate(view: DayViewFacade?) {
+                    view?.addSpan(ForegroundColorSpan(Color.GRAY))
+                }
+            })
+
+            // Inside the showDateRangePickerDialog function
+            confirmButton.setOnClickListener {
+                val selectedDates = calendarView.selectedDates
+
+                if (selectedDates.size >= 2) {
+                    val startDate = selectedDates.first().calendar
+                    val endDate = selectedDates.last().calendar
+
+                    startDate.set(Calendar.HOUR_OF_DAY, 0)
+                    startDate.set(Calendar.MINUTE, 0)
+                    startDate.set(Calendar.SECOND, 0)
+                    startDate.set(Calendar.MILLISECOND, 0)
+
+                    endDate.set(Calendar.HOUR_OF_DAY, 23)
+                    endDate.set(Calendar.MINUTE, 59)
+                    endDate.set(Calendar.SECOND, 59)
+                    endDate.set(Calendar.MILLISECOND, 999)
+
+                    // Check if layoutIndex is valid and then update or add to selectedDateRanges
+                    if (layoutIndex != null && layoutIndex < selectedDateRanges.size) {
+                        selectedDateRanges[layoutIndex] = startDate.timeInMillis to endDate.timeInMillis
+                    } else {
+                        selectedDateRanges.add(startDate.timeInMillis to endDate.timeInMillis)
+                    }
+
+                    callback(startDate.timeInMillis, endDate.timeInMillis)
+                    dialog.dismiss()
+                } else {
+                    textView.text = "Please select both start and end dates"
                 }
             }
-        })
 
-        disablePreviouslySelectedRanges(calendarView, selectedDateRanges)
 
-        confirmButton.setOnClickListener {
-            val selectedDates = calendarView.selectedDates
-
-            if (selectedDates.size >= 2) {
-                val startDate = selectedDates.first().calendar
-                val endDate = selectedDates.last().calendar
-
-                startDate.set(Calendar.HOUR_OF_DAY, 0)
-                startDate.set(Calendar.MINUTE, 0)
-                startDate.set(Calendar.SECOND, 0)
-                startDate.set(Calendar.MILLISECOND, 0)
-
-                endDate.set(Calendar.HOUR_OF_DAY, 23)
-                endDate.set(Calendar.MINUTE, 59)
-                endDate.set(Calendar.SECOND, 59)
-                endDate.set(Calendar.MILLISECOND, 999)
-
-                selectedDateRanges.add(startDate.timeInMillis to endDate.timeInMillis)
-
-                callback(startDate.timeInMillis, endDate.timeInMillis)
-
-                val formattedStartDate = formatDate(startDate.timeInMillis)
-                val formattedEndDate = formatDate(endDate.timeInMillis)
-                textView.text = "Selected Date Range: $formattedStartDate to $formattedEndDate"
-
-                dialog.dismiss()
-            } else {
-                textView.text = "Please select both start and end dates"
-            }
+            dialog.show()
         }
-
-        calendarView.setOnDateChangedListener { widget, date, selected ->
-            val selectedDateMillis = date.calendar.timeInMillis
-
-            if (selectedDateMillis < minDateMillis || selectedDateMillis > maxDateMillis) {
-                Toast.makeText(
-                    context,
-                    "Selected date is out of range. Please select a date within the allowed range.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        dialog.show()
-    }
 
     private fun disablePreviouslySelectedRanges(
         calendarView: MaterialCalendarView,
@@ -725,6 +731,8 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
             override fun decorate(view: DayViewFacade?) {
                 view?.apply {
+
+
                     view.addSpan(setDaysDisabled(true))
                     view.addSpan(areDaysDisabled())
                     view.addSpan(ForegroundColorSpan(Color.GRAY))
