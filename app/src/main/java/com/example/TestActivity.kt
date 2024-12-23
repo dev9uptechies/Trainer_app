@@ -760,7 +760,7 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
-        if (string == "Delete") {
+        if (string == "DeleteTest") {
             var builder: AlertDialog.Builder
             builder = AlertDialog.Builder(this)
             builder.setMessage("Are you sure you want to delete Test?").setTitle("Success")
@@ -951,7 +951,7 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
                     }
                 })
         } else {
-            this@TestActivity.type = "edit"
+            this@TestActivity.type = "EditTest"
             timeId = TestList[position].id.toString()
             testBinding.etTestName.setText(TestList[position].title)
             testBinding.edtGoal.setText(TestList[position].goal.toString())

@@ -639,14 +639,18 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
     private fun setData(timer: Exercise.TimerName?) {
-        timerData.addAll(timer?.timer_name_timer!!)
-        if (timerData.isNotEmpty()) {
-            for (i in timerData) {
-                setupTimerDataBasic(timerData)
+        // Safely access timer_name_timer
+        val timerNameList = timer?.timer_name_timer
+        if (!timerNameList.isNullOrEmpty()) {
+            timerData.addAll(timerNameList) // Add data to timerData safely
+            for (i in timerNameList) {
+                setupTimerDataBasic(timerData) // Use timerData (not null)
                 audioData = i.timer_audio
                 pauseAudioData = i.timer_pause_time_audio
                 pauseBetweenAudioData = i.timer_pause_between_time_audio
             }
+        } else {
+            Log.e("setData", "timer_name_timer is null or empty")
         }
     }
 

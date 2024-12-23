@@ -46,6 +46,8 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
     lateinit var specificlist1: ArrayList<ExcerciseData.Exercise>
     lateinit var adapter: ExcerciseAdapter
     private var checktype: Boolean? = false
+    private var isDataLoaded = false
+
 
     var selecteValue = SelectedValue(null)
 
@@ -111,12 +113,11 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         initViews()
         initrecycler(generallist)
         checkSearch()
-        loadData()
+//        loadData()
 
         exerciseBinding.edtSection.setOnClickListener {
             showPopup(it, categoryData, exerciseBinding.edtSection, category, categoryId)
         }
-
 
         exerciseBinding.scrollView.setOnRefreshListener {
             loadData()
@@ -259,8 +260,17 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         exerciselist = mutableListOf()
 
     }
+    private fun loadData() {
+        if (!isDataLoaded) {
+            isDataLoaded = true
+            getCategory()
+            getExerciseData()
+        } else {
+            refreshData()
+        }
+    }
 
-    private fun loadData(){
+    private fun refreshData() {
         getCategory()
         getExerciseData()
     }

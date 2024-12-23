@@ -101,6 +101,13 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
         exerciselist = ArrayList()
         specificlist = ArrayList()
         GetExercise()
+
+
+        try {
+
+        }catch (e:Exception){
+            Log.d("GDGDDHGD", "onCreate: ${e.message}")
+        }
         viewExerciseBinding.cardViewTimer.setOnClickListener {
             val intent = Intent(this, ViewTimerActivity::class.java)
             intent.putExtra("position", position)

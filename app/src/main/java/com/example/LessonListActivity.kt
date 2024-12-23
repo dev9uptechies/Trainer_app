@@ -2,10 +2,12 @@ package com.example
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Adapter.groups.GetAthleteListAdapterGroup
@@ -564,6 +566,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
     private fun GetTestList() {
         binding.progresBar.visibility = View.VISIBLE
         apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<TestListData?>, response: Response<TestListData?>) {
                 Log.d("TAG", response.code().toString() + "")
                 val code = response.code()
@@ -578,8 +581,11 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                             }else{
                                 binding.cardSave.focusable
                                 binding.cardSave.isClickable = false
+                                Toast.makeText(this@LessonListActivity, "No Test available", Toast.LENGTH_SHORT).show()
                             }
                         } catch (e: Exception) {
+                            binding.progresBar.visibility = View.GONE
+                            Log.d("TESTCATCH", "onResponse: ${e.message}")
                             e.printStackTrace()
                         }
                     } else {
@@ -589,6 +595,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                     Utils.setUnAuthDialog(this@LessonListActivity)
 
                 } else {
+                    binding.progresBar.visibility = View.GONE
                     val message = response.message()
                     Toast.makeText(this@LessonListActivity, "" + message, Toast.LENGTH_SHORT)
                         .show()
@@ -662,6 +669,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
         binding.progresBar.visibility = View.VISIBLE
 
         apiInterface.GetAthleteList()!!.enqueue(object : Callback<AthleteData> {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<AthleteData>, response: Response<AthleteData>) {
                 binding.progresBar.visibility = View.GONE
                 if (response.isSuccessful) {
@@ -672,9 +680,17 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                     if (success) {
                         val data = resource?.data
 
-                        if (data != null) {
-                            athleteData.addAll(data)
+
+
+                        if (resource?.data!! != null) {
+                            if (data != null) {
+                                athleteData.addAll(data)
+                            }
                             initrecyclerAthlete(athleteData)
+                        }else{
+                            binding.cardSave.focusable
+                            binding.cardSave.isClickable = false
+                            Toast.makeText(this@LessonListActivity, "No Athlete available", Toast.LENGTH_SHORT).show()
                         }
 
                         for (datas in athleteData){

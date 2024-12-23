@@ -42,6 +42,7 @@ class TestDataAdapter(
         apiClient = APIClient(context)
         apiInterface = apiClient.client().create(APIInterface::class.java)
 
+
         holder.tvFname.text = movie.title
         holder.tv_unit.text = "Unit: " + movie.unit
         holder.tvgoal.text = "Goal: " + movie.goal
