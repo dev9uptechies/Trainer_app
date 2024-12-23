@@ -478,6 +478,9 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                             call.cancel()
                         }
                     })
+                }else{
+                    createExerciseBinding.ProgressBar.visibility = View.GONE
+                    Toast.makeText(this, "fill all fild", Toast.LENGTH_SHORT).show()
                 }
             }
         }

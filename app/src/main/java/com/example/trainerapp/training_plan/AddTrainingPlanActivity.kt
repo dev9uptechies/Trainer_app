@@ -202,7 +202,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                 enddatesent = formattedEndDate
             }
         }
-        addTrainingPlanBinding.cardEndDate.setOnClickListener { selectEndDate() }
         addTrainingPlanBinding.edtStartDate.setOnClickListener {
             showDateRangePickerDialogfor(addTrainingPlanBinding.edtStartDate.context) { start, end ->
                 startDateMillis = start
@@ -218,8 +217,36 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
             }
         }
+        addTrainingPlanBinding.cardEndDate.setOnClickListener {
+            showDateRangePickerDialogfor(addTrainingPlanBinding.edtStartDate.context) { start, end ->
+                startDateMillis = start
+                endDateMillis = end
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+                val formattedEndDate = formatDate(end)
+                val formattedEndDate2 = formatDate2(end)
+                addTrainingPlanBinding.edtStartDate.setText(formattedStartDate2)
+                addTrainingPlanBinding.edtEndDate.setText(formattedEndDate2)
+                startdatesent = formattedStartDate
+                enddatesent = formattedEndDate
+            }
+        }
+        addTrainingPlanBinding.edtEndDate.setOnClickListener {
+            showDateRangePickerDialogfor(addTrainingPlanBinding.edtStartDate.context) { start, end ->
+                startDateMillis = start
+                endDateMillis = end
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+                val formattedEndDate = formatDate(end)
+                val formattedEndDate2 = formatDate2(end)
+                addTrainingPlanBinding.edtStartDate.setText(formattedStartDate2)
+                addTrainingPlanBinding.edtEndDate.setText(formattedEndDate2)
+                startdatesent = formattedStartDate
+                enddatesent = formattedEndDate
 
-        addTrainingPlanBinding.edtEndDate.setOnClickListener { selectEndDate() }
+            }
+        }
+
 
         addTrainingPlanBinding.cardSave.setOnClickListener { saveTrainingPlans() }
     }
@@ -550,21 +577,39 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         cancelButton.setOnClickListener { dialog.dismiss() }
 
         val currentDate = Calendar.getInstance()
+        currentDate.set(Calendar.HOUR_OF_DAY, 0)
+        currentDate.set(Calendar.MINUTE, 0)
+        currentDate.set(Calendar.SECOND, 0)
+        currentDate.set(Calendar.MILLISECOND, 0)
+        val today = currentDate.time
+
         calendarView.setCurrentDate(CalendarDay.from(currentDate))
 
+        // Set the calendar display mode
         calendarView.state().edit()
             .setCalendarDisplayMode(CalendarMode.MONTHS)
             .commit()
 
+        // Disable dates before today
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day != null && day.date.before(today) // Disable dates strictly before today
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.GRAY)) // Make past dates appear gray
+                view?.setDaysDisabled(true) // Disable past dates
+            }
+        })
+
         confirmButton.setOnClickListener {
             val selectedDates = calendarView.selectedDates
 
-            // Ensure both start and end dates are selected
             if (selectedDates.size >= 2) {
                 val startDate = selectedDates.first().calendar
                 val endDate = selectedDates.last().calendar
 
-                // Set the start and end dates with proper times
+                // Normalize start and end dates
                 startDate.set(Calendar.HOUR_OF_DAY, 0)
                 startDate.set(Calendar.MINUTE, 0)
                 startDate.set(Calendar.SECOND, 0)
@@ -585,6 +630,9 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
         dialog.show()
     }
+
+
+
 
     private fun getTrainingPlanDetails(planNumber: Int): String {
         return when (planNumber) {
@@ -643,8 +691,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                 }
             })
 
-
-
             calendarView.addDecorator(object : DayViewDecorator {
                 override fun shouldDecorate(day: CalendarDay?): Boolean {
                     return day?.let {
@@ -665,7 +711,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                 }
             })
 
-            // Inside the showDateRangePickerDialog function
             confirmButton.setOnClickListener {
                 val selectedDates = calendarView.selectedDates
 
@@ -683,7 +728,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                     endDate.set(Calendar.SECOND, 59)
                     endDate.set(Calendar.MILLISECOND, 999)
 
-                    // Check if layoutIndex is valid and then update or add to selectedDateRanges
                     if (layoutIndex != null && layoutIndex < selectedDateRanges.size) {
                         selectedDateRanges[layoutIndex] = startDate.timeInMillis to endDate.timeInMillis
                     } else {

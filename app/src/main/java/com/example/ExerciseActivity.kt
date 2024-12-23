@@ -69,6 +69,7 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
+                        loadData()
                         Log.d("Get Profile Data ", "${response.body()}")
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@ExerciseActivity)
@@ -110,6 +111,7 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         initViews()
         initrecycler(generallist)
         checkSearch()
+        loadData()
 
         exerciseBinding.edtSection.setOnClickListener {
             showPopup(it, categoryData, exerciseBinding.edtSection, category, categoryId)
@@ -117,7 +119,7 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
 
 
         exerciseBinding.scrollView.setOnRefreshListener {
-            getCategory()
+            loadData()
             exerciseBinding.scrollView.isRefreshing = false
         }
 
@@ -256,7 +258,11 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         specificlist = mutableListOf()
         exerciselist = mutableListOf()
 
+    }
+
+    private fun loadData(){
         getCategory()
+        getExerciseData()
     }
 
     private fun getCategory() {
@@ -281,7 +287,6 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
 //                        exerciseBinding.spCategories
 //                    )
                         }
-                        getExerciseData()
                     }
                 } else if (code == 403) {
                     Utils.setUnAuthDialog(this@ExerciseActivity)
@@ -516,8 +521,7 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
     private fun initrecycler(testdatalist: MutableList<Exercise.ExerciseData>) {
         exerciseBinding.ProgressBar.visibility = View.GONE
         exerciseBinding.rlyExercise.layoutManager = LinearLayoutManager(this)
-        adapter =
-            ExcerciseAdapter(testdatalist, this, this)
+        adapter = ExcerciseAdapter(testdatalist, this, this)
         exerciseBinding.rlyExercise.adapter = adapter
     }
 
@@ -565,7 +569,7 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                                         "" + Message,
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    initViews()
+                                    loadData()
 //                                    finish()
 //                                    startActivity(
 //                                        Intent(
