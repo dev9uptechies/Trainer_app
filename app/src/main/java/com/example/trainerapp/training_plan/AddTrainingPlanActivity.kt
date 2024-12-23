@@ -675,29 +675,25 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             .setCalendarDisplayMode(CalendarMode.MONTHS)
             .commit()
 
-        // First decorator: Disable dates outside the min/max range
         calendarView.addDecorator(object : DayViewDecorator {
             override fun shouldDecorate(day: CalendarDay?): Boolean {
                 return day?.let {
                     val dateInMillis = it.calendar.timeInMillis
-                    // Disable the dates outside the min/max range
                     dateInMillis < minDateMillis || dateInMillis > maxDateMillis
                 } ?: false
             }
 
             override fun decorate(view: DayViewFacade?) {
-                view?.addSpan(ForegroundColorSpan(Color.GRAY))  // Disabled color
+                view?.addSpan(ForegroundColorSpan(Color.GRAY))
                 view?.setDaysDisabled(true)
             }
         })
 
-        // Second decorator: Disable dates that overlap with other plans
         calendarView.addDecorator(object : DayViewDecorator {
             override fun shouldDecorate(day: CalendarDay?): Boolean {
                 return day?.let {
                     val dateInMillis = it.calendar.timeInMillis
                     selectedDateRanges.forEachIndexed { index, range ->
-                        // If the current plan being edited (layoutIndex) is not the one being selected, disable the date
                         if (layoutIndex != null && layoutIndex != index) {
                             if (dateInMillis in range.first..range.second) {
                                 return true
@@ -709,8 +705,8 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             }
 
             override fun decorate(view: DayViewFacade?) {
-                view?.addSpan(ForegroundColorSpan(Color.GRAY))  // Gray color for disabled dates
-                view?.setDaysDisabled(true)  // Disable these dates
+                view?.addSpan(ForegroundColorSpan(Color.GRAY))
+                view?.setDaysDisabled(true)
             }
         })
 

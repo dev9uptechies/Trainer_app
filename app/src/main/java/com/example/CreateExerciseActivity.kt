@@ -372,6 +372,12 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                     "TAG",
                     "onCreate: " + "equipments :- ${id} \n Goal :- $goalId \n category :- $categoryId \n timer :- $timerId \n section :- $sectionId \n name :- ${createExerciseBinding.edtName} \n notes :- ${createExerciseBinding.edtNotes} \n video :- ${videolink} \n imageFile :- $image_file\n"
                 )
+
+                Log.d("TIMERSTRING", "onCreate: $timerId")
+                if (timerId == null ){
+                    Toast.makeText(this, "Select Timer First.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
                 if (isValidate) {
                     Progress_bar.visibility = View.VISIBLE
                     val str = arrayOfNulls<Int>(id.size)
@@ -388,6 +394,13 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                     val categoryString = categoryId.id.toString()
                     val timerString = timerId.id.toString()
                     val noteString = createExerciseBinding.edtNotes.text.toString().trim()
+
+                    Log.d("TIMERSTRING", "onCreate: $timerString")
+                    if (timerString == null ){
+                        Toast.makeText(this, "Select Timer First.", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
                     // val videoString = videolink!!.trim()
                     val equipmentIds: MultipartBody.Part =
                         MultipartBody.Part.createFormData("equipment_ids", array.toString())
