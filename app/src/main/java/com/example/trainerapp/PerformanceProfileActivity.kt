@@ -246,7 +246,6 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
         val bottomSheetDialog = BottomSheetDialog(this)
         val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_layout, null)
 
-        // Set the view to the bottom sheet dialog
         bottomSheetDialog.setContentView(view)
 
         bottomSheetDialog.behavior.isDraggable = true
@@ -844,21 +843,39 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
 
         Log.d("aid","aid:-  $aid")
 
-        if (aid != 0) {
-            updateUI2(
-                performanceProfileBinding.viewAverageGraph,
-                performanceProfileBinding.viewQualityGraph
-            )
-            loadPerformance(aid)
-        }
-        else{
-            updateUI(
-                performanceProfileBinding.viewAverageGraph,
-                performanceProfileBinding.viewQualityGraph
-            )
+
+        val userType = preferenceManager.GetFlage()
+        Log.d("USERTYPE", "initViews: $userType")
+
+        if (userType == "Athlete") {
+//            if (aid != 0) {
+                updateUI2(
+                    performanceProfileBinding.viewAverageGraph,
+                    performanceProfileBinding.viewQualityGraph
+                )
+                loadPerformance(aid)
+//            }
+
+        } else {
+            if (aid != 0) {
+                updateUI2(
+                    performanceProfileBinding.viewAverageGraph,
+                    performanceProfileBinding.viewQualityGraph
+                )
+                loadPerformance(aid)
+            }
+            else{
+                updateUI(
+                    performanceProfileBinding.viewAverageGraph,
+                    performanceProfileBinding.viewQualityGraph
+                )
+            }
+
         }
 
     }
+
+
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
         when (string) {

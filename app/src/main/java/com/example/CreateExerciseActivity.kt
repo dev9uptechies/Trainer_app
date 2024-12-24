@@ -369,15 +369,10 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         createExerciseBinding.nextCard.setOnClickListener {
             if (areAllFieldsFilled()) {
                 Log.d(
-                    "TAG",
-                    "onCreate: " + "equipments :- ${id} \n Goal :- $goalId \n category :- $categoryId \n timer :- $timerId \n section :- $sectionId \n name :- ${createExerciseBinding.edtName} \n notes :- ${createExerciseBinding.edtNotes} \n video :- ${videolink} \n imageFile :- $image_file\n"
+                    "QPQPQPQPPQPQ",
+                    "onCreate: " + "equipments :- ${id} \n Goal :- $goalId \n category :- $categoryId \n timer :- ${timerId.id} \n section :- $sectionId \n name :- ${createExerciseBinding.edtName} \n notes :- ${createExerciseBinding.edtNotes} \n video :- ${videolink} \n imageFile :- $image_file\n"
                 )
 
-                Log.d("TIMERSTRING", "onCreate: $timerId")
-                if (timerId == null ){
-                    Toast.makeText(this, "Select Timer First.", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
                 if (isValidate) {
                     Progress_bar.visibility = View.VISIBLE
                     val str = arrayOfNulls<Int>(id.size)
@@ -401,7 +396,6 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                         return@setOnClickListener
                     }
 
-                    // val videoString = videolink!!.trim()
                     val equipmentIds: MultipartBody.Part =
                         MultipartBody.Part.createFormData("equipment_ids", array.toString())
                     if (requestCode != 0) {
@@ -493,8 +487,10 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                     })
                 }else{
                     createExerciseBinding.ProgressBar.visibility = View.GONE
-                    Toast.makeText(this, "fill all fild", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "fill all filed", Toast.LENGTH_SHORT).show()
                 }
+            }else{
+                Toast.makeText(this, "Fill All Filed", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -1218,7 +1214,6 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                 createExerciseBinding.imageError.text = "Please Upload Video"
             } else {
                 createExerciseBinding.imageError.visibility = View.GONE
-
             }
 
             if (name == "") {
@@ -1229,12 +1224,37 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                 createExerciseBinding.nameError.visibility = View.GONE
             }
 
-            if (createExerciseBinding.spGoal.selectedItem == "Enter Goal") {
+            if (createExerciseBinding.spSection.selectedItem == "Select Section" || sectionId.id == null) {
+                createExerciseBinding.selectionError.visibility = View.VISIBLE
+                createExerciseBinding.selectionError.text = "Please Select Section"
+                return false
+            } else {
+                createExerciseBinding.selectionError.visibility = View.GONE
+            }
+
+            if (createExerciseBinding.spGoal.selectedItem == "Enter Goal" || goalId.id == null) {
                 createExerciseBinding.goalError.visibility = View.VISIBLE
                 createExerciseBinding.goalError.text = "Please Select Goal"
-
+                return false
             } else {
                 createExerciseBinding.goalError.visibility = View.GONE
+            }
+
+
+            if (createExerciseBinding.sptype.selectedItem == "Select Type" || createExerciseBinding.edtType.text.toString() == "") {
+                createExerciseBinding.typeError.visibility = View.VISIBLE
+                createExerciseBinding.typeError.text = "Please Select Type"
+                return false
+            } else {
+                createExerciseBinding.typeError.visibility = View.GONE
+            }
+
+            if (createExerciseBinding.spCategory.selectedItem == "Select Category" || createExerciseBinding.edtCategory.text.toString() == "") {
+                createExerciseBinding.categoryError.visibility = View.VISIBLE
+                createExerciseBinding.categoryError.text = "Please Select Category"
+                return false
+            } else {
+                createExerciseBinding.categoryError.visibility = View.GONE
             }
 
             if (notes == "") {
@@ -1243,6 +1263,14 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                 return false
             } else {
                 createExerciseBinding.notesError.visibility = View.GONE
+            }
+
+            if (createExerciseBinding.spTimer.selectedItem == "Select Timer" || timerId.id == null) {
+                createExerciseBinding.timerError.visibility = View.VISIBLE
+                createExerciseBinding.timerError.text = "Please Select Timer"
+                return false
+            } else {
+                createExerciseBinding.timerError.visibility = View.GONE
             }
 
             return true

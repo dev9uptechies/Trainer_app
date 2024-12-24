@@ -72,6 +72,8 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                     val code = response.code()
                     if (code == 200) {
                         loadData()
+                        exerciseBinding.generalCard.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
+                        exerciseBinding.specificCard.setCardBackgroundColor(resources.getColor(R.color.grey))
                         Log.d("Get Profile Data ", "${response.body()}")
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@ExerciseActivity)
@@ -121,6 +123,8 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
 
         exerciseBinding.scrollView.setOnRefreshListener {
             loadData()
+            exerciseBinding.generalCard.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
+            exerciseBinding.specificCard.setCardBackgroundColor(resources.getColor(R.color.grey))
             exerciseBinding.scrollView.isRefreshing = false
         }
 
@@ -580,6 +584,9 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     loadData()
+                                    exerciseBinding.generalCard.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
+                                    exerciseBinding.specificCard.setCardBackgroundColor(resources.getColor(R.color.grey))
+
 //                                    finish()
 //                                    startActivity(
 //                                        Intent(

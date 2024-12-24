@@ -64,7 +64,8 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="@dimen/_17sdp"
-                android:src="@drawable/ic_delete_white" />
+                android:src="@drawable/img_delete"
+                app:tint="@color/white" />
 
         </LinearLayout>
 

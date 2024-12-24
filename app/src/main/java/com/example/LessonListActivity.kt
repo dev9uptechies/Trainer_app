@@ -665,7 +665,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
     }
 
     private fun getAthleteData() {
-        athleteData.clear() // Clear previous data
+        athleteData.clear()
         binding.progresBar.visibility = View.VISIBLE
 
         apiInterface.GetAthleteList()!!.enqueue(object : Callback<AthleteData> {
@@ -679,8 +679,6 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
 
                     if (success) {
                         val data = resource?.data
-
-
 
                         if (resource?.data!! != null) {
                             if (data != null) {

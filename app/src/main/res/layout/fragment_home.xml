@@ -119,39 +119,136 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
 
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
 
-                                <TextView
-                                    android:id="@+id/tv_date"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="@dimen/_20sdp"
-                                    android:layout_weight="1"
-                                    android:fontFamily="@font/poppins_semi_bold"
-                                    android:text="March, 2022"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/_10sdp"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
+                                    <TextView
+                                        android:id="@+id/tv_date"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_20sdp"
+                                        android:layout_weight="1"
+                                        android:fontFamily="@font/poppins_semi_bold"
+                                        android:text="March, 2022"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/_10sdp"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
 
-                                <ImageView
-                                    android:layout_width="@dimen/_17sdp"
-                                    android:layout_height="@dimen/_17sdp"
-                                    android:layout_marginEnd="@dimen/_20sdp"
-                                    android:src="@drawable/ic_info"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintTop_toTopOf="@+id/tv_date" />
+                                    <ImageView
+                                        android:id="@id/dialog_button"
+                                        android:layout_width="@dimen/_17sdp"
+                                        android:layout_height="@dimen/_17sdp"
+                                        android:layout_marginEnd="@dimen/_20sdp"
+                                        android:src="@drawable/ic_info"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintTop_toTopOf="@+id/tv_date" />
 
+                                    <LinearLayout
+                                        android:id="@+id/dialog"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="@dimen/_20sdp"
+                                        android:background="@drawable/dialog_home_back"
+                                        android:elevation="8dp"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:padding="16dp"
+                                        android:visibility="gone"
+                                        app:layout_constraintEnd_toStartOf="@+id/dialog_button"
+                                        app:layout_constraintTop_toTopOf="parent">
+
+                                        <!-- Percentage Ranges -->
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="horizontal"
+                                            android:paddingBottom="8dp">
+
+                                            <!-- Left Column -->
+                                            <LinearLayout
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:orientation="vertical"
+                                                android:paddingEnd="16dp">
+
+                                                <TextView
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_marginBottom="4dp"
+                                                    android:fontFamily="@font/poppins_medium"
+                                                    android:text="0% - 20%"
+                                                    android:textColor="#00FF00"
+                                                    android:textSize="16sp" />
+
+                                                <TextView
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_marginBottom="4dp"
+                                                    android:fontFamily="@font/poppins_medium"
+                                                    android:text="20% - 40%"
+                                                    android:textColor="#32CD32"
+                                                    android:textSize="16sp" />
+
+                                                <TextView
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:fontFamily="@font/poppins_medium"
+                                                    android:text="40% - 60%"
+                                                    android:textColor="#FFD700"
+                                                    android:textSize="16sp" />
+                                            </LinearLayout>
+
+                                            <LinearLayout
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:orientation="vertical">
+
+                                                <TextView
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_marginBottom="4dp"
+                                                    android:fontFamily="@font/poppins_medium"
+                                                    android:text="60% - 80%"
+                                                    android:textColor="#FFA500"
+                                                    android:textSize="16sp" />
+
+                                                <TextView
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:fontFamily="@font/poppins_medium"
+                                                    android:text="80% - 100%"
+                                                    android:textColor="#FF0000"
+                                                    android:textSize="16sp" />
+                                            </LinearLayout>
+                                        </LinearLayout>
+
+                                        <androidx.appcompat.widget.AppCompatButton
+                                            android:id="@+id/colse_button"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
+                                            android:background="@drawable/dialog_home_btn"
+                                            android:fontFamily="@font/poppins_medium"
+                                            android:gravity="center"
+                                            android:text="Close"
+                                            android:textColor="#FFFFFF" />
+
+                                    </LinearLayout>
+
+
+                                </androidx.constraintlayout.widget.ConstraintLayout>
                             </LinearLayout>
+
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/calendar_ly"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-
                                 android:layout_marginStart="@dimen/_10sdp"
                                 android:layout_marginTop="@dimen/_15sdp"
-                                android:layout_marginEnd="@dimen/_10sdp"
-                                app:layout_constraintTop_toBottomOf="@+id/tv_date">
+                                android:layout_marginEnd="@dimen/_10sdp">
 
                                 <LinearLayout
                                     android:id="@+id/legendLayout"
@@ -236,34 +333,32 @@
                                 </LinearLayout>
 
                                 <androidx.core.widget.NestedScrollView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
-
-                                <com.kizitonwose.calendarview.CalendarView
-                                    android:id="@+id/exSevenCalendar"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/_5sdp"
-                                    android:background="@null"
-                                    app:cv_dayViewResource="@layout/example_3_calendar_day"
-                                    app:cv_hasBoundaries="false"
-                                    app:cv_inDateStyle="allMonths"
-                                    app:cv_maxRowCount="1"
-                                    app:cv_monthHeaderResource="@layout/example_3_calendar_header"
-                                    app:cv_orientation="horizontal"
-                                    app:cv_outDateStyle="none"
-                                    app:cv_scrollMode="paged"
-                                    android:overScrollMode="never"
-                                    app:flow_horizontalGap="5dp"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:spanCount="6" />
+                                    android:layout_height="wrap_content">
+
+                                    <com.kizitonwose.calendarview.CalendarView
+                                        android:id="@+id/exSevenCalendar"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="@dimen/_5sdp"
+                                        android:background="@null"
+                                        android:overScrollMode="never"
+                                        app:cv_dayViewResource="@layout/example_3_calendar_day"
+                                        app:cv_hasBoundaries="false"
+                                        app:cv_inDateStyle="allMonths"
+                                        app:cv_maxRowCount="1"
+                                        app:cv_monthHeaderResource="@layout/example_3_calendar_header"
+                                        app:cv_orientation="horizontal"
+                                        app:cv_outDateStyle="none"
+                                        app:cv_scrollMode="paged"
+                                        app:flow_horizontalGap="5dp"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:spanCount="6" />
 
 
-                            </androidx.core.widget.NestedScrollView>
-
-
+                                </androidx.core.widget.NestedScrollView>
 
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -317,8 +412,8 @@
                                 android:layout_marginStart="@dimen/_10sdp"
                                 android:layout_marginTop="@dimen/_10sdp"
                                 android:layout_marginEnd="@dimen/_10sdp"
-                                app:cardBackgroundColor="#1A929492"
                                 android:visibility="gone"
+                                app:cardBackgroundColor="#1A929492"
                                 app:cardCornerRadius="@dimen/_10sdp"
                                 app:layout_constraintTop_toBottomOf="@+id/select_ly">
 
@@ -455,20 +550,20 @@
                                 android:layout_marginTop="@dimen/_10sdp"
                                 android:fontFamily="@font/poppins_medium"
                                 android:text="Your Next Lesson"
-                                android:visibility="gone"
                                 android:textColor="@color/splash_text_color"
                                 android:textSize="@dimen/_18sdp"
+                                android:visibility="gone"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/season_ly" />
 
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/view_recycler"
                                 android:layout_width="match_parent"
-                                android:visibility="gone"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_10sdp"
                                 android:layout_marginTop="@dimen/_10sdp"
                                 android:layout_marginEnd="@dimen/_10sdp"
+                                android:visibility="gone"
                                 app:layout_constraintTop_toBottomOf="@+id/next_tv"
                                 tools:itemCount="6"
                                 tools:listitem="@layout/next_lession_rly_item">
@@ -477,6 +572,7 @@
 
 
                         </LinearLayout>
+
 
                         <LinearLayout
                             android:id="@+id/Instruction_linera"
@@ -524,9 +620,9 @@
                             android:id="@+id/liner_athlete"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_10sdp"
                             android:orientation="vertical"
                             android:visibility="gone"
-                            android:layout_marginTop="@dimen/_10sdp"
                             app:layout_constraintTop_toBottomOf="@+id/information_linear">
 
                             <LinearLayout
@@ -1868,7 +1964,6 @@
                         </LinearLayout>
 
 
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </ScrollView>
@@ -1895,7 +1990,7 @@
         android:layout_gravity="start"
         android:background="#141414"
         android:fitsSystemWindows="true"
-        android:visibility="visible"
+        android:visibility="gone"
         app:headerLayout="@layout/header_layout"
         app:itemIconTint="@color/white"
         app:itemTextAppearance="@style/DrawerMenuTextAppearance"

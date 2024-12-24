@@ -184,135 +184,132 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
                 object : Callback<Exercise> {
                     override fun onResponse(call: Call<Exercise>, response: Response<Exercise>) {
                         Progress_bar.visibility = View.GONE
-                        Log.d("Response :- ", "${response.body()}")
-                        Log.d("Response :- ", "${response.code()}")
-                        Log.d("Response :- ", "${response.body()!!.data!!.size}")
-                        Log.d("Response :- ", "${response.isSuccessful}")
+
+                        Log.d("Response Body", response.body().toString())
+                        Log.d("Response Code", response.code().toString())
+
                         val code = response.code()
-                        if (code == 200) {
-                            if (response.isSuccessful) {
-                                val data = response.body()!!.data?.filter {
-                                    it.id == exercise_id?.toInt()
+                        if (code == 200 && response.isSuccessful) {
+                            val data = response.body()?.data?.filter { it.id == exercise_id?.toInt() }
+
+                            if (!data.isNullOrEmpty()) {
+                                val exercise = data[0]
+
+                                // Populate Exercise Data
+                                editExerciseBinding.edtName.setText(exercise.name ?: "")
+                                editExerciseBinding.edtType.setText(exercise.type ?: "")
+                                editExerciseBinding.edtNotes.setText(exercise.notes ?: "")
+
+                                // Goal
+                                if (exercise.goal_id != null && exercise.goal != null) {
+                                    editExerciseBinding.edtGoal.setText(exercise.goal.goal_name ?: "")
+                                    goalId = SelectedValue(exercise.goal_id.toInt())
+                                } else {
+                                    editExerciseBinding.edtGoal.text.clear()
+                                    goalId = SelectedValue(0)
                                 }
-                                if (data!! != null) {
-                                    if (data[0].name!!.isEmpty() || data[0].name == null) {
-                                        editExerciseBinding.edtName.text.clear()
-                                    } else {
-                                        editExerciseBinding.edtName.setText(data[0].name)
-                                    }
 
-                                    if (data[0].type!!.isEmpty() || data[0].type == null) {
-                                        editExerciseBinding.edtType.text.clear()
-                                    } else {
-                                        editExerciseBinding.edtType.setText(data[0].type)
-                                    }
+                                // Section
+                                if (exercise.section_id != null && exercise.section != null) {
+                                    editExerciseBinding.edtSection.setText(exercise.section.section_name ?: "")
+                                    sectionId = SelectedValue(exercise.section_id.toInt())
+                                } else {
+                                    editExerciseBinding.edtSection.text.clear()
+                                    sectionId = SelectedValue(0)
+                                }
 
-                                    if (data[0].notes == null || data[0].notes!!.isEmpty()) {
-                                        editExerciseBinding.edtNotes.text.clear()
-                                    } else {
-                                        editExerciseBinding.edtNotes.setText(data[0].notes)
-                                    }
+                                // Category
+                                if (exercise.category_id != null && exercise.category != null) {
+                                    editExerciseBinding.edtCategory.setText(exercise.category.category_name ?: "")
+                                    categoryId = SelectedValue(exercise.category_id.toInt())
+                                } else {
+                                    editExerciseBinding.edtCategory.text.clear()
+                                    categoryId = SelectedValue(0)
+                                }
 
-                                    if (data[0].goal_id.toString()
-                                            .isEmpty() || data[0].goal_id == null
-                                    ) {
-                                        editExerciseBinding.edtGoal.text.clear()
-                                        goalId = SelectedValue(0)
-                                    } else {
-                                        editExerciseBinding.edtGoal.setText(data[0].goal!!.goal_name)
-                                        goalId = SelectedValue(data[0].goal_id!!.toInt())
-                                    }
+                                // Timer
+                                if (exercise.timer_id != null && exercise.timer_name != null) {
+                                    editExerciseBinding.edtTimer.setText(exercise.timer_name.timer_name_name ?: "")
+                                    timerId = SelectedValue(exercise.timer_id.toInt())
+                                } else {
+                                    editExerciseBinding.edtTimer.text.clear()
+                                    timerId = SelectedValue(0)
+                                }
 
-                                    if (data[0].section_id.toString()
-                                            .isEmpty() || data[0].section_id == null
-                                    ) {
-                                        editExerciseBinding.edtSection.text.clear()
-                                        sectionId = SelectedValue(0)
-                                    } else {
-                                        editExerciseBinding.edtSection.setText(data[0].section!!.section_name)
-                                        sectionId = SelectedValue(data[0].section_id!!.toInt())
-                                    }
+                                checkPredefineValue(exercise.exercise_equipments)
 
-                                    if (data[0].category_id.toString()
-                                            .isEmpty() || data[0].category_id == null
-                                    ) {
-                                        editExerciseBinding.edtCategory.text.clear()
-                                        categoryId = SelectedValue(0)
-                                    } else {
-                                        editExerciseBinding.edtCategory.setText(data[0].category!!.category_name)
-                                        categoryId = SelectedValue(data[0].category_id!!.toInt())
+                                when {
+                                    !exercise.video.isNullOrEmpty() -> {
+                                        playNormalVideo("https://trainers.codefriend.in${exercise.video}")
                                     }
-
-                                    if (data[0].timer_id.toString()
-                                            .isEmpty() || data[0].timer_id == null
-                                    ) {
-                                        editExerciseBinding.edtTimer.text.clear()
-                                        timerId = SelectedValue(0)
-                                    } else {
-                                        editExerciseBinding.edtTimer.setText(
-                                            data[0].timer_name!!.timer_name_name ?: ""
-                                        )
-                                        timerId = SelectedValue(data[0].timer_id!!.toInt())
-                                    }
-                                    checkPredefineValue(data[0].exercise_equipments)
-
-                                    if (data[0].video != null) {
-                                        playNormalVideo("https://trainers.codefriend.in" + data[0].video!!)
-                                        Log.d(
-                                            "Video Type :-",
-                                            "https://trainers.codefriend.in" + data[0].video!!
-                                        )
-                                    } else if (data[0].video_link != null) {
-                                        if (isYouTubeUrl(data[0].video_link!!)) {
-                                            playYouTubeVideo(data[0].video_link!!)
+                                    !exercise.video_link.isNullOrEmpty() -> {
+                                        if (isYouTubeUrl(exercise.video_link)) {
+                                            playYouTubeVideo(exercise.video_link)
                                         } else {
-                                            playNormalVideo(data[0].video_link!!)
+                                            playNormalVideo(exercise.video_link)
                                         }
-                                    } else {
+                                    }
+                                    else -> {
                                         editExerciseBinding.videoUpload.visibility = View.GONE
                                         editExerciseBinding.selectUploadLy.visibility = View.VISIBLE
                                     }
                                 }
+                            } else {
+                                Log.d("Response", "No matching data found.")
+                                Toast.makeText(
+                                    this@EdiExerciseActivity,
+                                    "No exercise data found.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         } else if (code == 403) {
                             Utils.setUnAuthDialog(this@EdiExerciseActivity)
                         } else {
                             Toast.makeText(
                                 this@EdiExerciseActivity,
-                                "" + response.message(),
+                                "Error: ${response.message()}",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            call.cancel()
                         }
-                    }
-
-                    private fun checkPredefineValue(exerciseEquipments: List<Exercise.ExerciseEquipment>?) {
-                        for (i in exerciseEquipments!!) {
-                            id.add(i.exercise_equipment_id!!.toInt())
-                        }
-                        Log.d("Array list :-", id.toString())
-                        editExerciseBinding.equipmentRly.layoutManager =
-                            GridLayoutManager(this@EdiExerciseActivity, 2)
-                        adapter =
-                            EquipmentAdapter(
-                                Data,
-                                this@EdiExerciseActivity,
-                                this@EdiExerciseActivity,
-                                id
-                            )
-                        editExerciseBinding.equipmentRly.adapter = adapter
-
                     }
 
                     override fun onFailure(call: Call<Exercise>, t: Throwable) {
-                        Log.d("Response :- ", "${t.message}")
+                        Progress_bar.visibility = View.GONE
+                        Log.d("Response Error", t.message ?: "Unknown error")
+                        Toast.makeText(
+                            this@EdiExerciseActivity,
+                            "Failed to fetch exercise data: ${t.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
+                    private fun checkPredefineValue(exerciseEquipments: List<Exercise.ExerciseEquipment>?) {
+                        if (!exerciseEquipments.isNullOrEmpty()) {
+                            exerciseEquipments.forEach {
+                                id.add(it.exercise_equipment_id?.toInt() ?: 0)
+                            }
+                            Log.d("Array List", id.toString())
+                        }
+
+                        editExerciseBinding.equipmentRly.layoutManager = GridLayoutManager(this@EdiExerciseActivity, 2)
+                        adapter = EquipmentAdapter(
+                            Data,
+                            this@EdiExerciseActivity,
+                            this@EdiExerciseActivity,
+                            id
+                        )
+                        editExerciseBinding.equipmentRly.adapter = adapter
+                    }
                 }
             )
         } catch (e: Exception) {
             Progress_bar.visibility = View.GONE
-            Log.d("Response :- ", "${e.message}")
+            Log.d("Exception", e.message ?: "Unknown exception")
+            Toast.makeText(
+                this@EdiExerciseActivity,
+                "An error occurred: ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

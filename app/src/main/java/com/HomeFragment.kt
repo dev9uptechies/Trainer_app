@@ -1,21 +1,27 @@
     package com
     
     import android.annotation.SuppressLint
+    import android.app.Dialog
     import android.content.Context
     import android.content.Intent
     import android.os.Build
     import android.os.Bundle
     import android.util.Log
+    import android.view.Gravity
     import android.view.LayoutInflater
     import android.view.MenuItem
     import android.view.View
     import android.view.ViewGroup
+    import android.view.Window
+    import android.view.WindowManager
+    import android.widget.Button
     import android.widget.TextView
     import android.widget.Toast
     import androidx.annotation.RequiresApi
     import androidx.appcompat.app.ActionBarDrawerToggle
     import androidx.appcompat.app.AppCompatActivity
     import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
+    import androidx.appcompat.widget.AppCompatButton
     import androidx.core.text.HtmlCompat
     import androidx.core.view.GravityCompat
     import androidx.core.view.children
@@ -153,6 +159,14 @@
             }
 
 
+            homeFragmentBinding.dialogButton.setOnClickListener {
+//                showWorkoutInfoDialog(requireContext())
+                homeFragmentBinding.dialog.visibility = View.VISIBLE
+            }
+
+            homeFragmentBinding.colseButton.setOnClickListener {
+                homeFragmentBinding.dialog.visibility = View.GONE
+            }
 
             homeFragmentBinding.sidemenu.setOnClickListener {
                 homeFragmentBinding.drawerLayout.openDrawer(GravityCompat.START)
@@ -168,7 +182,36 @@
             return homeFragmentBinding.root
         }
 
+        fun showWorkoutInfoDialog(context: Context) {
+            val dialog = Dialog(context)
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(R.layout.dialog_home)
 
+            // Set dialog attributes for precise positioning
+            val window = dialog.window
+            if (window != null) {
+                val params = window.attributes
+                params.gravity = Gravity.TOP or Gravity.START // Adjusted for exact positioning
+
+                params.x = 200
+                params.y = 500 // Replace with your required vertical offset (distance from top)
+
+                window.attributes = params
+                window.setLayout(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+                window.setBackgroundDrawableResource(android.R.color.transparent) // Ensure rounded background
+            }
+
+            // Handle the close button
+            dialog.findViewById<Button>(R.id.colse_button)?.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            // Show the dialog
+            dialog.show()
+        }
         private fun setContent() {
             val workout = arrayOf("Instruction", "Information", "News")
 
@@ -625,7 +668,6 @@
 
                         when (response.code()) {
                             200 -> {
-                                // Check if the response is successful and the body is not null
                                 response.body()?.let { responseBody ->
                                     val diaryData = responseBody.data
 
@@ -644,23 +686,13 @@
                                             )
                                         }
 
-                                        // Pass the data to a method to update the UI
                                         SetData(diaryData)
                                     } else {
                                         Log.e("ERROR", "Data is null")
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "No diary data available",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+
                                     }
                                 } ?: run {
-                                    Log.e("ERROR", "Response body is null")
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Failed to retrieve data",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Log.e("ERROR", "Response body is null: $response")
                                 }
                             }
                             403 -> {
