@@ -858,12 +858,12 @@ class AddTrainingPlanActivity : AppCompatActivity() {
     }
 
 
-fun showConflictError(layoutIndex: Int) {
-    val layout = trainingPlanContainer.getChildAt(layoutIndex)
-    val errorTextView = layout.findViewById<TextView>(R.id.linear_days_list)
-    errorTextView.text = "Date conflict with another plan"
-    errorTextView.setTextColor(Color.RED)
-}
+    fun showConflictError(layoutIndex: Int) {
+        val layout = trainingPlanContainer.getChildAt(layoutIndex)
+        val errorTextView = layout.findViewById<TextView>(R.id.linear_days_list)
+        errorTextView.text = "Date conflict with another plan"
+        errorTextView.setTextColor(Color.RED)
+    }
 
     private fun disablePreviouslySelectedRanges(
         calendarView: MaterialCalendarView,

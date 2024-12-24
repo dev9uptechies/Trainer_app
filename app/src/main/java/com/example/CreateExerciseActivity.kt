@@ -487,7 +487,6 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                     })
                 }else{
                     createExerciseBinding.ProgressBar.visibility = View.GONE
-                    Toast.makeText(this, "fill all filed", Toast.LENGTH_SHORT).show()
                 }
             }else{
                 Toast.makeText(this, "Fill All Filed", Toast.LENGTH_SHORT).show()
