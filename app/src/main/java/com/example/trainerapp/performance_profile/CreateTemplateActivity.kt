@@ -130,6 +130,8 @@ class CreateTemplateActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             }
         }
 
+        createTemplateBinding.back.setOnClickListener { finish() }
+
         createTemplateBinding.saveCard.setOnClickListener {
             if (createTemplateBinding.edtAthletes.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Add Template Name First", Toast.LENGTH_SHORT).show()

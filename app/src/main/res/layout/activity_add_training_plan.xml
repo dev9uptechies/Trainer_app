@@ -80,7 +80,7 @@
             android:id="@+id/error_program"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Please enter program name"
+            android:text="Please enter planning name"
             android:textColor="@color/splash_text_color"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@+id/edt_ly"

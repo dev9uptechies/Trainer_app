@@ -51,16 +51,16 @@ class SelectEventActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                 response: Response<EventListData?>
             ) {
                 selectEventBinding.progressBar.visibility = View.GONE
-                Log.d("TAG", response.code().toString() + "")
+                Log.d("TAG", response.code().toString())
                 val code = response.code()
                 if (code == 200) {
                     val resource: EventListData? = response.body()
-                    val Success: Boolean = resource?.status!!
-                    val Message: String = resource.message!!
-                    if (Success == true) {
-                        EventList = resource.data!!
-                        if (EventList != null) {
-                            initRecycler(EventList)
+                    val success: Boolean = resource?.status ?: false
+                    val message: String = resource?.message ?: "Unknown error"
+                    if (success) {
+                        val eventList = resource!!.data
+                        if (!eventList.isNullOrEmpty()) {
+                            initRecycler(eventList)
                         } else {
                             Toast.makeText(
                                 this@SelectEventActivity,
@@ -68,13 +68,19 @@ class SelectEventActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
+                    } else {
+                        Toast.makeText(
+                            this@SelectEventActivity,
+                            message,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else if (code == 403) {
                     Utils.setUnAuthDialog(this@SelectEventActivity)
                 } else {
                     Toast.makeText(
                         this@SelectEventActivity,
-                        "" + response.message(),
+                        response.message(),
                         Toast.LENGTH_SHORT
                     ).show()
                     call.cancel()
@@ -83,7 +89,7 @@ class SelectEventActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
             override fun onFailure(call: Call<EventListData?>, t: Throwable) {
                 selectEventBinding.progressBar.visibility = View.GONE
-                Toast.makeText(this@SelectEventActivity, "" + t.message, Toast.LENGTH_SHORT)
+                Toast.makeText(this@SelectEventActivity, t.message ?: "Unknown error", Toast.LENGTH_SHORT)
                     .show()
                 call.cancel()
             }

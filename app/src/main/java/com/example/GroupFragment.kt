@@ -96,6 +96,15 @@
                 startActivity(Intent(requireContext(), CreateGropActivity::class.java))
             }
             callGroupApi()
+
+            val userType = preferenceManager.GetFlage()
+
+            if (userType == "Athlete") {
+                groupBinding.createGroup.visibility = View.GONE
+            }else{
+                groupBinding.createGroup.visibility = View.VISIBLE
+            }
+
             return groupBinding.root
         }
 

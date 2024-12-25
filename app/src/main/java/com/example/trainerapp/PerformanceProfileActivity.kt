@@ -481,18 +481,22 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                         response: Response<PerformanceCategory>
                     ) {
                         performanceProfileBinding.ProgressBar.visibility = View.GONE
-                        Log.d("TAG", response.code().toString() + "")
+                        Log.d("TAGLOARD", response.code().toString() + "")
                         val code = response.code()
                         if (code == 200) {
+
+                            val data = response.body()!!.data ?: mutableListOf()
+
+                            Log.d("SGFSSFSFSFF", "onResponse: ${data}")
+
                             if (response.isSuccessful) {
                                 val data = response.body()!!.data ?: mutableListOf()
 
                                 val addedCategoryIds = categoryData.map { it.id }.toMutableSet()
 
                                 for (i in data) {
-                                    // Only add if the category is not already added
                                     if (!addedCategoryIds.contains(i.id)) {
-                                        Log.d("Category Data :-", "${i.id} \t ${i.name}")
+                                        Log.d("Category DataLOAD :-", "${i.id} \t ${i.name}")
                                         categoryData.add(i)
                                         addedCategoryIds.add(i.id) // Mark as added
                                     }
@@ -853,7 +857,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                     performanceProfileBinding.viewAverageGraph,
                     performanceProfileBinding.viewQualityGraph
                 )
-                loadPerformance(aid)
+                loadPerformance(196)
 //            }
 
         } else {

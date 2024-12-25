@@ -138,66 +138,49 @@ class FinalRegisterActivity : AppCompatActivity() {
                         call: Call<RegisterData?>,
                         response: Response<RegisterData?>
                     ) {
-                        Log.d("TAG", response.code().toString() + "")
-                        val code = response.code()
-                        if (code == 200) {
-                            val resource: RegisterData? = response.body()
-                            val Success: Boolean = resource?.status!!
-                            val Message: String = resource.message!!
-                            preferenceManager.setToken(resource.token)
-                            preferenceManager.setUserId(response.body()!!.data!!.id.toString())
-                            preferenceManager.setUserLogIn(true)
-                            if (Success.equals(true)) {
-                                progress_bar.visibility = View.GONE
-                                startActivity(
-                                    Intent(
-                                        this@FinalRegisterActivity,
-                                        SelectSportActivity::class.java
-                                    )
-                                )
-                                finish()
+                        Log.d("TAG", response.code().toString())
+                        if (response.isSuccessful) {
+                            val resource = response.body()
+
+                            if (resource != null) {
+                                val success = resource.status ?: false
+                                val message = resource.message ?: "Unknown error"
+                                val token = resource.token
+                                val userId = resource.data?.id?.toString() ?: ""
+
+                                // Handle success
+                                if (success) {
+                                    preferenceManager.setToken(token)
+                                    preferenceManager.setUserId(userId)
+                                    preferenceManager.setUserLogIn(true)
+
+                                    progress_bar.visibility = View.GONE
+                                    startActivity(Intent(this@FinalRegisterActivity, SelectSportActivity::class.java))
+                                    finish()
+                                } else {
+                                    progress_bar.visibility = View.GONE
+                                    Toast.makeText(this@FinalRegisterActivity, message, Toast.LENGTH_SHORT).show()
+                                }
                             } else {
                                 progress_bar.visibility = View.GONE
-                                Toast.makeText(
-                                    this@FinalRegisterActivity,
-                                    "" + Message,
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
+                                Toast.makeText(this@FinalRegisterActivity, "Response body is null", Toast.LENGTH_SHORT).show()
                             }
                         } else {
                             progress_bar.visibility = View.GONE
                             val message = response.message()
-                            Toast.makeText(
-                                this@FinalRegisterActivity,
-                                "" + message,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+                            Toast.makeText(this@FinalRegisterActivity, message, Toast.LENGTH_SHORT).show()
                             call.cancel()
-                            startActivity(
-                                Intent(
-                                    this@FinalRegisterActivity,
-                                    SignInActivity::class.java
-                                )
-                            )
+                            startActivity(Intent(this@FinalRegisterActivity, SignInActivity::class.java))
                             finish()
                         }
-
                     }
 
                     override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
                         progress_bar.visibility = View.GONE
-                        Toast.makeText(
-                            this@FinalRegisterActivity,
-                            "" + t.message,
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+                        Toast.makeText(this@FinalRegisterActivity, t.message ?: "An error occurred", Toast.LENGTH_SHORT).show()
                         call.cancel()
                     }
                 })
-
             }
         }
 

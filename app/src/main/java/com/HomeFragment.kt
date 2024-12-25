@@ -181,42 +181,10 @@
 
             return homeFragmentBinding.root
         }
-
-        fun showWorkoutInfoDialog(context: Context) {
-            val dialog = Dialog(context)
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setContentView(R.layout.dialog_home)
-
-            // Set dialog attributes for precise positioning
-            val window = dialog.window
-            if (window != null) {
-                val params = window.attributes
-                params.gravity = Gravity.TOP or Gravity.START // Adjusted for exact positioning
-
-                params.x = 200
-                params.y = 500 // Replace with your required vertical offset (distance from top)
-
-                window.attributes = params
-                window.setLayout(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT
-                )
-                window.setBackgroundDrawableResource(android.R.color.transparent) // Ensure rounded background
-            }
-
-            // Handle the close button
-            dialog.findViewById<Button>(R.id.colse_button)?.setOnClickListener {
-                dialog.dismiss()
-            }
-
-            // Show the dialog
-            dialog.show()
-        }
         private fun setContent() {
             val workout = arrayOf("Instruction", "Information", "News")
 
             for (item in workout.indices) {
-
                 WorkOutlist.add(Work_Out(workout[item]))
             }
 
@@ -318,11 +286,16 @@
                             val userType = preferenceManager.GetFlage()
 
                             if (userType == "Athlete") {
-                                homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+                                if (receivedIdInt != null && receivedIdInt != 0) {
+                                    homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
 
-                                Log.d("FORMATTEDDATE", "bind: ${formattedDate.toString()}")
+                                    Log.d("FORMATTEDDATE", "bind: ${formattedDate.toString()}")
 
-                                getPersonalDiaryData(formattedDate.toString())
+                                    getPersonalDiaryData(formattedDate.toString())
+                                } else {
+                                    Toast.makeText(requireContext(), "Please Select Group First", Toast.LENGTH_SHORT).show()
+                                }
+
                             }else{
                                 if (receivedIdInt != null && receivedIdInt != 0) {
                                     val intent = Intent(requireContext(), SelectDayActivity::class.java).apply {
@@ -957,11 +930,13 @@
                     homeFragmentBinding.informationLinear.visibility = View.GONE
                     homeFragmentBinding.InstructionLinera.visibility = View.VISIBLE
                     homeFragmentBinding.NewsLinera.visibility = View.GONE
+                    homeFragmentBinding.linerAthlete.visibility = View.GONE
                 }
                 2 -> {
                     homeFragmentBinding.informationLinear.visibility = View.VISIBLE
                     homeFragmentBinding.InstructionLinera.visibility = View.GONE
                     homeFragmentBinding.NewsLinera.visibility = View.GONE
+                    homeFragmentBinding.linerAthlete.visibility = View.GONE
                 }
             }
         }
