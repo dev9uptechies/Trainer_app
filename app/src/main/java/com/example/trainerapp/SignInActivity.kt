@@ -35,14 +35,14 @@ class SignInActivity : AppCompatActivity() {
         signInBinding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(signInBinding.root)
 
-
         initViews()
 //        signInBinding.edtEmail.setText("gaurav.bhattacharya7@gmail.com")
 //        signInBinding.edtPassword.setText("Gaurav@7613")
-        signInBinding.edtEmail.setText("testusernew@gmail.com")
-        signInBinding.edtPassword.setText("Testing@112")
-//        signInBinding.edtEmail.setText("4trainersapp@gmail.com")
-//        signInBinding.edtPassword.setText("4Trainersapp!")
+//        signInBinding.edtEmail.setText("testusernew@gmail.com")
+//        signInBinding.edtPassword.setText("Testing@112")
+        signInBinding.edtEmail.setText("4trainersapp@gmail.com")
+        signInBinding.edtPassword.setText("4Trainersapp!")
+
         checkFieldValue()
         checkButtonClick()
         checkChangeListner()

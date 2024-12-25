@@ -35,14 +35,13 @@ class ViewAthleteStatusActivity : AppCompatActivity(), OnItemClickListener.OnIte
         initializeComponents()
         setListeners()
         fetchAthleteDetails(mainId)
+
     }
 
     private fun initializeComponents() {
         apiInterface = APIClient(this).client().create(APIInterface::class.java)
-
         mainId = intent.getIntExtra("MainId", 0)
         Log.d("MainId","MainID:- "+ mainId)
-
     }
 
     private fun setListeners() {

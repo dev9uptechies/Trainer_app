@@ -777,6 +777,10 @@ interface APIInterface {
     @POST("personal_diary/share")
     fun updateShareStatus(@Body body: Map<String, Int>): Call<Void>
 
+    //////////////// Athlete ////////////
+
+    @GET("Athlete/group")
+    fun GropListAthlete(): Call<GroupListData>?
 
 }
 
