@@ -1,14 +1,25 @@
 package com.example.trainerapp.performance_profile.mesocycle
 
+import android.app.Dialog
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import com.example.model.training_plan.TrainingPlanData
 import com.example.model.training_plan.cycles.AddMesocycleCompatitive
 import com.example.model.training_plan.cycles.AddMesocyclePreCompatitive
@@ -22,10 +33,16 @@ import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityAddMesocycleListBinding
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import com.prolificinteractive.materialcalendarview.CalendarMode
+import com.prolificinteractive.materialcalendarview.DayViewDecorator
+import com.prolificinteractive.materialcalendarview.DayViewFacade
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -41,6 +58,8 @@ class AddMesocycleListActivity : AppCompatActivity() {
     private val trainingPlanLayouts = mutableListOf<View>()
     private val missingIndices = mutableListOf<Int>()
 
+    private var startdatesent:String? = null
+    private var enddatesent:String? = null
     lateinit var programData: MutableList<TrainingPlanData.TrainingPlan>
 
     private var preSeason: MutableList<AddMesocyclePresession> = mutableListOf()
@@ -193,8 +212,8 @@ class AddMesocycleListActivity : AppCompatActivity() {
                         id = 0,
                         planning_t_id = seasonId.toString(),
                         name = nameEditText.text.toString(),
-                        start_date = startDate.text.toString(),
-                        end_date = endDate.text.toString(),
+                        start_date = startdatesent.toString(),
+                        end_date = enddatesent.toString(),
                         periods = "0"
 
                     )
@@ -264,8 +283,8 @@ class AddMesocycleListActivity : AppCompatActivity() {
                         id = 0,
                         planning_c_id = seasonId.toString(),
                         name = nameEditText.text.toString(),
-                        start_date = startDate.text.toString(),
-                        end_date = endDate.text.toString(),
+                        start_date = startdatesent.toString(),
+                        end_date = enddatesent.toString(),
                         periods = "0"
                     )
                 )
@@ -332,8 +351,8 @@ class AddMesocycleListActivity : AppCompatActivity() {
                         id = 0,
                         planning_pc_id = seasonId.toString(),
                         name = nameEditText.text.toString(),
-                        start_date = startDate.text.toString(),
-                        end_date = endDate.text.toString(),
+                        start_date = startdatesent.toString(),
+                        end_date = enddatesent.toString(),
                         periods = "0"
 
                     )
@@ -404,8 +423,8 @@ class AddMesocycleListActivity : AppCompatActivity() {
                             id = id,
                             planning_ps_id = seasonId.toString(),
                             name = nameEditText.text.toString(),
-                            start_date = startDate.text.toString(),
-                            end_date = endDate.text.toString(),
+                            start_date = startdatesent.toString(),
+                            end_date = enddatesent.toString(),
                             periods = "test"
 
                         )
@@ -481,22 +500,63 @@ class AddMesocycleListActivity : AppCompatActivity() {
         val newTrainingPlanLayout = LayoutInflater.from(this)
             .inflate(R.layout.editetriningplanactivityadapter, trainingPlanContainer, false)
 
-        val nameEditText: AppCompatEditText =
-            newTrainingPlanLayout.findViewById(R.id.ent_pre_sea_name)
+        val nameEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_pre_sea_name)
         nameEditText.setText("Mesocycle ${indexToAdd + 1}")
 
-        val startDateEditText: AppCompatEditText =
-            newTrainingPlanLayout.findViewById(R.id.ent_start_date_liner)
-
-        val endDateEditText: AppCompatEditText =
-            newTrainingPlanLayout.findViewById(R.id.ent_ent_date_liner)
-
+        val startDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_start_date_liner)
         startDateEditText.setOnClickListener {
-            selectTrainingPlanStartDate(startDateEditText)
+            val minDateMillis = formatDateToMillis(addMesoCycleBinding.startDate.text.toString())
+            val maxDateMillis = formatDateToMillis(addMesoCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+
+                startDateEditText.setText(formattedStartDate2)
+                startdatesent = formattedStartDate
+            }
         }
 
+        val startDateCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_start_date_list)
+        startDateCard.setOnClickListener {
+            val minDateMillis = formatDateToMillis(addMesoCycleBinding.startDate.text.toString())
+            val maxDateMillis = formatDateToMillis(addMesoCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+
+                startDateEditText.setText(formattedStartDate2)
+                startdatesent = formattedStartDate
+            }
+        }
+
+        val endDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_ent_date_liner)
         endDateEditText.setOnClickListener {
-            selectTrainingPlanEndDate(endDateEditText)
+            val minDateMillis = formatDateToMillis(addMesoCycleBinding.startDate.text.toString())
+            val maxDateMillis = formatDateToMillis(addMesoCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+
+                endDateEditText.setText(formattedStartDate2)
+                enddatesent = formattedStartDate
+            }
+        }
+
+        val endDateCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_end_pick_list)
+        endDateCard.setOnClickListener {
+            val minDateMillis = formatDateToMillis(addMesoCycleBinding.startDate.text.toString())
+            val maxDateMillis = formatDateToMillis(addMesoCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+
+                endDateEditText.setText(formattedStartDate2)
+                enddatesent = formattedStartDate
+            }
         }
 
         trainingPlanLayouts.add(indexToAdd, newTrainingPlanLayout)
@@ -510,6 +570,86 @@ class AddMesocycleListActivity : AppCompatActivity() {
         updateTrainingPlanIndices()
     }
 
+
+    fun showDateRangePickerDialog(
+        context: Context,
+        minDateMillis: Long,
+        maxDateMillis: Long,
+        callback: (start: Long) -> Unit
+    ) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.date_range_picker_dialog)
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#80000000")))
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        dialog.window?.setGravity(Gravity.CENTER)
+
+        val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
+        val textView = dialog.findViewById<TextView>(R.id.textView)
+        val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
+        val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
+
+        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE)
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+
+        calendarView.state().edit()
+            .setCalendarDisplayMode(CalendarMode.MONTHS)
+            .commit()
+
+        calendarView.addDecorator(object : DayViewDecorator {
+            val today = CalendarDay.today()
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day == today
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today
+                ContextCompat.getDrawable(context, R.drawable.todays_date_selecte)?.let {
+                    view?.setBackgroundDrawable(it)
+                }
+            }
+        })
+
+        // Disable dates outside the min-max range
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                val dateInMillis = day?.calendar?.timeInMillis ?: return false
+                return dateInMillis < minDateMillis || dateInMillis > maxDateMillis
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.GRAY))
+                view?.setDaysDisabled(true)
+            }
+        })
+
+        confirmButton.setOnClickListener {
+            val selectedDates = calendarView.selectedDates
+
+            if (selectedDates.isNotEmpty()) {
+                val selectedDate = selectedDates.first().calendar
+
+                selectedDate.set(Calendar.HOUR_OF_DAY, 0)
+                selectedDate.set(Calendar.MINUTE, 0)
+                selectedDate.set(Calendar.SECOND, 0)
+                selectedDate.set(Calendar.MILLISECOND, 0)
+
+                callback(selectedDate.timeInMillis)
+
+                dialog.dismiss()
+            } else {
+                textView.text = "Please select a date"
+                textView.setTextColor(Color.RED)
+            }
+        }
+
+        dialog.show()
+    }
+
     private fun selectTrainingPlanStartDate(editText: AppCompatEditText) {
         // Get the main start and max end dates from the binding
         val mainStartDate = addMesoCycleBinding.startDate.text.toString()
@@ -521,12 +661,11 @@ class AddMesocycleListActivity : AppCompatActivity() {
         val maxDateMillis =
             if (maxStartDate.isNotEmpty()) formatDateToMillis(maxStartDate) else Long.MAX_VALUE
 
-        // Call Utils.selectDate3 with the min and max dates
         Utils.selectDate3(
             this,
             editText,
-            minDateMillis, // Minimum date for selection
-            maxDateMillis  // Maximum date for selection
+            minDateMillis,
+            maxDateMillis
         ) { dateMillis ->
             // When a date is selected, update startDateMillis and display the formatted date
             startDateMillis = dateMillis
@@ -571,6 +710,12 @@ class AddMesocycleListActivity : AppCompatActivity() {
     private fun formatDate(dateMillis: Long): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(Date(dateMillis))
+    }
+
+
+    private fun formatDate2(dateMillis: Long): String {
+        val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+        return format.format(Date(dateMillis))
     }
 
 

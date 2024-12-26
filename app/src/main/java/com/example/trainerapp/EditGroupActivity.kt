@@ -619,7 +619,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 binding.selectUploadLy.visibility = View.GONE
                 binding.imageUpload.visibility = View.VISIBLE
 
-                val sharedPreferences = binding.root.context.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
+                val sharedPreferences =
+                    binding.root.context.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
                 sharedPreferences.edit().putString("imageUrll", uri.toString()).apply()
 
                 Picasso.get()
@@ -632,7 +633,10 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                             val imagePart = processImage(binding.root.context, uri)
 
                             if (imagePart != null) {
-                                Log.d("ImagePart", "Image file created: ${imagePart.body.contentType()}")
+                                Log.d(
+                                    "ImagePart",
+                                    "Image file created: ${imagePart.body.contentType()}"
+                                )
                                 // Call the API with the image part
                                 selectedImageUri = uri
 //                                editGroupWithImageApiCall(binding.root.context, uri)
@@ -652,7 +656,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
 
     fun saveImageUriToPreferences(uri: Uri) {
-        val sharedPreferences = applicationContext.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            applicationContext.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
             putString("imageUrll", uri.toString())
             apply()
@@ -779,6 +784,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             val groupName = binding.edtName.text.toString()
             val sportName = binding.edtSport.text.toString()
             val imageUri = selectedImageUri
+
+            Log.d("FBFBBFBF", "onPause: $selectedImageUri")
             saveGroupData(groupName, imageUri, sportName, sportlId.id.toString())
             saveDayTimesToPreferences()
             if (firstTimeId != -1 && firstTimeId != 0) {
@@ -1302,7 +1309,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
     fun editGroupWithImageApiCall(context: Context, imageUri: Uri?) {
         val timingFormatted = collectTimings().toString()
-        val daysids = selectedDays.joinToString(prefix = "[", postfix = "]", separator = ", ") { "\"$it\"" }
+        val daysids =
+            selectedDays.joinToString(prefix = "[", postfix = "]", separator = ", ") { "\"$it\"" }
         val sportids = sportlId.id.toString()
         val lessonids = lessonId.joinToString(", ", prefix = "[", postfix = "]")
         val athleteids = athleteId.joinToString(", ", prefix = "[", postfix = "]")
@@ -1313,7 +1321,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val method = RequestBody.create("text/plain".toMediaTypeOrNull(), "PUT")
         val idbody = RequestBody.create("text/plain".toMediaTypeOrNull(), receivedId.toString())
         val sport_id = RequestBody.create("text/plain".toMediaTypeOrNull(), sportids)
-        val name = RequestBody.create("text/plain".toMediaTypeOrNull(), binding.edtName.text.toString())
+        val name =
+            RequestBody.create("text/plain".toMediaTypeOrNull(), binding.edtName.text.toString())
         val lession_ids = RequestBody.create("application/json".toMediaTypeOrNull(), lessonids)
         val athlete_ids = RequestBody.create("application/json".toMediaTypeOrNull(), athleteids)
         val event_ids = RequestBody.create("application/json".toMediaTypeOrNull(), eventids)
@@ -1416,7 +1425,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
 
-
     fun getImageUriFromPreferences(context: Context): Uri? {
         val sharedPreferences = context.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
         val imageUrl = sharedPreferences.getString("imageUrll", null)
@@ -1472,7 +1480,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
 
         return try {
-            val fileName = getFileNameFromUri(context, contentUri) ?: "temp_file_${System.currentTimeMillis()}"
+            val fileName =
+                getFileNameFromUri(context, contentUri) ?: "temp_file_${System.currentTimeMillis()}"
             val cacheDir = context.cacheDir
 
             // Ensure cache directory exists
@@ -1494,7 +1503,10 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 contentUri
             }
 
-            Log.d("FileDebug", "Resolved URI: $resolvedUri, Scheme: ${resolvedUri.scheme}, Path: ${resolvedUri.path}")
+            Log.d(
+                "FileDebug",
+                "Resolved URI: $resolvedUri, Scheme: ${resolvedUri.scheme}, Path: ${resolvedUri.path}"
+            )
 
             when (resolvedUri.scheme) {
                 "file" -> {
@@ -1548,7 +1560,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
 
-
 //    fun createFileFromLocalPath(context: Context, localPath: String): File? {
 //        val correctedPath = if (localPath.startsWith("/")) {
 //            "file://$localPath"
@@ -1580,12 +1591,10 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             "Saving data: groupName=$groupName, sportName=$sportName, sportId=$sportId"
         )
 
+
+        Log.d("saveGroupData", "saveGroupData: $imageUri")
         editor.putString("groupName", groupName)
-
-        imageUri?.let {
-            editor.putString("imageUri", it.toString())
-        }
-
+        editor.putString("imageUri", imageUri.toString())
         editor.putString("sportName", sportName)
         editor.putString("sportId", sportId)
 
@@ -1595,6 +1604,9 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     private fun loadGroupData() {
         val sharedPreferences = getSharedPreferences("GroupData", MODE_PRIVATE)
 
+        binding.imageUpload.visibility = View.VISIBLE
+        binding.selectUploadLy.visibility = View.GONE
+
         val groupName = sharedPreferences.getString("groupName", null)
         val imageUriString = sharedPreferences.getString("imageUri", null)
         val sportName = sharedPreferences.getString("sportName", null)
@@ -1602,18 +1614,17 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         Log.d("GroupData", "Loading data...")
 
+        Log.d("loadGroupData", "loadGroupData: $imageUriString")
+
         // Set group name
         groupName?.let {
             binding.edtName.setText(it)
             Log.d("GroupData", "Loaded groupName: $it")
+
         }
+
         imageUriString?.let {
-            var imageUri = Uri.parse(it)
-
-            if (imageUri.scheme == null && it.startsWith("/")) {
-                imageUri = Uri.parse("file://$it")
-            }
-
+            val imageUri = Uri.parse(it)
             if (imageUri.scheme == "content" || imageUri.scheme == "file") {
                 Glide.with(this)
                     .load(imageUri)
@@ -1621,7 +1632,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
                 binding.selectUploadLy.visibility = View.GONE
                 binding.imageUpload.visibility = View.VISIBLE
-                binding.imageUpload.tag = imageUri
+                binding.imageUpload.tag = imageUri // Save the URI in the tag
                 selectedImageUri = imageUri
                 Log.d("GroupData", "Image successfully loaded into ImageView")
             } else {
@@ -1854,7 +1865,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     private fun setSavedDayTimes() {
         val savedData = loadDayTimesFromPreferences()
 
-        // Deserialize the saved data back into the Map
         val gson = Gson()
         val type = object : TypeToken<Map<String, List<DayTime>>>() {}.type
         val dayTimesData: Map<String, List<DayTime>> = gson.fromJson(savedData, type)
@@ -2066,7 +2076,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        // Clear all ID-related entries
         editor.remove("lessonId")
         editor.remove("testId")
         editor.remove("eventId")
@@ -2155,7 +2164,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                     "setData sportlId: ${sportlId.id}"
                 ) // Assuming SelectedValue has a 'value' property
             } else {
-                // Handle the case where sport is empty or null
             }
 
             val image = group.image

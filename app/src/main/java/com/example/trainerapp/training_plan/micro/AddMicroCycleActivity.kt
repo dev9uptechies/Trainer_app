@@ -1,14 +1,19 @@
 package com.example.trainerapp.training_plan.micro
 
+import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.style.ForegroundColorSpan
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
@@ -21,6 +26,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.Adapter.training_plan.view.AbilitiesAdapter
@@ -39,10 +45,16 @@ import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityAddMicroCycleBinding
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import com.prolificinteractive.materialcalendarview.CalendarMode
+import com.prolificinteractive.materialcalendarview.DayViewDecorator
+import com.prolificinteractive.materialcalendarview.DayViewFacade
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -514,18 +526,61 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
         val startDateEditText: AppCompatEditText =
             newTrainingPlanLayout.findViewById(R.id.ent_start_date_liner)
-        startDateEditText.setOnClickListener {  selectTrainingPlanStartDate(startDateEditText)}
+
+        startDateEditText.setOnClickListener {
+            val minDateMillis = formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
+            val maxDateMillis = formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+
+                startDateEditText.setText(formattedStartDate2)
+                startdatesent = formattedStartDate
+            }
+        }
 
         val startDateCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_start_date_list)
         startDateCard.setOnClickListener {
-            selectTrainingPlanStartDate(startDateEditText)
+            val minDateMillis = formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
+            val maxDateMillis = formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+
+                startDateEditText.setText(formattedStartDate2)
+                startdatesent = formattedStartDate
+            }
         }
 
         val endDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_ent_date_liner)
-        endDateEditText.setOnClickListener {  selectTrainingPlanEndDate(endDateEditText) }
+        endDateEditText.setOnClickListener {
+            val minDateMillis = formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
+            val maxDateMillis = formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+
+                endDateEditText.setText(formattedStartDate2)
+                enddatesent = formattedStartDate
+            }
+        }
 
         val endDateCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_end_pick_list)
-        endDateCard.setOnClickListener { selectTrainingPlanEndDate(endDateEditText)}
+        endDateCard.setOnClickListener {
+            val minDateMillis = formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
+            val maxDateMillis = formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+
+                endDateEditText.setText(formattedStartDate2)
+                enddatesent = formattedStartDate
+            }
+        }
 
         val seekBar: SeekBar = newTrainingPlanLayout.findViewById(R.id.seekbar_workload_layout)
         seekBar.isEnabled = false // Disable SeekBar in the layout
@@ -653,6 +708,88 @@ class AddMicroCycleActivity : AppCompatActivity() {
         }
     }
 
+    fun showDateRangePickerDialog(
+        context: Context,
+        minDateMillis: Long,
+        maxDateMillis: Long,
+        callback: (start: Long) -> Unit
+    ) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.date_range_picker_dialog)
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#80000000")))
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        dialog.window?.setGravity(Gravity.CENTER)
+
+        val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
+        val textView = dialog.findViewById<TextView>(R.id.textView)
+        val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
+        val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
+
+        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE)
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+
+        calendarView.state().edit()
+            .setCalendarDisplayMode(CalendarMode.MONTHS)
+            .commit()
+
+        calendarView.addDecorator(object : DayViewDecorator {
+            val today = CalendarDay.today()
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day == today
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today
+                ContextCompat.getDrawable(context, R.drawable.todays_date_selecte)?.let {
+                    view?.setBackgroundDrawable(it)
+                }
+            }
+        })
+
+        // Disable dates outside the min-max range
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                val dateInMillis = day?.calendar?.timeInMillis ?: return false
+                return dateInMillis < minDateMillis || dateInMillis > maxDateMillis
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.GRAY))
+                view?.setDaysDisabled(true)
+            }
+        })
+
+        confirmButton.setOnClickListener {
+            val selectedDates = calendarView.selectedDates
+
+            if (selectedDates.isNotEmpty()) {
+                val selectedDate = selectedDates.first().calendar
+
+                selectedDate.set(Calendar.HOUR_OF_DAY, 0)
+                selectedDate.set(Calendar.MINUTE, 0)
+                selectedDate.set(Calendar.SECOND, 0)
+                selectedDate.set(Calendar.MILLISECOND, 0)
+
+                callback(selectedDate.timeInMillis)
+
+                dialog.dismiss()
+            } else {
+                textView.text = "Please select a date"
+                textView.setTextColor(Color.RED)
+            }
+        }
+
+        dialog.show()
+    }
+
+
+
+
     private fun selectTrainingPlanStartDate(editText: AppCompatEditText) {
         // Get the main start and max end dates from the binding
         val mainStartDate = addMicroCycleBinding.startDate.text.toString()
@@ -664,7 +801,6 @@ class AddMicroCycleActivity : AppCompatActivity() {
         val maxDateMillis =
             if (maxStartDate.isNotEmpty()) formatDateToMillis(maxStartDate) else Long.MAX_VALUE
 
-        // Call Utils.selectDate3 with the min and max dates
         Utils.selectDate3(
             this,
             editText,

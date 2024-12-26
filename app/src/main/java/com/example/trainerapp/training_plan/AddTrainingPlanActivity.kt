@@ -63,6 +63,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
     private lateinit var apiClient: APIClient
     private val selectedDateRanges = mutableListOf<Pair<Long, Long>>()
 
+
     private lateinit var trainingPlanContainer: LinearLayout
     private var trainingPlanCount = 0
     private val gson = Gson()
@@ -85,6 +86,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
     private var startdatesentlist:String? = null
     private var enddatesentlist:String? = null
+    private val dateRangeMap = mutableMapOf<Int, Pair<String, String>>()
     var activePlanIndex = -1
 
     override fun onResume() {
@@ -436,9 +438,11 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
         val mesocycles: TextView = newTrainingPlanLayout.findViewById(R.id.linear_days_list)
 
+        // Function to update the mesocycles text based on selected dates
         val updateDaysTextView = {
             val startDate = startdatesentlist.toString()
             val endDate = enddatesentlist.toString()
+
 
             Log.d("DFDFDFDFDF", "addTrainingPlan: $startDate  end:- $endDate")
             Log.d("DFDFDFDFDF", "addTrainingPlan: $startdatesentlist  end:- $enddatesentlist")
@@ -492,6 +496,8 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                     endDateEditText.setText(formattedEndDate2)
                     startdatesentlist = formattedStartDate
                     enddatesentlist = formattedEndDate
+                    dateRangeMap[layoutIndex] = Pair(formattedStartDate, formattedEndDate)
+
                     updateDaysTextView()
                 }
             }
@@ -517,7 +523,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                     endDateEditText.setText(formattedEndDate2)
                     startdatesentlist = formattedStartDate
                     enddatesentlist = formattedEndDate
-
+                    dateRangeMap[layoutIndex] = Pair(formattedStartDate, formattedEndDate)
                     updateDaysTextView()
                 }
             }
@@ -550,14 +556,15 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
     private fun findConflictingRange(start: Long, end: Long, layoutIndex: Int): Pair<Long, Long> {
         return selectedDateRanges
-            .filterIndexed { index, _ -> index < layoutIndex }
+            .filterIndexed { index, _ -> index < layoutIndex }  // Check only previous plans
             .firstOrNull { (existingStart, existingEnd) ->
-                start <= existingEnd && end >= existingStart
+                start <= existingEnd && end >= existingStart  // Overlapping condition
             } ?: (0L to 0L)  // Return default (no conflict)
     }
 
     private fun updateTrainingPlanIndices() {
         hyy = true
+        // Define a list of default names
         val defaultNames = listOf("Pre Season", "Pre Competititve", "Compatitive","Transition")
 
         for (i in trainingPlanLayouts.indices) {
@@ -647,13 +654,17 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         // Disable overlapping dates with previous plans
         calendarView.addDecorator(object : DayViewDecorator {
             override fun shouldDecorate(day: CalendarDay?): Boolean {
-                val dateInMillis = day?.calendar?.timeInMillis ?: return false
+                if (day == null || day.calendar == null) return false
 
-                if (layoutIndex == 0) return false
+                val dateInMillis = day.calendar.timeInMillis
+
+                if (layoutIndex == null || layoutIndex == 0) return false
+
+                if (selectedDateRanges == null) return false
 
                 return selectedDateRanges.withIndex().any { (index, range) ->
                     val (start, end) = range
-                    index < layoutIndex!! && dateInMillis in start..end
+                    index < layoutIndex && dateInMillis in start..end
                 }
             }
 
@@ -926,6 +937,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return format.format(Date(dateMillis))
     }
+
     private fun formatDate2(dateMillis: Long): String {
         val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
         return format.format(Date(dateMillis))
@@ -957,16 +969,13 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                     return
                 }
 
-                // Store Plan 1 dates for final validation
                 if (i == 0) {
                     plan1StartDate = startDate
                     plan1EndDate = endDate
                 }
 
-                // Individual plan conflict check
                 if (i != 0) {
                     if (isConflict(startDate, endDate, i)) {
-                        // Set the error message below Plan 2 or any other plan's date selection
                         errorTextView.visibility = View.VISIBLE
                         errorTextView.text = "Date conflict detected for Plan ${i + 1}"
                         errorTextView.setTextColor(Color.RED)
@@ -976,26 +985,62 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                     }
                 }
 
-                Log.e("DATATATATATATATAATAT", "saveTrainingPlans: "+startdatesentlist )
-                Log.e("DATATATATATATATAATAT", "saveTrainingPlans: "+enddatesentlist )
-                when (i) {
-                    0 -> preSeason = PreSeason(name, startdatesentlist.toString(), enddatesentlist.toString(), mesocycle.toString())
-                    1 -> preCompetitive = PreCompetitive(name, startdatesentlist.toString(), enddatesentlist.toString(), mesocycle.toString())
-                    2 -> competitive = Competitive(name, startdatesentlist.toString(), enddatesentlist.toString(), mesocycle.toString())
-                    3 -> transition = Transition(name, startdatesentlist.toString(), enddatesentlist.toString(), mesocycle.toString())
+                Log.e("DATATATATATATATAATAT", "saveTrainingPlans: "+dateRangeMap )
+                Log.e("DATATATATATATATAATAT", "saveTrainingPlans: "+dateRangeMap )
+
+                for (i in dateRangeMap.keys) {
+                    val dateRange = dateRangeMap[i]
+                    if (dateRange != null) {
+                        val (startDate, endDate) = dateRange
+
+                        val layout = trainingPlanContainer.getChildAt(i)
+                        val planName = layout.findViewById<AppCompatEditText>(R.id.ent_pre_sea_name).text.toString().trim()
+
+                        when (i) {
+                            0 -> preSeason = PreSeason(
+                                name = planName,
+                                start_date = startDate,
+                                end_date = endDate,
+                                mesocycle = mesocycle.toString()
+                            )
+
+                            1 -> preCompetitive = PreCompetitive(
+                                name = planName,
+                                start_date = startDate,
+                                end_date = endDate,
+                                mesocycle = mesocycle.toString()
+                            )
+
+                            2 -> competitive = Competitive(
+                                name = planName,
+                                start_date = startDate,
+                                end_date = endDate,
+                                mesocycle = mesocycle.toString()
+                            )
+
+                            3 -> transition = Transition(
+                                name = planName,
+                                start_date = startDate,
+                                end_date = endDate,
+                                mesocycle = mesocycle.toString()
+                            )
+                        }
+                    } else {
+                        Log.e("DATE_RANGE_ERROR", "No date range found for index: $i")
+                    }
                 }
+
+
             }
 
             Log.d("RTTRTRTRTRTR", "saveTrainingPlans: ${isConflictWithOtherPlans(plan1StartDate , plan1EndDate)}")
             Log.e("HJHJHJHJHJHJHJ", "onResponse: "+calculateDaysBetweenDates(startdatesent.toString(), enddatesent.toString()).toString() )
 
-            // Final Plan 1 Conflict Check after all edits
             if (isConflictWithOtherPlans(plan1StartDate, plan1EndDate)) {
                 Toast.makeText(this, "Plan 1 conflicts with another plan. Cannot save.", Toast.LENGTH_SHORT).show()
                 return
             }
 
-            // Prepare and send the request
             val trainingPlanRequest = TrainingPlanSubClass(
                 id = id?.toInt() ?: 0,
                 name = addTrainingPlanBinding.edtProgramName.text.toString(),

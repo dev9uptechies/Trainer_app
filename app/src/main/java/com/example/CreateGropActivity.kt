@@ -640,6 +640,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     }
 
     fun addGroup(uri: Uri) {
+        shouldSaveData = false
         val imageFile = getFileFromUri(uri)
         if (imageFile == null || !imageFile.exists()) {
             Log.e("ERROR", "Invalid file URI or file does not exist.")
@@ -680,7 +681,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             testIds, programIds, days, timing
         ).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                shouldSaveData = false
                 onBackPressed()
                 clearIdsFromPreferences()
                 clearGroupDataOnBack()
@@ -866,7 +866,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
                 createGroupBinding.selectUploadLy.visibility = View.GONE
                 createGroupBinding.imageUpload.visibility = View.VISIBLE
-                createGroupBinding.imageUpload.tag = imageUri // Save the URI in the tag
+                createGroupBinding.imageUpload.tag = imageUri
                 selectedImageUri = imageUri
                 Log.d("GroupData", "Image successfully loaded into ImageView")
             } else {
