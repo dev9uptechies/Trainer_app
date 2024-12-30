@@ -51,6 +51,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.math.log
 
 class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback,
     PerformanceProfileAdapter.OnQualityClick {
@@ -82,6 +83,15 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
         resetData()
         checkButtonClick()
 
+
+            val userType = preferenceManager.GetFlage()
+
+            if (userType == "Athlete") {
+                performanceProfileBinding.edtAthletes.visibility = View.GONE
+                loadPerformanceAthlete()
+            }else{
+                performanceProfileBinding.edtAthletes.visibility = View.VISIBLE
+            }
         secondActivityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == RESULT_OK) {
@@ -505,7 +515,6 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                                 if (categoryData.isNotEmpty()) {
                                     initRecyclerView()
 
-                                    // Now load performance quality only after categories are loaded
                                     categoryData.forEach {
                                         Log.d("idp","${it.id}")
                                         loadPerformanceQuality(id, it.id)
@@ -544,7 +553,85 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
         }
     }
 
+    private fun loadPerformanceAthlete() {
+        try {
+//            tempData.clear()
+//            categoryData.clear()
+//            qualityData.clear()
+            performanceProfileBinding.ProgressBar.visibility = View.VISIBLE
+            apiInterface.GetPerformanceCategoryAthlete()
+                .enqueue(object : Callback<PerformanceCategory> {
+                    override fun onResponse(
+                        call: Call<PerformanceCategory>,
+                        response: Response<PerformanceCategory>
+                    ) {
+                        performanceProfileBinding.ProgressBar.visibility = View.GONE
+                        Log.d("TAGLOARD", response.code().toString() + "")
+                        val code = response.code()
+                        if (code == 200) {
 
+                            val data = response.body()!!.data ?: mutableListOf()
+
+                            Log.d("SGFSSFSFSFF", "onResponse: ${data}")
+
+                            if (response.isSuccessful) {
+                                val data = response.body()!!.data ?: mutableListOf()
+
+                                val addedCategoryIds = categoryData.map { it.id }.toMutableSet()
+
+                                val qid = data.get(0).id
+                                Log.d("OPOPOP", "onResponse: $qid")
+
+                                for (i in data) {
+                                    if (!addedCategoryIds.contains(i.id)) {
+                                        Log.d("Category DataLOAD :-", "${i.id} \t ${i.name}")
+                                        categoryData.add(i)
+                                        addedCategoryIds.add(i.id)
+                                    }
+                                }
+
+                                if (categoryData.isNotEmpty()) {
+                                    initRecyclerView()
+
+                                    categoryData.forEach {
+                                        Log.d("idp","${it.id}")
+                                        if (qid != null) {
+                                            loadPerformanceQualityAthlete(it.id)
+                                        }
+                                    }
+                                } else {
+                                    performanceProfileBinding.performanceRly.visibility = View.GONE
+                                }
+                            }
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(this@PerformanceProfileActivity)
+                        } else {
+                            Toast.makeText(
+                                this@PerformanceProfileActivity,
+                                "" + response.message(),
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<PerformanceCategory>, t: Throwable) {
+                        performanceProfileBinding.ProgressBar.visibility = View.GONE
+                        Toast.makeText(
+                            this@PerformanceProfileActivity,
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                })
+        } catch (e: Exception) {
+            performanceProfileBinding.ProgressBar.visibility = View.GONE
+            Log.d("Exception :- ", "${e.message}")
+        }
+    }
 
 
 //    private fun initRecyclerView() {
@@ -664,6 +751,33 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                 }
             })
     }
+
+
+    private fun loadPerformanceQualityAthlete(performId: Int?) {
+        performanceProfileBinding.ProgressBar.visibility = View.VISIBLE
+        apiInterface.GetPerformanceQualityAthlete(performId = performId)
+            .enqueue(object : Callback<PerformanceQuality> {
+                override fun onResponse(call: Call<PerformanceQuality>, response: Response<PerformanceQuality>) {
+                    performanceProfileBinding.ProgressBar.visibility = View.GONE
+                    if (response.isSuccessful) {
+                        val data = response.body()?.data ?: mutableListOf()
+                        qualityData.clear()
+                        qualityData.addAll(data)
+                        initRecyclerView() // Update visibility
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(this@PerformanceProfileActivity)
+                    } else {
+                        Toast.makeText(this@PerformanceProfileActivity, response.message(), Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<PerformanceQuality>, t: Throwable) {
+                    performanceProfileBinding.ProgressBar.visibility = View.GONE
+                    Toast.makeText(this@PerformanceProfileActivity, t.message, Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
 
 
 //    private fun getPerformanceTempData() {
@@ -1292,7 +1406,15 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                                                 "" + response.message(),
                                                 Toast.LENGTH_SHORT
                                             ).show()
-                                            loadPerformance(athleteId.id!!)
+
+                                            val userType = preferenceManager.GetFlage()
+                                            if(userType == "Athlete"){
+                                                loadPerformanceAthlete()
+
+                                            }else{
+                                                loadPerformance(athleteId.id!!)
+
+                                            }
                                         }
                                     } else if (code == 403) {
                                         Utils.setUnAuthDialog(this@PerformanceProfileActivity)

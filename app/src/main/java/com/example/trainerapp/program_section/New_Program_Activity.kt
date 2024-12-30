@@ -1,18 +1,23 @@
 package com.example.trainerapp.program_section
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.PopupWindow
@@ -47,10 +52,19 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import com.prolificinteractive.materialcalendarview.CalendarMode
+import com.prolificinteractive.materialcalendarview.DayViewDecorator
+import com.prolificinteractive.materialcalendarview.DayViewFacade
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 
 class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
@@ -58,6 +72,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
     lateinit var adapter: ProgramAdapter
     lateinit var adapter1: Exercise_select_Adapter1
     lateinit var apiInterface: APIInterface
+    private var datesent: String? = null
     var age = ArrayList<String>()
     private lateinit var exercise_list: ArrayList<Ecercise_data_list>
     private lateinit var exercise_list1: ArrayList<ExcerciseData.Exercise>
@@ -101,8 +116,19 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         }
 
         newProgramBinding.etSelectTestDate.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Utils.selectDate(this, newProgramBinding.etSelectTestDate)
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                Utils.selectDate(this, newProgramBinding.etSelectTestDate)
+//            }
+
+
+            showDateRangePickerDialog(
+                newProgramBinding.etSelectTestDate.context,
+            ) { start ->
+                val formattedDate = formatDate2(start)
+                val formattedStartDate = formatDate(start)
+                datesent = formattedStartDate
+
+                newProgramBinding.etSelectTestDate.setText(formattedDate)
             }
         }
 
@@ -139,6 +165,84 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
             finish()
         }
     }
+
+
+    fun showDateRangePickerDialog(
+        context: Context,
+        callback: (start: Long) -> Unit
+    ) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.date_range_picker_dialog)
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#80000000")))
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        dialog.window?.setGravity(Gravity.CENTER)
+
+        val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
+        val textView = dialog.findViewById<TextView>(R.id.textView)
+        val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
+        val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
+
+        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE)
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+
+        calendarView.state().edit()
+            .setCalendarDisplayMode(CalendarMode.MONTHS)
+            .commit()
+
+        calendarView.addDecorator(object : DayViewDecorator {
+            val today = CalendarDay.today()
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day == today
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today
+                ContextCompat.getDrawable(context, R.drawable.todays_date_selecte)?.let {
+                    view?.setBackgroundDrawable(it)
+                }
+            }
+        })
+
+
+        confirmButton.setOnClickListener {
+            val selectedDates = calendarView.selectedDates
+
+            if (selectedDates.isNotEmpty()) {
+                val selectedDate = selectedDates.first().calendar
+
+                selectedDate.set(Calendar.HOUR_OF_DAY, 0)
+                selectedDate.set(Calendar.MINUTE, 0)
+                selectedDate.set(Calendar.SECOND, 0)
+                selectedDate.set(Calendar.MILLISECOND, 0)
+
+                callback(selectedDate.timeInMillis)
+
+                dialog.dismiss()
+            } else {
+                textView.text = "Please select a date"
+                textView.setTextColor(Color.RED)
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun formatDate2(dateMillis: Long): String {
+        val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+        return format.format(Date(dateMillis))
+    }
+
+    private fun formatDate(dateMillis: Long): String {
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return format.format(Date(dateMillis))
+    }
+
+
 
     private fun showPopup(
         anchorView: View?,
@@ -338,6 +442,9 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                         array.add(id[i])
                         Log.d("List :- Array :-", "${id[i]} \t ${array[i]}")
                     }
+
+                    Log.d("JKJKJK", "saveData: $datesent")
+
                     val jsonObject = JsonObject()
                     jsonObject.addProperty("name", newProgramBinding.edtProgramName.text.toString())
                     jsonObject.addProperty("goal_id", goalId.id.toString())
@@ -346,8 +453,9 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                     jsonObject.add("exercise_ids", array)
                     jsonObject.addProperty(
                         "date",
-                        newProgramBinding.etSelectTestDate.text.toString()
+                        datesent
                     )
+
 
                     apiInterface.CreateProgram(
                         jsonObject

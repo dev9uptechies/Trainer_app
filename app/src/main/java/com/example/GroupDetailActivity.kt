@@ -155,178 +155,215 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     }
 
     private fun deleteGroup(groupId: Int) {
-        // Perform the deletion API call
-        apiInterface.DeleteGroup(groupId)!!.enqueue(object : Callback<GroupListData> {
-            override fun onResponse(call: Call<GroupListData>, response: Response<GroupListData>) {
-                if (response.isSuccessful) {
-                    Toast.makeText(
-                        this@GroupDetailActivity,
-                        "Group deleted successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    loadData()  // Re-fetch the group data after deletion
-                } else {
-                    Toast.makeText(
-                        this@GroupDetailActivity,
-                        "Failed to delete group",
-                        Toast.LENGTH_SHORT
-                    ).show()
+        try {
+            // Perform the deletion API call
+            apiInterface.DeleteGroup(groupId)!!.enqueue(object : Callback<GroupListData> {
+                override fun onResponse(
+                    call: Call<GroupListData>,
+                    response: Response<GroupListData>
+                ) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(
+                            this@GroupDetailActivity,
+                            "Group deleted successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        loadData()  // Re-fetch the group data after deletion
+                    } else {
+                        Toast.makeText(
+                            this@GroupDetailActivity,
+                            "Failed to delete group",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<GroupListData>, t: Throwable) {
-                Toast.makeText(this@GroupDetailActivity, "Error deleting group", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        })
+                override fun onFailure(call: Call<GroupListData>, t: Throwable) {
+                    Toast.makeText(
+                        this@GroupDetailActivity,
+                        "Error deleting group",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            })
+        } catch (e: Exception) {
+            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+        }
     }
 
     private fun callGroupApi() {
-        groupDetailBinding.progressDetail.visibility = View.VISIBLE
+        try {
 
-        groupListCall = apiInterface.GropList()
-        groupListCall?.enqueue(object : Callback<GroupListData?> {
-            override fun onResponse(
-                call: Call<GroupListData?>,
-                response: Response<GroupListData?>
-            ) {
-                if (isFinishing || isDestroyed) return
+            groupDetailBinding.progressDetail.visibility = View.VISIBLE
 
-                groupDetailBinding.progressDetail.visibility = View.GONE
-                if (response.isSuccessful) {
-                    val resource = response.body()
-                    if (resource?.status == true) {
-                        val position = position ?: return
-                        resource.data?.getOrNull(position)?.let { data ->
-                            groupDetailBinding.tvGroupName.text = data.name
-                            groupDetailBinding.tvMember.text =
-                                "${data.group_members?.size ?: 0} Members"
+            groupListCall = apiInterface.GropList()
+            groupListCall?.enqueue(object : Callback<GroupListData?> {
+                override fun onResponse(
+                    call: Call<GroupListData?>,
+                    response: Response<GroupListData?>
+                ) {
+                    if (isFinishing || isDestroyed) return
 
-                            data.group_plannings?.forEach { groupPlanning ->
-                                groupPlanning.planning_id?.let {
-                                    planningIdList.add(it)
-                                }
-                            }
+                    groupDetailBinding.progressDetail.visibility = View.GONE
+                    if (response.isSuccessful) {
+                        val resource = response.body()
+                        if (resource?.status == true) {
+                            val position = position ?: return
+                            resource.data?.getOrNull(position)?.let { data ->
+                                groupDetailBinding.tvGroupName.text = data.name
+                                groupDetailBinding.tvMember.text =
+                                    "${data.group_members?.size ?: 0} Members"
 
-                            Log.d("FVVFVFV", "Planning IDs: ${planningIdList.joinToString()}")
-                            val transformation: Transformation = RoundedTransformationBuilder()
-                                .borderColor(Color.WHITE)
-                                .borderWidthDp(1f)
-                                .cornerRadiusDp(10f)
-                                .oval(false)
-                                .build()
-
-                            Picasso.get()
-                                .load("https://trainers.codefriend.in${data.image}")
-                                .fit()
-                                .transform(transformation)
-                                .into(groupDetailBinding.roundedImg)
-
-                            initPlanningData(data.group_plannings)
-                            initLessonData(data.group_lessions)
-                            initEventData(data.group_events)
-                            initTestData(data.group_tests)
-
-                            Log.d("iddd", "onResponse:" + data.id)
-                            val groupMembers = data.group_members
-                            if (groupMembers != null) {
-                                val allAthletes = arrayListOf<GroupListData.Athlete>()
-
-                                groupMembers.forEach { member ->
-                                    val athlete = member.athlete
-                                    if (athlete != null) {
-                                        allAthletes.add(athlete)
-                                        Log.d("AthleteData", "Athlete: ${athlete.name}")
-                                    } else {
-                                        Log.d(
-                                            "com.example.model.AthleteDataPackage.AthleteData",
-                                            "Athlete is null for member: $member"
-                                        )
+                                data.group_plannings?.forEach { groupPlanning ->
+                                    groupPlanning.planning_id?.let {
+                                        planningIdList.add(it)
                                     }
                                 }
 
-                                if (allAthletes.isNotEmpty()) {
-                                    initAthleteData(allAthletes)
+                                Log.d("FVVFVFV", "Planning IDs: ${planningIdList.joinToString()}")
+                                val transformation: Transformation = RoundedTransformationBuilder()
+                                    .borderColor(Color.WHITE)
+                                    .borderWidthDp(1f)
+                                    .cornerRadiusDp(10f)
+                                    .oval(false)
+                                    .build()
+
+                                Picasso.get()
+                                    .load("https://trainers.codefriend.in${data.image}")
+                                    .fit()
+                                    .transform(transformation)
+                                    .into(groupDetailBinding.roundedImg)
+
+                                initPlanningData(data.group_plannings)
+                                initLessonData(data.group_lessions)
+                                initEventData(data.group_events)
+                                initTestData(data.group_tests)
+
+                                Log.d("iddd", "onResponse:" + data.id)
+                                val groupMembers = data.group_members
+                                if (groupMembers != null) {
+                                    val allAthletes = arrayListOf<GroupListData.Athlete>()
+
+                                    groupMembers.forEach { member ->
+                                        val athlete = member.athlete
+                                        if (athlete != null) {
+                                            allAthletes.add(athlete)
+                                            Log.d("AthleteData", "Athlete: ${athlete.name}")
+                                        } else {
+                                            Log.d(
+                                                "com.example.model.AthleteDataPackage.AthleteData",
+                                                "Athlete is null for member: $member"
+                                            )
+                                        }
+                                    }
+
+                                    if (allAthletes.isNotEmpty()) {
+                                        initAthleteData(allAthletes)
+                                    } else {
+                                        Log.d(
+                                            "com.example.model.AthleteDataPackage.AthleteData",
+                                            "No athletes found in group members."
+                                        )
+                                    }
                                 } else {
                                     Log.d(
                                         "com.example.model.AthleteDataPackage.AthleteData",
-                                        "No athletes found in group members."
+                                        "No group members found."
                                     )
                                 }
-                            } else {
-                                Log.d(
-                                    "com.example.model.AthleteDataPackage.AthleteData",
-                                    "No group members found."
-                                )
-                            }
 
+                            }
+                        } else {
+                            Toast.makeText(
+                                this@GroupDetailActivity,
+                                resource?.message ?: "Unknown error",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     } else {
                         Toast.makeText(
                             this@GroupDetailActivity,
-                            resource?.message ?: "Unknown error",
+                            "Error: ${response.message()}",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                } else {
+                }
+
+                override fun onFailure(call: Call<GroupListData?>, t: Throwable) {
+                    if (isFinishing || isDestroyed) return
+                    groupDetailBinding.progressDetail.visibility = View.GONE
                     Toast.makeText(
                         this@GroupDetailActivity,
-                        "Error: ${response.message()}",
+                        t.message ?: "Error fetching data",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            }
-
-            override fun onFailure(call: Call<GroupListData?>, t: Throwable) {
-                if (isFinishing || isDestroyed) return
-                groupDetailBinding.progressDetail.visibility = View.GONE
-                Toast.makeText(
-                    this@GroupDetailActivity,
-                    t.message ?: "Error fetching data",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
+            })
+        } catch (e: Exception) {
+            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+        }
     }
 
     private fun initEventData(eventData: ArrayList<GroupListData.GroupEvents>?) {
+        try {
+            val data = eventData ?: ArrayList<GroupListData.GroupEvents>()
 
-        val data = eventData ?: ArrayList<GroupListData.GroupEvents>()
-
-        groupDetailBinding.eventRly.layoutManager = LinearLayoutManager(this)
-        eventAdapter = EventAdapter(data, this, this)
-        groupDetailBinding.eventRly.adapter = eventAdapter
+            groupDetailBinding.eventRly.layoutManager = LinearLayoutManager(this)
+            eventAdapter = EventAdapter(data, this, this)
+            groupDetailBinding.eventRly.adapter = eventAdapter
+        } catch (e: Exception) {
+            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+        }
     }
 
     private fun initAthleteData(athleteData: ArrayList<GroupListData.Athlete>?) {
 
-        val data = athleteData ?: ArrayList<GroupListData.Athlete>()
+        try {
+            val data = athleteData ?: ArrayList<GroupListData.Athlete>()
 
-        groupDetailBinding.atheleteRly.layoutManager = LinearLayoutManager(this)
-        athleteAdapter = AthleteAdapter(data, this, this)
-        groupDetailBinding.atheleteRly.adapter = athleteAdapter
+            groupDetailBinding.atheleteRly.layoutManager = LinearLayoutManager(this)
+            athleteAdapter = AthleteAdapter(data, this, this)
+            groupDetailBinding.atheleteRly.adapter = athleteAdapter
+        } catch (e: Exception) {
+            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+        }
     }
 
     private fun initLessonData(lessonData: ArrayList<GroupListData.GroupLesson>?) {
-        val data = lessonData ?: ArrayList<GroupListData.GroupLesson>()
+        try {
+            val data = lessonData ?: ArrayList<GroupListData.GroupLesson>()
 
-        groupDetailBinding.lessionRly.layoutManager = LinearLayoutManager(this)
-        lessonAdapter = LessonAdapter(data, this, this) // No need to pass null values
-        groupDetailBinding.lessionRly.adapter = lessonAdapter
+            groupDetailBinding.lessionRly.layoutManager = LinearLayoutManager(this)
+            lessonAdapter = LessonAdapter(data, this, this) // No need to pass null values
+            groupDetailBinding.lessionRly.adapter = lessonAdapter
+        } catch (e: Exception) {
+            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+        }
     }
 
     private fun initTestData(testData: ArrayList<GroupListData.GroupTest>?) {
-        val data = testData ?: ArrayList<GroupListData.GroupTest>()
+        try {
 
-        groupDetailBinding.testRly.layoutManager = LinearLayoutManager(this)
-        testAdapter = TestAdapter(data, this, this) // No need to pass null values
-        groupDetailBinding.testRly.adapter = testAdapter
+            val data = testData ?: ArrayList<GroupListData.GroupTest>()
+
+            groupDetailBinding.testRly.layoutManager = LinearLayoutManager(this)
+            testAdapter = TestAdapter(data, this, this) // No need to pass null values
+            groupDetailBinding.testRly.adapter = testAdapter
+        } catch (e: Exception) {
+            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+        }
     }
 
     private fun initPlanningData(data: ArrayList<GroupListData.GroupPlanning>?) {
-        groupDetailBinding.planningRly.layoutManager = LinearLayoutManager(this)
-        adapter = PlanningAdapter(data, this, this)
-        groupDetailBinding.planningRly.adapter = adapter
+        try {
+
+            groupDetailBinding.planningRly.layoutManager = LinearLayoutManager(this)
+            adapter = PlanningAdapter(data, this, this)
+            groupDetailBinding.planningRly.adapter = adapter
+        } catch (e: Exception) {
+            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+        }
     }
 
 
@@ -349,6 +386,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         }
 
         if (string == "fav") {
+            try {
             groupDetailBinding.progressDetail.visibility = View.VISIBLE
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
@@ -397,7 +435,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                     call.cancel()
                 }
             })
+            }catch (e:Exception){
+                Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+            }
         } else if (string == "unfav") {
+            try{
             groupDetailBinding.progressDetail.visibility = View.VISIBLE
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
@@ -449,7 +491,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                         call.cancel()
                     }
                 })
+            }catch (e:Exception){
+                Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+            }
         } else if (string == "favevent") {
+            try {
             groupDetailBinding.progressDetail.visibility = View.VISIBLE
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
@@ -498,7 +544,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                     call.cancel()
                 }
             })
+            }catch (e:Exception){
+                Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+            }
         } else if (string == "unfavevent") {
+            try {
             groupDetailBinding.progressDetail.visibility = View.VISIBLE
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
@@ -550,7 +600,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                         call.cancel()
                     }
                 })
+            }catch (e:Exception){
+                Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+            }
         } else if (string == "favtest") {
+            try {
             groupDetailBinding.progressDetail.visibility = View.VISIBLE
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
@@ -599,7 +653,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                     call.cancel()
                 }
             })
+            }catch (e:Exception){
+                Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+            }
         } else if (string == "unfavtest") {
+            try {
             groupDetailBinding.progressDetail.visibility = View.VISIBLE
             var id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
@@ -651,6 +709,9 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                         call.cancel()
                     }
                 })
+            }catch (e:Exception){
+                Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+            }
         }
     }
 

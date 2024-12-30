@@ -1,15 +1,22 @@
 package com.example
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -19,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.model.Ecercise_data_list
@@ -30,10 +38,16 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import com.prolificinteractive.materialcalendarview.CalendarMode
+import com.prolificinteractive.materialcalendarview.DayViewDecorator
+import com.prolificinteractive.materialcalendarview.DayViewFacade
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Calendar
 
 
 class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
@@ -76,9 +90,18 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         GetGoal()
 
         etSelectTestDate.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Utils.selectDate(this, etSelectTestDate)
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                Utils.selectDate(this, etSelectTestDate)
+//            }
+
+            showDateRangePickerDialog(
+                etSelectTestDate.context,
+            ) { start ->
+
+
+                etSelectTestDate.setText(start.toString())
             }
+
         }
 
         initView()
@@ -94,7 +117,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         card_save.setOnClickListener {
             if (isValidate) {
                 progres_bar.visibility = View.VISIBLE
-                for(i in 0 until exercise_list.size){
+                for (i in 0 until exercise_list.size) {
                     id.add(exercise_list[i].id.toInt())
                 }
 
@@ -157,6 +180,71 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
     }
 
 
+    fun showDateRangePickerDialog(
+        context: Context,
+        callback: (start: Long) -> Unit
+    ) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.date_range_picker_dialog)
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#80000000")))
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        dialog.window?.setGravity(Gravity.CENTER)
+
+        val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
+        val textView = dialog.findViewById<TextView>(R.id.textView)
+        val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
+        val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
+
+        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE)
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+
+        calendarView.state().edit()
+            .setCalendarDisplayMode(CalendarMode.MONTHS)
+            .commit()
+
+        calendarView.addDecorator(object : DayViewDecorator {
+            val today = CalendarDay.today()
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day == today
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today
+                ContextCompat.getDrawable(context, R.drawable.todays_date_selecte)?.let {
+                    view?.setBackgroundDrawable(it)
+                }
+            }
+        })
+
+
+        confirmButton.setOnClickListener {
+            val selectedDates = calendarView.selectedDates
+
+            if (selectedDates.isNotEmpty()) {
+                val selectedDate = selectedDates.first().calendar
+
+                selectedDate.set(Calendar.HOUR_OF_DAY, 0)
+                selectedDate.set(Calendar.MINUTE, 0)
+                selectedDate.set(Calendar.SECOND, 0)
+                selectedDate.set(Calendar.MILLISECOND, 0)
+
+                callback(selectedDate.timeInMillis)
+
+                dialog.dismiss()
+            } else {
+                textView.text = "Please select a date"
+                textView.setTextColor(Color.RED)
+            }
+        }
+
+        dialog.show()
+    }
+
 
     private fun initrecyclerview(user: ArrayList<ProgramListData.testData>) {
 
@@ -178,8 +266,8 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                 error_program.visibility = View.GONE
             }
 
-            if(date == ""){
-                error_date .visibility = View.VISIBLE
+            if (date == "") {
+                error_date.visibility = View.VISIBLE
                 return false
             } else {
                 error_date.visibility = View.GONE
@@ -231,13 +319,17 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                 val resource: CycleData? = response.body()
                 val Success: Boolean = resource?.status!!
                 val Message: String = resource.message!!
-                if(resource.data!!.size != 0){
-                    for(i in 0 until resource.data!!.size){
+                if (resource.data!!.size != 0) {
+                    for (i in 0 until resource.data!!.size) {
                         age.add(resource.data!![i].name!!)
 
                     }
 
-                    val spinnerArrayAdapter = ArrayAdapter(this@New_Program_Activity, android.R.layout.simple_spinner_item, age)
+                    val spinnerArrayAdapter = ArrayAdapter(
+                        this@New_Program_Activity,
+                        android.R.layout.simple_spinner_item,
+                        age
+                    )
                     spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     etEnterGoal.adapter = spinnerArrayAdapter
                     Utils.setSpinnerAdapter(applicationContext, age, etEnterGoal)
@@ -269,7 +361,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                 val resource: CategoriesData? = response.body()
                 val Success: Boolean = resource?.status!!
                 val Message: String = resource.message!!
-                if(resource.data!!.size != 0){
+                if (resource.data!!.size != 0) {
                     for (i in 0 until resource.data!!.size) {
                         unitArray.add(resource.data!![i].name!!)
                     }
@@ -294,7 +386,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
         if (string == "Edit") {
             startActivity(Intent(this, EditProgramActivity::class.java))
-        }else if(string=="fav"){
+        } else if (string == "fav") {
             progres_bar.visibility = View.VISIBLE
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt()!!.toString())
@@ -307,13 +399,13 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                     val resource: RegisterData? = response.body()
                     val Success: Boolean = resource?.status!!
                     val Message: String = resource.message!!
-                    if(Success){
+                    if (Success) {
                         progres_bar.visibility = View.GONE
                         Toast.makeText(this@New_Program_Activity, "" + Message, Toast.LENGTH_SHORT)
                             .show()
                         finish()
                         startActivity(intent)
-                    }else{
+                    } else {
                         progres_bar.visibility = View.GONE
                         Toast.makeText(this@New_Program_Activity, "" + Message, Toast.LENGTH_SHORT)
                             .show()
@@ -329,75 +421,97 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                     call.cancel()
                 }
             })
-        }else if(string=="unfav"){
+        } else if (string == "unfav") {
             progres_bar.visibility = View.VISIBLE
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt()!!.toString())
-            apiInterface.DeleteFavourite_Program(type.toInt())?.enqueue(object : Callback<RegisterData?> {
-                override fun onResponse(
-                    call: Call<RegisterData?>?,
-                    response: Response<RegisterData?>
-                ) {
-                    Log.d("TAG", response.code().toString() + "")
-                    val resource: RegisterData? = response.body()
-                    val Success: Boolean = resource?.status!!
-                    val Message: String = resource.message!!
-                    if(Success){
-                        progres_bar.visibility = View.GONE
-                        Toast.makeText(this@New_Program_Activity, "" + Message, Toast.LENGTH_SHORT)
-                            .show()
-                        finish()
-                        startActivity(intent)
-                    }else{
-                        progres_bar.visibility = View.GONE
-                        Toast.makeText(this@New_Program_Activity, "" + Message, Toast.LENGTH_SHORT)
-                            .show()
+            apiInterface.DeleteFavourite_Program(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>?,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        val resource: RegisterData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success) {
+                            progres_bar.visibility = View.GONE
+                            Toast.makeText(
+                                this@New_Program_Activity,
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            finish()
+                            startActivity(intent)
+                        } else {
+                            progres_bar.visibility = View.GONE
+                            Toast.makeText(
+                                this@New_Program_Activity,
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+
+
                     }
 
-
-                }
-
-                override fun onFailure(call: Call<RegisterData?>, t: Throwable?) {
-                    progres_bar.visibility = View.GONE
-                    Toast.makeText(this@New_Program_Activity, "" + t!!.message, Toast.LENGTH_SHORT)
-                        .show()
-                    call.cancel()
-                }
-            })
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable?) {
+                        progres_bar.visibility = View.GONE
+                        Toast.makeText(
+                            this@New_Program_Activity,
+                            "" + t!!.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                })
         } else {
 
             var builder: AlertDialog.Builder
             builder = AlertDialog.Builder(this)
-            builder.setMessage("Are you sure you want to delete Program?") .setTitle("Success")
+            builder.setMessage("Are you sure you want to delete Program?").setTitle("Success")
 
             builder.setMessage("Are you sure you want to delete Program?")
                 .setCancelable(false)
                 .setPositiveButton("Yes") { dialog, id ->
                     progres_bar.visibility = View.VISIBLE
-                    apiInterface.DeleteProgram(type.toInt())?.enqueue(object : Callback<RegisterData?> {
-                        override fun onResponse(
-                            call: Call<RegisterData?>?,
-                            response: Response<RegisterData?>
-                        ) {
-                            Log.d("TAG", response.code().toString() + "")
-                            val resource: RegisterData? = response.body()
-                            val Success: Boolean = resource?.status!!
-                            val Message: String = resource.message!!
-                            progres_bar.visibility = View.GONE
-                            Toast.makeText(this@New_Program_Activity, "" + Message, Toast.LENGTH_SHORT)
-                                .show()
-                            finish()
-                            startActivity(intent)
+                    apiInterface.DeleteProgram(type.toInt())
+                        ?.enqueue(object : Callback<RegisterData?> {
+                            override fun onResponse(
+                                call: Call<RegisterData?>?,
+                                response: Response<RegisterData?>
+                            ) {
+                                Log.d("TAG", response.code().toString() + "")
+                                val resource: RegisterData? = response.body()
+                                val Success: Boolean = resource?.status!!
+                                val Message: String = resource.message!!
+                                progres_bar.visibility = View.GONE
+                                Toast.makeText(
+                                    this@New_Program_Activity,
+                                    "" + Message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                                finish()
+                                startActivity(intent)
 
-                        }
+                            }
 
-                        override fun onFailure(call: Call<RegisterData?>, t: Throwable?) {
-                            progres_bar.visibility = View.GONE
-                            Toast.makeText(this@New_Program_Activity, "" + t!!.message, Toast.LENGTH_SHORT)
-                                .show()
-                            call.cancel()
-                        }
-                    })
+                            override fun onFailure(call: Call<RegisterData?>, t: Throwable?) {
+                                progres_bar.visibility = View.GONE
+                                Toast.makeText(
+                                    this@New_Program_Activity,
+                                    "" + t!!.message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                                call.cancel()
+                            }
+                        })
                 }
                 .setNegativeButton(
                     "No"
@@ -415,11 +529,12 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
 
     override fun onResume() {
         super.onResume()
-        if (preferenceManager.getexercisedata()){
+        if (preferenceManager.getexercisedata()) {
             exercise_list = getObject(this, "Exercise") as ArrayList<Ecercise_data_list>
             edt_time.setText(exercise_list[0].time)
             exercise_select_recycler.visibility = View.VISIBLE
-            exercise_select_recycler.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false)
+            exercise_select_recycler.layoutManager =
+                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 //            adapter1 =
 //                Exercise_select_Adapter(exercise_list, this)
 //            exercise_select_recycler.adapter = adapter1

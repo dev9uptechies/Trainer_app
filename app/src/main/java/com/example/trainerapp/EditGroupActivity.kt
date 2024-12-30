@@ -704,6 +704,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         Log.d("FIRSTTIMEID", "initView: $firstTimeId")
 
 
+
         lessonId = intent.getIntArrayExtra("lessonId") ?: intArrayOf()
         Log.d("IDDDDDDDD", "lesson: ${lessonId.joinToString()}")
 
@@ -1632,14 +1633,20 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
                 binding.selectUploadLy.visibility = View.GONE
                 binding.imageUpload.visibility = View.VISIBLE
-                binding.imageUpload.tag = imageUri // Save the URI in the tag
-                selectedImageUri = imageUri
-                Log.d("GroupData", "Image successfully loaded into ImageView")
+                Log.d("GroupData999", "Image successfully loaded into ImageView")
+            } else if (!imageUri.isAbsolute) {
+                val completeUrl = "https://trainers.codefriend.in$it"
+                Glide.with(this)
+                    .load(completeUrl)
+                    .into(binding.imageUpload)
+
+                binding.selectUploadLy.visibility = View.GONE
+                binding.imageUpload.visibility = View.VISIBLE
+                Log.d("GroupData999", "Relative path successfully loaded into ImageView")
             } else {
-                Log.e("GroupData", "Invalid URI: $imageUri")
+                Log.e("GroupData999", "Invalid URI: $imageUri")
             }
         }
-
 
         // Set sport name
         sportName?.let {
@@ -2046,7 +2053,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     private fun mergeIdsAndSave() {
         val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
 
-        // Load existing IDs
+        // Load existing IDs from SharedPreferences
         val existingLessonIds =
             sharedPreferences.getString("lessonId", "")?.split(",")?.mapNotNull { it.toIntOrNull() }
                 ?.toSet() ?: emptySet()
@@ -2061,14 +2068,19 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val existingAthleteIds = sharedPreferences.getString("athleteId", "")?.split(",")
             ?.mapNotNull { it.toIntOrNull() }?.toSet() ?: emptySet()
 
-        // Merge new IDs with existing IDs
-        lessonId = (existingLessonIds + lessonId.toList()).toList().toIntArray()
-        testId = (existingTestIds + testId.toList()).toList().toIntArray()
-        eventId = (existingEventIds + eventId.toList()).toList().toIntArray()
-        planningId = (existingPlanningIds + planningId.toList()).toList().toIntArray()
-        athleteId = (existingAthleteIds + athleteId.toList()).toList().toIntArray()
+        lessonId = if (lessonId.isNotEmpty()) lessonId else existingLessonIds.toIntArray()
+        testId = if (testId.isNotEmpty()) testId else existingTestIds.toIntArray()
+        eventId = if (eventId.isNotEmpty()) eventId else existingEventIds.toIntArray()
+        planningId = if (planningId.isNotEmpty()) planningId else existingPlanningIds.toIntArray()
+        athleteId = if (athleteId.isNotEmpty()) athleteId else existingAthleteIds.toIntArray()
 
-        // Save merged IDs
+        Log.d("MergedIDs", "lessonId: ${lessonId.joinToString()}")
+        Log.d("MergedIDs", "testId: ${testId.joinToString()}")
+        Log.d("MergedIDs", "eventId: ${eventId.joinToString()}")
+        Log.d("MergedIDs", "planningId: ${planningId.joinToString()}")
+        Log.d("MergedIDs", "athleteId: ${athleteId.joinToString()}")
+
+        // Save merged IDs to SharedPreferences
         saveIdsToPreferences()
     }
 
@@ -2234,7 +2246,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 initrecyclerAthlete(groupAthlete)
             }
 
-            mergeIdsAndSave()
+//            mergeIdsAndSave()
 
         } else {
             Log.d("SetData", "Filtered group list is empty")

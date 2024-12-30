@@ -639,7 +639,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         }
     }
 
-    fun addGroup(uri: Uri) {
+    private fun addGroup(uri: Uri) {
         shouldSaveData = false
         val imageFile = getFileFromUri(uri)
         if (imageFile == null || !imageFile.exists()) {
@@ -681,10 +681,12 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             testIds, programIds, days, timing
         ).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                shouldSaveData = false
                 onBackPressed()
                 clearIdsFromPreferences()
                 clearGroupDataOnBack()
                 clearDayTimesOnBack()
+
                 if (response.isSuccessful) {
                     Toast.makeText(this@CreateGropActivity, "Group Added", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@CreateGropActivity, HomeActivity::class.java)
@@ -1783,6 +1785,5 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
-
     }
 }

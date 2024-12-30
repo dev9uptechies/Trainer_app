@@ -777,10 +777,19 @@ interface APIInterface {
     @POST("personal_diary/share")
     fun updateShareStatus(@Body body: Map<String, Int>): Call<Void>
 
-    //////////////// Athlete ////////////
+    //////////////// Athlete ////////////////
 
     @GET("Athlete/group")
     fun GropListAthlete(): Call<GroupListData>?
 
-}
+    @GET("Athlete/performance_category")
+    fun GetPerformanceCategoryAthlete(): Call<PerformanceCategory>
 
+
+
+    @POST("Athlete/performance_quality")
+    fun GetPerformanceQualityAthlete(
+        @Query("performance_category_id") performId: Int? = null
+    ): Call<PerformanceQuality>
+
+}

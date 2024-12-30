@@ -1047,15 +1047,14 @@ class EditMesocycleListActivity : AppCompatActivity() {
     }
 
 
-    // Method to convert formatted date strings back to milliseconds
     private fun parseFormattedDateToMillis(dateString: String?): Long {
         return try {
             val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
             val date = format.parse(dateString)
-            date?.time ?: System.currentTimeMillis() // Fallback to current time if parsing fails
+            date?.time ?: System.currentTimeMillis()
         } catch (e: Exception) {
             Log.e("DateConversion", "Error parsing formatted date: ${e.message}")
-            System.currentTimeMillis() // Fallback to current time
+            System.currentTimeMillis()
         }
     }
 

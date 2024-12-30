@@ -79,13 +79,13 @@ class AddTrainingPlanActivity : AppCompatActivity() {
     private var endDateMillis: Long = 0
     private var activeLayoutIndex: Int? = null
 
-    var hyy:Boolean = false
+    var hyy: Boolean = false
 
-    private var startdatesent:String? = null
-    private var enddatesent:String? = null
+    private var startdatesent: String? = null
+    private var enddatesent: String? = null
 
-    private var startdatesentlist:String? = null
-    private var enddatesentlist:String? = null
+    private var startdatesentlist: String? = null
+    private var enddatesentlist: String? = null
     private val dateRangeMap = mutableMapOf<Int, Pair<String, String>>()
     var activePlanIndex = -1
 
@@ -108,7 +108,11 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@AddTrainingPlanActivity)
                     } else {
-                        Toast.makeText(this@AddTrainingPlanActivity, "" + response.message(), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@AddTrainingPlanActivity,
+                            "" + response.message(),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         call.cancel()
                     }
                 }
@@ -483,10 +487,17 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             if (addTrainingPlanBinding.edtStartDate.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
             } else {
-                val minDateMillis = formatDateToMillis(addTrainingPlanBinding.edtStartDate.text.toString())
-                val maxDateMillis = formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
+                val minDateMillis =
+                    formatDateToMillis(addTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis =
+                    formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
 
-                showDateRangePickerDialogfor(startDateEditText.context, minDateMillis, maxDateMillis, layoutIndex) { start, end ->
+                showDateRangePickerDialogfor(
+                    startDateEditText.context,
+                    minDateMillis,
+                    maxDateMillis,
+                    layoutIndex
+                ) { start, end ->
                     val formattedStartDate = formatDate(start)
                     val formattedStartDate2 = formatDate2(start)
                     val formattedEndDate = formatDate(end)
@@ -510,10 +521,17 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             if (addTrainingPlanBinding.edtEndDate.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
             } else {
-                val minDateMillis = formatDateToMillis(addTrainingPlanBinding.edtStartDate.text.toString())
-                val maxDateMillis = formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
+                val minDateMillis =
+                    formatDateToMillis(addTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis =
+                    formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
 
-                showDateRangePickerDialogfor(startDateEditText.context, minDateMillis, maxDateMillis, layoutIndex) { start, end ->
+                showDateRangePickerDialogfor(
+                    startDateEditText.context,
+                    minDateMillis,
+                    maxDateMillis,
+                    layoutIndex
+                ) { start, end ->
                     val formattedStartDate = formatDate(start)
                     val formattedStartDate2 = formatDate2(start)
                     val formattedEndDate = formatDate(end)
@@ -565,7 +583,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
     private fun updateTrainingPlanIndices() {
         hyy = true
         // Define a list of default names
-        val defaultNames = listOf("Pre Season", "Pre Competititve", "Compatitive","Transition")
+        val defaultNames = listOf("Pre Season", "Pre Competititve", "Compatitive", "Transition")
 
         for (i in trainingPlanLayouts.indices) {
             val layout = trainingPlanLayouts[i]
@@ -621,22 +639,23 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             .setCalendarDisplayMode(CalendarMode.MONTHS)
             .commit()
 
-        // Highlight today's date
         calendarView.addDecorator(object : DayViewDecorator {
             val today = CalendarDay.today()
+
             override fun shouldDecorate(day: CalendarDay?): Boolean {
+                // Only decorate today
                 return day == today
             }
 
             override fun decorate(view: DayViewFacade?) {
-                view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today
                 ContextCompat.getDrawable(context, R.drawable.todays_date_selecte)?.let {
-                    view?.setBackgroundDrawable(
-                        it // Drawable for today's background
-                    )
+                    view?.setBackgroundDrawable(it)
                 }
+                view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today (non-selected)
+
             }
         })
+
 
         // Disable dates outside the min-max range
         calendarView.addDecorator(object : DayViewDecorator {
@@ -651,7 +670,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             }
         })
 
-        // Disable overlapping dates with previous plans
+
         calendarView.addDecorator(object : DayViewDecorator {
             override fun shouldDecorate(day: CalendarDay?): Boolean {
                 if (day == null || day.calendar == null) return false
@@ -674,6 +693,68 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             }
         })
 
+        // Disable overlapping dates with previous plans
+        confirmButton.setOnClickListener {
+            val selectedDates = calendarView.selectedDates
+
+            if (selectedDates.size >= 2) {
+                // Sort the selected dates to ensure proper range order
+                val sortedDates = selectedDates.sortedBy { it.calendar.timeInMillis }
+
+                // Get the first and second selected dates
+                val startDate = sortedDates.first().calendar
+                val endDate = sortedDates[1].calendar // Adjusted logic for the end date
+
+                // Set the start date to the start of the day
+                startDate.set(Calendar.HOUR_OF_DAY, 0)
+                startDate.set(Calendar.MINUTE, 0)
+                startDate.set(Calendar.SECOND, 0)
+                startDate.set(Calendar.MILLISECOND, 0)
+
+                // If the selected dates are non-contiguous, set the end date to the day before the second date
+                if (selectedDates.size > 2 || sortedDates.last() != sortedDates[1]) {
+                    endDate.add(Calendar.DAY_OF_MONTH, -1)
+                }
+
+                // Set the end date to the end of the day
+                endDate.set(Calendar.HOUR_OF_DAY, 23)
+                endDate.set(Calendar.MINUTE, 59)
+                endDate.set(Calendar.SECOND, 59)
+                endDate.set(Calendar.MILLISECOND, 999)
+
+                val startMillis = startDate.timeInMillis
+                val endMillis = endDate.timeInMillis
+
+                if (layoutIndex == 0) {
+                    // Update or add the selected range
+                    updateOrAddDateRange(layoutIndex, startMillis, endMillis)
+                    callback(startMillis, endMillis)
+                    dialog.dismiss()
+                } else {
+                    // Check for conflicts with other plans
+                    val conflict =
+                        isConflictWithPreviousPlans(startMillis, endMillis, layoutIndex ?: 0)
+
+                    if (conflict) {
+                        textView.text = "Selected dates conflict with another plan"
+                        textView.setTextColor(Color.RED)
+                        Toast.makeText(
+                            context,
+                            "Plan $layoutIndex conflicts with earlier plans",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        updateOrAddDateRange(layoutIndex, startMillis, endMillis)
+                        callback(startMillis, endMillis)
+                        dialog.dismiss()
+                    }
+                }
+            } else {
+                textView.text = "Please select both start and end dates"
+                textView.setTextColor(Color.RED)
+            }
+        }
+
         calendarView.addDecorator(object : DayViewDecorator {
             override fun shouldDecorate(day: CalendarDay?): Boolean {
                 // Check if the day is part of the selected range (selected dates)
@@ -691,52 +772,55 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             val selectedDates = calendarView.selectedDates
 
             if (selectedDates.size >= 2) {
-                // Get the start and end dates
-                val startDate = selectedDates.first().calendar
-                val endDate = selectedDates.last().calendar
+                // Sort the selected dates to ensure proper range order
+                val sortedDates = selectedDates.sortedBy { it.calendar.timeInMillis }
 
-                // Set the start date to the start of the day (midnight)
+                // Get the first and last selected dates
+                val startDate = sortedDates.first().calendar
+                val endDate = sortedDates.last().calendar
+
+                // Set the start date to the start of the day
                 startDate.set(Calendar.HOUR_OF_DAY, 0)
                 startDate.set(Calendar.MINUTE, 0)
                 startDate.set(Calendar.SECOND, 0)
                 startDate.set(Calendar.MILLISECOND, 0)
 
-                // Set the end date to the end of the day (23:59:59.999)
+                // Adjust the end date for non-contiguous selections
+                if (endDate.timeInMillis - startDate.timeInMillis > 24 * 60 * 60 * 1000) {
+                    endDate.add(Calendar.DAY_OF_MONTH, -0)
+                }
+
+                // Set the end date to the end of the day
                 endDate.set(Calendar.HOUR_OF_DAY, 23)
                 endDate.set(Calendar.MINUTE, 59)
                 endDate.set(Calendar.SECOND, 59)
                 endDate.set(Calendar.MILLISECOND, 999)
 
-                // Ensure that the end date is the last date of the selected range (e.g., 30th, not 29th)
-                if (endDate.before(startDate)) {
-                    // If for any reason the end date is before the start date, adjust it
-                    endDate.add(Calendar.DAY_OF_MONTH, 1)
-                }
-
-                // Now check if the entire range is included correctly
                 val startMillis = startDate.timeInMillis
                 val endMillis = endDate.timeInMillis
 
-                // Ensure the end date is inclusive of the full day
-                val adjustedEndDate = endDate.clone() as Calendar
-                adjustedEndDate.add(Calendar.DAY_OF_MONTH, 1) // Add 1 day to ensure the full end date is included.
-
-                val adjustedEndMillis = adjustedEndDate.timeInMillis
-
                 if (layoutIndex == 0) {
-                    updateOrAddDateRange(layoutIndex, startMillis, adjustedEndMillis)
-                    callback(startMillis, adjustedEndMillis)
+                    // Update or add the selected range
+                    updateOrAddDateRange(layoutIndex, startMillis, endMillis)
+                    callback(startMillis, endMillis)
                     dialog.dismiss()
                 } else {
-                    val conflict = isConflictWithPreviousPlans(startMillis, adjustedEndMillis, layoutIndex ?: 0)
+                    // Check for conflicts with other plans
+                    val conflict =
+                        isConflictWithPreviousPlans(startMillis, endMillis, layoutIndex ?: 0)
 
                     if (conflict) {
                         textView.text = "Selected dates conflict with another plan"
                         textView.setTextColor(Color.RED)
-                        Toast.makeText(context, "Plan $layoutIndex conflicts with earlier plans", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Plan $layoutIndex conflicts with earlier plans",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
-                        updateOrAddDateRange(layoutIndex, startMillis, adjustedEndMillis)
-                        callback(startMillis, adjustedEndMillis)
+                        // Update or add the selected range
+                        updateOrAddDateRange(layoutIndex, startMillis, endMillis)
+                        callback(startMillis, endMillis)
                         dialog.dismiss()
                     }
                 }
@@ -746,14 +830,10 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             }
         }
 
-
-
         dialog.show()
     }
 
 
-
-    // Utility to update or add date ranges
     fun updateOrAddDateRange(layoutIndex: Int?, startMillis: Long, endMillis: Long) {
         layoutIndex?.let {
             if (it < selectedDateRanges.size) {
@@ -764,12 +844,12 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         }
     }
 
-    // Check conflicts with previous plans
     fun isConflictWithPreviousPlans(startMillis: Long, endMillis: Long, layoutIndex: Int): Boolean {
         for (i in 0 until layoutIndex) {
             val (planStart, planEnd) = selectedDateRanges[i]
             if ((startMillis in planStart..planEnd) || (endMillis in planStart..planEnd) ||
-                (startMillis < planStart && endMillis > planEnd)) {
+                (startMillis < planStart && endMillis > planEnd)
+            ) {
                 return true
             }
         }
@@ -784,10 +864,13 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         for (i in 0 until trainingPlanContainer.childCount) {
             if (i != layoutIndex) {
                 val layout = trainingPlanContainer.getChildAt(i)
-                val existingStartDate: AppCompatEditText = layout.findViewById(R.id.ent_start_date_liner)
-                val existingEndDate: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
+                val existingStartDate: AppCompatEditText =
+                    layout.findViewById(R.id.ent_start_date_liner)
+                val existingEndDate: AppCompatEditText =
+                    layout.findViewById(R.id.ent_ent_date_liner)
 
-                val existingStartMillis = convertDateToMillis(existingStartDate.text.toString().trim())
+                val existingStartMillis =
+                    convertDateToMillis(existingStartDate.text.toString().trim())
                 val existingEndMillis = convertDateToMillis(existingEndDate.text.toString().trim())
 
                 // Check for overlap using the isOverlapping function
@@ -802,7 +885,10 @@ class AddTrainingPlanActivity : AppCompatActivity() {
     // Convert date in "yyyy-MM-dd" format to milliseconds
     fun convertDateToMillis(dateString: String): Long {
         return try {
-            val sdf = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault()) // Adjust format based on your date format
+            val sdf = SimpleDateFormat(
+                "dd MMM, yyyy",
+                Locale.getDefault()
+            ) // Adjust format based on your date format
             val date = sdf.parse(dateString)
             date?.time ?: 0L
         } catch (e: Exception) {
@@ -892,7 +978,13 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         val maxDateMillis =
             if (maxStartDate.isNotEmpty()) formatDateToMillis(maxStartDate) else Long.MAX_VALUE
 
-        Utils.selectDate4(this, editText, minDateMillis, maxDateMillis, selectedDateRanges) { dateMillis ->
+        Utils.selectDate4(
+            this,
+            editText,
+            minDateMillis,
+            maxDateMillis,
+            selectedDateRanges
+        ) { dateMillis ->
             startDateMillis = dateMillis
             val formattedDate = formatDate(dateMillis)
             val formattedDateset = formatDate2(dateMillis)
@@ -932,7 +1024,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
     }
 
 
-
     private fun formatDate(dateMillis: Long): String {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return format.format(Date(dateMillis))
@@ -952,10 +1043,13 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             for (i in 0 until trainingPlanContainer.childCount) {
                 val layout = trainingPlanContainer.getChildAt(i)
                 val nameEditText: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
-                val startDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_start_date_liner)
-                val endDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
+                val startDateEditText: AppCompatEditText =
+                    layout.findViewById(R.id.ent_start_date_liner)
+                val endDateEditText: AppCompatEditText =
+                    layout.findViewById(R.id.ent_ent_date_liner)
                 val mesocycleTextView: TextView = layout.findViewById(R.id.linear_days_list)
-                val errorTextView: TextView = layout.findViewById(R.id.error_start_date_list)  // Make sure you have this TextView in your layout
+                val errorTextView: TextView =
+                    layout.findViewById(R.id.error_start_date_list)  // Make sure you have this TextView in your layout
 
                 val name = nameEditText.text.toString().trim()
                 val mesocycleValue = mesocycleTextView.text.toString().split(" ")[0]
@@ -985,8 +1079,8 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                     }
                 }
 
-                Log.e("DATATATATATATATAATAT", "saveTrainingPlans: "+dateRangeMap )
-                Log.e("DATATATATATATATAATAT", "saveTrainingPlans: "+dateRangeMap )
+                Log.e("DATATATATATATATAATAT", "saveTrainingPlans: " + dateRangeMap)
+                Log.e("DATATATATATATATAATAT", "saveTrainingPlans: " + dateRangeMap)
 
                 for (i in dateRangeMap.keys) {
                     val dateRange = dateRangeMap[i]
@@ -994,7 +1088,16 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                         val (startDate, endDate) = dateRange
 
                         val layout = trainingPlanContainer.getChildAt(i)
-                        val planName = layout.findViewById<AppCompatEditText>(R.id.ent_pre_sea_name).text.toString().trim()
+                        val planName =
+                            layout.findViewById<AppCompatEditText>(R.id.ent_pre_sea_name).text.toString()
+                                .trim()
+
+                        if (startDate < startdatesent.toString() || endDate > enddatesent.toString()) {
+                            errorTextView.visibility = View.VISIBLE
+                            errorTextView.text = "Invalid Date"
+                            errorTextView.setTextColor(Color.RED)
+                            return
+                        }
 
                         when (i) {
                             0 -> preSeason = PreSeason(
@@ -1033,11 +1136,24 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
             }
 
-            Log.d("RTTRTRTRTRTR", "saveTrainingPlans: ${isConflictWithOtherPlans(plan1StartDate , plan1EndDate)}")
-            Log.e("HJHJHJHJHJHJHJ", "onResponse: "+calculateDaysBetweenDates(startdatesent.toString(), enddatesent.toString()).toString() )
+            Log.d(
+                "RTTRTRTRTRTR",
+                "saveTrainingPlans: ${isConflictWithOtherPlans(plan1StartDate, plan1EndDate)}"
+            )
+            Log.e(
+                "HJHJHJHJHJHJHJ",
+                "onResponse: " + calculateDaysBetweenDates(
+                    startdatesent.toString(),
+                    enddatesent.toString()
+                ).toString()
+            )
 
             if (isConflictWithOtherPlans(plan1StartDate, plan1EndDate)) {
-                Toast.makeText(this, "Plan 1 conflicts with another plan. Cannot save.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Plan 1 conflicts with another plan. Cannot save.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return
             }
 
@@ -1050,23 +1166,42 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                 pre_competitive = preCompetitive,
                 competitive = competitive,
                 transition = transition,
-                mesocycle = calculateDaysBetweenDates(startdatesent.toString(), enddatesent.toString()).toString()
+                mesocycle = calculateDaysBetweenDates(
+                    startdatesent.toString(),
+                    enddatesent.toString()
+                ).toString()
             )
 
-            apiInterface.CreatePlanning(trainingPlanRequest)?.enqueue(object : Callback<TrainingPlanData> {
-                override fun onResponse(call: Call<TrainingPlanData>, response: Response<TrainingPlanData>) {
-                    if (response.isSuccessful) {
-                        Toast.makeText(this@AddTrainingPlanActivity, response.body()?.message ?: "Success", Toast.LENGTH_SHORT).show()
-                        finish()
-                    } else {
-                        Toast.makeText(this@AddTrainingPlanActivity, "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
+            apiInterface.CreatePlanning(trainingPlanRequest)
+                ?.enqueue(object : Callback<TrainingPlanData> {
+                    override fun onResponse(
+                        call: Call<TrainingPlanData>,
+                        response: Response<TrainingPlanData>
+                    ) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(
+                                this@AddTrainingPlanActivity,
+                                response.body()?.message ?: "Success",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            finish()
+                        } else {
+                            Toast.makeText(
+                                this@AddTrainingPlanActivity,
+                                "Error: ${response.message()}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                }
 
-                override fun onFailure(call: Call<TrainingPlanData>, t: Throwable) {
-                    Toast.makeText(this@AddTrainingPlanActivity, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
+                    override fun onFailure(call: Call<TrainingPlanData>, t: Throwable) {
+                        Toast.makeText(
+                            this@AddTrainingPlanActivity,
+                            "Network error: ${t.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
         } catch (e: Exception) {
             Log.e("SaveTrainingPlanError", e.message ?: "Error saving training plans")
             Toast.makeText(this, "An unexpected error occurred", Toast.LENGTH_SHORT).show()
@@ -1082,13 +1217,17 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
         for (i in 1 until trainingPlanContainer.childCount) {
             val layout = trainingPlanContainer.getChildAt(i)
-            val existingStartDate: AppCompatEditText = layout.findViewById(R.id.ent_start_date_liner)
+            val existingStartDate: AppCompatEditText =
+                layout.findViewById(R.id.ent_start_date_liner)
             val existingEndDate: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
 
             val existingStartMillis = convertDateToMillis(existingStartDate.text.toString().trim())
             val existingEndMillis = convertDateToMillis(existingEndDate.text.toString().trim())
 
-            Log.d("DATE_CHECK", "Plan ${i + 1}: Start: $existingStartMillis, End: $existingEndMillis")
+            Log.d(
+                "DATE_CHECK",
+                "Plan ${i + 1}: Start: $existingStartMillis, End: $existingEndMillis"
+            )
 
             if (isOverlapping(startMillis, endMillis, existingStartMillis, existingEndMillis)) {
                 Log.d("DATE_CHECK", "Conflict detected between Plan 1 and Plan ${i + 1}")
@@ -1165,7 +1304,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             val statdateList = startDateEditText.text.toString()
             val enddateList = endDateEditText.text.toString()
 
-            if (nameEditText == null || nameEditText.equals("")){
+            if (nameEditText == null || nameEditText.equals("")) {
 
             }
 
