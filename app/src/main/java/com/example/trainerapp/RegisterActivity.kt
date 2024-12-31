@@ -1,14 +1,22 @@
 package com.example.trainerapp
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
+import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Patterns
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.DatePicker
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -21,6 +29,7 @@ import com.example.trainerapp.databinding.ActivityRegisterBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Calendar
 
 class RegisterActivity : AppCompatActivity() {
     lateinit var registerBinding: ActivityRegisterBinding
@@ -269,6 +278,8 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
     }
+
+
 
     private fun initViews() {
         progress_bar = findViewById(R.id.progress_bar)

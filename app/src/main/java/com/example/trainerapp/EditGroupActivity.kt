@@ -2002,7 +2002,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val sharedPreferences = getSharedPreferences("DayTimesPrefs", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        // Clear all data from SharedPreferences
         editor.clear()
         editor.apply()
 

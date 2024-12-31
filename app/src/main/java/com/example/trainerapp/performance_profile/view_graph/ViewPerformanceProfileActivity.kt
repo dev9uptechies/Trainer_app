@@ -34,10 +34,14 @@ import com.highsoft.highcharts.core.HIChartContext
 import com.highsoft.highcharts.core.HIChartView
 import com.highsoft.highcharts.core.HIFunction
 import com.highsoft.highcharts.core.HIFunctionInterface
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.Arrays
+import kotlin.math.log
 
 class ViewPerformanceProfileActivity : AppCompatActivity() {
     lateinit var viewPerformanceProfileBinding: ActivityViewPerformanceProfileBinding
@@ -103,7 +107,7 @@ class ViewPerformanceProfileActivity : AppCompatActivity() {
         initView()
         checkButtonClick()
     }
-    
+
     private fun checkButtonClick() {
         viewPerformanceProfileBinding.back.setOnClickListener {
             finish()
@@ -122,9 +126,18 @@ class ViewPerformanceProfileActivity : AppCompatActivity() {
         title = intent.getStringExtra("catName").toString()
         viewPerformanceProfileBinding.title.text = title
 
+        Log.d("GHGHHGH", "initView: $catId")
+
         chartView = viewPerformanceProfileBinding.chartView
 
-        getQualityData(catId, athleteId)
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete") {
+            loadPerformanceQualityAthlete(catId.toInt())
+        } else {
+            getQualityData(catId, athleteId)
+
+        }
     }
 
     private fun getQualityData(catId: String, athleteId: String) {
@@ -196,6 +209,58 @@ class ViewPerformanceProfileActivity : AppCompatActivity() {
             Log.d("Exception :- ", "${e.message}")
         }
     }
+
+    private fun loadPerformanceQualityAthlete(id: Int) {
+        try {
+
+            apiInterface.GetPerformanceQualityAthlete(performId = id)
+                .enqueue(object : Callback<PerformanceQuality> {
+                    override fun onResponse(
+                        call: Call<PerformanceQuality>,
+                        response: Response<PerformanceQuality>
+                    ) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            if (response.isSuccessful) {
+                                val data = response.body()?.data ?: mutableListOf()
+                                Log.d(
+                                    "PerformanceQuality",
+                                    "Loaded qualities for ID $id: ${data.size} items"
+                                )
+
+                                synchronized(this@ViewPerformanceProfileActivity) {
+                                    qualityData.addAll(data.distinctBy { it.id })
+                                }
+
+                                if (qualityData.isNotEmpty()) {
+                                    setChartData(qualityData)
+                                } else {
+                                    viewPerformanceProfileBinding.ProgressBar.visibility = View.GONE
+                                    Toast.makeText(
+                                        this@ViewPerformanceProfileActivity,
+                                        "No Data Found",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
+
+                            } else {
+                                Log.e("PerformanceQuality", "Failed to load qualities for ID $id: ${response.message()}")
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<PerformanceQuality>, t: Throwable) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            Log.e("PerformanceQuality", "Error loading qualities for ID $id: ${t.message}")
+                        }
+                    }
+                })
+
+        } catch (e: Exception) {
+            Log.e("CATCH", "loadPerformanceQualityAthlete: ${e.message.toString()}")
+        }
+    }
+
 
     private fun setChartData(competitionProgress: MutableList<PerformanceQualityData>) {
 

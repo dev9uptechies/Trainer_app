@@ -817,7 +817,7 @@ class EditMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
             "competitive" -> {
                 editMicroCycleActivity.progresBar.visibility = View.VISIBLE
-                apiInterface.delete_MicrocyclePreCompatitive(id = cycleId, psid = seasonid)
+                apiInterface.delete_MicrocycleCompatitive(id = cycleId, psid = seasonid)
                     .enqueue(object : Callback<GetMicrocycle> {
                         override fun onResponse(
                             call: Call<GetMicrocycle>,

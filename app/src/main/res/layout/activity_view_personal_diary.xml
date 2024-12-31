@@ -50,39 +50,6 @@
             app:layout_constraintTop_toTopOf="@+id/back" />
 
 
-        <!--        <LinearLayout-->
-        <!--            android:id="@+id/add_layout"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="@dimen/_40sdp"-->
-        <!--            android:layout_margin="@dimen/_10sdp"-->
-        <!--            android:layout_marginTop="129dp"-->
-        <!--            android:background="@drawable/card_not_select"-->
-        <!--            android:gravity="center"-->
-        <!--            android:orientation="horizontal"-->
-        <!--            android:visibility="gone"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/linearLayout3"-->
-        <!--            tools:layout_editor_absoluteX="59dp">-->
-
-        <!--            <ImageView-->
-        <!--                android:id="@+id/add2"-->
-        <!--                android:layout_width="@dimen/_20sdp"-->
-        <!--                android:layout_height="@dimen/_20sdp"-->
-        <!--                android:layout_marginEnd="@dimen/_10sdp"-->
-        <!--                android:src="@drawable/ic_plus" />-->
-
-        <!--            <TextView-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:gravity="center"-->
-        <!--                android:text="Add Mesocycle"-->
-        <!--                android:textColor="@color/white"-->
-        <!--                android:textSize="@dimen/_13sdp" />-->
-
-        <!--        </LinearLayout>-->
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -104,7 +71,7 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/share_card"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_10sdp"
@@ -125,7 +92,7 @@
                         android:layout_gravity="center"
                         android:layout_marginVertical="@dimen/_10sdp"
                         android:layout_weight="1"
-                        android:text="Whant to share personal diary with coach"
+                        android:text="Whant to share personal diary to coach"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_12sdp" />
 

@@ -36,6 +36,9 @@ import com.highsoft.highcharts.common.hichartsclasses.HITitle
 import com.highsoft.highcharts.common.hichartsclasses.HIXAxis
 import com.highsoft.highcharts.common.hichartsclasses.HIYAxis
 import com.highsoft.highcharts.core.HIChartView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -107,9 +110,17 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
         initView()
         ButtonClick()
 
-        if (athleteId != null && athleteId.toString().isNotEmpty() && athleteId.toString() != "null") {
-            loadPerformance(athleteId.toInt())
+
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete") {
+            loadPerformanceAthlete()
+        } else {
+            if (athleteId != null && athleteId.toString().isNotEmpty() && athleteId.toString() != "null") {
+                loadPerformance(athleteId.toInt())
+            }
         }
+
 
     }
 
@@ -204,7 +215,6 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
         categoryData.forEach { category ->
             loadPerformanceQuality(athleteId, category.id) {
                 loadedCount++
-                // Once all performance qualities are loaded, set the chart data
                 if (loadedCount == totalCategories) {
                     setChartData() // Call setChartData only after all categories are loaded
                 }
@@ -212,7 +222,6 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
         }
     }
 
-    // Modified loadPerformanceQuality to accept a callback
     private fun loadPerformanceQuality(athleteId: Int, categoryId: Int?, onComplete: () -> Unit) {
         try {
             apiInterface.GetPerformanceQuality(id = athleteId, performId = categoryId)
@@ -250,6 +259,108 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
             Log.d("Exception :- ", "${e.message}")
             onComplete() // Notify to proceed even in case of an exception
         }
+    }
+
+
+
+    ///////////// for Athlte ////////////////
+
+
+    private fun loadPerformanceAthlete() {
+        viewAllPerformanceProfileBinding.ProgressBar.visibility = View.VISIBLE
+        apiInterface.GetPerformanceCategoryAthlete()
+            .enqueue(object : Callback<PerformanceCategory> {
+                override fun onResponse(
+                    call: Call<PerformanceCategory>,
+                    response: Response<PerformanceCategory>
+                ) {
+                    viewAllPerformanceProfileBinding.ProgressBar.visibility = View.GONE
+                    if (response.isSuccessful) {
+                        val data = response.body()?.data ?: mutableListOf()
+                        val addedCategoryIds = categoryData.map { it.id }.toMutableSet()
+
+                        for (category in data) {
+                            if (!addedCategoryIds.contains(category.id)) {
+                                categoryData.add(category)
+                                addedCategoryIds.add(category.id)
+                            }
+                        }
+
+                        if (categoryData.isNotEmpty()) {
+//                            loadPerformanceQualityAthleteThrottled(categoryData.map { it.id!!.toInt() })
+                            loadAllPerformanceQualitiesAtthlete()
+                        } else {
+                            Log.d("Performance", "No categories found")
+                        }
+                    } else if (response.code() == 429) {
+                        Toast.makeText(
+                            this@ViewPerformanesProfileAverageActivity,
+                            "Rate limit exceeded. Please try again later.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(this@ViewPerformanesProfileAverageActivity)
+                    } else {
+                        Toast.makeText(
+                            this@ViewPerformanesProfileAverageActivity,
+                            response.message(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<PerformanceCategory>, t: Throwable) {
+                    viewAllPerformanceProfileBinding.ProgressBar.visibility = View.GONE
+                    Toast.makeText(
+                        this@ViewPerformanesProfileAverageActivity,
+                        t.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+    }
+
+    private fun loadAllPerformanceQualitiesAtthlete() {
+        var loadedCount = 0
+        val totalCategories = categoryData.size
+
+        categoryData.forEach { category ->
+            loadPerformanceQualityAthlete(category.id!!.toInt()) {
+                loadedCount++
+                if (loadedCount == totalCategories) {
+                    setChartData() // Call setChartData only after all categories are loaded
+                }
+            }
+        }
+    }
+
+    private fun loadPerformanceQualityAthlete(id: Int, onComplete: () -> Unit) {
+        apiInterface.GetPerformanceQualityAthlete(performId = id)
+            .enqueue(object : Callback<PerformanceQuality> {
+                override fun onResponse(call: Call<PerformanceQuality>, response: Response<PerformanceQuality>) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        if (response.isSuccessful) {
+                            val data = response.body()?.data ?: mutableListOf()
+                            Log.d("PerformanceQuality", "Loaded qualities for ID $id: ${data.size} items")
+
+                            synchronized(this@ViewPerformanesProfileAverageActivity) { // Prevent concurrency issues
+                                qualityData.addAll(data.distinctBy { it.id })
+                            }
+
+                        } else {
+                            Log.e("PerformanceQuality", "Failed to load qualities for ID $id: ${response.message()}")
+                        }
+                        onComplete() // Notify completion
+                    }
+                }
+
+                override fun onFailure(call: Call<PerformanceQuality>, t: Throwable) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        Log.e("PerformanceQuality", "Error loading qualities for ID $id: ${t.message}")
+                        onComplete() // Notify completion even on failure
+                    }
+                }
+            })
     }
 
 

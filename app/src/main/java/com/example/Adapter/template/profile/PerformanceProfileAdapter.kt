@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.OnItemClickListener
 import com.example.model.performance_profile.performance.category.PerformanceCategoryData
 import com.example.model.performance_profile.performance.quality.PerformanceQualityData
+import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.zerobranch.layout.SwipeLayout
 
@@ -23,6 +24,9 @@ class PerformanceProfileAdapter(
     val qualityListener: OnQualityClick
 ) :
     RecyclerView.Adapter<PerformanceProfileAdapter.MyViewHolder>() {
+
+    lateinit var preferenceManager: PreferencesManager
+
 
     interface OnQualityClick {
         fun onQualityClick(position: Int, qualId: Long, type: String, catId: Long)
@@ -43,6 +47,21 @@ class PerformanceProfileAdapter(
         holder.performance_name.text = movie.name
         holder.performanceDetailsLinear.removeAllViews()
 
+
+        preferenceManager = PreferencesManager(context)
+
+        val userType =  preferenceManager.GetFlage()
+
+        if (userType == "Athlete"){
+            holder.add_performance.visibility = View.GONE
+            holder.edit_performance.visibility = View.GONE
+            holder.del_performance.visibility = View.GONE
+        }else{
+            holder.add_performance.visibility = View.VISIBLE
+            holder.edit_performance.visibility = View.VISIBLE
+            holder.del_performance.visibility = View.VISIBLE
+        }
+
         val filteredQualities =
             qualityList!!.filter { it.performance_category_id == movie.id.toString() }
 
@@ -60,6 +79,7 @@ class PerformanceProfileAdapter(
                 val athlete_star = addView.findViewById<TextView>(R.id.performance_athelete_star)
                 val edit = addView.findViewById<ImageView>(R.id.img_edit)
                 val delete = addView.findViewById<ImageView>(R.id.img_delete)
+
 
                 val margin = context.resources.getDimensionPixelSize(R.dimen._35sdp)
                 val margin2 = context.resources.getDimensionPixelSize(R.dimen._3sdp)

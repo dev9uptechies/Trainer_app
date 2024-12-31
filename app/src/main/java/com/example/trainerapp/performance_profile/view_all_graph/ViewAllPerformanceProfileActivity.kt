@@ -35,6 +35,10 @@ import com.highsoft.highcharts.common.hichartsclasses.HITooltip
 import com.highsoft.highcharts.common.hichartsclasses.HIXAxis
 import com.highsoft.highcharts.common.hichartsclasses.HIYAxis
 import com.highsoft.highcharts.core.HIChartView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -94,11 +98,18 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
         initView()
         ButtonClick()
 
-        if (athleteId != null && athleteId.toString().isNotEmpty() && athleteId.toString() != "null") {
-            loadPerformance(athleteId.toInt())
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete") {
+            loadPerformanceAthlete()
+        } else {
+            if (athleteId != null && athleteId.toString()
+                    .isNotEmpty() && athleteId.toString() != "null"
+            ) {
+                loadPerformance(athleteId.toInt())
+            }
+
         }
-
-
     }
 
     private fun ButtonClick() {
@@ -153,7 +164,8 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
                                     // Load performance qualities for all categories
                                     loadAllPerformanceQualities(id)
                                 } else {
-                                    viewAllPerformanceProfileBinding.chartView.visibility = View.GONE
+                                    viewAllPerformanceProfileBinding.chartView.visibility =
+                                        View.GONE
                                 }
                             }
                         } else if (code == 403) {
@@ -176,7 +188,6 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
         }
     }
 
-    // Load all performance qualities for all categories
     private fun loadAllPerformanceQualities(athleteId: Int) {
         var loadedCount = 0
         val totalCategories = categoryData.size
@@ -184,7 +195,6 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
         categoryData.forEach { category ->
             loadPerformanceQuality(athleteId, category.id) {
                 loadedCount++
-                // Once all performance qualities are loaded, set the chart data
                 if (loadedCount == totalCategories) {
                     setChartData() // Call setChartData only after all categories are loaded
                 }
@@ -192,7 +202,6 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
         }
     }
 
-    // Modified loadPerformanceQuality to accept a callback
     private fun loadPerformanceQuality(athleteId: Int, categoryId: Int?, onComplete: () -> Unit) {
         try {
             apiInterface.GetPerformanceQuality(id = athleteId, performId = categoryId)
@@ -227,153 +236,275 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
         }
     }
 
-    // Use setChartData() as provided earlier
-    private fun setChartData() {
-        chartBase.clear()
 
-        // Create a ChartBase entry for each category
-        categoryData.forEach { category ->
-            chartBase.add(
-                ChartBase(
-                    catId = category.id,
-                    catName = category.name,
-                    catQuality = mutableListOf()
-                )
-            )
+    private fun loadPerformanceAthlete() {
+        viewAllPerformanceProfileBinding.ProgressBar.visibility = View.VISIBLE
+        apiInterface.GetPerformanceCategoryAthlete()
+            .enqueue(object : Callback<PerformanceCategory> {
+                override fun onResponse(
+                    call: Call<PerformanceCategory>,
+                    response: Response<PerformanceCategory>
+                ) {
+                    viewAllPerformanceProfileBinding.ProgressBar.visibility = View.GONE
+                    if (response.isSuccessful) {
+                        val data = response.body()?.data ?: mutableListOf()
+                        val addedCategoryIds = categoryData.map { it.id }.toMutableSet()
+
+                        for (category in data) {
+                            if (!addedCategoryIds.contains(category.id)) {
+                                categoryData.add(category)
+                                addedCategoryIds.add(category.id)
+                            }
+                        }
+
+                        if (categoryData.isNotEmpty()) {
+                            loadPerformanceQualityAthleteThrottled(categoryData.map { it.id!!.toInt() })
+                            loadAllPerformanceQualitiesAthlete()
+                        } else {
+                            Log.d("Performance", "No categories found")
+                        }
+                    } else if (response.code() == 429) {
+                        Toast.makeText(
+                            this@ViewAllPerformanceProfileActivity,
+                            "Rate limit exceeded. Please try again later.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(this@ViewAllPerformanceProfileActivity)
+                    } else {
+                        Toast.makeText(
+                            this@ViewAllPerformanceProfileActivity,
+                            response.message(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<PerformanceCategory>, t: Throwable) {
+                    viewAllPerformanceProfileBinding.ProgressBar.visibility = View.GONE
+                    Toast.makeText(
+                        this@ViewAllPerformanceProfileActivity,
+                        t.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+    }
+
+    private fun loadPerformanceQualityAthleteThrottled(ids: List<Int>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            ids.forEach { id ->
+                delay(1000) // Adjust delay based on API rate limits
+//                loadPerformanceQualityAthlete(id)
+            }
+        }
+    }
+
+    private fun loadAllPerformanceQualitiesAthlete() {
+        var loadedCount = 0
+        val totalCategories = categoryData.size
+
+        if (totalCategories == 0) {
+            Log.d("PerformanceQuality", "No categories found to load qualities.")
+            return
         }
 
-        // Assign qualities to their respective categories
-        qualityData.forEach { quality ->
-            quality.performance_category_id?.toInt()?.let { categoryId ->
-                chartBase.find { it.catId == categoryId }?.catQuality?.add(
-                    QualityBase(
-                        qualityName = quality.name,
-                        athleteScore = quality.athelet_score?.toFloat(),
-                        coachScore = quality.coach_score?.toFloat()
+        Log.d("PerformanceQuality", "Total categories to load: $totalCategories")
+
+        categoryData.forEach { category ->
+            val categoryId = category.id
+            if (categoryId != null) {
+                loadPerformanceQualityAthlete(categoryId.toInt()) {
+                    synchronized(this) { // Synchronize access to shared resources
+                        loadedCount++
+                    }
+
+                    Log.d("PerformanceQuality", "Loaded category ID: $categoryId")
+                    Log.d("PerformanceQuality", "Loaded count: $loadedCount / $totalCategories")
+
+                    if (loadedCount == totalCategories) {
+                        Log.d("PerformanceQuality", "All categories loaded. Updating chart data.")
+                        setChartData()
+                    }
+                }
+            } else {
+                Log.e("PerformanceQuality", "Category ID is null. Skipping.")
+            }
+        }
+    }
+
+    private fun loadPerformanceQualityAthlete(id: Int, onComplete: () -> Unit) {
+        apiInterface.GetPerformanceQualityAthlete(performId = id)
+            .enqueue(object : Callback<PerformanceQuality> {
+                override fun onResponse(call: Call<PerformanceQuality>, response: Response<PerformanceQuality>) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        if (response.isSuccessful) {
+                            val data = response.body()?.data ?: mutableListOf()
+                            Log.d("PerformanceQuality", "Loaded qualities for ID $id: ${data.size} items")
+
+                            synchronized(this@ViewAllPerformanceProfileActivity) { // Prevent concurrency issues
+                                qualityData.addAll(data.distinctBy { it.id })
+                            }
+
+                        } else {
+                            Log.e("PerformanceQuality", "Failed to load qualities for ID $id: ${response.message()}")
+                        }
+                        onComplete() // Notify completion
+                    }
+                }
+
+                override fun onFailure(call: Call<PerformanceQuality>, t: Throwable) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        Log.e("PerformanceQuality", "Error loading qualities for ID $id: ${t.message}")
+                        onComplete() // Notify completion even on failure
+                    }
+                }
+            })
+    }
+
+
+        private fun setChartData() {
+            chartBase.clear()
+
+            categoryData.forEach { category ->
+                chartBase.add(
+                    ChartBase(
+                        catId = category.id,
+                        catName = category.name,
+                        catQuality = mutableListOf()
                     )
                 )
             }
-        }
 
-        // List to store athlete and coach series
-        val athleteSeriesList: MutableList<Float> = mutableListOf()
-        val coachSeriesList: MutableList<Float> = mutableListOf()
-        val categoriesList: MutableList<String> = mutableListOf()
-
-        // For each category, create athlete and coach data for each quality
-        chartBase.forEach { category ->
-            category.catQuality?.forEach { quality ->
-                // Add quality name to x-axis categories
-                quality.qualityName?.let { categoriesList.add(it) }
-
-                // Add scores to respective lists
-                athleteSeriesList.add(quality.athleteScore?.takeIf { !it.isNaN() } ?: 0f)
-                coachSeriesList.add(quality.coachScore?.takeIf { !it.isNaN() } ?: 0f)
-            }
-        }
-
-        // Set up the chart options
-        viewAllPerformanceProfileBinding.chartView.visibility = View.VISIBLE
-        val options = HIOptions()
-
-        val chart = HIChart().apply {
-            polar = true
-            height = "100%"
-        }
-        options.chart = chart
-        chartView.theme = "dark"
-
-        val pane = HIPane().apply {
-            startAngle = 0
-            endAngle = 360
-            background = arrayListOf(
-                HIBackground().apply {
-                    backgroundColor = HIColor.initWithRGBA(255, 255, 255, 0.05)
-                    innerRadius = "0%"
-                    outerRadius = "100%"
-                    shape = "circle"
+            qualityData.forEach { quality ->
+                quality.performance_category_id?.toInt()?.let { categoryId ->
+                    chartBase.find { it.catId == categoryId }?.catQuality?.add(
+                        QualityBase(
+                            qualityName = quality.name,
+                            athleteScore = quality.athelet_score?.toFloat(),
+                            coachScore = quality.coach_score?.toFloat()
+                        )
+                    )
                 }
-            )
-        }
-        options.pane = arrayListOf(pane)
-
-        // Set quality names as xAxis categories
-        val xAxis = HIXAxis().apply {
-            categories = ArrayList(categoriesList) // Quality names
-            labels = HILabels().apply {
-                style = HICSSObject().apply { color = "#FFFFFF" }
-                distance = 2
-                rotation = 10
             }
-            title = HITitle().apply { text = "" }
-        }
 
-        options.xAxis = arrayListOf(xAxis)
+            val athleteSeriesList: MutableList<Float> = mutableListOf()
+            val coachSeriesList: MutableList<Float> = mutableListOf()
+            val categoriesList: MutableList<String> = mutableListOf()
 
-        val yAxis = HIYAxis().apply {
-            min = 0
-            tickPositions = arrayListOf(0, 2.5, 5, 10)
-            labels = HILabels().apply {
+            // For each category, create athlete and coach data for each quality
+            chartBase.forEach { category ->
+                category.catQuality?.forEach { quality ->
+                    // Add quality name to x-axis categories
+                    quality.qualityName?.let { categoriesList.add(it) }
+
+                    // Add scores to respective lists
+                    athleteSeriesList.add(quality.athleteScore?.takeIf { !it.isNaN() } ?: 0f)
+                    coachSeriesList.add(quality.coachScore?.takeIf { !it.isNaN() } ?: 0f)
+                }
+            }
+
+            // Set up the chart options
+            viewAllPerformanceProfileBinding.chartView.visibility = View.VISIBLE
+            val options = HIOptions()
+
+            val chart = HIChart().apply {
+                polar = true
+                height = "100%"
+            }
+            options.chart = chart
+            chartView.theme = "dark"
+
+            val pane = HIPane().apply {
+                startAngle = 0
+                endAngle = 360
+                background = arrayListOf(
+                    HIBackground().apply {
+                        backgroundColor = HIColor.initWithRGBA(255, 255, 255, 0.05)
+                        innerRadius = "0%"
+                        outerRadius = "100%"
+                        shape = "circle"
+                    }
+                )
+            }
+
+            options.pane = arrayListOf(pane)
+
+            val xAxis = HIXAxis().apply {
+                categories = ArrayList(categoriesList)
+                labels = HILabels().apply {
+                    style = HICSSObject().apply { color = "#FFFFFF" }
+                    distance = 2
+                    rotation = 0
+                }
+                title = HITitle().apply { text = "" }
+            }
+
+            options.xAxis = arrayListOf(xAxis)
+
+            val yAxis = HIYAxis().apply {
+                min = 0
+                tickPositions = arrayListOf(0, 2.5, 5, 10)
+                labels = HILabels().apply {
+                    enabled = true
+                    style = HICSSObject().apply {
+                        color = "#FFFFFF"
+                        fontSize = "12px"
+                    }
+                }
+                title = HITitle().apply { text = "" }
+            }
+            options.yAxis = arrayListOf(yAxis)
+
+            val plotOptions = HIPlotOptions().apply {
+                series = HISeries().apply { pointStart = 0 }
+                column = HIColumn().apply {
+                    pointPadding = 0
+                    groupPadding = 0
+                }
+            }
+            options.plotOptions = plotOptions
+            chart.backgroundColor = HIColor.initWithRGB(0, 0, 0)
+
+            val athleteSeries = HIColumn().apply {
+                name = "Athlete"
+                color = HIColor.initWithRGB(255, 0, 0) // Red for athlete
+                data = ArrayList(athleteSeriesList)
+            }
+
+            val coachSeries = HIColumn().apply {
+                name = "Coach"
+                color = HIColor.initWithRGB(83, 83, 83) // Grey for coach
+                data = ArrayList(coachSeriesList)
+            }
+
+            options.series = arrayListOf(athleteSeries, coachSeries)
+
+
+            // Other chart options
+            val hiTitle = HITitle()
+            hiTitle.text = ""
+            options.title = hiTitle
+
+            val legend = HILegend().apply {
                 enabled = true
-                style = HICSSObject().apply {
+                itemStyle = HICSSObject().apply {
+                    fontSize = "14px"
+                    fontWeight = "regular"
                     color = "#FFFFFF"
-                    fontSize = "12px"
                 }
             }
-            title = HITitle().apply { text = "" }
-        }
-        options.yAxis = arrayListOf(yAxis)
+            options.legend = legend
+            options.exporting = HIExporting().apply { enabled = false }
+            options.credits = HICredits().apply { enabled = false }
 
-        val plotOptions = HIPlotOptions().apply {
-            series = HISeries().apply { pointStart = 0 }
-            column = HIColumn().apply {
-                pointPadding = 0
-                groupPadding = 0
-            }
-        }
-        options.plotOptions = plotOptions
-        chart.backgroundColor = HIColor.initWithRGB(0, 0, 0)
+            // Set the chart options to the view
+            chartView.options = options
+            chartView.invalidate()
+            chartView.requestLayout()
 
-        // Create series for athlete and coach data
-        val athleteSeries = HIColumn().apply {
-            name = "Athlete"
-            color = HIColor.initWithRGB(255, 0, 0) // Red for athlete
-            data = ArrayList(athleteSeriesList)
+            viewAllPerformanceProfileBinding.ProgressBar.visibility = View.GONE
         }
 
-        val coachSeries = HIColumn().apply {
-            name = "Coach"
-            color = HIColor.initWithRGB(83, 83, 83) // Grey for coach
-            data = ArrayList(coachSeriesList)
-        }
-
-        // Set series in chart options
-        options.series = arrayListOf(athleteSeries, coachSeries)
-
-
-        // Other chart options
-        val hiTitle = HITitle()
-        hiTitle.text = ""
-        options.title = hiTitle
-
-        val legend = HILegend().apply {
-            enabled = true
-            itemStyle = HICSSObject().apply {
-                fontSize = "14px"
-                fontWeight = "regular"
-                color = "#FFFFFF"
-            }
-        }
-        options.legend = legend
-        options.exporting = HIExporting().apply { enabled = false }
-        options.credits = HICredits().apply { enabled = false }
-
-        // Set the chart options to the view
-        chartView.options = options
-        chartView.invalidate()
-        chartView.requestLayout()
-
-        viewAllPerformanceProfileBinding.ProgressBar.visibility = View.GONE
-    }
 
 }

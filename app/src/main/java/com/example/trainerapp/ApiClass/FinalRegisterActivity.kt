@@ -2,12 +2,20 @@ package com.example.trainerapp.ApiClass
 
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.DatePicker
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -43,22 +51,12 @@ class FinalRegisterActivity : AppCompatActivity() {
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
 
-
-        val date =
-            OnDateSetListener { view, year, month, day ->
-                myCalendar.set(Calendar.YEAR, year)
-                myCalendar.set(Calendar.MONTH, month)
-                myCalendar.set(Calendar.DAY_OF_MONTH, day)
+        finalRegisterBinding.edtBirthday.setOnClickListener {
+            showDatePickerDialog {dayOfMonth, month, year ->
+                val selectedDate = "$dayOfMonth-${month + 1}-$year"
+                finalRegisterBinding.edtBirthday.setText(selectedDate)
                 updateLabel()
             }
-        finalRegisterBinding.edtBirthday.setOnClickListener {
-            DatePickerDialog(
-                this,
-                date,
-                myCalendar[Calendar.YEAR],
-                myCalendar[Calendar.MONTH],
-                myCalendar[Calendar.DAY_OF_MONTH]
-            ).show()
         }
 
         back.setOnClickListener {
@@ -184,6 +182,41 @@ class FinalRegisterActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun showDatePickerDialog(onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit) {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.custom_date_picker)
+
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val width = (displayMetrics.widthPixels * 0.9f).toInt()
+        dialog.window?.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val datePicker = dialog.findViewById<DatePicker>(R.id.datePicker)
+        val cancelButton = dialog.findViewById<Button>(R.id.btnCancel)
+        val applyButton = dialog.findViewById<Button>(R.id.btnApply)
+
+
+        // Default date (today)
+        val calendar = Calendar.getInstance()
+        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(
+            Calendar.DAY_OF_MONTH), null)
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+
+        applyButton.setOnClickListener {
+            val selectedYear = datePicker.year
+            val selectedMonth = datePicker.month
+            val selectedDay = datePicker.dayOfMonth
+            onDateSelected(selectedYear, selectedMonth, selectedDay)
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
 

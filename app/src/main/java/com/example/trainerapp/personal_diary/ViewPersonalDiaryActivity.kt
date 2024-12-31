@@ -110,13 +110,14 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
             try {
 //            loadData()
             } catch (e: Exception) {
-                Log.d("errro", e.message.toString())
+                Log.d("error", e.message.toString())
             }
         }
 
         binding.swipeReferesh.setOnRefreshListener {
             loadData()
         }
+
         binding.back.setOnClickListener { finish() }
 
         binding.add.setOnClickListener {
@@ -138,9 +139,8 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
 
     private fun AddShareData(shareValue: Int) {
         try {
-            val requestBody = mapOf("share" to shareValue)
 
-            apiInterface.updateShareStatus(requestBody).enqueue(object : Callback<Void> {
+            apiInterface.updateShareStatus().enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
                         saveShareStatus(shareValue) // Save only the switch's status
