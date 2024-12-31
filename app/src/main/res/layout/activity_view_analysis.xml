@@ -66,6 +66,7 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@drawable/spinner_background"
                 android:clickable="false"
+                android:visibility="gone"
                 android:focusable="false"
                 android:fontFamily="@font/poppins_medium"
                 android:hint="Select Athletes"

@@ -777,7 +777,7 @@ interface APIInterface {
     //////////////// Athlete ////////////////
 
     @GET("Athlete/group")
-    fun GropListAthlete(): Call<GroupListData>?
+    fun GropListAthlete(): Call<GroupListData>
 
     @GET("Athlete/performance_category")
     fun GetPerformanceCategoryAthlete(): Call<PerformanceCategory>
@@ -789,6 +789,12 @@ interface APIInterface {
 
     @GET("Athlete/personal_diary/share")
     fun updateShareStatus(): Call<Void>
+
+    @GET("Athlete/event")
+    fun GetEventAthlete(): Call<EventListData>?
+
+    @GET("Athlete/competition_analysis")
+    fun GetCompetitionAnalysisDataAthlete(): Call<GetCompetition>
 
 
 }

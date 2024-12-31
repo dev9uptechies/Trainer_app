@@ -111,7 +111,7 @@
         private fun callGroupApiAthlete() {
             try {
             groupBinding.groupProgress.visibility = View.VISIBLE
-            apiInterface.GropListAthlete()?.enqueue(object : Callback<GroupListData?> {
+            apiInterface.GropListAthlete().enqueue(object : Callback<GroupListData?> {
                 override fun onResponse(
                     call: Call<GroupListData?>,
                     response: Response<GroupListData?>
@@ -123,10 +123,15 @@
                         val Success: Boolean = resource?.status!!
                         val Message: String = resource.message!!
 
-                        if (Success) {
+                        if (Success == true) {
                             groupBinding.groupProgress.visibility = View.GONE
                             groupList = resource.data!! // Populate the groupList here
                             initrecycler(resource.data!!)
+
+                            for (data in resource.data!!){
+                                Log.d("GHHGHGHGHGH", "onResponse: Name:- ${data.name }")
+                            }
+
                         } else {
                             groupBinding.groupProgress.visibility = View.GONE
                         }
@@ -227,8 +232,6 @@
 
         private fun initrecycler(data: ArrayList<GroupListData.groupData>) {
             try {
-
-
             if (!isAdded) {
                 Log.e("GroupFragment", "Fragment is not attached to an activity.")
                 return

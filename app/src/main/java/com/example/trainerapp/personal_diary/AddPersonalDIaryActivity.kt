@@ -115,7 +115,6 @@ class AddPersonalDIaryActivity : AppCompatActivity() {
         addPersonalDiaryBinding.cardSave.setOnClickListener { saveDiary() }
     }
 
-
     private fun saveDiary() {
         try {
             val date = addPersonalDiaryBinding.dateTextView.text.toString()
@@ -129,104 +128,80 @@ class AddPersonalDIaryActivity : AppCompatActivity() {
                 TrainingAssessment(
                     assess_your_level_of = "Energy",
                     before_training = addPersonalDiaryBinding.EnergyBT.text.toString() ?: "",
-                    during_training = addPersonalDiaryBinding.EnergyDT.text.toString()?: "",
-                    after_training = addPersonalDiaryBinding.EnergyAT.text.toString()?: ""
+                    during_training = addPersonalDiaryBinding.EnergyDT.text.toString() ?: "",
+                    after_training = addPersonalDiaryBinding.EnergyAT.text.toString() ?: ""
                 ),
                 TrainingAssessment(
                     assess_your_level_of = "Satisfaction",
-                    before_training = addPersonalDiaryBinding.SatisfationBT.text.toString()?: "",
-                    during_training = addPersonalDiaryBinding.SatisfationDT.text.toString()?: "",
-                    after_training = addPersonalDiaryBinding.SatisfationAT.text.toString()?: ""
+                    before_training = addPersonalDiaryBinding.SatisfationBT.text.toString() ?: "",
+                    during_training = addPersonalDiaryBinding.SatisfationDT.text.toString() ?: "",
+                    after_training = addPersonalDiaryBinding.SatisfationAT.text.toString() ?: ""
                 ),
                 TrainingAssessment(
                     assess_your_level_of = "Happiness",
-                    before_training = addPersonalDiaryBinding.HapinessBT.text.toString()?: "",
-                    during_training = addPersonalDiaryBinding.HapinessDT.text.toString()?: "",
-                    after_training = addPersonalDiaryBinding.HapinessAT.text.toString()?: ""
+                    before_training = addPersonalDiaryBinding.HapinessBT.text.toString() ?: "",
+                    during_training = addPersonalDiaryBinding.HapinessDT.text.toString() ?: "",
+                    after_training = addPersonalDiaryBinding.HapinessAT.text.toString() ?: ""
                 ),
                 TrainingAssessment(
                     assess_your_level_of = "Irritability",
-                    before_training = addPersonalDiaryBinding.IrritabilityBT.text.toString()?: "",
-                    during_training = addPersonalDiaryBinding.IrritabilityDT.text.toString()?: "",
-                    after_training = addPersonalDiaryBinding.IrritabilityAT.text.toString()?: ""
+                    before_training = addPersonalDiaryBinding.IrritabilityBT.text.toString() ?: "",
+                    during_training = addPersonalDiaryBinding.IrritabilityDT.text.toString() ?: "",
+                    after_training = addPersonalDiaryBinding.IrritabilityAT.text.toString() ?: ""
                 ),
                 TrainingAssessment(
                     assess_your_level_of = "Determination",
-                    before_training = addPersonalDiaryBinding.DeterminationDT.text.toString()?: "",
-                    during_training = addPersonalDiaryBinding.DeterminationDT.text.toString()?: "",
-                    after_training = addPersonalDiaryBinding.DeterminationAT.text.toString()?: ""
+                    before_training = addPersonalDiaryBinding.DeterminationBT.text.toString() ?: "",
+                    during_training = addPersonalDiaryBinding.DeterminationDT.text.toString() ?: "",
+                    after_training = addPersonalDiaryBinding.DeterminationAT.text.toString() ?: ""
                 ),
                 TrainingAssessment(
                     assess_your_level_of = "Anxiety",
-                    before_training = addPersonalDiaryBinding.AnxietyBT.text.toString()?: "",
-                    during_training = addPersonalDiaryBinding.AnxietyDT.text.toString()?: "",
-                    after_training = addPersonalDiaryBinding.AnxietyAT.text.toString()?: ""
+                    before_training = addPersonalDiaryBinding.AnxietyBT.text.toString() ?: "",
+                    during_training = addPersonalDiaryBinding.AnxietyDT.text.toString() ?: "",
+                    after_training = addPersonalDiaryBinding.AnxietyAT.text.toString() ?: ""
                 ),
                 TrainingAssessment(
                     assess_your_level_of = "Tiredness",
-                    before_training = addPersonalDiaryBinding.TirednessDT.text.toString()?: "",
-                    during_training = addPersonalDiaryBinding.TirednessDT.text.toString()?: "",
-                    after_training = addPersonalDiaryBinding.TirednessAT.text.toString()?: ""
+                    before_training = addPersonalDiaryBinding.TirednessBT.text.toString() ?: "",
+                    during_training = addPersonalDiaryBinding.TirednessDT.text.toString() ?: "",
+                    after_training = addPersonalDiaryBinding.TirednessAT.text.toString() ?: ""
                 )
             )
 
-            // Creating the training session object with a list of TrainingAssessment
-            Log.d("sleep", "saveDiary: $sleepHours   , $nutritionAndHydration")
             val personalDiaryData = TrainingSession(
                 date = date.ifEmpty { "" },
                 sleep_hours = sleepHours.ifEmpty { "00:00:00" },
                 nutrition_and_hydration = nutritionAndHydration.ifEmpty { "" },
                 notes = notes.ifEmpty { "" },
                 share = 0,
-                data = trainingAssessments // Pass the list of training assessments
+                data = trainingAssessments
             )
 
+            Log.d("Request Payload", Gson().toJson(personalDiaryData))
 
-
-            // Make the API call
             apiInterface.AddPersonalDIaryData(personalDiaryData)?.enqueue(object : Callback<GetPersonalDiaryData> {
                 override fun onResponse(call: Call<GetPersonalDiaryData>, response: Response<GetPersonalDiaryData>) {
                     Log.d("APIResponse", "Response: ${response.code()} - ${response.errorBody()}")
 
-                    val code = response.code()
-                    if (code == 200 && response.isSuccessful) {
+                    if (response.isSuccessful) {
                         val responseBody = response.body()
                         responseBody?.let {
-                            // Log the ID and date from the response
-                            val diaryId = it.data?.id
-                            val diaryDate = it.data?.date
-                            val userId = it.data?.userId
-                            val sleepHours = it.data?.sleepHours
-                            val nutritionAndHydration = it.data?.nutritionAndHydration
-                            val notes = it.data?.notes
-                            val share = it.data?.share
-                            val createdAt = it.data?.createdAt
-                            val updatedAt = it.data?.updatedAt
-
-
-                            // Log the list of personalDairieDetails (assessments)
                             it.data?.personalDairieDetails?.forEach { assessment ->
-                                Log.d("Diary Assessment", "ID: ${assessment.id}, Level: ${assessment.assessYourLevelOf}, Before: ${assessment.beforeTraining}, During: ${assessment.duringTraining}, After: ${assessment.afterTraining}, Created At: ${assessment.createdAt}, Updated At: ${assessment.updatedAt}")
+                                Log.d(
+                                    "Diary Assessment",
+                                    "ID: ${assessment.id}, Level: ${assessment.assessYourLevelOf}, Before: ${assessment.beforeTraining}, During: ${assessment.duringTraining}, After: ${assessment.afterTraining}, Created At: ${assessment.createdAt}, Updated At: ${assessment.updatedAt}"
+                                )
                             }
-
-                            // Log the main data
-                            Log.d("Diary Data", "ID: $diaryId, Date: $diaryDate, User ID: $userId, Sleep Hours: $sleepHours, Nutrition: $nutritionAndHydration, Notes: $notes, Share: $share, Created At: $createdAt, Updated At: $updatedAt")
-
+                            Toast.makeText(this@AddPersonalDIaryActivity, "Diary saved successfully!", Toast.LENGTH_SHORT).show()
                             finish()
                         } ?: run {
                             Log.e("API Error", "Response body is null")
                         }
-                    } else if (code == 403) {
-                        Utils.setUnAuthDialog(this@AddPersonalDIaryActivity)
                     } else {
                         val errorBody = response.errorBody()?.string() ?: "Unknown error"
                         Log.e("API Error", "Response: ${response.code()} - $errorBody")
-                        Toast.makeText(
-                            this@AddPersonalDIaryActivity,
-                            "Error: $errorBody",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        call.cancel()
+                        Toast.makeText(this@AddPersonalDIaryActivity, "Error: $errorBody", Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -251,7 +226,6 @@ class AddPersonalDIaryActivity : AppCompatActivity() {
         preferenceManager = PreferencesManager(this)
 
     }
-
 
     private fun showDatePickerDialog(onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit) {
         val dialog = Dialog(this)

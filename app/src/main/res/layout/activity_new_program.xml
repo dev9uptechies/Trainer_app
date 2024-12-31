@@ -361,25 +361,25 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_save"
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/save_card"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_40sdp"
-        android:layout_margin="@dimen/_10sdp"
-        app:cardBackgroundColor="#535353"
-        app:cardCornerRadius="@dimen/_10sdp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_gravity="center"
+        android:background="@drawable/save_buttton"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:text="Save"
+        android:textAllCaps="false"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_17sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/poppins_medium"
-            android:text="Save"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_15sdp" />
-
-    </androidx.cardview.widget.CardView>
 
     <ProgressBar
         android:id="@+id/progres_bar"

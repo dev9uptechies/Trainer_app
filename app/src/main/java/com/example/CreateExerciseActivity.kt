@@ -557,7 +557,6 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             addButton.setCardBackgroundColor(resources.getColor(R.color.grey)) // Disabled color
         }
     }
-
     private fun showTimerPopup(
         anchorView: View?,
         data: MutableList<Timer.TimerData>,
@@ -582,19 +581,21 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         popupWindow.elevation = 10f
         val listView = popupView.findViewById<ListView>(R.id.listView)
 
-        val adapter =
-            object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val view = super.getView(position, convertView, parent) as TextView
-                    view.setTextColor(Color.WHITE) // Set text color to white
-                    return view
-                }
+        // Ensure unique values in the list
+        val uniqueList = list.distinct()
+
+        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, uniqueList) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent) as TextView
+                view.setTextColor(Color.WHITE)
+                return view
             }
+        }
         listView.adapter = adapter
         listView.setOnItemClickListener { _, _, position, _ ->
-            val selectedItem = list[position]
+            val selectedItem = uniqueList[position]
             editText.setText(selectedItem)
-            selectedValue.id = data.filter { it.name == selectedItem }.first().id!!
+            selectedValue.id = data.filter { it.name == selectedItem }.firstOrNull()?.id
             println("Selected item: $selectedItem")
             popupWindow.dismiss()
         }
@@ -606,6 +607,7 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             )
         )
     }
+
 
     private fun showPopup(
         anchorView: View?,
@@ -614,6 +616,7 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         list: ArrayList<String>,
         selectedValue: SelectedValue
     ) {
+        val uniqueList = list.distinct()
 
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_list, null)
@@ -621,42 +624,32 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             popupView,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            true // Focusable to allow outside clicks to dismiss
+            true
         )
         popupWindow.setBackgroundDrawable(
-            ContextCompat.getDrawable(
-                this,
-                R.drawable.popup_background
-            )
+            ContextCompat.getDrawable(this, R.drawable.popup_background)
         )
         popupWindow.elevation = 10f
         val listView = popupView.findViewById<ListView>(R.id.listView)
 
-        val adapter =
-            object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val view = super.getView(position, convertView, parent) as TextView
-                    view.setTextColor(Color.WHITE) // Set text color to white
-                    return view
-                }
+        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, uniqueList) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent) as TextView
+                view.setTextColor(Color.WHITE)
+                return view
             }
+        }
         listView.adapter = adapter
         listView.setOnItemClickListener { _, _, position, _ ->
-            val selectedItem = list[position]
+            val selectedItem = uniqueList[position]
             editText.setText(selectedItem)
-            selectedValue.id = data.filter { it.name == selectedItem }.first().id!!
+            selectedValue.id = data.first { it.name == selectedItem }.id!!
             println("Selected item: $selectedItem")
             popupWindow.dismiss()
         }
         popupWindow.showAsDropDown(anchorView)
-        popupWindow.setBackgroundDrawable(
-            AppCompatResources.getDrawable(
-                this,
-                android.R.color.white
-            )
-        )
-
     }
+
 
     private fun showTypePopup(anchorView: View?) {
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -675,30 +668,25 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         )
         popupWindow.elevation = 10f
         val listView = popupView.findViewById<ListView>(R.id.listView)
-        val adapter =
-            object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, type) {
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val view = super.getView(position, convertView, parent) as TextView
-                    view.setTextColor(Color.WHITE) // Set text color to white
-                    return view
-                }
+
+        val uniqueType = type.distinct()
+
+        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, uniqueType) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent) as TextView
+                view.setTextColor(Color.WHITE)
+                return view
             }
+        }
         listView.adapter = adapter
         listView.setOnItemClickListener { _, _, position, _ ->
-            val selectedItem = type[position]
+            val selectedItem = uniqueType[position]
             createExerciseBinding.edtType.setText(selectedItem)
             println("Selected item: $selectedItem")
             popupWindow.dismiss()
         }
         popupWindow.showAsDropDown(anchorView)
-        popupWindow.setBackgroundDrawable(
-            AppCompatResources.getDrawable(
-                this,
-                android.R.color.white
-            )
-        )
     }
-
     private fun videoDialog() {
         val dialog = Dialog(this, R.style.Theme_Dialog)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)

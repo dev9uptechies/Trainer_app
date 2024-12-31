@@ -44,8 +44,6 @@ class ViewAnalysisActivity : AppCompatActivity() {
     var aid:Int = 0
     var Name:String? = null
 
-
-
     private fun checkUser() {
         try {
             apiInterface.ProfileData()?.enqueue(object : Callback<RegisterData?> {
@@ -99,6 +97,15 @@ class ViewAnalysisActivity : AppCompatActivity() {
         setDefaultRecycler()
 //        checkButtonClick()
 
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete"){
+            viewAnalysisBinding.edtAthletes.visibility = View.GONE
+        }else{
+            viewAnalysisBinding.edtAthletes.visibility = View.VISIBLE
+
+        }
+
         if (aid != 0 || Name != null){
             checkButtonClick2()
         }else{
@@ -111,7 +118,9 @@ class ViewAnalysisActivity : AppCompatActivity() {
         viewAnalysisBinding.recViewAnalysis.layoutManager = LinearLayoutManager(this)
         viewAnalysisAdapter = ViewAnalysisAdapter(competitionData, this)
         viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAdapter
+        viewAnalysisAdapter.notifyDataSetChanged()
     }
+
 
     private fun checkButtonClick() {
 
@@ -180,7 +189,6 @@ class ViewAnalysisActivity : AppCompatActivity() {
 
         Log.d("DDDDJDJDJDJD", "checkButtonClick2: $aid")
 
-        // Safely find the selected athlete by name
         val selectedAthlete = athleteData.find { it.name == Name }
 
         // Hide the EditText field regardless of whether an athlete is selected
@@ -200,7 +208,6 @@ class ViewAnalysisActivity : AppCompatActivity() {
 
 
     private fun setRecyclerView(id: Int) {
-        // Filter competition data by athlete ID
         val filteredData = competitionData.filter { it.athlete_id!!.toInt() == id }
 
         Log.d("SetRecyclerView", "Selected Athlete ID: $id")
@@ -244,8 +251,15 @@ class ViewAnalysisActivity : AppCompatActivity() {
 
     private fun loadData() {
         resetData()
-        getCompetitionData()
-        getAthleteData()
+
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete"){
+            getCompetitionDataAthlete()
+        }else{
+            getCompetitionData()
+            getAthleteData()
+        }
 
         if (competitionData.isEmpty()) {
             viewAnalysisBinding.tvNodata.visibility = View.VISIBLE
@@ -292,6 +306,58 @@ class ViewAnalysisActivity : AppCompatActivity() {
                                     )
                                     competitionData.add(i)
 
+                                }
+                                Log.d("Competition Data :-", "${competitionData}")
+                            }
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(this@ViewAnalysisActivity)
+                    } else {
+                        Toast.makeText(
+                            this@ViewAnalysisActivity,
+                            "Failed",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(p0: Call<GetCompetition>, p1: Throwable) {
+                    viewAnalysisBinding.ProgressBar.visibility = View.GONE
+                }
+
+            })
+        } catch (e: Exception) {
+            Log.d("Error :-", "${e.message}")
+        }
+    }
+
+    private fun getCompetitionDataAthlete() {
+        try {
+            competitionData.clear()
+            apiInterface.GetCompetitionAnalysisDataAthlete().enqueue(object : Callback<GetCompetition> {
+                override fun onResponse(
+                    call: Call<GetCompetition>,
+                    response: Response<GetCompetition>
+                ) {
+                    viewAnalysisBinding.ProgressBar.visibility = View.GONE
+                    Log.d("TAG", response.code().toString() + "")
+
+                    val code = response.code()
+                    if (code == 200) {
+                        val success: Boolean = response.body()!!.status!!
+                        if (success) {
+                            val data = response.body()!!
+                            Log.d("Athlete :- Data ", "${data}")
+                            val message = data.message ?: "Success"
+                            val compData = data.data!!
+                            if (compData != null) {
+                                for (i in compData) {
+                                    Log.d(
+                                        "Competition",
+                                        "${i.category} \n ${i.athlete!!.name}"
+                                    )
+                                    competitionData.add(i)
+//                                    setDefaultRecycler()
                                 }
                                 Log.d("Competition Data :-", "${competitionData}")
                             }

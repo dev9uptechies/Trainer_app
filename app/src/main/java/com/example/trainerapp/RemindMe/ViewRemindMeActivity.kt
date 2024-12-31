@@ -51,7 +51,6 @@ class ViewRemindMeActivity : AppCompatActivity() {
         dialog.setCancelable(true)
         dialog.setContentView(R.layout.dialog_add_remind_me)
 
-        // Set dialog dimensions
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val width = (displayMetrics.widthPixels * 0.9f).toInt()
@@ -59,7 +58,6 @@ class ViewRemindMeActivity : AppCompatActivity() {
         dialog.window!!.setLayout(width, height)
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        // Find views inside the dialog
         val editText = dialog.findViewById<EditText>(R.id.edt_name)
         val editText2 = dialog.findViewById<EditText>(R.id.tv_pause_cycle)
         val saveButton = dialog.findViewById<CardView>(R.id.card_add)
@@ -74,13 +72,11 @@ class ViewRemindMeActivity : AppCompatActivity() {
                 val combinedReminder = "$inputText - $inputText2"
                 reminderList.add(combinedReminder)
 
-                // Save the updated list to SharedPreferences (as a Set)
                 with(sharedPreferences.edit()) {
                     putStringSet("RemindMeDataList", reminderList.toSet()) // Store as Set
                     apply()
                 }
 
-                // Refresh the list instantly by calling getSavedReminders
                 getSavedReminders()
 
                 Toast.makeText(this, "Reminder saved!", Toast.LENGTH_SHORT).show()
@@ -96,12 +92,10 @@ class ViewRemindMeActivity : AppCompatActivity() {
     private fun getSavedReminders() {
         val savedSet = sharedPreferences.getStringSet("RemindMeDataList", null)
 
-        // Update the UI based on whether we have saved reminders
         if (!savedSet.isNullOrEmpty()) {
-            reminderList.clear()  // Clear any old data
-            reminderList.addAll(savedSet)  // Add the saved data
+            reminderList.clear()
+            reminderList.addAll(savedSet)
 
-            // Notify the adapter to refresh the list
             (binding.reminderListView.adapter as ReminderAdapter).notifyDataSetChanged()
 
             binding.reminderListView.visibility = View.VISIBLE

@@ -657,8 +657,17 @@ class EdiTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
 
     private fun setTimerData(data: List<Timer.TimerData>) {
         audio_id = data[0].audio!!.id!!
-        pause_audio_id = data[0].pause_time_audio!!.id!!
-        pause_between_id = data[0].pause_between_time_audio!!.id!!
+        val pauseAudioId = data[0].pause_time_audio?.id
+        val pauseBetweenId = data[0].pause_between_time_audio?.id
+
+        if (pauseAudioId == null || pauseBetweenId == null) {
+            Log.e("ViewTimerDetails", "Audio ID is null")
+            return
+        }
+
+        pause_audio_id = pauseAudioId
+        pause_between_id = pauseBetweenId
+
 
         editTimerBinding.edtTimerName.setText(data[0].name)
         editTimerBinding.edtAudio.setText(data[0].audio!!.name)

@@ -516,6 +516,8 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                                     loadPerformanceQuality(id, category.id)
                                 }
                             } else {
+                                handleApiError(response.code(), response.message())
+                                call.cancel()
                                 performanceProfileBinding.performanceRly.visibility = View.GONE
                             }
                         } else {

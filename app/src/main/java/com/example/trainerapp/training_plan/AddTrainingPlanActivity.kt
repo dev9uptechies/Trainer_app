@@ -435,10 +435,10 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             newTrainingPlanLayout.findViewById(R.id.ent_pre_sea_name)
         nameEditText.hint = getTrainingPlanDetails(indexToAdd) // Use the correct index
 
-        val startDateEditText: AppCompatEditText =
-            newTrainingPlanLayout.findViewById(R.id.ent_start_date_liner)
-        val endDateEditText: AppCompatEditText =
-            newTrainingPlanLayout.findViewById(R.id.ent_ent_date_liner)
+        val startDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_start_date_liner)
+        val endDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_ent_date_liner)
+        val startDateCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_start_date_list)
+        val endDateEditCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_end_pick_list)
 
         val mesocycles: TextView = newTrainingPlanLayout.findViewById(R.id.linear_days_list)
 
@@ -481,6 +481,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         })
 
         startDateEditText.setOnClickListener {
+            // Get the layout index based on the active layout in the container
             val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
             activeLayoutIndex = layoutIndex
 
@@ -547,38 +548,116 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             }
         }
 
+        startDateCard.setOnClickListener {
+            // Get the layout index based on the active layout in the container
+            val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
+            activeLayoutIndex = layoutIndex
+
+            if (addTrainingPlanBinding.edtStartDate.text.isNullOrEmpty()) {
+                Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
+            } else {
+                val minDateMillis =
+                    formatDateToMillis(addTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis =
+                    formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
+
+                showDateRangePickerDialogfor(
+                    startDateEditText.context,
+                    minDateMillis,
+                    maxDateMillis,
+                    layoutIndex
+                ) { start, end ->
+                    val formattedStartDate = formatDate(start)
+                    val formattedStartDate2 = formatDate2(start)
+                    val formattedEndDate = formatDate(end)
+                    val formattedEndDate2 = formatDate2(end)
+
+                    startDateEditText.setText(formattedStartDate2)
+                    endDateEditText.setText(formattedEndDate2)
+                    startdatesentlist = formattedStartDate
+                    enddatesentlist = formattedEndDate
+                    dateRangeMap[layoutIndex] = Pair(formattedStartDate, formattedEndDate)
+
+                    updateDaysTextView()
+                }
+            }
+        }
+
+        endDateEditCard.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
+            activeLayoutIndex = layoutIndex
+
+            if (addTrainingPlanBinding.edtEndDate.text.isNullOrEmpty()) {
+                Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
+            } else {
+                val minDateMillis =
+                    formatDateToMillis(addTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis =
+                    formatDateToMillis(addTrainingPlanBinding.edtEndDate.text.toString())
+
+                showDateRangePickerDialogfor(
+                    startDateEditText.context,
+                    minDateMillis,
+                    maxDateMillis,
+                    layoutIndex
+                ) { start, end ->
+                    val formattedStartDate = formatDate(start)
+                    val formattedStartDate2 = formatDate2(start)
+                    val formattedEndDate = formatDate(end)
+                    val formattedEndDate2 = formatDate2(end)
+
+                    startDateEditText.setText(formattedStartDate2)
+                    endDateEditText.setText(formattedEndDate2)
+                    startdatesentlist = formattedStartDate
+                    enddatesentlist = formattedEndDate
+                    dateRangeMap[layoutIndex] = Pair(formattedStartDate, formattedEndDate)
+                    updateDaysTextView()
+                }
+            }
+        }
+
         trainingPlanLayouts.add(indexToAdd, newTrainingPlanLayout)
         trainingPlanContainer.addView(newTrainingPlanLayout, indexToAdd)
         Log.d("AddTrainingPlan", "Added training plan at index: $indexToAdd")
         val delete: ImageView = newTrainingPlanLayout.findViewById(R.id.img_delete)
         delete.setOnClickListener {
+            activeLayoutIndex = activeLayoutIndex?.minus(1)
+
+            Log.d("RTTRTRTRT", "addTrainingPlan: $activeLayoutIndex")
+
             removeTrainingPlan(newTrainingPlanLayout)
         }
         updateTrainingPlanIndices()
     }
 
-
     private fun removeTrainingPlan(trainingPlanLayout: View) {
         val index = trainingPlanLayouts.indexOf(trainingPlanLayout)
-        trainingPlanContainer.removeView(trainingPlanLayout)
-        trainingPlanLayouts.remove(trainingPlanLayout)
-        trainingPlanCount--
-        Log.d("RemoveTrainingPlan", "Removed training plan at index: $index")
-
         if (index != -1) {
+            // Remove the training plan layout from the container and list
+            trainingPlanContainer.removeView(trainingPlanLayout)
+            trainingPlanLayouts.remove(trainingPlanLayout)
+            trainingPlanCount--
+            Log.d("RemoveTrainingPlan", "Removed training plan at index: $index")
+
+            dateRangeMap.remove(index)
+            Log.d("RemoveTrainingPlan", "Date range for training plan at index $index removed from map.")
+
+            Log.d("RemoveTrainingPlan", "Date range for training plan at index $index removed.")
+
+            if (activeLayoutIndex == index) {
+                activeLayoutIndex = null
+                Log.d("RemoveTrainingPlan", "Active layout index reset.")
+            } else if (activeLayoutIndex != null && activeLayoutIndex!! > index) {
+                activeLayoutIndex = activeLayoutIndex?.minus(1)
+                Log.d("RemoveTrainingPlan", "Active layout index decremented to: $activeLayoutIndex")
+            }
+
             missingIndices.add(index)
             Log.d("RemoveTrainingPlan", "Index $index added to missing indices.")
         }
-
     }
 
-    private fun findConflictingRange(start: Long, end: Long, layoutIndex: Int): Pair<Long, Long> {
-        return selectedDateRanges
-            .filterIndexed { index, _ -> index < layoutIndex }  // Check only previous plans
-            .firstOrNull { (existingStart, existingEnd) ->
-                start <= existingEnd && end >= existingStart  // Overlapping condition
-            } ?: (0L to 0L)  // Return default (no conflict)
-    }
+
 
     private fun updateTrainingPlanIndices() {
         hyy = true
@@ -607,6 +686,14 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             "UpdateTrainingPlan",
             "Updated indices for ${trainingPlanLayouts.size} training plans."
         )
+    }
+
+    private fun findConflictingRange(start: Long, end: Long, layoutIndex: Int): Pair<Long, Long> {
+        return selectedDateRanges
+            .filterIndexed { index, _ -> index < layoutIndex }  // Check only previous plans
+            .firstOrNull { (existingStart, existingEnd) ->
+                start <= existingEnd && end >= existingStart  // Overlapping condition
+            } ?: (0L to 0L)
     }
 
     fun showDateRangePickerDialogfor(
@@ -833,19 +920,39 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         dialog.show()
     }
 
-
-    fun updateOrAddDateRange(layoutIndex: Int?, startMillis: Long, endMillis: Long) {
+    fun updateOrAddDateRange(layoutIndex: Int?, startMillis: Long, endMillis: Long, remove: Boolean = false) {
         layoutIndex?.let {
-            if (it < selectedDateRanges.size) {
-                selectedDateRanges[it] = startMillis to endMillis
+            if (remove) {
+                // Remove the date range if it exists
+                if (it < selectedDateRanges.size) {
+                    selectedDateRanges.removeAt(it)
+                    Log.d("UpdateOrAddDateRange", "Date range at index $it removed.")
+                } else {
+
+                }
             } else {
-                selectedDateRanges.add(startMillis to endMillis)
+                // Add or update the date range
+                if (it < selectedDateRanges.size) {
+                    selectedDateRanges[it] = startMillis to endMillis
+                    Log.d("UpdateOrAddDateRange", "Date range at index $it updated.")
+                } else {
+                    selectedDateRanges.add(startMillis to endMillis)
+                    Log.d("UpdateOrAddDateRange", "Date range added at index $it.")
+                }
             }
         }
     }
 
+
     fun isConflictWithPreviousPlans(startMillis: Long, endMillis: Long, layoutIndex: Int): Boolean {
+        if (layoutIndex <= 0 || selectedDateRanges.isEmpty()) {
+            return false
+        }
+
         for (i in 0 until layoutIndex) {
+            if (i >= selectedDateRanges.size) {
+                break // Prevent out-of-bounds access
+            }
             val (planStart, planEnd) = selectedDateRanges[i]
             if ((startMillis in planStart..planEnd) || (endMillis in planStart..planEnd) ||
                 (startMillis < planStart && endMillis > planEnd)

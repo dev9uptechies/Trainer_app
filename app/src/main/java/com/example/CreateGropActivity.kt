@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
@@ -28,8 +29,10 @@ import android.widget.NumberPicker
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -122,27 +125,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         "sunday" to mutableListOf()
     )
 
-    private var mondayStartTime: String? = null
-    private var mondayEndTime: String? = null
-
-    private var tuesdayStartTime: String? = null
-    private var tuesdayEndTime: String? = null
-
-    private var wednesdayStartTime: String? = null
-    private var wednesdayEndTime: String? = null
-
-    private var thursdayStartTime: String? = null
-    private var thursdayEndTime: String? = null
-
-    private var fridayStartTime: String? = null
-    private var fridayEndTime: String? = null
-
-    private var saturdayStartTime: String? = null
-    private var saturdayEndTime: String? = null
-
-    private var sundayStartTime: String? = null
-    private var sundayEndTime: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createGroupBinding = ActivityCreateGropBinding.inflate(layoutInflater)
@@ -161,10 +143,11 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         loadIdsFromPreferences()
         loadGroupData()
         loadDayTimesFromPreferences()
+        setupTextWatcher()
 
         dayTimes.forEach { (day, times) ->
             val linearLayout = getLinearLayoutForDay(day)
-            linearLayout.removeAllViews() // Clear any existing views
+            linearLayout.removeAllViews()
 
             for (time in times) {
                 val inflater = LayoutInflater.from(this).inflate(R.layout.time_layout_group, null)
@@ -622,21 +605,63 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             onBackPressed()
             clearGroupDataOnBack()
             clearDayTimesOnBack()
+            clearIdsFromPreferences()
             val intent = Intent(this, HomeActivity::class.java)
             intent.putExtra("group", "addGroup")
             startActivity(intent)
-
         }
 
-        createGroupBinding.nextCard.setOnClickListener {
-            val selectedImageUri: Uri? = selectedImageUri // Get this from your image picker logic
+        createGroupBinding.nextButtonText.setOnClickListener {
+            createGroupBinding.progressBar.visibility = View.VISIBLE
+            val selectedImageUri: Uri? = selectedImageUri
 
             if (selectedImageUri != null) {
                 addGroup(selectedImageUri)
             } else {
+                createGroupBinding.progressBar.visibility = View.GONE
                 Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun areAllFieldsFilled(): Boolean {
+        return !(createGroupBinding.edtName.text.isNullOrEmpty() || createGroupBinding.edtSport.text.isNullOrEmpty())
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun updateUI(addButton: AppCompatButton) {
+        if (areAllFieldsFilled()) {
+            addButton.isEnabled = true
+            addButton.setBackgroundResource(R.drawable.active_save_btn)
+        } else {
+            addButton.setBackgroundResource(R.drawable.save_buttton)
+        }
+    }
+
+    private fun setupTextWatcher() {
+        createGroupBinding.edtName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun afterTextChanged(s: Editable?) {
+                updateUI(createGroupBinding.nextButtonText)
+
+            }
+
+        })
+        createGroupBinding.edtSport.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun afterTextChanged(s: Editable?) {
+                updateUI(createGroupBinding.nextButtonText)
+            }
+        })
+
     }
 
     private fun addGroup(uri: Uri) {

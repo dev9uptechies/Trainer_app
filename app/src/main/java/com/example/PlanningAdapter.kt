@@ -33,7 +33,6 @@ class PlanningAdapter(
     override fun onBindViewHolder(holder: PlanningAdapter.MyViewHolder, position: Int) {
         val movie = data!![position]
 
-        // Check if movie.planning is null before accessing its properties
         val planning = movie.planning
         if (planning != null) {
             holder.group_name.text = planning.name ?: "No name"

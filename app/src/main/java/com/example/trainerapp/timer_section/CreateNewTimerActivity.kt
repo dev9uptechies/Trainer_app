@@ -80,6 +80,7 @@ class CreateNewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                     if (code == 200) {
                         Log.d("Get Profile Data ", "${response.body()}")
                     } else if (code == 403) {
+                    } else if (code == 403) {
                         Utils.setUnAuthDialog(this@CreateNewTimerActivity)
                     } else {
                         Toast.makeText(
@@ -135,10 +136,21 @@ class CreateNewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             goalDialog()
         }
         createNewTimerBinding.saveCycle.setOnClickListener {
+            if (createNewTimerBinding.edtTimerName.text.isNullOrEmpty() || createNewTimerBinding.edtAudio.text.toString()
+                    .isNullOrEmpty() || createNewTimerBinding.edtPauseAudio.text.toString()
+                    .isNullOrEmpty() || createNewTimerBinding.edtPauseBetween.text.toString().isNullOrEmpty()
+            ) {
+                Toast.makeText(this, "Please Fill All Data", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             list = mutableListOf()
             list.clear()
             if (id.size == 1 && (createNewTimerBinding.edtTimerName.text.toString()
-                    .isEmpty() || createNewTimerBinding.edtAudio.text.toString()
+                    .isNullOrEmpty() ||
+                        createNewTimerBinding.edtTimerName.text.toString() == ""
+                        || createNewTimerBinding.edtTimerName.text.toString() == "Enter Timer Name"
+                        || createNewTimerBinding.edtAudio.text.toString()
                     .isEmpty() || createNewTimerBinding.edtPauseAudio.toString()
                     .isEmpty() || createNewTimerBinding.edtPauseBetween.toString().isEmpty())
             ) {

@@ -10,6 +10,8 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Gravity
@@ -23,8 +25,10 @@ import android.widget.ListView
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -104,6 +108,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         setContentView(newProgramBinding.root)
         initView()
         getData()
+        setupTextWatcher()
 
         idd = intent.getStringExtra("ids")
         Log.e("TAGexcId", "onCreate: " + idd)
@@ -137,7 +142,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
             //refreshData()
         }
 
-        newProgramBinding.cardSave.setOnClickListener {
+        newProgramBinding.saveCard.setOnClickListener {
             saveData()
         }
 
@@ -164,6 +169,72 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         newProgramBinding.back.setOnClickListener {
             finish()
         }
+    }
+
+    private fun areAllFieldsFilled(): Boolean {
+        return !(newProgramBinding.edtProgramName.text.isNullOrEmpty() || newProgramBinding.edtGoal.text.isNullOrEmpty()
+                || newProgramBinding.etSelectTestDate.text.isNullOrEmpty()
+                || newProgramBinding.edtSection.text.isNullOrEmpty()
+                || newProgramBinding.edtTime.text.isNullOrEmpty())
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun updateUI(addButton: AppCompatButton) {
+        if (areAllFieldsFilled()) {
+            addButton.isEnabled = true
+            addButton.setBackgroundResource(R.drawable.active_save_btn)
+        } else {
+            addButton.setBackgroundResource(R.drawable.save_buttton)
+        }
+    }
+
+    private fun setupTextWatcher() {
+        newProgramBinding.edtProgramName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun afterTextChanged(s: Editable?) {
+                updateUI(newProgramBinding.saveCard)
+            }
+
+        })
+
+        newProgramBinding.edtGoal.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun afterTextChanged(s: Editable?) {
+                updateUI(newProgramBinding.saveCard)
+            }
+        })
+
+        newProgramBinding.edtTime.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun afterTextChanged(s: Editable?) {
+                updateUI(newProgramBinding.saveCard)
+            }
+        })
+
+        newProgramBinding.edtSection.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun afterTextChanged(s: Editable?) {
+                updateUI(newProgramBinding.saveCard)
+            }
+        })
+
+        newProgramBinding.etSelectTestDate.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun afterTextChanged(s: Editable?) {
+                updateUI(newProgramBinding.saveCard)
+            }
+        })
+
     }
 
 

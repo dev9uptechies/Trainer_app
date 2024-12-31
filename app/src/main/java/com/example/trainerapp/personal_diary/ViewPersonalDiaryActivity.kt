@@ -54,7 +54,7 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
-
+                        loadData()
                         Log.d("Get Profile Data ", "${response.body()}")
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@ViewPersonalDiaryActivity)
@@ -104,6 +104,7 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
             binding.shareCard.visibility = View.GONE
         }
     }
+
 
     private fun setupButtonClickListeners() {
         binding.swipeReferesh.setOnRefreshListener {
@@ -229,6 +230,19 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
     private fun loadData() {
         getpersonaldiary()
         binding.swipeReferesh.isRefreshing = false
+
+            val userType = preferenceManager.GetFlage()
+
+            if (userType == "Athlete") {
+                binding.shareCard.visibility = View.VISIBLE
+
+                val savedStatus = getShareStatus()
+                binding.switchShare.isChecked = savedStatus == 1
+            } else {
+                binding.shareCard.visibility = View.GONE
+            }
+
+
     }
 
 //    private fun getpersonaldiary() {

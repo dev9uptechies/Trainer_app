@@ -41,7 +41,8 @@ class GroupAdapter(
     override fun onBindViewHolder(holder: GroupAdapter.MyViewHolder, position: Int) {
         val movie = splist!![position]
         holder.group_name.text = movie.name
-        holder.tv_sport.text = movie.sport!!.title
+        holder.tv_sport.text = movie.sport?.title ?: "Unknown" // Default to "Unknown" if sport or title is null
+
         val transformation: Transformation = RoundedTransformationBuilder()
             .borderColor(Color.BLACK)
             .borderWidthDp(1f)
@@ -55,7 +56,14 @@ class GroupAdapter(
             .transform(transformation)
             .into(holder.rounded_image)
 
-        holder.itemView.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , ""))
+        holder.itemView.setOnClickListener(
+            OnItemClickListener(
+                position,
+                listener,
+                movie.id!!.toLong(),
+                ""
+            )
+        )
     }
 
     override fun getItemCount(): Int {

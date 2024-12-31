@@ -630,25 +630,25 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         }
     }
 
+
     fun isConflictWithPreviousPlans(startMillis: Long, endMillis: Long, layoutIndex: Int): Boolean {
-        try {
+        if (layoutIndex <= 0 || selectedDateRanges.isEmpty()) {
+            return false
+        }
 
-
-            for (i in 0 until layoutIndex) {
-                val (planStart, planEnd) = selectedDateRanges[i]
-                if ((startMillis in planStart..planEnd) || (endMillis in planStart..planEnd) ||
-                    (startMillis < planStart && endMillis > planEnd)
-                ) {
-                    return true
-                }
+        for (i in 0 until layoutIndex) {
+            if (i >= selectedDateRanges.size) {
+                break // Prevent out-of-bounds access
             }
-
-        } catch (e: Exception) {
-            Log.d("ERROROROROOR", "isConflictWithPreviousPlans: ${e.message.toString()}")
+            val (planStart, planEnd) = selectedDateRanges[i]
+            if ((startMillis in planStart..planEnd) || (endMillis in planStart..planEnd) ||
+                (startMillis < planStart && endMillis > planEnd)
+            ) {
+                return true
+            }
         }
         return false
     }
-
 
     fun isConflict(startDate: String, endDate: String, layoutIndex: Int?): Boolean {
         val startMillis = convertDateToMillis(startDate)
@@ -864,6 +864,42 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         }
 
         endDateEditText.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(trainingPlanView)
+            activeLayoutIndex = layoutIndex
+            if (editTrainingPlanBinding.edtEndDate.text.isNullOrEmpty()) {
+                Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            } else {
+                val minDateMillis =
+                    formatDateToMillis(editTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis =
+                    formatDateToMillis(editTrainingPlanBinding.edtEndDate.text.toString())
+
+                showDateRangePickerDialogfor(
+                    startDateEditText.context,
+                    minDateMillis,
+                    maxDateMillis,
+                    layoutIndex
+                ) { start, end ->
+                    startDateMilliss = start
+                    endDateMilliss = end
+                    val formattedStartDate = formatDate(start)
+                    val formattedStartDate2 = formatDate2(start)
+                    val formattedEndDate = formatDate(end)
+                    val formattedEndDate2 = formatDate2(end)
+
+                    startDateEditText.setText(formattedStartDate2)
+                    endDateEditText.setText(formattedEndDate2)
+                    updateDaysTextView()
+                    startdatesentlist = formattedStartDate
+                    enddatesentlist = formattedEndDate
+                    dateRangeMap[layoutIndex] = Pair(formattedStartDate, formattedEndDate)
+                    selectedDateRanges.add(startDateMilliss to endDateMilliss)
+                }
+            }
+        }
+
+        enddatecard.setOnClickListener {
             val layoutIndex = trainingPlanContainer.indexOfChild(trainingPlanView)
             activeLayoutIndex = layoutIndex
             if (editTrainingPlanBinding.edtEndDate.text.isNullOrEmpty()) {
@@ -1357,12 +1393,38 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             System.currentTimeMillis() // Fallback to current time
         }
     }
-
     private fun removeTrainingPlan(trainingPlanLayout: View) {
-        trainingPlanContainer.removeView(trainingPlanLayout)
-        trainingPlanLayouts.remove(trainingPlanLayout)
-        trainingPlanCount--
+        val index = trainingPlanLayouts.indexOf(trainingPlanLayout)
+        if (index != -1) {
+            // Remove the training plan layout from the container and list
+            trainingPlanContainer.removeView(trainingPlanLayout)
+            trainingPlanLayouts.remove(trainingPlanLayout)
+            trainingPlanCount--
+            Log.d("RemoveTrainingPlan", "Removed training plan at index: $index")
+
+            // Remove the corresponding date range from dateRangeMap
+            dateRangeMap.remove(index)
+            Log.d("RemoveTrainingPlan", "Date range for training plan at index $index removed from map.")
+
+
+            Log.d("RemoveTrainingPlan", "Date range for training plan at index $index removed.")
+
+            // If the removed training plan layout is the active one, reset activeLayoutIndex
+            if (activeLayoutIndex == index) {
+                activeLayoutIndex = null // Reset the active index to null if the removed plan is active
+                Log.d("RemoveTrainingPlan", "Active layout index reset.")
+            } else if (activeLayoutIndex != null && activeLayoutIndex!! > index) {
+                // If activeLayoutIndex is not null and is after the removed index, decrement it
+                activeLayoutIndex = activeLayoutIndex?.minus(1)
+                Log.d("RemoveTrainingPlan", "Active layout index decremented to: $activeLayoutIndex")
+            }
+
+            // Optionally, keep track of missing indices if needed
+            missingIndices.add(index)
+            Log.d("RemoveTrainingPlan", "Index $index added to missing indices.")
+        }
     }
+
 
 
     private fun setupTextWatcher() {
