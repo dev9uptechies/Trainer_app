@@ -8,6 +8,7 @@ import android.database.Cursor
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.OpenableColumns
@@ -32,8 +33,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -101,6 +105,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     private lateinit var binding: ActivityEditGroupBinding
     val selectedDays = mutableListOf<String>()
     private var selectedImageUri: Uri? = null
+    private var selectedImageUri2: Uri? = null
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
     lateinit var preferenceManager: PreferencesManager
@@ -203,12 +208,55 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         ButtonClick()
         callGroupApi(receivedId.toString())
         setSavedDayTimes()
+        setupTextWatcher()
+
+    }
+
+    private fun areAllFieldsFilled(): Boolean {
+        return !(binding.edtName.text.isNullOrEmpty() || binding.edtSport.text.isNullOrEmpty())
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun updateUI(addButton: AppCompatButton) {
+        if (areAllFieldsFilled()) {
+            addButton.isEnabled = true
+            addButton.setBackgroundResource(R.drawable.active_save_btn)
+        } else {
+            addButton.isEnabled = false
+            addButton.setBackgroundResource(R.drawable.save_buttton)
+        }
+    }
+
+    private fun setupTextWatcher() {
+        binding.edtName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun afterTextChanged(s: Editable?) {
+                updateUI(binding.nextButtonText)
+
+            }
+
+        })
+        binding.edtSport.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun afterTextChanged(s: Editable?) {
+                updateUI(binding.nextButtonText)
+            }
+        })
 
     }
 
     private fun ButtonClick() {
 
         binding.back.setOnClickListener {
+
             shouldSaveData = false
             clearIdsFromPreferences()
             clearAllPreferences()
@@ -228,6 +276,13 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         binding.edtSport.setOnClickListener {
             showPopup(it, goalData, binding.edtSport, Goal, sportlId)
+
+            val groupName = binding.edtName.text.toString()
+            val sportName = binding.edtSport.text.toString()
+            val imageUri = binding.imageUpload.tag as? Uri
+
+            saveGroupData(groupName, imageUri, sportName, sportlId.id.toString())
+
         }
 
         binding.monAddScheduleTime.setOnClickListener {
@@ -577,7 +632,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         }
 
-        binding.nextCard.setOnClickListener {
+        binding.nextButtonText.setOnClickListener {
 
             if (selectedImageUri != null) {
                 selectedImageUri
@@ -781,17 +836,16 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
     override fun onPause() {
         super.onPause()
+
+        Log.d("FGFGFG", "onPause: $shouldSaveData")
+
         if (shouldSaveData == true) {
             val groupName = binding.edtName.text.toString()
             val sportName = binding.edtSport.text.toString()
-            val imageUri = selectedImageUri
-
-            Log.d("FBFBBFBF", "onPause: $selectedImageUri")
+            val imageUri = selectedImageUri ?: selectedImageUri2
             saveGroupData(groupName, imageUri, sportName, sportlId.id.toString())
             saveDayTimesToPreferences()
-            if (firstTimeId != -1 && firstTimeId != 0) {
-                saveIdToSharedPreferences(this, firstTimeId)
-            }
+
             Log.d("GroupData", "Data saved in onPause")
         } else {
             Log.d("GroupData", "Data not saved in onPause because shouldSaveData is false")
@@ -811,8 +865,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     fun saveIdToSharedPreferences(context: Context, id: Int) {
         val sharedPref = context.getSharedPreferences("MySharedPrefs", Context.MODE_PRIVATE)
         val editor = sharedPref.edit()
-        editor.putInt("first_time_id", id)  // Save the 'id' under the key 'first_time_id'
-        editor.apply()  // Apply the changes asynchronously
+        editor.putInt("first_time_id", id)
+        editor.apply()
 
         Log.d("SAVEEEVEVEVV", "First time ID saved to SharedPreferences: $id")
     }
@@ -875,11 +929,10 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                             editor.putString("imageUrll", imageUrl)
                             editor.apply()
 
-                            // Update the UI for the image
                             binding.imageUpload.visibility = View.VISIBLE
                             binding.selectUploadLy.visibility = View.GONE
 
-                            selectedImageUri = Uri.parse(imageUrl)
+                            selectedImageUri2 = Uri.parse(imageUrl)
 
                             val transformation: Transformation = RoundedTransformationBuilder()
                                 .borderColor(Color.BLACK)
@@ -903,12 +956,11 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                     }
                                 })
 
-                            // Process the schedule if the group is found
                             selectedGroup.schedule?.forEach { schedule ->
                                 schedule.day?.let { day ->
                                     when (day.lowercase()) {
                                         "monday" -> {
-                                            showDefaultDay() // Ensure Monday is default
+                                            showDefaultDay()
 
                                             toggleDay(
                                                 "monday",
@@ -1407,7 +1459,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         Log.e("ProcessImage", "Image URL from SharedPreferences: $imageUrl")
 
         if (!imageUrl.isNullOrEmpty()) {
-            // Process the image from the SharedPreferences URL
             val imageFileFromUrl = runBlocking { convertUrlToFile(context, imageUrl) }
             if (imageFileFromUrl != null && imageFileFromUrl.exists()) {
                 val imageRequestBody = imageFileFromUrl.asRequestBody("image/*".toMediaTypeOrNull())
@@ -1543,9 +1594,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
     }
 
-    /**
-     * Get the file name from the URI.
-     */
+
 
     fun getFileNameFromUri(context: Context, uri: Uri): String? {
         return if (uri.scheme == "content") {
@@ -1592,21 +1641,22 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             "Saving data: groupName=$groupName, sportName=$sportName, sportId=$sportId"
         )
 
-
-        Log.d("saveGroupData", "saveGroupData: $imageUri")
         editor.putString("groupName", groupName)
-        editor.putString("imageUri", imageUri.toString())
+
+        imageUri?.let {
+            Log.d("GroupData", "Saving imageUri: $imageUri")
+            editor.putString("imageUri", it.toString())
+        }
+
         editor.putString("sportName", sportName)
         editor.putString("sportId", sportId)
 
         editor.apply()
+        Log.d("GroupData", "Data saved successfully")
     }
 
     private fun loadGroupData() {
         val sharedPreferences = getSharedPreferences("GroupData", MODE_PRIVATE)
-
-        binding.imageUpload.visibility = View.VISIBLE
-        binding.selectUploadLy.visibility = View.GONE
 
         val groupName = sharedPreferences.getString("groupName", null)
         val imageUriString = sharedPreferences.getString("imageUri", null)
@@ -1615,17 +1665,15 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         Log.d("GroupData", "Loading data...")
 
-        Log.d("loadGroupData", "loadGroupData: $imageUriString")
-
         // Set group name
         groupName?.let {
             binding.edtName.setText(it)
             Log.d("GroupData", "Loaded groupName: $it")
-
         }
 
-        imageUriString?.let {
-            val imageUri = Uri.parse(it)
+        // Only load the image if no image is currently selected
+        if (selectedImageUri == null && imageUriString != null) {
+            val imageUri = Uri.parse(imageUriString)
             if (imageUri.scheme == "content" || imageUri.scheme == "file") {
                 Glide.with(this)
                     .load(imageUri)
@@ -1635,17 +1683,19 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 binding.imageUpload.visibility = View.VISIBLE
                 Log.d("GroupData999", "Image successfully loaded into ImageView")
             } else if (!imageUri.isAbsolute) {
-                val completeUrl = "https://trainers.codefriend.in$it"
+                val completeUrl = "https://trainers.codefriend.in$imageUriString"
                 Glide.with(this)
                     .load(completeUrl)
                     .into(binding.imageUpload)
 
                 binding.selectUploadLy.visibility = View.GONE
                 binding.imageUpload.visibility = View.VISIBLE
-                Log.d("GroupData999", "Relative path successfully loaded into ImageView")
+                Log.d("GroupData999", "Relative path successfully loaded into ImageView $imageUri")
             } else {
                 Log.e("GroupData999", "Invalid URI: $imageUri")
             }
+        } else {
+            Log.d("GroupData", "Skipping image loading as selectedImageUri is already set: $selectedImageUri")
         }
 
         // Set sport name
@@ -1908,12 +1958,11 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val inflater = LayoutInflater.from(this).inflate(R.layout.time_layout_group, null)
         linearLayout.addView(inflater, linearLayout.childCount)
 
-        val tvStartTime: EditText = inflater.findViewById(R.id.tv_start_time)
-        val tvEndTime: EditText = inflater.findViewById(R.id.tv_End_time)
+        val tvStartTime: AppCompatEditText = inflater.findViewById(R.id.tv_start_time)
+        val tvEndTime: AppCompatEditText = inflater.findViewById(R.id.tv_End_time)
         val tvStartTimeCard: CardView = inflater.findViewById(R.id.start_time_card)
         val tvEndTimeCard: CardView = inflater.findViewById(R.id.card_end_time)
 
-        // Generate a unique ID for this view (e.g., based on the current child count)
         val id = linearLayout.childCount.toString()
 
         tvStartTime.setText(startTime)
@@ -1932,6 +1981,16 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
 
         tvEndTimeCard.setOnClickListener {
+            setDialogEnd(tvEndTime)
+        }
+
+        tvStartTime.setOnClickListener {
+            Log.d("CLICK", "Start time clicked")
+            SetDialog_start(tvStartTime)
+        }
+
+        tvEndTime.setOnClickListener {
+            Log.d("CLICK", "End time clicked")
             setDialogEnd(tvEndTime)
         }
 
@@ -2052,25 +2111,23 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     private fun mergeIdsAndSave() {
         val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
 
-        // Load existing IDs from SharedPreferences
-        val existingLessonIds =
-            sharedPreferences.getString("lessonId", "")?.split(",")?.mapNotNull { it.toIntOrNull() }
-                ?.toSet() ?: emptySet()
-        val existingTestIds =
-            sharedPreferences.getString("testId", "")?.split(",")?.mapNotNull { it.toIntOrNull() }
-                ?.toSet() ?: emptySet()
-        val existingEventIds =
-            sharedPreferences.getString("eventId", "")?.split(",")?.mapNotNull { it.toIntOrNull() }
-                ?.toSet() ?: emptySet()
+        val existingLessonIds = sharedPreferences.getString("lessonId", "")?.split(",")?.mapNotNull { it.toIntOrNull() }
+            ?.toSet() ?: emptySet()
+        val existingTestIds = sharedPreferences.getString("testId", "")?.split(",")?.mapNotNull { it.toIntOrNull() }
+            ?.toSet() ?: emptySet()
+        val existingEventIds = sharedPreferences.getString("eventId", "")?.split(",")?.mapNotNull { it.toIntOrNull() }
+            ?.toSet() ?: emptySet()
         val existingPlanningIds = sharedPreferences.getString("planningId", "")?.split(",")
             ?.mapNotNull { it.toIntOrNull() }?.toSet() ?: emptySet()
         val existingAthleteIds = sharedPreferences.getString("athleteId", "")?.split(",")
             ?.mapNotNull { it.toIntOrNull() }?.toSet() ?: emptySet()
 
+        planningId = if (planningId.isNotEmpty()) planningId else existingPlanningIds.toIntArray()
+
+        // Keep other IDs unchanged, even if planningId is updated
         lessonId = if (lessonId.isNotEmpty()) lessonId else existingLessonIds.toIntArray()
         testId = if (testId.isNotEmpty()) testId else existingTestIds.toIntArray()
         eventId = if (eventId.isNotEmpty()) eventId else existingEventIds.toIntArray()
-        planningId = if (planningId.isNotEmpty()) planningId else existingPlanningIds.toIntArray()
         athleteId = if (athleteId.isNotEmpty()) athleteId else existingAthleteIds.toIntArray()
 
         Log.d("MergedIDs", "lessonId: ${lessonId.joinToString()}")
@@ -2166,7 +2223,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             binding.edtName.setText(group.name ?: "")
             binding.edtSport.setText(group.sport?.title ?: "")
 
-
             val sport = group.sport_id
             if (!sport.isNullOrEmpty()) {
                 sportlId = SelectedValue(sport.toInt())  // Wrap the string in a SelectedValue
@@ -2245,7 +2301,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 initrecyclerAthlete(groupAthlete)
             }
 
-//            mergeIdsAndSave()
+            mergeIdsAndSave()
 
         } else {
             Log.d("SetData", "Filtered group list is empty")

@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.DisplayMetrics
@@ -29,10 +30,12 @@ import android.widget.NumberPicker
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -58,6 +61,10 @@ import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityCreateGropBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.squareup.picasso.Picasso
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -69,6 +76,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.math.log
 
 
 @Suppress("DEPRECATION")
@@ -594,10 +605,13 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
 
         createGroupBinding.selectImage.setOnClickListener {
-            val intent = Intent()
-            intent.type = "image/*"
-            intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
+//            val intent = Intent()
+//            intent.type = "image/*"
+//            intent.action = Intent.ACTION_GET_CONTENT
+//            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
+
+            getContent.launch("image/*")
+
         }
 
         createGroupBinding.back.setOnClickListener {
@@ -616,7 +630,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             val selectedImageUri: Uri? = selectedImageUri
 
             if (selectedImageUri != null) {
-                addGroup(selectedImageUri)
+                addGroup(this,selectedImageUri)
             } else {
                 createGroupBinding.progressBar.visibility = View.GONE
                 Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show()
@@ -634,9 +648,54 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             addButton.isEnabled = true
             addButton.setBackgroundResource(R.drawable.active_save_btn)
         } else {
+            addButton.isEnabled = false
             addButton.setBackgroundResource(R.drawable.save_buttton)
         }
     }
+
+    private val getContent =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                selectedImageUri = it
+                Log.d("SUJALLLLLL", "Selected Image URI: $it")
+                Log.d("SUJALLLLLL", "Selected Image URI: $selectedImageUri")
+                createGroupBinding.selectUploadLy.visibility = View.GONE
+                createGroupBinding.imageUpload.visibility = View.VISIBLE
+
+                val sharedPreferences =
+                    createGroupBinding.root.context.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
+                sharedPreferences.edit().putString("imageUrll", uri.toString()).apply()
+
+                Picasso.get()
+                    .load(uri)
+                    .error(R.drawable.app_icon)
+                    .into(createGroupBinding.imageUpload, object : com.squareup.picasso.Callback {
+                        override fun onSuccess() {
+                            Log.d("Picasso", "Image loaded successfully")
+
+                            val imagePart = processImage(createGroupBinding.root.context, uri)
+
+                            if (imagePart != null) {
+                                Log.d(
+                                    "ImagePart",
+                                    "Image file created: ${imagePart.body.contentType()}"
+                                )
+                                // Call the API with the image part
+                                selectedImageUri = uri
+//                                editGroupWithImageApiCall(binding.root.context, uri)
+                            } else {
+                                Log.e("ImagePart", "Failed to create image file from URI")
+                            }
+                        }
+
+                        override fun onError(e: Exception?) {
+                            Log.e("Picasso", "Error loading image", e)
+                        }
+                    })
+            } ?: run {
+                Log.e("ImageUri", "No image selected")
+            }
+        }
 
     private fun setupTextWatcher() {
         createGroupBinding.edtName.addTextChangedListener(object : TextWatcher {
@@ -664,13 +723,12 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
     }
 
-    private fun addGroup(uri: Uri) {
+    private fun addGroup(context: Context,uri: Uri) {
         shouldSaveData = false
-        val imageFile = getFileFromUri(uri)
-        if (imageFile == null || !imageFile.exists()) {
-            Log.e("ERROR", "Invalid file URI or file does not exist.")
-            return
-        }
+
+
+        Log.d("FNFNFNFN", "onResponse: GRoup Added")
+
 
         val timingFormatted = collectTimings().toString()
         val daysids = selectedDays.joinToString(prefix = "[", postfix = "]", separator = ", ") { "\"$it\"" }
@@ -698,8 +756,15 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         val days = RequestBody.create("text/plain".toMediaTypeOrNull(), daysids)
         val timing = RequestBody.create("application/json".toMediaTypeOrNull(), timingFormatted)
 
-        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), imageFile)
-        val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
+        val imagePart = processImage(context, uri)
+        if (imagePart == null){
+            Log.d("NULLLLLLLL", "addGroup: $imagePart")
+            return
+        }
+
+
+//        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), imageFile)
+//        val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
 
         apiInterface.addGroup(
             sportId, name, imagePart, lessonIds, athleteIds, eventIds, planningIds,
@@ -711,9 +776,13 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
                 clearIdsFromPreferences()
                 clearGroupDataOnBack()
                 clearDayTimesOnBack()
+                Log.d("FNFNFNFN", "onResponse: GRoup Added")
+
 
                 if (response.isSuccessful) {
                     Toast.makeText(this@CreateGropActivity, "Group Added", Toast.LENGTH_SHORT).show()
+                    Log.d("FNFNFNFN", "onResponse: GRoup Added success")
+
                     val intent = Intent(this@CreateGropActivity, HomeActivity::class.java)
                     intent.putExtra("group", "addGroup")
                     startActivity(intent)
@@ -731,6 +800,157 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         })
     }
 
+    fun processImage(context: Context, imageUri: Uri?): MultipartBody.Part? {
+        Log.d("SUJALLLLLLGGGGG", "processImage: $imageUri")
+
+        // Use the passed image URI (from gallery)
+        val imageFile = imageUri?.let { createFileFromContentUri(context, it) }
+        if (imageFile != null && imageFile.exists()) {
+            val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+            return MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
+        }
+
+        // Fallback to the image in SharedPreferences if no new image is selected
+        val imageUrl = getImageUriFromPreferences(context)?.toString()
+        Log.e("ProcessImage", "Image URL from SharedPreferences: $imageUrl")
+
+        if (!imageUrl.isNullOrEmpty()) {
+            val imageFileFromUrl = runBlocking { convertUrlToFile(context, imageUrl) }
+            if (imageFileFromUrl != null && imageFileFromUrl.exists()) {
+                val imageRequestBody = imageFileFromUrl.asRequestBody("image/*".toMediaTypeOrNull())
+                return MultipartBody.Part.createFormData(
+                    "image",
+                    imageFileFromUrl.name,
+                    imageRequestBody
+                )
+            } else {
+                Log.e("ProcessImage", "Error creating image file from URL.")
+            }
+        }
+
+        Log.e("ProcessImage", "No valid image found. Returning null.")
+        return null
+    }
+
+
+    fun getImageUriFromPreferences(context: Context): Uri? {
+        val sharedPreferences = context.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
+        val imageUrl = sharedPreferences.getString("imageUrll", null)
+        return imageUrl?.let { Uri.parse(it) }
+    }
+
+    suspend fun convertUrlToFile(context: Context, imageUrl: String): File? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val fileName = imageUrl.substringAfterLast("/")
+                val file = File(context.cacheDir, fileName)
+
+                Log.d("TAG", "convertUrlToFile: ")
+                // Check if the file already exists
+                if (file.exists()) {
+                    Log.d("ConvertUrlToFile", "File already exists: ${file.absolutePath}")
+                    return@withContext file
+                }
+
+                // Download and save the file
+                val url = URL(imageUrl)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.connect()
+
+                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                    connection.inputStream.use { input ->
+                        FileOutputStream(file).use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                    Log.d("ConvertUrlToFile", "File downloaded and saved: ${file.absolutePath}")
+                    return@withContext file
+                } else {
+                    Log.e(
+                        "ConvertUrlToFile",
+                        "Failed to download file. Response code: ${connection.responseCode}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("ConvertUrlToFile", "Error converting URL to file: ${e.message}", e)
+            }
+
+            return@withContext null
+        }
+    }
+
+    fun createFileFromContentUri(context: Context, contentUri: Uri?): File? {
+        Log.d("SUJALLLLLL", "createFileFromContentUri: $contentUri")
+
+        if (contentUri == null) {
+            Log.e("FileCopy", "No image selected or URI is null")
+            return null
+        }
+
+        return try {
+            val fileName =
+                getFileNameFromUri(context, contentUri) ?: "temp_file_${System.currentTimeMillis()}"
+            val cacheDir = context.cacheDir
+
+            // Ensure cache directory exists
+            if (!cacheDir.exists()) {
+                cacheDir.mkdirs()
+            }
+
+            val tempFile = File(cacheDir, fileName)
+
+            // Delete existing file with the same name
+            if (tempFile.exists()) {
+                tempFile.delete()
+            }
+
+            // Resolve the URI
+            val resolvedUri = if (contentUri.scheme == null) {
+                Uri.parse("file://${contentUri.path}")
+            } else {
+                contentUri
+            }
+
+            Log.d(
+                "FileDebug",
+                "Resolved URI: $resolvedUri, Scheme: ${resolvedUri.scheme}, Path: ${resolvedUri.path}"
+            )
+
+            when (resolvedUri.scheme) {
+                "file" -> {
+                    val file = File(resolvedUri.path ?: return null)
+                    if (file.exists()) {
+                        file.copyTo(tempFile, overwrite = true)
+                        Log.d("FileCopy", "File copied to cache: ${tempFile.absolutePath}")
+                    } else {
+                        Log.e("FileCopy", "Source file does not exist: ${resolvedUri.path}")
+                        return null
+                    }
+                }
+
+                "content" -> {
+                    context.contentResolver.openInputStream(resolvedUri)?.use { inputStream ->
+                        FileOutputStream(tempFile).use { outputStream ->
+                            inputStream.copyTo(outputStream)
+                        }
+                    }
+                    Log.d("FileCopy", "Content URI copied to cache: ${tempFile.absolutePath}")
+                }
+
+                else -> {
+                    Log.e("FileCopy", "Unsupported URI scheme: ${resolvedUri.scheme}")
+                    return null
+                }
+            }
+            tempFile
+        } catch (e: Exception) {
+            Log.e("FileCopy", "Error creating file from URI: ${e.message}")
+            e.printStackTrace()
+            null
+        }
+    }
+
+
     private fun getLinearLayoutForDay(day: String): LinearLayout {
         return when (day.lowercase()) { // Convert the input day to lowercase
             "monday" -> mon_linearLayour
@@ -744,13 +964,30 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         }
     }
 
+    fun getFileNameFromUri(context: Context, uri: Uri): String? {
+        return if (uri.scheme == "content") {
+            context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (cursor.moveToFirst() && nameIndex >= 0) cursor.getString(nameIndex) else null
+            }
+        } else {
+            uri.path?.let { path ->
+                File(path).name
+            }
+        }
+    }
 
     private fun getFileFromUri(uri: Uri): File? {
+
+        Log.d("FHFFHHFHF", "getFileFromUri: $uri")
         val filePath = getRealPathFromURI(uri)
+        Log.d("FHFFHHFHF", "getFileFromUri: $filePath")
         return if (filePath != null) File(filePath) else null
     }
 
     private fun getRealPathFromURI(uri: Uri): String? {
+        Log.d("FHFFHHFHF", "getRealPathFromURI: $uri")
+
         val cursor = contentResolver.query(uri, null, null, null, null)
         return if (cursor != null && cursor.moveToFirst()) {
             val index = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
@@ -946,7 +1183,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             val imageUri = selectedImageUri
             saveGroupData(groupName, imageUri, sportName, sportlId.id.toString())
             saveDayTimesToPreferences()
-
 
             Log.d("GroupData", "Data saved in onPause")
         } else {
@@ -1527,6 +1763,14 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     // Monday Add View Method
 // Monday Add View Method
     fun mon_addView() {
+
+        toggleDay(
+            "monday",
+            createGroupBinding.weekMon,
+            mon_linearLayour,
+            createGroupBinding.monAddScheduleTime
+        )
+
         addViewForDay(mon_linearLayour, "monday")
     }
 
@@ -1687,19 +1931,25 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         val inflater = LayoutInflater.from(this).inflate(R.layout.time_layout_group, null)
         linearLayout.addView(inflater, linearLayout.childCount)
 
-        val tvStartTime: EditText = inflater.findViewById(R.id.tv_start_time)
-        val tvEndTime: EditText = inflater.findViewById(R.id.tv_End_time)
+        val tvStartTime: AppCompatEditText = inflater.findViewById(R.id.tv_start_time)
+        val tvEndTime: AppCompatEditText = inflater.findViewById(R.id.tv_End_time)
         val tvStartTimeCard: CardView = inflater.findViewById(R.id.start_time_card)
         val tvEndTimeCard: CardView = inflater.findViewById(R.id.card_end_time)
 
-        // Generate a unique ID for this view (e.g., based on index or timestamp)
         val id = linearLayout.childCount.toString()
-
-        // Add default entry for the new view
         updateDayTimes(dayKey, id, "", "")
 
-        // Save state immediately after adding a new view
         saveDayTimesToPreferences()
+
+        tvStartTime.setOnClickListener {
+            Log.d("CLICK", "Start time clicked")
+            SetDialog_start(tvStartTime)
+        }
+
+        tvEndTime.setOnClickListener {
+            Log.d("CLICK", "End time clicked")
+            setDialogEnd(tvEndTime)
+        }
 
         tvStartTimeCard.setOnClickListener {
             SetDialog_start(tvStartTime)

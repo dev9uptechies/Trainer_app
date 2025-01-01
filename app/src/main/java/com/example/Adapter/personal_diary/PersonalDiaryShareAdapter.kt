@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.OnItemClickListener
 import com.example.model.AthleteDataPackage.AthltepersonaldiaryModel
@@ -32,6 +33,9 @@ class PersonalDiaryShareAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val diaryItem = diaryList[position]
+
+        holder.card.setCardBackgroundColor(ContextCompat.getColor(context, R.color.black))
+
         holder.date.text = diaryItem.date
         holder.sleepHours.text = "SleepHours - ${diaryItem.sleep_hours ?: "00:00:00"}"
 

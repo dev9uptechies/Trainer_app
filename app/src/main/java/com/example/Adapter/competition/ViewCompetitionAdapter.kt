@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trainerapp.ApiClass.RatingItem
@@ -38,7 +39,7 @@ class ViewCompetitionAdapter(
         holder.coachRating.rating = movie.coachRating!!.toFloat()
         holder.athleteRating.rating = movie.athleteRating!!.toFloat()
         if (isSetData!!) {
-            holder.athleteRating.isEnabled = false
+            holder.athleteRating.isEnabled = true
             holder.coachRating.isEnabled = false
             
             holder.athleteRating.progressTintList =
@@ -61,17 +62,17 @@ class ViewCompetitionAdapter(
                     }
                 }
             } else {
-//            holder.athleteRating.isEnabled = false
-//            holder.athleteRating.progressTintList =
-//                context.resources.getColorStateList(R.color.yellow, null)
-//            holder.athleteRating.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-//                if (fromUser) {
-//                    Log.d("Rating", "$rating")
-//                    // Update the item's rating dynamically based on user input
-//                    Toast.makeText(context, "$rating", Toast.LENGTH_SHORT).show()
-//                    movie.athleteRating = rating.toInt()
-//                }
-//            }
+            holder.athleteRating.isEnabled = false
+            holder.athleteRating.progressTintList =
+                context.resources.getColorStateList(R.color.yellow, null)
+            holder.athleteRating.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                if (fromUser) {
+                    Log.d("Rating", "$rating")
+                    // Update the item's rating dynamically based on user input
+                    Toast.makeText(context, "$rating", Toast.LENGTH_SHORT).show()
+                    movie.athleteRating = rating.toInt()
+                }
+            }
             }
         }
     }

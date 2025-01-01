@@ -90,9 +90,6 @@ class GetLessonListAdapterGroup(
         return selectedItems.map { filterList[it].id ?: 0 }
     }
 
-
-
-
     override fun getItemCount(): Int {
         return filterList.size
     }

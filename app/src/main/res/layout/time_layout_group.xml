@@ -26,7 +26,7 @@
             app:cardBackgroundColor="#1A929492"
             app:cardCornerRadius="@dimen/_10sdp">
 
-            <EditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/tv_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,16 +35,16 @@
                 android:background="@null"
                 android:fontFamily="@font/poppins_medium"
                 android:maxLines="1"
-                android:enabled="false"
-                android:focusable="true"
-                android:clickable="false"
+                android:focusable="false"
+                android:clickable="true"
                 android:inputType="numberDecimal"
                 android:hint="start date"
                 android:singleLine="true"
                 android:textColor="@color/dark_text"
                 android:textColorHint="@color/dark_text"
-                android:textSize="@dimen/_13sdp"
-                />
+                android:textSize="@dimen/_13sdp" />
+
+
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
@@ -56,7 +56,7 @@
             app:cardBackgroundColor="#1A929492"
             app:cardCornerRadius="@dimen/_10sdp">
 
-            <EditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/tv_End_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -65,15 +65,15 @@
                 android:background="@null"
                 android:maxLines="1"
                 android:hint="end date"
-                android:focusable="true"
-                android:enabled="false"
-                android:clickable="false"
+                android:focusable="false"
+                android:clickable="true"
                 android:inputType="numberDecimal"
                 android:singleLine="true"
                 android:fontFamily="@font/poppins_medium"
                 android:textColorHint="@color/dark_text"
                 android:textColor="@color/dark_text"
                 android:textSize="@dimen/_13sdp"/>
+
 
             <ImageView
                 android:id="@+id/calendar_img"

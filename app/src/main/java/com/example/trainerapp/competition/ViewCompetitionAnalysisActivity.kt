@@ -58,7 +58,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
     var eventId = SelectedValue(null)
 
     var compDate = ""
-    var compName = "" //event name
+    var compName = ""
 
     lateinit var eventList: ArrayList<EventListData.testData>
     lateinit var apiInterface: APIInterface
@@ -163,21 +163,41 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
     }
 
     private fun checkButtonClick() {
+        viewCompetitionAnalysisBinding.save.isActivated
+        viewCompetitionAnalysisBinding.save.isEnabled = true
+        viewCompetitionAnalysisBinding.save.isClickable = true
+
+
         viewCompetitionAnalysisBinding.save.setOnClickListener {
             val dataList: MutableList<RatingData> = mutableListOf()
             for (i in analysisData) {
-                if (i.coachRating != 0) {
-//                    viewCompetitionAnalysisBinding.save.isEnabled = true
-                    viewCompetitionAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
-                    dataList.add(RatingData(i.name!!, i.coachRating!!))
-                } else {
-                    Toast.makeText(this, "Please Rating Coach All Fields", Toast.LENGTH_SHORT)
-                        .show()
-                    break
+
+                val userType = preferenceManager.GetFlage()
+
+                if (userType == "Athlete"){
+
+                    if (i.athleteRating != 0) {
+                        viewCompetitionAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
+                        dataList.add(RatingData(i.name!!, i.athleteRating!!))
+                    } else {
+                        Toast.makeText(this, "Please Rating Athlete All Fields", Toast.LENGTH_SHORT)
+                            .show()
+                        break
+                    }
+                }else{
+                    if (i.coachRating != 0) {
+                    viewCompetitionAnalysisBinding.save.isEnabled = true
+                        viewCompetitionAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
+                        dataList.add(RatingData(i.name!!, i.coachRating!!))
+                    } else {
+                        Toast.makeText(this, "Please Rating Coach All Fields", Toast.LENGTH_SHORT)
+                            .show()
+                        break
+                    }
                 }
+
             }
             if (dataList.isNotEmpty()) {
-
                 saveCompetitionData(dataList)
             }
         }
@@ -196,6 +216,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                 areaId = areaId.id!!,
                 data = data
             )
+
             Log.d("AddCompetition Data :-", "$addCompetitionData")
             apiInterface.CreateCompetitionAnalysisData(addCompetitionData)!!.enqueue(object :
                 Callback<Competition> {
@@ -465,7 +486,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                     val Success: Boolean = resource?.status!!
                     val Message: String = resource.message!!
                     if (Success == true) {
-                        if (resource.data!! != null) {
+                        if (resource.data != null) {
                             eventList = resource.data!!
                         }
                     }

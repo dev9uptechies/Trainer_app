@@ -381,7 +381,6 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
         }
     }
 
-
     private fun getpersonaldiaryshare(id: Int) {
         try {
             diaryData.clear()

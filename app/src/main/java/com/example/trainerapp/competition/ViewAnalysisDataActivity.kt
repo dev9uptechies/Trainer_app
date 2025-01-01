@@ -72,7 +72,15 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         viewAnalysisBinding = ActivityViewCompetitionAnalysisBinding.inflate(layoutInflater)
         setContentView(viewAnalysisBinding.root)
         initViews()
-        getCompetitionData()
+
+        val userType = preferenceManager.GetFlage()
+        if (userType == "Athlete"){
+            getCompetitionDataAthlete()
+        }else{
+            getCompetitionData()
+        }
+
+//        getCompetitionData()
         //getAnalysisData()
         setDefaultRecycler()
         setData()
@@ -151,6 +159,8 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
                             val message = data.message ?: "Success"
                             if (data.data != null) {
                                 val compData = data.data
+                                val filteredCompetitionData = competitionData.filter { it.id == eventId.toInt() }
+
                                 for (i in compData) {
                                     Log.d(
                                         "Competition Data :-",
@@ -158,19 +168,102 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
                                     )
                                     competitionData.add(i)
                                 }
-                                Log.d(
-                                    "Competition Data :-",
-                                    "${
-                                        competitionData.filter { it.id == eventId.toInt() }
-                                            .get(0).category
-                                    }"
-                                )
+
+                                if (filteredCompetitionData.isNotEmpty()) {
+                                    Log.d(
+                                        "Competition Data :-",
+                                        "${filteredCompetitionData[0].category}"
+                                    )
+                                } else {
+                                    Log.d("Competition Data :-", "No data found for eventId: $eventId")
+                                }
                                 competition = competitionData.filter { it.id == eventId.toInt() }
                                     .toMutableList()
                                 Log.d("Competition Data co:-", "$competition")
                                 if (competition != null) {
                                     setRatingData(competition)
-                                    setChartData(competition[0].competition_progress)
+                                    if (competition.isNotEmpty()) {
+                                        setChartData(competition[0].competition_progress)
+                                    } else {
+                                        Log.d("Competition Data", "Competition list is empty.")
+                                    }
+                                } else {
+                                    Log.d("No Data", "No Data Found")
+                                }
+                                Log.d("Competition Data :-", "${competitionData}")
+                            }
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(this@ViewAnalysisDataActivity)
+                    } else {
+                        Toast.makeText(
+                            this@ViewAnalysisDataActivity,
+                            "Failed",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(p0: Call<GetCompetition>, p1: Throwable) {
+                    viewAnalysisBinding.progressBar.visibility = View.GONE
+                }
+
+            })
+        } catch (e: Exception) {
+            Log.d("Error :-", "${e.message}")
+        }
+    }
+
+    private fun getCompetitionDataAthlete() {
+        try {
+            competitionData.clear()
+            competition.clear()
+            viewAnalysisBinding.progressBar.visibility = View.VISIBLE
+            apiInterface.GetCompetitionAnalysisDataAthlete().enqueue(object : Callback<GetCompetition> {
+                override fun onResponse(
+                    call: Call<GetCompetition>,
+                    response: Response<GetCompetition>
+                ) {
+                    viewAnalysisBinding.progressBar.visibility = View.GONE
+                    Log.d("TAG", response.code().toString() + "")
+
+                    val code = response.code()
+                    if (code == 200) {
+                        val success: Boolean = response.body()!!.status!!
+                        if (success) {
+                            val data = response.body()!!
+                            Log.d("Athlete :- Data ", "${data}")
+                            val message = data.message ?: "Success"
+                            if (data.data != null) {
+                                val compData = data.data
+                                val filteredCompetitionData = competitionData.filter { it.id == eventId.toInt() }
+
+                                for (i in compData) {
+                                    Log.d(
+                                        "Competition Data :-",
+                                        "${i.category} \n ${i.athlete!!.name}"
+                                    )
+                                    competitionData.add(i)
+                                }
+
+                                if (filteredCompetitionData.isNotEmpty()) {
+                                    Log.d(
+                                        "Competition Data :-",
+                                        "${filteredCompetitionData[0].category}"
+                                    )
+                                } else {
+                                    Log.d("Competition Data :-", "No data found for eventId: $eventId")
+                                }
+                                competition = competitionData.filter { it.id == eventId.toInt() }
+                                    .toMutableList()
+                                Log.d("Competition Data co:-", "$competition")
+                                if (competition != null) {
+                                    setRatingData(competition)
+                                    if (competition.isNotEmpty()) {
+                                        setChartData(competition[0].competition_progress)
+                                    } else {
+                                        Log.d("Competition Data", "Competition list is empty.")
+                                    }
                                 } else {
                                     Log.d("No Data", "No Data Found")
                                 }

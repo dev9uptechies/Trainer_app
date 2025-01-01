@@ -28,6 +28,7 @@ import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityViewAnalysisBinding
+import com.example.trainerappAthlete.model.ViewAnalysisAthleteAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,6 +42,7 @@ class ViewAnalysisActivity : AppCompatActivity() {
     lateinit var athleteData: ArrayList<AthleteData.Athlete>
     lateinit var competitionData: MutableList<Competition.CompetitionData>
     lateinit var viewAnalysisAdapter: ViewAnalysisAdapter
+    lateinit var viewAnalysisAthleteAdapter: ViewAnalysisAthleteAdapter
     var aid:Int = 0
     var Name:String? = null
 
@@ -94,31 +96,33 @@ class ViewAnalysisActivity : AppCompatActivity() {
         setContentView(viewAnalysisBinding.root)
         initViews()
         loadData()
-        setDefaultRecycler()
+//        setDefaultRecycler()
 //        checkButtonClick()
+
 
         val userType = preferenceManager.GetFlage()
 
         if (userType == "Athlete"){
             viewAnalysisBinding.edtAthletes.visibility = View.GONE
+            getCompetitionDataAthlete()
         }else{
             viewAnalysisBinding.edtAthletes.visibility = View.VISIBLE
 
-        }
+            if (aid != 0 || Name != null){
+                checkButtonClick2()
+            }else{
+                checkButtonClick()
+            }
 
-        if (aid != 0 || Name != null){
-            checkButtonClick2()
-        }else{
-            checkButtonClick()
         }
         viewAnalysisBinding.back.setOnClickListener { finish() }
     }
 
-    private fun setDefaultRecycler() {
+    private fun setDefaultRecycler(data: MutableList<Competition.CompetitionData>) {
+        Log.d("ODLLDLL", "setDefaultRecycler: ${competitionData[0].category}")
         viewAnalysisBinding.recViewAnalysis.layoutManager = LinearLayoutManager(this)
-        viewAnalysisAdapter = ViewAnalysisAdapter(competitionData, this)
-        viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAdapter
-        viewAnalysisAdapter.notifyDataSetChanged()
+        viewAnalysisAthleteAdapter = ViewAnalysisAthleteAdapter(data, this)
+        viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAthleteAdapter
     }
 
 
@@ -143,7 +147,6 @@ class ViewAnalysisActivity : AppCompatActivity() {
             popupWindow.elevation = 10f
 
             val listView = popupView.findViewById<ListView>(R.id.listView)
-
 
             val adapter =
                 object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
@@ -226,11 +229,29 @@ class ViewAnalysisActivity : AppCompatActivity() {
         }
     }
 
+    private fun setAthleteRecyclerView(data: MutableList<Competition.CompetitionData>) {
+
+        Log.d("SetRecyclerView", "Filtered Data: $competitionData")
+
+        if (competitionData.isEmpty()) {
+            viewAnalysisBinding.tvNodata.visibility = View.VISIBLE
+            viewAnalysisBinding.recViewAnalysis.visibility = View.GONE
+        } else {
+            viewAnalysisBinding.tvNodata.visibility = View.GONE
+            viewAnalysisBinding.recViewAnalysis.visibility = View.VISIBLE
+
+            viewAnalysisBinding.recViewAnalysis.layoutManager = LinearLayoutManager(this)
+            viewAnalysisAthleteAdapter = ViewAnalysisAthleteAdapter(data.toMutableList(), this)
+            viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAthleteAdapter
+
+        }
+    }
+
 
     //    private fun setRecyclerView(id: Int) {
 //        viewAnalysisBinding.recViewAnalysis.visibility = View.VISIBLE
 //        val data = competitionData.filter { it.athlete_id!!.toInt() == id }
-//        viewAnalysisAdapter = ViewAnalysisAdapter(data.toMutableList(), this)
+//        viewAnalysisAdapter = com.example.trainerappAthlete.model.com.example.trainerappAthlete.model.ViewAnalysisAdapter(data.toMutableList(), this)
 //        viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAdapter
 //    }
 //
@@ -246,7 +267,6 @@ class ViewAnalysisActivity : AppCompatActivity() {
        Log.d("aidssss","aid:-  $aid")
        Log.d("aidssss","aid:-  $Name")
 
-
     }
 
     private fun loadData() {
@@ -261,13 +281,13 @@ class ViewAnalysisActivity : AppCompatActivity() {
             getAthleteData()
         }
 
-        if (competitionData.isEmpty()) {
-            viewAnalysisBinding.tvNodata.visibility = View.VISIBLE
-            viewAnalysisBinding.recViewAnalysis.visibility = View.GONE
-        } else {
-            viewAnalysisBinding.tvNodata.visibility = View.GONE
-            viewAnalysisBinding.recViewAnalysis.visibility = View.VISIBLE
-        }
+//        if (competitionData.isEmpty()) {
+//            viewAnalysisBinding.tvNodata.visibility = View.VISIBLE
+//            viewAnalysisBinding.recViewAnalysis.visibility = View.GONE
+//        } else {
+//            viewAnalysisBinding.tvNodata.visibility = View.GONE
+//            viewAnalysisBinding.recViewAnalysis.visibility = View.VISIBLE
+//        }
     }
 
 
@@ -357,9 +377,10 @@ class ViewAnalysisActivity : AppCompatActivity() {
                                         "${i.category} \n ${i.athlete!!.name}"
                                     )
                                     competitionData.add(i)
-//                                    setDefaultRecycler()
                                 }
                                 Log.d("Competition Data :-", "${competitionData}")
+//                                setDefaultRecycler(competitionData)
+                                setAthleteRecyclerView(compData.toMutableList())
                             }
                         }
                     } else if (code == 403) {

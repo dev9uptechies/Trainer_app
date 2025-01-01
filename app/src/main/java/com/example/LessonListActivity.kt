@@ -59,9 +59,8 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
         setContentView(binding.root)
 
         initView()
-        ButtonClick()
         lordData()
-
+        ButtonClick()
     }
 
     private fun lordData() {
@@ -113,13 +112,30 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
     }
 
     private fun ButtonClick() {
-
         binding.back.setOnClickListener { finish() }
 
-        when(type) {
+        binding.saveBtn.setOnClickListener {
+            when (type) {
+                "test" -> {
+                    val selecteTestIds = adapterTest.getSelectedTestData()
+                    Log.d("SelectedTestIds", "Selected IDs: $selecteTestIds")
 
-            "lesson" -> {
-                binding.cardSave.setOnClickListener {
+                    if (selecteTestIds.isNullOrEmpty()) {
+                        Toast.makeText(
+                            this,
+                            "Please select a valid test before saving",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    val intent = Intent(this, CreateGropActivity::class.java)
+                    intent.putExtra("testId", selecteTestIds.toIntArray())
+                    startActivity(intent)
+                    finish()
+                }
+
+                "lesson" -> {
                     val selectedLessonIds = adapter.getSelectedLessonData()
                     Log.d("SelectedLessonIds", "Selected IDs: $selectedLessonIds")
 
@@ -134,28 +150,19 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
 
                     val intent = Intent(this, CreateGropActivity::class.java)
                     intent.putExtra("lessonId", selectedLessonIds.toIntArray())
-                    intent.putExtra("load","load")
+                    intent.putExtra("load", "load")
                     startActivity(intent)
                     finish()
-
                 }
 
-//                binding.edtSearch.addTextChangedListener { text ->
-//                    val query = text?.toString() ?: ""
-//                    adapter.filter(query)
-//                }
-
-            }
-
-            "event" -> {
-                binding.cardSave.setOnClickListener {
+                "event" -> {
                     val selecteTestIds = adapterEvent.getSelectedEventData()
-                    Log.d("SelectedLessonIds", "Selected IDs: $selecteTestIds")
+                    Log.d("SelectedEventIds", "Selected IDs: $selecteTestIds")
 
                     if (selecteTestIds.isNullOrEmpty()) {
                         Toast.makeText(
                             this,
-                            "Please select a valid test before saving",
+                            "Please select a valid event before saving",
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setOnClickListener
@@ -167,98 +174,48 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                     finish()
                 }
 
-//                binding.edtSearch.addTextChangedListener { text ->
-//                    val query = text?.toString() ?: ""
-//                    adapterEvent.filter(query)
-//                }
-            }
+                "planning" -> {
+                    val selecteTestIds = adapterPlanning.getSelectedPlanningData()
+                    Log.d("SelectedPlanningIds", "Selected IDs: $selecteTestIds")
 
-            "test" -> {
-                binding.cardSave.setOnClickListener {
-                    binding.cardSave.setOnClickListener {
-                        val selecteTestIds = adapterTest.getSelectedTestData()
-                        Log.d("SelectedLessonIds", "Selected IDs: $selecteTestIds")
-
-                        if (selecteTestIds.isNullOrEmpty()) {
-                            Toast.makeText(
-                                this,
-                                "Please select a valid test before saving",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        val intent = Intent(this, CreateGropActivity::class.java)
-                        intent.putExtra("testId", selecteTestIds.toIntArray())
-                        startActivity(intent)
-                        finish()
+                    if (selecteTestIds.isNullOrEmpty()) {
+                        Toast.makeText(
+                            this,
+                            "Please select a valid planning before saving",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
                     }
+
+                    val intent = Intent(this, CreateGropActivity::class.java)
+                    intent.putExtra("planningId", selecteTestIds.toIntArray())
+                    startActivity(intent)
+                    finish()
                 }
 
-//                binding.edtSearch.addTextChangedListener { text ->
-//                    val query = text?.toString() ?: ""
-//                    adapterTest.filter(query)
-//                }
-            }
-            "planning" -> {
-                binding.cardSave.setOnClickListener {
-                    binding.cardSave.setOnClickListener {
-                        val selecteTestIds = adapterPlanning.getSelectedPlanningData()
-                        Log.d("SelectedLessonIds", "Selected IDs: $selecteTestIds")
+                "athlete" -> {
+                    val selecteTestIds = adapterAthlete.getSelectedAthleteData()
+                    Log.d("SelectedAthleteIds", "Selected IDs: $selecteTestIds")
 
-                        if (selecteTestIds.isNullOrEmpty()) {
-                            Toast.makeText(
-                                this,
-                                "Please select a valid test before saving",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        val intent = Intent(this, CreateGropActivity::class.java)
-                        intent.putExtra("planningId", selecteTestIds.toIntArray())
-                        startActivity(intent)
-                        finish()
+                    if (selecteTestIds.isNullOrEmpty()) {
+                        Toast.makeText(
+                            this,
+                            "Please select a valid athlete before saving",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
                     }
+
+                    val intent = Intent(this, CreateGropActivity::class.java)
+                    intent.putExtra("athleteId", selecteTestIds.toIntArray())
+                    startActivity(intent)
+                    finish()
                 }
-
-//                binding.edtSearch.addTextChangedListener { text ->
-//                    val query = text?.toString() ?: ""
-//                    adapterTest.filter(query)
-//                }
             }
-            "athlete" -> {
-                binding.cardSave.setOnClickListener {
-                    binding.cardSave.setOnClickListener {
-                        val selecteTestIds = adapterAthlete.getSelectedAthleteData()
-                        Log.d("SelectedLessonIds", "Selected IDs: $selecteTestIds")
 
-                        if (selecteTestIds.isNullOrEmpty()) {
-                            Toast.makeText(
-                                this,
-                                "Please select a valid test before saving",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        val intent = Intent(this, CreateGropActivity::class.java)
-                        intent.putExtra("athleteId", selecteTestIds.toIntArray())
-                        startActivity(intent)
-                    }
-                }
-
-//                binding.edtSearch.addTextChangedListener { text ->
-//                    val query = text?.toString() ?: ""
-//                    adapterTest.filter(query)
-//                }
-            }
-        }
-
-        when(typeEdit) {
-
-            "lesson" -> {
-                binding.cardSave.setOnClickListener {
+            // Now handling the case for typeEdit if necessary
+            when (typeEdit) {
+                "lesson" -> {
                     val selectedLessonIds = adapter.getSelectedLessonData()
                     Log.d("SelectedLessonIds", "Selected IDs: $selectedLessonIds")
 
@@ -273,28 +230,19 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
 
                     val intent = Intent(this, EditGroupActivity::class.java)
                     intent.putExtra("lessonId", selectedLessonIds.toIntArray())
-                    intent.putExtra("load","load")
+                    intent.putExtra("load", "load")
                     startActivity(intent)
                     finish()
-
                 }
 
-//                binding.edtSearch.addTextChangedListener { text ->
-//                    val query = text?.toString() ?: ""
-//                    adapter.filter(query)
-//                }
-
-            }
-
-            "event" -> {
-                binding.cardSave.setOnClickListener {
+                "event" -> {
                     val selecteTestIds = adapterEvent.getSelectedEventData()
-                    Log.d("SelectedLessonIds", "Selected IDs: $selecteTestIds")
+                    Log.d("SelectedEventIds", "Selected IDs: $selecteTestIds")
 
                     if (selecteTestIds.isNullOrEmpty()) {
                         Toast.makeText(
                             this,
-                            "Please select a valid test before saving",
+                            "Please select a valid event before saving",
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setOnClickListener
@@ -306,91 +254,62 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                     finish()
                 }
 
-//                binding.edtSearch.addTextChangedListener { text ->
-//                    val query = text?.toString() ?: ""
-//                    adapterEvent.filter(query)
-//                }
-            }
+                "test" -> {
+                    val selecteTestIds = adapterTest.getSelectedTestData()
+                    Log.d("SelectedTestIds", "Selected IDs: $selecteTestIds")
 
-            "test" -> {
-                binding.cardSave.setOnClickListener {
-                    binding.cardSave.setOnClickListener {
-                        val selecteTestIds = adapterTest.getSelectedTestData()
-                        Log.d("SelectedLessonIds", "Selected IDs: $selecteTestIds")
-
-                        if (selecteTestIds.isNullOrEmpty()) {
-                            Toast.makeText(
-                                this,
-                                "Please select a valid test before saving",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        val intent = Intent(this, EditGroupActivity::class.java)
-                        intent.putExtra("testId", selecteTestIds.toIntArray())
-                        startActivity(intent)
-                        finish()
+                    if (selecteTestIds.isNullOrEmpty()) {
+                        Toast.makeText(
+                            this,
+                            "Please select a valid test before saving",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
                     }
+
+                    val intent = Intent(this, EditGroupActivity::class.java)
+                    intent.putExtra("testId", selecteTestIds.toIntArray())
+                    startActivity(intent)
+                    finish()
                 }
 
-//                binding.edtSearch.addTextChangedListener { text ->
-//                    val query = text?.toString() ?: ""
-//                    adapterTest.filter(query)
-//                }
-            }
-            "planning" -> {
-                binding.cardSave.setOnClickListener {
-                    binding.cardSave.setOnClickListener {
-                        val selecteTestIds = adapterPlanning.getSelectedPlanningData()
-                        Log.d("SelectedLessonIds", "Selected IDs: $selecteTestIds")
+                "planning" -> {
+                    val selecteTestIds = adapterPlanning.getSelectedPlanningData()
+                    Log.d("SelectedPlanningIds", "Selected IDs: $selecteTestIds")
 
-                        if (selecteTestIds.isNullOrEmpty()) {
-                            Toast.makeText(
-                                this,
-                                "Please select a valid test before saving",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        val intent = Intent(this, EditGroupActivity::class.java)
-                        intent.putExtra("planningId", selecteTestIds.toIntArray())
-                        startActivity(intent)
-                        finish()
+                    if (selecteTestIds.isNullOrEmpty()) {
+                        Toast.makeText(
+                            this,
+                            "Please select a valid planning before saving",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
                     }
+
+                    val intent = Intent(this, EditGroupActivity::class.java)
+                    intent.putExtra("planningId", selecteTestIds.toIntArray())
+                    startActivity(intent)
+                    finish()
                 }
 
-//                binding.edtSearch.addTextChangedListener { text ->
-//                    val query = text?.toString() ?: ""
-//                    adapterTest.filter(query)
-//                }
-            }
-            "athlete" -> {
-                binding.cardSave.setOnClickListener {
-                    binding.cardSave.setOnClickListener {
-                        val selecteTestIds = adapterAthlete.getSelectedAthleteData()
-                        Log.d("SelectedLessonIds", "Selected IDs: $selecteTestIds")
+                "athlete" -> {
+                    val selecteTestIds = adapterAthlete.getSelectedAthleteData()
+                    Log.d("SelectedAthleteIds", "Selected IDs: $selecteTestIds")
 
-                        if (selecteTestIds.isNullOrEmpty()) {
-                            Toast.makeText(
-                                this,
-                                "Please select a valid test before saving",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        val intent = Intent(this, EditGroupActivity::class.java)
-                        intent.putExtra("athleteId", selecteTestIds.toIntArray())
-                        startActivity(intent)
+                    if (selecteTestIds.isNullOrEmpty()) {
+                        Toast.makeText(
+                            this,
+                            "Please select a valid athlete before saving",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
                     }
-                }
 
-//                binding.edtSearch.addTextChangedListener { text ->
-//                    val query = text?.toString() ?: ""
-//                    adapterTest.filter(query)
-//                }
+                    val intent = Intent(this, EditGroupActivity::class.java)
+                    intent.putExtra("athleteId", selecteTestIds.toIntArray())
+                    startActivity(intent)
+                    finish()
+                }
             }
         }
     }
@@ -425,6 +344,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
+
                         if (response.isSuccessful && response.body() != null) {
                             val data = response.body()?.data ?: mutableListOf()
                             if (data.isNotEmpty()) {
@@ -433,8 +353,6 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                                 initrecyclerplanning(plainngData)
 
                             } else{
-                                binding.cardSave.focusable
-                                binding.cardSave.isClickable = false
 
                             }
                         } else {
@@ -489,8 +407,6 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                             }
                             initrecycler(resource.data)
                         } else {
-                            binding.cardSave.focusable
-                            binding.cardSave.isClickable = false
                             initrecycler(arrayListOf())
                         }
                     } else {
@@ -538,8 +454,6 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                                 lessonData.addAll(data)
                                 initRecyclerview(data)
                             } else {
-                                binding.cardSave.focusable
-                                binding.cardSave.isClickable = false
                                 Toast.makeText(this@LessonListActivity, "No lessons available", Toast.LENGTH_SHORT).show()
                             }
                         } else {
@@ -579,8 +493,6 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                             if (resource.data!! != null) {
                                 initrecyclerTest(resource.data)
                             }else{
-                                binding.cardSave.focusable
-                                binding.cardSave.isClickable = false
                                 Toast.makeText(this@LessonListActivity, "No Test available", Toast.LENGTH_SHORT).show()
                             }
                         } catch (e: Exception) {
@@ -683,18 +595,15 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                         if (resource?.data!! != null) {
                             if (data != null) {
                                 athleteData.addAll(data)
+                                initrecyclerAthlete(athleteData)
                             }
-                            initrecyclerAthlete(athleteData)
                         }else{
-                            binding.cardSave.focusable
-                            binding.cardSave.isClickable = false
                             Toast.makeText(this@LessonListActivity, "No Athlete available", Toast.LENGTH_SHORT).show()
                         }
 
                         for (datas in athleteData){
                             Log.d("sujals","ID:- " + datas.id)
                         }
-
                     } else if (response.code() == 403) {
                         Utils.setUnAuthDialog(this@LessonListActivity)
                     } else {

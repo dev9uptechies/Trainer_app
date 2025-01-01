@@ -1,53 +1,43 @@
-package com.example.Adapter.competition
-
+package com.example.trainerappAthlete.model
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.model.newClass.competition.Competition
 import com.example.trainerapp.R
 import com.example.trainerapp.competition.ViewAnalysisDataActivity
 
-class ViewAnalysisAdapter(
+class ViewAnalysisAthleteAdapter(
     private var splist: MutableList<Competition.CompetitionData>,
     var context: Context,
 ) :
-    RecyclerView.Adapter<ViewAnalysisAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<ViewAnalysisAthleteAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ViewAnalysisAdapter.MyViewHolder {
+    ): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.view_anlysis_list_item, parent, false)
         return MyViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: ViewAnalysisAdapter.MyViewHolder, position: Int) {
-        Log.d("Adapter", "onBindViewHolder invoked for position: $position")
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val item = splist[position]
+        Log.d("Adapter", "Binding item at position $position: $item")
 
-        val movie = splist[position]
-        val athlete = movie.athlete
+        holder.sub_title_2.visibility = View.GONE
 
-        Log.d("DRDRDRRR", "onBindViewHolder: $movie")
 
-        val competition = movie.competition_analysis_area
-        if (athlete.toString() != null || athlete.toString() != "") {
-            holder.title_name.text = athlete!!.name
-        }
+        holder.title_name.text = item.category ?: ""
+        holder.sub_title_1.text = item.competition_analysis_area?.title  ?: ""
+        holder.date_name.text = item.date ?: ""
 
-        holder.sub_title_1.text = movie.category
-        holder.date_name.text = movie.date
-        if (competition.toString() != null || competition.toString() != "") {
-            holder.sub_title_2.text = competition!!.title
-        }
         holder.card_view.setOnClickListener {
             Log.d("Event Id :-", "${splist[position].id} \t ${splist[position].category}")
             val intent = Intent(context, ViewAnalysisDataActivity::class.java).apply {
@@ -57,6 +47,7 @@ class ViewAnalysisAdapter(
             }
             context.startActivity(intent)
         }
+
     }
 
 
