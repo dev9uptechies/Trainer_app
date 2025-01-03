@@ -97,7 +97,7 @@
         android:orientation="horizontal"
         android:layout_marginLeft="@dimen/_11sdp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/start_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -112,7 +112,6 @@
             android:visibility="gone"
             android:layout_marginLeft="@dimen/_120sdp"
             android:textColor="@color/red"/>
-
 
 
     </LinearLayout>

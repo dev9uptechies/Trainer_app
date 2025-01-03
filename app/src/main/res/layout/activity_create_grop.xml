@@ -866,6 +866,7 @@
         android:layout_gravity="center"
         android:background="@drawable/save_buttton"
         android:enabled="false"
+        android:textAllCaps="false"
         android:fontFamily="@font/poppins_semi_bold"
         android:text="Save"
         android:layout_marginStart="@dimen/_10sdp"

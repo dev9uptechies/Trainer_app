@@ -511,23 +511,6 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             }
         )
 
-        createExerciseBinding.edtNotes.addTextChangedListener(
-            object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    updateUI(createExerciseBinding.nextCard)
-                }
-
-                override fun afterTextChanged(s: Editable?) {}
-            }
-        )
     }
 
     private fun loadData(){
@@ -540,7 +523,7 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
     }
 
     private fun areAllFieldsFilled(): Boolean {
-        return !(createExerciseBinding.edtName.text.isNullOrEmpty() || createExerciseBinding.edtNotes.text.isNullOrEmpty() ||
+        return !(createExerciseBinding.edtName.text.isNullOrEmpty() ||
                 createExerciseBinding.edtSection.text.toString() == "Select Section" ||
                 createExerciseBinding.edtGoal.text.toString() == "Select Goal" ||
                 createExerciseBinding.edtType.text.toString() == "Select Type" ||
@@ -1180,7 +1163,6 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
     private val isValidate: Boolean
         get() {
             val name = createExerciseBinding.edtName.text.toString()
-            val notes = createExerciseBinding.edtNotes.text.toString()
 
             if (fileNameDl == "") {
                 createExerciseBinding.imageError.visibility = View.GONE
@@ -1242,14 +1224,6 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                 return false
             } else {
                 createExerciseBinding.categoryError.visibility = View.GONE
-            }
-
-            if (notes == "") {
-                createExerciseBinding.notesError.visibility = View.VISIBLE
-                createExerciseBinding.notesError.text = "Please Enter Notes"
-                return false
-            } else {
-                createExerciseBinding.notesError.visibility = View.GONE
             }
 
             if (createExerciseBinding.spTimer.selectedItem == "Select Timer" || timerId.id == null) {

@@ -175,7 +175,6 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                 val userType = preferenceManager.GetFlage()
 
                 if (userType == "Athlete"){
-
                     if (i.athleteRating != 0) {
                         viewCompetitionAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
                         dataList.add(RatingData(i.name!!, i.athleteRating!!))

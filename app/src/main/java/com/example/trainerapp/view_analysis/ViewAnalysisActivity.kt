@@ -104,7 +104,7 @@ class ViewAnalysisActivity : AppCompatActivity() {
 
         if (userType == "Athlete"){
             viewAnalysisBinding.edtAthletes.visibility = View.GONE
-            getCompetitionDataAthlete()
+//            getCompetitionDataAthlete()
         }else{
             viewAnalysisBinding.edtAthletes.visibility = View.VISIBLE
 
@@ -224,6 +224,7 @@ class ViewAnalysisActivity : AppCompatActivity() {
             viewAnalysisBinding.recViewAnalysis.visibility = View.VISIBLE
 
             // Set the adapter with the filtered competition data
+            viewAnalysisBinding.recViewAnalysis.layoutManager = LinearLayoutManager(this)
             viewAnalysisAdapter = ViewAnalysisAdapter(filteredData.toMutableList(), this)
             viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAdapter
         }
@@ -272,6 +273,7 @@ class ViewAnalysisActivity : AppCompatActivity() {
     private fun loadData() {
         resetData()
 
+        viewAnalysisBinding.recViewAnalysis.visibility = View.VISIBLE
         val userType = preferenceManager.GetFlage()
 
         if (userType == "Athlete"){
@@ -301,6 +303,9 @@ class ViewAnalysisActivity : AppCompatActivity() {
 
     private fun getCompetitionData() {
         try {
+
+            Log.d("TESTSS", "getCompetitionData: ")
+
             competitionData.clear()
             apiInterface.GetCompetitionAnalysisData().enqueue(object : Callback<GetCompetition> {
                 override fun onResponse(

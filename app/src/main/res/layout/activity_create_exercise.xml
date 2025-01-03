@@ -126,7 +126,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Upload Your image"
+                            android:text="Upload Your video"
                             android:textColor="#BBBBBB"
                             android:textSize="@dimen/_16sdp" />
 
@@ -165,6 +165,7 @@
                         android:fontFamily="@font/poppins_medium"
                         android:hint="Enter Name"
                         android:maxLines="1"
+                        android:textSize="@dimen/_12sdp"
                         android:singleLine="true"
                         android:textColor="#BBBBBB"
                         android:textColorHint="#BBBBBB" />

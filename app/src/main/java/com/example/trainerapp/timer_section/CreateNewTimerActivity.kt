@@ -135,6 +135,7 @@ class CreateNewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             createNewTimerBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
             goalDialog()
         }
+
         createNewTimerBinding.saveCycle.setOnClickListener {
             if (createNewTimerBinding.edtTimerName.text.isNullOrEmpty() || createNewTimerBinding.edtAudio.text.toString()
                     .isNullOrEmpty() || createNewTimerBinding.edtPauseAudio.text.toString()
@@ -251,7 +252,6 @@ class CreateNewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             openAudioDialog(createNewTimerBinding.edtPauseBetween, "pause_between_id")
         }
     }
-
 
     private fun goalDialog() {
         val dialog = Dialog(this, R.style.Theme_Dialog)
@@ -401,20 +401,25 @@ class CreateNewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
     }
 
     private fun areAllFieldsFilled(): Boolean {
-        return !(edt_name.text.isNullOrEmpty() ||
+        Log.d("Validation", "Name: ${edt_name.text.isNullOrEmpty()}")
+        Log.d("Validation", "Time: ${tv_time.text.toString().isEmpty()}")
+        Log.d("Validation", "Reps: ${tv_reps.text.toString().isEmpty()}")
+        Log.d("Validation", "Pause Time: ${tv_pause_time.text.toString().isEmpty()}")
+
+        return !(  tv_pause_cycle.text.toString() == "Pause Cycle" ||
+                edt_name.text.isNullOrEmpty() ||
                 tv_time.text.toString() == "Time" ||
                 tv_reps.text.toString() == "Reps" ||
-                tv_pause_time.text.toString() == "Pause Time" ||
-                tv_pause_cycle.text.toString() == "Pause Cycle")
+                tv_pause_time.text.toString() == "Pause Time")
     }
 
     private fun updateAddButtonState(addButton: CardView) {
         if (areAllFieldsFilled()) {
             addButton.isEnabled = true
-            addButton.setCardBackgroundColor(resources.getColor(R.color.splash_text_color)) // Change to your desired color
+            addButton.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
         } else {
             addButton.isEnabled = false
-            addButton.setCardBackgroundColor(resources.getColor(R.color.grey)) // Disabled color
+            addButton.setCardBackgroundColor(resources.getColor(R.color.grey))
         }
     }
 

@@ -44,6 +44,8 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
     lateinit var generallist1: ArrayList<ExcerciseData.Exercise>
     lateinit var exerciselist1: ArrayList<ExcerciseData.Exercise>
     lateinit var specificlist1: ArrayList<ExcerciseData.Exercise>
+    val testdatalist: MutableList<Exercise.ExerciseData> =
+        mutableListOf()  // This should be defined somewhere in your activity
     lateinit var adapter: ExcerciseAdapter
     private var checktype: Boolean? = false
     private var isDataLoaded = false
@@ -264,6 +266,7 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         exerciselist = mutableListOf()
 
     }
+
     private fun loadData() {
         if (!isDataLoaded) {
             isDataLoaded = true
@@ -427,23 +430,33 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                             )
                         } else {
                             // Handle empty data
-                            Toast.makeText(this@ExerciseActivity, "No exercise data available", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@ExerciseActivity,
+                                "No exercise data available",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     } else {
                         // Handle null response body
-                        Toast.makeText(this@ExerciseActivity, "Empty response from server", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@ExerciseActivity,
+                            "Empty response from server",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else if (code == 403) {
                     Utils.setUnAuthDialog(this@ExerciseActivity)
                 } else {
-                    Toast.makeText(this@ExerciseActivity, response.message(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ExerciseActivity, response.message(), Toast.LENGTH_SHORT)
+                        .show()
                     call.cancel()
                 }
             }
 
             override fun onFailure(call: Call<Exercise>, t: Throwable) {
                 exerciseBinding.ProgressBar.visibility = View.GONE
-                Toast.makeText(this@ExerciseActivity, t.message ?: "Error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExerciseActivity, t.message ?: "Error", Toast.LENGTH_SHORT)
+                    .show()
                 call.cancel()
             }
         })
@@ -537,6 +550,7 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         exerciseBinding.rlyExercise.layoutManager = LinearLayoutManager(this)
         adapter = ExcerciseAdapter(testdatalist, this, this)
         exerciseBinding.rlyExercise.adapter = adapter
+        adapter.notifyDataSetChanged()  // Notify the adapter about changes
     }
 
     override fun onItemClicked(
@@ -583,17 +597,29 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                                         "" + Message,
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    loadData()
-                                    exerciseBinding.generalCard.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
-                                    exerciseBinding.specificCard.setCardBackgroundColor(resources.getColor(R.color.grey))
 
-//                                    finish()
-//                                    startActivity(
-//                                        Intent(
-//                                            this@ExerciseActivity,
-//                                            ExerciseActivity::class.java
-//                                        )
-//                                    )
+                                    testdatalist.removeAll { it.id == type.toInt() }
+                                    adapter.notifyDataSetChanged()
+
+                                    loadData()
+                                    exerciseBinding.generalCard.setCardBackgroundColor(
+                                        resources.getColor(
+                                            R.color.splash_text_color
+                                        )
+                                    )
+                                    exerciseBinding.specificCard.setCardBackgroundColor(
+                                        resources.getColor(
+                                            R.color.grey
+                                        )
+                                    )
+
+//                    finish()
+//                    startActivity(
+//                        Intent(
+//                            this@ExerciseActivity,
+//                            ExerciseActivity::class.java
+//                        )
+//                    )
                                 } else if (code == 403) {
                                     Utils.setUnAuthDialog(this@ExerciseActivity)
                                 } else {

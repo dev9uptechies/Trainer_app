@@ -564,7 +564,7 @@ class CompetitionActivity : AppCompatActivity() {
     }
 
     private fun formatDate2(dateMillis: Long): String {
-        val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return format.format(Date(dateMillis))
     }
 

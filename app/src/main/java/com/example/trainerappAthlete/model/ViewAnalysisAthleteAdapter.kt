@@ -30,7 +30,6 @@ class ViewAnalysisAthleteAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = splist[position]
         Log.d("Adapter", "Binding item at position $position: $item")
-
         holder.sub_title_2.visibility = View.GONE
 
 
