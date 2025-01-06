@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/main"
     android:background="@color/black"
     tools:context="com.example.GroupDetailActivity">
 
@@ -105,6 +106,7 @@
                             android:layout_height="wrap_content"
                             android:text="06 Members"
                             android:textColor="#BBBBBB"
+                            android:fontFamily="@font/poppins_medium"
                             android:textSize="@dimen/_15sdp"
                             app:layout_constraintStart_toStartOf="@+id/tv_group_name"
                             app:layout_constraintTop_toBottomOf="@+id/tv_group_name"/>
@@ -125,6 +127,7 @@
                                 android:layout_gravity="center"
                                 android:gravity="center"
                                 android:text="Edit Profile"
+                                android:fontFamily="@font/poppins_medium"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_8sdp" />
 
@@ -160,6 +163,7 @@
                         android:textSize="@dimen/_14sdp"/>
 
                     <ImageView
+                        android:id="@+id/planning_add"
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
                         android:src="@drawable/ic_plus"/>
@@ -186,6 +190,7 @@
                         android:textSize="@dimen/_14sdp"/>
 
                     <ImageView
+                        android:id="@+id/Lesson_add"
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
                         android:src="@drawable/ic_plus"/>
@@ -212,6 +217,7 @@
                         android:textSize="@dimen/_14sdp"/>
 
                     <ImageView
+                        android:id="@+id/Event_add"
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
                         android:src="@drawable/ic_plus"/>
@@ -238,6 +244,7 @@
                         android:textSize="@dimen/_14sdp"/>
 
                     <ImageView
+                        android:id="@+id/Test_add"
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
                         android:src="@drawable/ic_plus"/>

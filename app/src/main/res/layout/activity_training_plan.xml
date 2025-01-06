@@ -102,7 +102,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_add" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/textVie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -110,8 +110,7 @@
                 android:layout_marginStart="@dimen/_8sdp"
                 android:fontFamily="@font/poppins_medium"
                 android:text="Add Training Plan"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
+                android:textColor="@color/white" />
 
         </LinearLayout>
 

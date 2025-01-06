@@ -54,8 +54,10 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     lateinit var eventadapter: eventAdapter
     lateinit var testadapter: testAdapter
     var date: String = ""
+    var userType: String? = null
     var calendarView: CalendarView? = null
     private var selectedDate: LocalDate? = null
+
     @RequiresApi(Build.VERSION_CODES.O)
     private val today = LocalDate.now()
 
@@ -71,9 +73,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     private lateinit var calenderBinding: FragmentCalenderBinding
 
     private val datesWithData = mutableSetOf<LocalDate>() // Set to track dates with data
-
-
-
+    
     private fun checkUser() {
         try {
             apiInterface.ProfileData()?.enqueue(object : Callback<RegisterData?> {
@@ -136,37 +136,42 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     @SuppressLint("NewApi")
     private fun loadData() {
         selectDate(LocalDate.now())
-        fetchDayData(LocalDate.now())
+
+        if (userType == "Athlete") {
+            fetchDayDataAthlete(LocalDate.now())
+        }else {
+            fetchDayData(LocalDate.now())
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpCalendar() {
         try {
 
-        val daysOfWeek = daysOfWeekFromLocale()
-        val currentMonth = YearMonth.now()
+            val daysOfWeek = daysOfWeekFromLocale()
+            val currentMonth = YearMonth.now()
 
-        calendarView!!.apply {
-            setup(currentMonth.minusMonths(10), currentMonth.plusMonths(10), daysOfWeek.first())
-            scrollToMonth(currentMonth)
-        }
+            calendarView!!.apply {
+                setup(currentMonth.minusMonths(100), currentMonth.plusMonths(100), daysOfWeek.first())
+                scrollToMonth(currentMonth)
+            }
 
-        class DayViewContainer(view: View) : ViewContainer(view) {
-            lateinit var day: CalendarDay
-            val binding = Example3CalendarDayBinding.bind(view)
+            class DayViewContainer(view: View) : ViewContainer(view) {
+                lateinit var day: CalendarDay
+                val binding = Example3CalendarDayBinding.bind(view)
 
-            init {
-                view.setOnClickListener {
-                    if (day.owner == DayOwner.THIS_MONTH) {
-                        selectDate(day.date)
+                init {
+                    view.setOnClickListener {
+                        if (day.owner == DayOwner.THIS_MONTH) {
+                            selectDate(day.date)
+                        }
                     }
                 }
             }
-        }
 
-        class MonthViewContainer(view: View) : ViewContainer(view) {
-            val legendLayout = Example3CalendarHeaderBinding.bind(view).legendLayout.root
-        }
+            class MonthViewContainer(view: View) : ViewContainer(view) {
+                val legendLayout = Example3CalendarHeaderBinding.bind(view).legendLayout.root
+            }
 
             calendarView!!.dayBinder = object : DayBinder<DayViewContainer> {
                 override fun create(view: View) = DayViewContainer(view)
@@ -216,32 +221,33 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                 }
             }
 
-        calendarView!!.monthScrollListener = {
-            if (it.year == today.year) {
-                titleSameYearFormatter.format(it.yearMonth)
-            } else {
-                titleFormatter.format(it.yearMonth)
-            }
-//            selectDate(it.yearMonth.atDay(1))
-        }
-
-        calendarView!!.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthViewContainer> {
-            override fun create(view: View) = MonthViewContainer(view)
-
-            @SuppressLint("ResourceAsColor")
-            override fun bind(container: MonthViewContainer, month: CalendarMonth) {
-                if (container.legendLayout.tag == null) {
-                    container.legendLayout.tag = month.yearMonth
-                    container.legendLayout.children.map { it as TextView }
-                        .forEachIndexed { index, tv ->
-                            tv.text = daysOfWeek[index].name.first().toString()
-                        }
+            calendarView!!.monthScrollListener = {
+                if (it.year == today.year) {
+                    titleSameYearFormatter.format(it.yearMonth)
+                } else {
+                    titleFormatter.format(it.yearMonth)
                 }
+//            selectDate(it.yearMonth.atDay(1))
             }
-        }
 
-        }catch (e:Exception){
-            Log.e("error","Catch:- ${e.message.toString()}")
+            calendarView!!.monthHeaderBinder =
+                object : MonthHeaderFooterBinder<MonthViewContainer> {
+                    override fun create(view: View) = MonthViewContainer(view)
+
+                    @SuppressLint("ResourceAsColor")
+                    override fun bind(container: MonthViewContainer, month: CalendarMonth) {
+                        if (container.legendLayout.tag == null) {
+                            container.legendLayout.tag = month.yearMonth
+                            container.legendLayout.children.map { it as TextView }
+                                .forEachIndexed { index, tv ->
+                                    tv.text = daysOfWeek[index].name.first().toString()
+                                }
+                        }
+                    }
+                }
+
+        } catch (e: Exception) {
+            Log.e("error", "Catch:- ${e.message.toString()}")
         }
     }
 
@@ -259,10 +265,14 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             oldDate?.let { calenderBinding.frgCalendarView.notifyDateChanged(it) }
             calenderBinding.frgCalendarView.notifyDateChanged(date)
             calenderBinding.frgCalendarView.scrollToMonth(YearMonth.from(date))
-
             updateAdapterForDate(date)
 
-            fetchDayData(date)
+            if (userType == "Athlete") {
+                fetchDayDataAthlete(date)
+            }else {
+                fetchDayData(date)
+            }
+
         }
     }
 
@@ -291,56 +301,108 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             val formattedDate = selectionFormatter.format(selectedDate)
             Log.d("CalendarFragment", "Fetching data for date: $formattedDate with ID: $receivedId")
 
-            apiInterface.GetSelectedDays(formattedDate, receivedId)!!.enqueue(object : Callback<SelectedDaysModel> {
-                override fun onResponse(call: Call<SelectedDaysModel>, response: Response<SelectedDaysModel>) {
-                    if (response.isSuccessful && response.body() != null) {
-                        val selectedDaysModel = response.body()
-                        Log.d("API Response", "Response: $selectedDaysModel")
+            apiInterface.GetSelectedDays(formattedDate, receivedId)!!
+                .enqueue(object : Callback<SelectedDaysModel> {
+                    override fun onResponse(
+                        call: Call<SelectedDaysModel>,
+                        response: Response<SelectedDaysModel>
+                    ) {
+                        if (response.isSuccessful && response.body() != null) {
+                            val selectedDaysModel = response.body()
+                            Log.d("API Response", "Response: $selectedDaysModel")
 
-                        val data = selectedDaysModel?.data
-                        if (data != null) {
-                            if (::eventadapter.isInitialized) {
-                                eventadapter.clearData()
-                            }
-                            initTestRecyclerView(data.tests)
-                            initLessonRecyclerView(data.lessons)
-                            initEventRecyclerView(data.events)
+                            val data = selectedDaysModel?.data
+                            if (data != null) {
+                                if (::eventadapter.isInitialized) {
+                                    eventadapter.clearData()
+                                }
+                                initTestRecyclerView(data.tests)
+                                initLessonRecyclerView(data.lessons)
+                                initEventRecyclerView(data.events)
 
-                            // Add or remove the dot based on the data
-                            if (data.tests.isNotEmpty() || data.lessons.isNotEmpty() || data.events.isNotEmpty()) {
-                                if (!datesWithData.contains(selectedDate)) {
-                                    datesWithData.add(selectedDate)
-                                    // Notify the calendar view to update this date
-                                    calendarView!!.notifyDateChanged(selectedDate)
+                                // Add or remove the dot based on the data
+                                if (data.tests.isNotEmpty() || data.lessons.isNotEmpty() || data.events.isNotEmpty()) {
+                                    if (!datesWithData.contains(selectedDate)) {
+                                        datesWithData.add(selectedDate)
+                                        // Notify the calendar view to update this date
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                } else {
+                                    if (datesWithData.contains(selectedDate)) {
+                                        datesWithData.remove(selectedDate)
+                                        // Notify the calendar view to remove the dot
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
                                 }
                             } else {
-                                if (datesWithData.contains(selectedDate)) {
-                                    datesWithData.remove(selectedDate)
-                                    // Notify the calendar view to remove the dot
-                                    calendarView!!.notifyDateChanged(selectedDate)
-                                }
+                                Log.e("API Response", "Data is null. No dot added.")
+                                // Remove any dots for this date if data is null
+                                datesWithData.remove(selectedDate)
+                                calendarView!!.notifyDateChanged(selectedDate)
                             }
                         } else {
-                            Log.e("API Response", "Data is null. No dot added.")
-                            // Remove any dots for this date if data is null
-                            datesWithData.remove(selectedDate)
-                            calendarView!!.notifyDateChanged(selectedDate)
+                            Log.e("API Response", "Failed to fetch data: ${response.message()}")
                         }
-                    } else {
-                        Log.e("API Response", "Failed to fetch data: ${response.message()}")
                     }
-                }
 
-                override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
-                    Log.e("API Response", "Error: ${t.message}")
-                }
-            })
+                    override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
+                        Log.e("API Response", "Error: ${t.message}")
+                    }
+                })
         } catch (e: Exception) {
             Log.e("Catch", "CatchError :- ${e.message}")
         }
     }
 
 
+    @SuppressLint("NewApi")
+    private fun fetchDayDataAthlete(selectedDate: LocalDate) {
+        try {
+            val formattedDate = selectionFormatter.format(selectedDate)
+            Log.d("CalendarFragment", "Fetching data for date: $formattedDate with ID: $receivedId")
+
+            apiInterface.GetSelectedDays(formattedDate, receivedId)!!
+                .enqueue(object : Callback<SelectedDaysModel> {
+                    override fun onResponse(
+                        call: Call<SelectedDaysModel>,
+                        response: Response<SelectedDaysModel>
+                    ) {
+                        if (response.isSuccessful && response.body() != null) {
+                            val selectedDaysModel = response.body()
+                            Log.d("API Response", "Response: $selectedDaysModel")
+
+                            val data = selectedDaysModel?.data
+                            if (data != null) {
+                                if (::eventadapter.isInitialized) {
+                                    eventadapter.clearData()
+                                }
+
+                                initTestRecyclerView(data.tests)
+                                initLessonRecyclerView(data.lessons)
+                                initEventRecyclerView(data.events)
+
+                                if (data.tests.isNotEmpty() || data.lessons.isNotEmpty() || data.events.isNotEmpty()) {
+
+                                } else {
+
+                                }
+                            } else {
+                                Log.e("API Response", "Data is null. No dot added.")
+                                // Remove any dots for this date if data is null
+                            }
+                        } else {
+                            Log.e("API Response", "Failed to fetch data: ${response.message()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
+                        Log.e("API Response", "Error: ${t.message}")
+                    }
+                })
+        } catch (e: Exception) {
+            Log.e("Catch", "CatchError :- ${e.message}")
+        }
+    }
 
 
     private fun initLessonRecyclerView(programs: List<SelectedDaysModel.Lesson>) {
@@ -371,7 +433,8 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         preferenceManager = PreferencesManager(requireContext())
         apiInterface = apiClient.client().create(APIInterface::class.java)
 
-        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
         receivedId = sharedPreferences.getString("id", "default_value") ?: ""
 
         Log.d("CalenderFragment", "Received ID from SharedPreferences: $receivedId")
@@ -479,7 +542,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                         call.cancel()
                     }
                 })
-        } else if (string == "favevent"){
+        } else if (string == "favevent") {
             calenderBinding.progressCalender.visibility = View.VISIBLE
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
@@ -580,7 +643,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                         call.cancel()
                     }
                 })
-        } else if (string == "favtest"){
+        } else if (string == "favtest") {
             calenderBinding.progressCalender.visibility = View.VISIBLE
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())

@@ -196,6 +196,16 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         binding = ActivityEditGroupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+        val inflater = LayoutInflater.from(this).inflate(R.layout.time_layout_group, null)
+        tv_start_time = inflater.findViewById(R.id.tv_start_time)
+        tv_End_time = inflater.findViewById(R.id.tv_End_time)
+
+
+        start_error = inflater.findViewById(R.id.start_error)
+        end_error = inflater.findViewById(R.id.end_error)
+
+
         loadIdsFromPreferences()
         getFirstTimeIdFromSharedPreferences(this)
 
@@ -633,16 +643,32 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
 
         binding.nextButtonText.setOnClickListener {
+            val start = tv_start_time.text.toString()
+            val end = tv_End_time.text.toString()
+
+            Log.d("GHHGHGHGHGHGH", "onCreate: $start    $end")
+            Log.d("GHHGHGHGHGHGH", "onCreate: ${start_error.text.toString()}    $end")
+
+            if (start == null || start == "") {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "Start field is required", Toast.LENGTH_SHORT)
+                    .show() // Toast for start field
+                return@setOnClickListener
+            }
+
+            if (end == null || end == "") {
+                end_error.visibility = View.VISIBLE
+                Toast.makeText(this, "End field is required", Toast.LENGTH_SHORT)
+                    .show() // Toast for end field
+                return@setOnClickListener
+            }
 
             if (selectedImageUri != null) {
                 selectedImageUri
-
             }
 
             val selectedImageUri: Uri? = selectedImageUri
             val selectedImageUri2: Uri = Uri.parse(uriString)
-
-
 
             if (selectedImageUri != null) {
                 editGroupWithImageApiCall(this, selectedImageUri)
@@ -1361,9 +1387,11 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
 
     fun editGroupWithImageApiCall(context: Context, imageUri: Uri?) {
+
+        binding.progressBar.visibility = View.VISIBLE
+
         val timingFormatted = collectTimings().toString()
-        val daysids =
-            selectedDays.joinToString(prefix = "[", postfix = "]", separator = ", ") { "\"$it\"" }
+        val daysids = selectedDays.joinToString(prefix = "[", postfix = "]", separator = ", ") { "\"$it\"" }
         val sportids = sportlId.id.toString()
         val lessonids = lessonId.joinToString(", ", prefix = "[", postfix = "]")
         val athleteids = athleteId.joinToString(", ", prefix = "[", postfix = "]")
@@ -1374,8 +1402,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val method = RequestBody.create("text/plain".toMediaTypeOrNull(), "PUT")
         val idbody = RequestBody.create("text/plain".toMediaTypeOrNull(), receivedId.toString())
         val sport_id = RequestBody.create("text/plain".toMediaTypeOrNull(), sportids)
-        val name =
-            RequestBody.create("text/plain".toMediaTypeOrNull(), binding.edtName.text.toString())
+        val name = RequestBody.create("text/plain".toMediaTypeOrNull(), binding.edtName.text.toString())
         val lession_ids = RequestBody.create("application/json".toMediaTypeOrNull(), lessonids)
         val athlete_ids = RequestBody.create("application/json".toMediaTypeOrNull(), athleteids)
         val event_ids = RequestBody.create("application/json".toMediaTypeOrNull(), eventids)
@@ -1399,6 +1426,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             event_ids, planning_ids, test_ids, program_ids, days, timing, imagePart
         ).enqueue(object : Callback<Any> {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                binding.progressBar.visibility = View.GONE
                 Log.e("EditGroup", "onResponse: " + response.body())
                 if (response.isSuccessful) {
                     Log.e("KLKLKLKLKLKL", "onResponse: " + response.body())
@@ -1416,11 +1444,11 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             }
 
             override fun onFailure(call: Call<Any>, t: Throwable) {
+                binding.progressBar.visibility = View.GONE
                 Log.e("EditGroup", "API Call failed: ${t.message}")
             }
         })
     }
-
 
     private fun getFileFromUri(uri: Uri): File? {
         val filePath = getRealPathFromURI(uri)
@@ -1633,7 +1661,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         sportName: String,
         sportId: String
     ) {
-        val sharedPreferences = getSharedPreferences("GroupData", MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("GroupDataEdit", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
         Log.d(
@@ -1656,7 +1684,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
     private fun loadGroupData() {
-        val sharedPreferences = getSharedPreferences("GroupData", MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("GroupDataEdit", MODE_PRIVATE)
 
         val groupName = sharedPreferences.getString("groupName", null)
         val imageUriString = sharedPreferences.getString("imageUri", null)

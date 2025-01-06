@@ -23,6 +23,7 @@
         android:layout_height="@dimen/_40sdp"
         android:background="@color/light_grey"
         android:text="Save"
+        android:fontFamily="@font/poppins_medium"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +54,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Add Microcycle"
+            android:fontFamily="@font/poppins_medium"
             android:textColor="@color/white"
             android:textSize="@dimen/_13sdp" />
 

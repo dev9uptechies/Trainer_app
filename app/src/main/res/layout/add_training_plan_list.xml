@@ -179,8 +179,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_15sdp"
-            android:fontFamily="@font/poppins_medium"
             android:text="00 Days"
+            android:fontFamily="@font/poppins_medium"
             android:textColor="@color/white"
             android:textSize="@dimen/_14sdp"
             android:textStyle="bold" />

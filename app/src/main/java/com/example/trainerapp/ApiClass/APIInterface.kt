@@ -358,13 +358,7 @@ interface APIInterface {
         @Field("email") email: String?,
     ): Call<RegisterData>?
 
-    @Multipart
-    @POST("profile")
-    fun EditProfileAthlete(
-        @Part("name") name: RequestBody?,
-        @Part("email") email: RequestBody?,
-        @Part image: MultipartBody.Part
-    ): Call<RegisterData>?
+
 
 
     //new functions
@@ -797,5 +791,26 @@ interface APIInterface {
     @GET("Athlete/competition_analysis")
     fun GetCompetitionAnalysisDataAthlete(): Call<GetCompetition>
 
+    @POST("Athlete/group/join")
+    fun JoinGroup(@Query ("group_id") Group_id: String): Call<Any>
+
+    @GET("Athlete/profile")
+    fun ProfileDataAthlete(): Call<RegisterData>?
+
+    @Multipart
+    @POST("Athlete/profile")
+    fun EditProfileAthlete(
+        @Part("name") name: RequestBody?,
+        @Part("email") email: RequestBody?,
+        @Part("birthdate") birthdate: RequestBody?,
+        @Part("address") address: RequestBody?,
+        @Part("zipcode") zipcode: RequestBody?,
+        @Part image: MultipartBody.Part,
+        @Part("sport_ids") sport_ids: RequestBody?,
+        @Part("below") below: RequestBody?,
+        @Part("athletes") athletes: RequestBody?,
+        @Part("baseline") baseline: RequestBody?,
+        @Part("fat_mass") fat_mass: RequestBody?
+    ): Call<RegisterData>?
 
 }

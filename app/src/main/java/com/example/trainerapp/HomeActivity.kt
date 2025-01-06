@@ -316,7 +316,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 return@setOnClickListener
             }
             setNavigationSelection(imgGroupAthlete, imgHomeAthlete, imgCalendarAthlete, imgChatAthlete, imgProfileAthlete)
-            replaceFragment(GroupFragment())
+            replaceFragment(CalenderFragment())
         }
 
         chatImageAthlete.setOnClickListener {

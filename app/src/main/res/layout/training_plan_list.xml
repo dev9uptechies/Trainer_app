@@ -68,18 +68,17 @@
                 android:layout_gravity="center"
                 android:background="#212121">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/training_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="7dp"
-                    android:fontFamily="@font/poppins_medium"
                     android:gravity="center"
+                    android:fontFamily="@font/poppins_medium"
                     android:text="Test Name"
                     android:textColor="#F3F3F3"
                     android:textSize="@dimen/_15sdp"
-                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

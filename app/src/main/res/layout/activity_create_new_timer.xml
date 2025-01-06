@@ -91,6 +91,7 @@
                     android:background="@null"
                     android:fontFamily="@font/poppins_medium"
                     android:hint="Enter Timer Name"
+                    android:textSize="@dimen/_12sdp"
                     android:maxLines="1"
                     android:singleLine="true"
                     android:textColor="#BBBBBB"

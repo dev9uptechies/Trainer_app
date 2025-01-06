@@ -65,6 +65,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     private lateinit var athleteAdapter: AthleteAdapter
     private lateinit var athleteAdapterAthlete: AthleteAdapterAthlete
     lateinit var preferenceManager: PreferencesManager
+    var userType: String? = null
 
     private var groupListCall: Call<GroupListData>? = null
     private var groupListCallAthlete: Call<GroupListAthlete>? = null
@@ -124,6 +125,8 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         preferenceManager = PreferencesManager(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
 
+        userType = preferenceManager.GetFlage()
+
         loadData()
 
         position = intent.getIntExtra("position", 0)
@@ -165,6 +168,8 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
             groupDetailBinding.deleteGroup.visibility = View.GONE
 
             groupDetailBinding.createGroup.setOnClickListener {
+                groupDetailBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
+
                 val dialog = Dialog(this, R.style.Theme_Dialog)
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 dialog.setCancelable(true)
@@ -195,7 +200,9 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                     .fit()
                     .into(scanQr)
 
-                close.setOnClickListener { dialog.dismiss() }
+                close.setOnClickListener {
+                    groupDetailBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+                    dialog.dismiss() }
 
                 dialog.show()
             }
@@ -203,6 +210,47 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         }else{
             groupDetailBinding.cardView4.visibility = View.VISIBLE
             groupDetailBinding.deleteGroup.visibility = View.VISIBLE
+
+            groupDetailBinding.createGroup.setOnClickListener {
+                groupDetailBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
+                val dialog = Dialog(this, R.style.Theme_Dialog)
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.setCancelable(true)
+                dialog.setCanceledOnTouchOutside(false)
+                dialog.setContentView(R.layout.scan_qr_code_dailog)
+                val displayMetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+                val width = (displayMetrics.widthPixels * 0.9f).toInt()
+                val height = WindowManager.LayoutParams.WRAP_CONTENT
+                val window: Window = dialog.window!!
+                val wlp = window.attributes
+                wlp.gravity = Gravity.CENTER
+                wlp.flags = wlp.flags and WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                window.attributes = wlp
+                dialog.window!!.setLayout(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                dialog.window!!.setLayout(width, height)
+                dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+                val close = dialog.findViewById<CardView>(R.id.next_card)
+                val scanQr = dialog.findViewById<ImageView>(R.id.scan_qr)
+
+                Picasso.get()
+                    .load("https://trainers.codefriend.in" + selectedImageUri)
+                    .fit()
+                    .into(scanQr)
+
+                close.setOnClickListener {
+                    groupDetailBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+                    dialog.dismiss()
+                }
+
+                dialog.show()
+            }
+
         }
         groupDetailBinding.cardView4.setOnClickListener {
             val intent = Intent(this, EditGroupActivity::class.java)
@@ -219,8 +267,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     }
 
     private fun loadData() {
-        val userType = preferenceManager.GetFlage()
         if (userType == "Athlete"){
+            groupDetailBinding.planningAdd.visibility = View.GONE
+            groupDetailBinding.LessonAdd.visibility = View.GONE
+            groupDetailBinding.EventAdd.visibility = View.GONE
+            groupDetailBinding.TestAdd.visibility = View.GONE
             callGroupApiAthlete()
         }else {
             callGroupApi()
@@ -242,7 +293,9 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                             Toast.LENGTH_SHORT
                         ).show()
                         loadData()  // Re-fetch the group data after deletion
-                    } else {
+                    }else if (response.code() == 429) {
+                        Toast.makeText(this@GroupDetailActivity, "Too Many Request", Toast.LENGTH_SHORT).show()
+                    }else {
                         Toast.makeText(
                             this@GroupDetailActivity,
                             "Failed to delete group",

@@ -20,8 +20,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Instruction"
+            android:fontFamily="@font/poppins_medium"
             android:textColor="@color/white"
-            android:textSize="@dimen/_14sdp"/>
+            android:textSize="@dimen/_13sdp"/>
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

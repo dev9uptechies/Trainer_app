@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.model.SelectedValue
 import com.example.trainerapp.ApiClass.APIClient
@@ -643,6 +644,10 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
             object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
+
+                    val typeface = ResourcesCompat.getFont(this@TestActivity, R.font.poppins_medium)
+                    view.typeface = typeface
+
                     view.setTextColor(Color.WHITE) // Set text color to white
                     return view
                 }

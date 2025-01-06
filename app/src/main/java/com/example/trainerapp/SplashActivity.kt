@@ -39,6 +39,7 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+
     private fun checkLogin() {
         if (preferenceManager.UserLogIn()) {
             splashBinding.btnGetStart.visibility = View.GONE

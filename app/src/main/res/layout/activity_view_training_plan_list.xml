@@ -94,6 +94,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="Add Mesocycle"
+                android:fontFamily="@font/poppins_medium"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_13sdp" />
 

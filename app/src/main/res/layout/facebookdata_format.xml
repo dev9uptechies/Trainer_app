@@ -117,6 +117,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
+                                android:fontFamily="@font/poppins_medium"
                                 android:text="Unit: 01 m"
                                 android:textColor="#BBBBBB"
                                 android:textSize="@dimen/_15sdp"

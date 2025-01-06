@@ -42,6 +42,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:layout_weight="1"
+                android:fontFamily="@font/poppins_medium"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:text="Enter Set/Round No."
@@ -88,6 +89,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_weight="1"
+                    android:fontFamily="@font/poppins_medium"
                     android:maxLines="1"
                     android:singleLine="true"
                     android:text="Time"
@@ -130,6 +132,7 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_weight="1"
                     android:maxLines="1"
+                    android:fontFamily="@font/poppins_medium"
                     android:singleLine="true"
                     android:text="Reps"
                     android:textColor="#BBBBBB"
@@ -173,6 +176,7 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:text="Pause Time"
+                android:fontFamily="@font/poppins_medium"
                 android:textColor="#BBBBBB"
                 android:textSize="@dimen/_13sdp" />
 
@@ -218,6 +222,7 @@
                     android:layout_weight="1"
                     android:maxLines="1"
                     android:singleLine="true"
+                    android:fontFamily="@font/poppins_medium"
                     android:text="Weight"
                     android:textColor="#BBBBBB"
                     android:textSize="@dimen/_13sdp" />
@@ -258,6 +263,7 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_weight="1"
                     android:maxLines="1"
+                    android:fontFamily="@font/poppins_medium"
                     android:singleLine="true"
                     android:text="Distance"
                     android:textColor="#BBBBBB"
@@ -301,6 +307,7 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:text="Pause Between Cycles"
+                android:fontFamily="@font/poppins_medium"
                 android:textColor="#BBBBBB"
                 android:textSize="@dimen/_13sdp" />
 

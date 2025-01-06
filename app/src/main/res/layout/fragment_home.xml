@@ -921,6 +921,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -951,6 +953,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -981,6 +985,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1045,6 +1051,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1075,6 +1083,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
                                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -1104,6 +1114,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1168,6 +1180,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1198,6 +1212,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1228,6 +1244,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1292,6 +1310,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1322,6 +1342,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1352,6 +1374,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1415,6 +1439,8 @@
                                             android:gravity="center"
                                             android:inputType="number"
                                             android:maxLength="1"
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:text=""
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
@@ -1446,6 +1472,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1477,6 +1505,8 @@
                                             android:inputType="number"
                                             android:maxLength="1"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1540,6 +1570,8 @@
                                             android:fontFamily="@font/poppins_medium"
                                             android:gravity="center"
                                             android:inputType="number"
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:maxLength="1"
                                             android:text=""
                                             android:textColor="@color/white"
@@ -1572,6 +1604,8 @@
                                             android:gravity="center"
                                             android:inputType="number"
                                             android:maxLength="1"
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:text=""
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
@@ -1601,6 +1635,8 @@
                                             android:gravity="center"
                                             android:inputType="number"
                                             android:maxLength="1"
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:text=""
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
@@ -1665,6 +1701,8 @@
                                             android:gravity="center"
                                             android:inputType="number"
                                             android:maxLength="1"
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:text=""
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
@@ -1695,6 +1733,8 @@
                                             android:gravity="center"
                                             android:inputType="number"
                                             android:maxLength="1"
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:text=""
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
@@ -1725,6 +1765,8 @@
                                             android:gravity="center"
                                             android:inputType="number"
                                             android:maxLength="1"
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:text=""
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
@@ -1796,6 +1838,8 @@
                                             android:fontFamily="@font/poppins_medium"
                                             android:gravity="center"
                                             android:text=""
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
 
@@ -1866,6 +1910,8 @@
                                             android:background="@null"
                                             android:fontFamily="@font/poppins_medium"
                                             android:gravity="center"
+                                            android:clickable="false"
+                                            android:focusable="false"
                                             android:text=""
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp" />
@@ -1905,7 +1951,7 @@
         android:layout_gravity="start"
         android:background="#141414"
         android:fitsSystemWindows="true"
-        android:visibility="gone"
+        android:visibility="visible"
         app:headerLayout="@layout/header_layout"
         app:itemIconTint="@color/white"
         app:itemTextAppearance="@style/DrawerMenuTextAppearance"

@@ -233,7 +233,9 @@
                                 Log.e("API Response", "Data is null. No dot added.")
                                 // Remove any dots for this date if data is null
                             }
-                        } else {
+                        }else if (response.code() == 429) {
+                            Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT).show()
+                        }else {
                             Log.e("API Response", "Failed to fetch data: ${response.message()}")
                         }
                     }
@@ -246,7 +248,6 @@
                 Log.e("Catch", "CatchError :- ${e.message}")
             }
         }
-
 
         private fun initLessonRecyclerView(programs: List<SelectedDaysModel.Lesson>) {
             homeFragmentBinding.favLessonRly.layoutManager = LinearLayoutManager(requireContext())
@@ -299,7 +300,7 @@
             val today = LocalDate.now()
 
             homeFragmentBinding.exSevenCalendar!!.apply {
-                setup(currentMonth.minusMonths(10), currentMonth.plusMonths(10), daysOfWeek.first())
+                setup(currentMonth.minusMonths(12), currentMonth.plusMonths(12), daysOfWeek.first())
                 scrollToMonth(currentMonth)
             }
 
@@ -309,14 +310,20 @@
 
             class DayViewContainer(view: View) : ViewContainer(view) {
                 lateinit var day: CalendarDay
+                lateinit var month: YearMonth
                 val binding = Example3CalendarDayBinding.bind(view)
 
                 init {
+
                     view.setOnClickListener {
+
+                        Log.d("HFGFGFFGGFFG", "setUpCalendar: $month")
+
                         if (day.owner == DayOwner.THIS_MONTH) {
                             selectDate(day.date)
                             formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                         }
+
                     }
                 }
             }
@@ -749,6 +756,9 @@
                                     ).show()
                                 }
                             }
+                            429 -> {
+                                Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT).show()
+                            }
 
                             403 -> {
                                 Utils.setUnAuthDialog(requireContext())
@@ -825,6 +835,9 @@
                             }
                             403 -> {
                                 Utils.setUnAuthDialog(requireContext())
+                            }
+                            429 -> {
+                                Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT).show()
                             }
                             else -> {
                                 Log.e("ERROR", "Error: ${response.message()}")
@@ -1079,6 +1092,7 @@
                     homeFragmentBinding.informationLinear.visibility = View.GONE
                     homeFragmentBinding.InstructionLinera.visibility = View.GONE
                     homeFragmentBinding.NewsLinera.visibility = View.VISIBLE
+                    homeFragmentBinding.linerAthlete.visibility = View.GONE
 
                 }
                 1 -> {

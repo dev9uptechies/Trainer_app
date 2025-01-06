@@ -215,8 +215,7 @@
                                         android:fontFamily="@font/poppins_medium"
                                         android:text="00:00:00"
                                         android:textColor="@color/dark_text"
-                                        android:textSize="@dimen/_18sdp"
-                                        android:textStyle="bold" />
+                                        android:textSize="@dimen/_18sdp"/>
 
                                     <ImageView
                                         android:id="@+id/play"

@@ -427,7 +427,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/card_weight"
                     tools:layout_editor_absoluteX="25dp">
 
-                    <TextView
+                    <EditText
                         android:id="@+id/below_edt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -452,7 +452,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/card_weight"
                     tools:layout_editor_absoluteX="25dp">
 
-                    <TextView
+                    <EditText
                         android:id="@+id/athletes_edt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -477,7 +477,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/linearLayouts"
                     tools:layout_editor_absoluteX="25dp">
 
-                    <TextView
+                    <EditText
                         android:id="@+id/baseline_edt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -502,7 +502,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/card_Height"
                     tools:layout_editor_absoluteX="25dp">
 
-                    <TextView
+                    <EditText
                         android:id="@+id/fat_mass_edt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

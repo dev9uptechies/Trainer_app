@@ -900,6 +900,7 @@
         android:enabled="false"
         android:fontFamily="@font/poppins_semi_bold"
         android:text="Save"
+        android:textAllCaps="false"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"

@@ -570,7 +570,6 @@ class AddMesocycleListActivity : AppCompatActivity() {
         updateTrainingPlanIndices()
     }
 
-
     fun showDateRangePickerDialog(
         context: Context,
         minDateMillis: Long,
