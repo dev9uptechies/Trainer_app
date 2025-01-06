@@ -28,6 +28,9 @@
     import androidx.drawerlayout.widget.DrawerLayout
     import androidx.fragment.app.Fragment
     import androidx.recyclerview.widget.LinearLayoutManager
+    import com.example.Adapter.selected_day.LessonAdapter
+    import com.example.Adapter.selected_day.eventAdapter
+    import com.example.Adapter.selected_day.testAdapter
     import com.example.AthletesActivity
     import com.example.GroupListData
     import com.example.NewsAdapter
@@ -35,6 +38,7 @@
     import com.example.SelectGroupActivity
     import com.example.model.HomeFragment.NewsModel
     import com.example.model.PrivacyPolicy.privacypolicy
+    import com.example.model.SelectedDaysModel
     import com.example.model.personal_diary.GetDiaryDataForEdit
     import com.example.trainerapp.ApiClass.APIClient
     import com.example.trainerapp.ApiClass.APIInterface
@@ -60,7 +64,9 @@
     import com.example.trainerapp.personal_diary.ViewPersonalDiaryActivity
     import com.example.trainerapp.privacy_policy.PrivacyPolicyActivity
     import com.example.trainerapp.view_analysis.ViewAnalysisActivity
+    import com.example.trainerappAthlete.model.GroupListAthlete
     import com.google.android.material.navigation.NavigationView
+    import com.kizitonwose.calendarview.CalendarView
     import com.kizitonwose.calendarview.model.CalendarDay
     import com.kizitonwose.calendarview.model.CalendarMonth
     import com.kizitonwose.calendarview.model.DayOwner
@@ -91,6 +97,14 @@
         private var newsData: MutableList<NewsModel.Data> = mutableListOf()
         private var receivedIds: String = ""
         var formattedDate:String?= null
+
+        lateinit var lessonadapter: LessonAdapter
+        lateinit var eventadapter: eventAdapter
+        lateinit var testadapter: testAdapter
+
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        private val selectionFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
 
         private val sharedPreferences by lazy {
@@ -125,29 +139,35 @@
             GetNews()
             setUpCalendar()
 
-
+            val receivedIdInt = receivedIds.toIntOrNull()
 
             val userType = preferenceManager.GetFlage()
-
 
             if (userType == "Athlete") {
                 homeFragmentBinding.navigationView.menu.findItem(R.id.tv_library).isVisible = false
                 homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = false
+                if (receivedIdInt != null) {
+                    callGroupApiAthlete(receivedIdInt)
+                } else {
+                    Log.e("API Call", "Invalid receivedId: $receivedIds")
+                    clearSavedGroupData()
+                }
 
 
             } else {
+                if (receivedIdInt != null) {
+                    callGroupApi(receivedIdInt)
+                } else {
+                    Log.e("API Call", "Invalid receivedId: $receivedIds")
+                    clearSavedGroupData()
+                }
+
                 homeFragmentBinding.navigationView.menu.findItem(R.id.tv_library).isVisible = true
                 homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = true
             }
 
 
-            val receivedIdInt = receivedIds.toIntOrNull()
-            if (receivedIdInt != null) {
-                callGroupApi(receivedIdInt)
-            } else {
-                Log.e("API Call", "Invalid receivedId: $receivedIds")
-                clearSavedGroupData()
-            }
+
 
             val (savedGroupName, savedStartDate) = getSavedGroupData()
 
@@ -181,6 +201,78 @@
 
             return homeFragmentBinding.root
         }
+
+        @SuppressLint("NewApi")
+        private fun fetchDayData(selectedDate: LocalDate) {
+            try {
+                val formattedDate = selectionFormatter.format(selectedDate)
+                Log.d("CalendarFragment", "Fetching data for date: $formattedDate with ID: $receivedIds")
+
+                apiInterface.GetSelectedDays(formattedDate, receivedIds)!!.enqueue(object : Callback<SelectedDaysModel> {
+                    override fun onResponse(call: Call<SelectedDaysModel>, response: Response<SelectedDaysModel>) {
+                        if (response.isSuccessful && response.body() != null) {
+                            val selectedDaysModel = response.body()
+                            Log.d("API Response", "Response: $selectedDaysModel")
+
+                            val data = selectedDaysModel?.data
+                            if (data != null) {
+                                if (::eventadapter.isInitialized) {
+                                    eventadapter.clearData()
+                                }
+
+                                initTestRecyclerView(data.tests)
+                                initLessonRecyclerView(data.lessons)
+                                initEventRecyclerView(data.events)
+
+                                if (data.tests.isNotEmpty() || data.lessons.isNotEmpty() || data.events.isNotEmpty()) {
+
+                                } else {
+
+                                }
+                            } else {
+                                Log.e("API Response", "Data is null. No dot added.")
+                                // Remove any dots for this date if data is null
+                            }
+                        } else {
+                            Log.e("API Response", "Failed to fetch data: ${response.message()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
+                        Log.e("API Response", "Error: ${t.message}")
+                    }
+                })
+            } catch (e: Exception) {
+                Log.e("Catch", "CatchError :- ${e.message}")
+            }
+        }
+
+
+        private fun initLessonRecyclerView(programs: List<SelectedDaysModel.Lesson>) {
+            homeFragmentBinding.favLessonRly.layoutManager = LinearLayoutManager(requireContext())
+            lessonadapter = LessonAdapter(programs, requireContext(), this)
+            homeFragmentBinding.favLessonRly.adapter = lessonadapter
+        }
+
+        private fun initTestRecyclerView(tests: List<SelectedDaysModel.Test>) {
+            homeFragmentBinding.favTestRly.layoutManager = LinearLayoutManager(requireContext())
+            testadapter = testAdapter(tests, requireContext(), this)
+            homeFragmentBinding.favTestRly.adapter = testadapter
+        }
+
+
+        private fun initEventRecyclerView(events: List<SelectedDaysModel.Event>) {
+            if (events.isNotEmpty()) {
+                Log.d("Event RecyclerView", "Setting up RecyclerView with events.")
+                homeFragmentBinding.favEventRly.layoutManager = LinearLayoutManager(requireContext())
+                eventadapter = eventAdapter(events, requireContext(), this)
+                homeFragmentBinding.favEventRly.adapter = eventadapter
+            } else {
+                Log.d("Event RecyclerView", "No events available.")
+            }
+        }
+
+
         private fun setContent() {
             val workout = arrayOf("Instruction", "Information", "News")
 
@@ -292,6 +384,9 @@
                                     Log.d("FORMATTEDDATE", "bind: ${formattedDate.toString()}")
 
                                     getPersonalDiaryData(formattedDate.toString())
+
+                                    fetchDayData(day.date)
+
                                 } else {
                                     Toast.makeText(requireContext(), "Please Select Group First", Toast.LENGTH_SHORT).show()
                                 }
@@ -423,6 +518,66 @@
                 }
             })
         }
+
+        private fun callGroupApiAthlete(receivedId: Int) {
+            homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+            Log.d("API Call", "Received ID: $receivedId")
+
+            apiInterface.GropListAthlete()?.enqueue(object : Callback<GroupListAthlete?> {
+                override fun onResponse(call: Call<GroupListAthlete?>, response: Response<GroupListAthlete?>) {
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource = response.body()
+                        val success = resource?.status ?: false
+                        val message = resource?.message ?: "No message available"
+
+                        if (success) {
+                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            val group = resource!!.data?.find { it.id == receivedId }
+
+                            if (group != null) {
+                                Log.d("API Response", "Group found: ${group.group!!.name}, Group ID: ${group.id}")
+                                saveSelectedGroupData(
+                                    group.group!!.name.toString(),
+                                    group.group!!.group_plannings?.firstOrNull()?.planning?.start_date ?: "",
+                                    group.id.toString()
+                                )
+
+                                homeFragmentBinding.selectGroupTxt.text = group.group!!.name
+
+                                val planning = group.group!!.group_plannings?.firstOrNull()
+                                if (planning != null && planning.planning != null) {
+                                    homeFragmentBinding.edtStartDate.text = planning.planning?.start_date
+                                } else {
+                                    homeFragmentBinding.edtStartDate.text = ""
+                                }
+                            } else {
+                                homeFragmentBinding.selectGroupTxt.text = "Group not found for ID: $receivedId"
+                            }
+                        } else {
+                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            homeFragmentBinding.selectGroupTxt.text = "Failed to fetch data: $message"
+                        }
+                    } else if (code == 403) {
+                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Log.e("API Error", "Access forbidden: ${response.message()}")
+                        call.cancel()
+                        preferenceManager.setUserLogIn(false)
+                    } else {
+                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Log.e("API Error", "Error code: $code, ${response.message()}")
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<GroupListAthlete?>, t: Throwable) {
+                    Log.e("GROOOOOOOP", "API call failed: ${t.message}")
+                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    call.cancel()
+                }
+            })
+        }
+
 
         private fun saveSelectedGroupData(groupName: String, startDate: String, id: String) {
             Log.d("Save Group Data", "Saving group data: $groupName, $startDate, $id")

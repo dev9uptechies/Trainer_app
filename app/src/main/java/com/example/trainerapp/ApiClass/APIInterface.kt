@@ -54,6 +54,7 @@ import com.example.model.training_plan.cycles.AddMesocyclePresession
 import com.example.model.training_plan.cycles.AddMesocycleTransition
 import com.example.model.training_plan.cycles.GetMessocyclePreSession
 import com.example.trainerapp.TestListData
+import com.example.trainerappAthlete.model.GroupListAthlete
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -777,7 +778,7 @@ interface APIInterface {
     //////////////// Athlete ////////////////
 
     @GET("Athlete/group")
-    fun GropListAthlete(): Call<GroupListData>
+    fun GropListAthlete(): Call<GroupListAthlete>
 
     @GET("Athlete/performance_category")
     fun GetPerformanceCategoryAthlete(): Call<PerformanceCategory>

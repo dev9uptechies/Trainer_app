@@ -16,6 +16,8 @@
     import com.example.trainerapp.SignInActivity
     import com.example.trainerapp.Utils
     import com.example.trainerapp.databinding.FragmentGroupBinding
+    import com.example.trainerappAthlete.model.GroupAdapterAthlete
+    import com.example.trainerappAthlete.model.GroupListAthlete
     import retrofit2.Call
     import retrofit2.Callback
     import retrofit2.Response
@@ -25,9 +27,10 @@
         lateinit var apiClient: APIClient
         lateinit var preferenceManager: PreferencesManager
         lateinit var groupadapter: GroupAdapter
+        lateinit var groupadapterAthlete: GroupAdapterAthlete
         private var receivedId: String = ""
         private var groupList: ArrayList<GroupListData.groupData> = ArrayList()
-
+        private var groupListAthlete: List<GroupListAthlete.Data>? = null // Store a list of items
 
         override fun onResume() {
             checkUser()
@@ -73,10 +76,10 @@
             }
         }
 
-
     //    lateinit var group_progress: ProgressBar
     //    lateinit var create_group: ImageView
         lateinit var groupBinding: FragmentGroupBinding
+
         override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -110,65 +113,53 @@
 
         private fun callGroupApiAthlete() {
             try {
-            groupBinding.groupProgress.visibility = View.VISIBLE
-            apiInterface.GropListAthlete().enqueue(object : Callback<GroupListData?> {
-                override fun onResponse(
-                    call: Call<GroupListData?>,
-                    response: Response<GroupListData?>
-                ) {
+                groupBinding.groupProgress.visibility = View.VISIBLE
+                apiInterface.GropListAthlete().enqueue(object : Callback<GroupListAthlete?> {
+                    override fun onResponse(
+                        call: Call<GroupListAthlete?>,
+                        response: Response<GroupListAthlete?>
+                    ) {
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: GroupListAthlete? = response.body()
+                            val success: Boolean = resource?.status ?: false
+                            val message: String = resource?.message ?: "Unknown"
 
-                    val code = response.code()
-                    if (code == 200) {
-                        val resource: GroupListData? = response.body()
-                        val Success: Boolean = resource?.status!!
-                        val Message: String = resource.message!!
+                            if (success) {
+                                groupBinding.groupProgress.visibility = View.GONE
+                                // Store the list of GroupListAthlete.Data items
+                                groupListAthlete = resource?.data // No need for toList() since it's already a list
+                                initrecyclerAthlete(groupListAthlete!!) // Pass the list to the RecyclerView
 
-                        if (Success == true) {
-                            groupBinding.groupProgress.visibility = View.GONE
-                            groupList = resource.data!! // Populate the groupList here
-                            initrecycler(resource.data!!)
-
-                            for (data in resource.data!!){
-                                Log.d("GHHGHGHGHGH", "onResponse: Name:- ${data.name }")
+                            } else {
+                                groupBinding.groupProgress.visibility = View.GONE
+                                // Handle failure case
                             }
-
+                        } else if (response.code() == 403) {
+                            groupBinding.groupProgress.visibility = View.GONE
+                            val message = response.message()
+                            call.cancel()
+                            preferenceManager.setUserLogIn(false)
+                            startActivity(Intent(requireContext(), SignInActivity::class.java))
+                            requireActivity().finish()
                         } else {
                             groupBinding.groupProgress.visibility = View.GONE
+                            call.cancel()
                         }
-                    } else if (response.code() == 403) {
-                        groupBinding.groupProgress.visibility = View.GONE
-                        val message = response.message()
-                        call.cancel()
-                        preferenceManager.setUserLogIn(false)
-                        startActivity(
-                            Intent(
-                                requireContext(),
-                                SignInActivity::class.java
-                            )
-                        )
-                        requireActivity().finish()
-                    } else {
-                        groupBinding.groupProgress.visibility = View.GONE
-                        val message = response.message()
-                        //                    Toast.makeText(requireContext(), "" + message, Toast.LENGTH_SHORT)
-                        //                        .show()
-
-                        call.cancel()
                     }
-                }
 
-                override fun onFailure(call: Call<GroupListData?>, t: Throwable) {
-                    Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
-                        .show()
-                    call.cancel()
-                    Log.d("GROOOOOOOP", t.message.toString() + "")
-                    groupBinding.groupProgress.visibility = View.GONE
-                }
-            })
-            }catch (e:Exception){
-                Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+                    override fun onFailure(call: Call<GroupListAthlete?>, t: Throwable) {
+                        Toast.makeText(requireContext(), t.message, Toast.LENGTH_SHORT).show()
+                        call.cancel()
+                        Log.d("GROOOOOOOP", t.message.toString())
+                        groupBinding.groupProgress.visibility = View.GONE
+                    }
+                })
+            } catch (e: Exception) {
+                Log.d("catch", "callGroupApiAthlete: ${e.message}")
             }
         }
+
 
         private fun callGroupApi() {
             try {
@@ -245,17 +236,36 @@
             }
         }
 
-        override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
-            val groupId = groupList[position].id
-
-            startActivity(
-                Intent(requireContext(), GroupDetailActivity::class.java).apply {
-                    putExtra("id", groupList[position].id)
-                    putExtra("group_id", groupId)
-                    putExtra("position", position)
+        private fun initrecyclerAthlete(data: List<GroupListAthlete.Data>) {
+            try {
+                if (!isAdded) {
+                    Log.e("GroupFragment", "Fragment is not attached to an activity.")
+                    return
                 }
 
-            )
+                groupBinding.groupRly.layoutManager = LinearLayoutManager(requireActivity())
+                groupadapterAthlete = GroupAdapterAthlete(data, requireContext(), this)
+                groupBinding.groupRly.adapter = groupadapterAthlete
+            } catch (e: Exception) {
+                Log.d("catch", "initrecyclerAthlete: ${e.message}")
+            }
+        }
+
+        override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
+            if (groupList != null){
+
+                val groupId = groupList[position].id
+
+                startActivity(
+                    Intent(requireContext(), GroupDetailActivity::class.java).apply {
+                        putExtra("id", groupList[position].id)
+                        putExtra("group_id", groupId)
+                        putExtra("position", position)
+                    }
+
+                )
+            }
+
         }
 
 

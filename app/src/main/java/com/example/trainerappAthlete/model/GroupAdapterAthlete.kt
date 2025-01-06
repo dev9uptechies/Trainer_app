@@ -1,4 +1,7 @@
-package com.example
+package com.example.trainerappAthlete.model
+
+import com.example.GroupListData
+import com.example.OnItemClickListener
 
 import android.app.usage.UsageEvents
 import android.content.Context
@@ -11,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.GroupDetailActivity
 import com.example.trainerapp.ApiClass.*
 import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
@@ -23,25 +27,26 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class GroupAdapter(
-    private var splist: ArrayList<GroupListData.groupData>?,
+class GroupAdapterAthlete(
+    private var splist: List<GroupListAthlete.Data>?,
     var context: Context,
     val listener: OnItemClickListener.OnItemClickCallback
 ) :
-    RecyclerView.Adapter<GroupAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<GroupAdapterAthlete.MyViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): GroupAdapter.MyViewHolder {
+    ): GroupAdapterAthlete.MyViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.group_list_item, parent, false)
         return MyViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: GroupAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: GroupAdapterAthlete.MyViewHolder, position: Int) {
         val movie = splist!![position]
-        holder.group_name.text = movie.name
-        holder.tv_sport.text = movie.sport?.title ?: "Unknown" // Default to "Unknown" if sport or title is null
+        holder.group_name.text = movie.group!!.name
+        holder.tv_sport.text =
+            (movie.group?.sport?.title ?: "").toString() // Default to "Unknown" if sport or title is null
 
         val transformation: Transformation = RoundedTransformationBuilder()
             .borderColor(Color.BLACK)
@@ -51,19 +56,28 @@ class GroupAdapter(
             .build()
 
         Picasso.get()
-            .load("https://trainers.codefriend.in" + movie.image)
+            .load("https://trainers.codefriend.in" + movie.group!!.image)
             .fit()
             .transform(transformation)
             .into(holder.rounded_image)
 
-        holder.itemView.setOnClickListener(
-            OnItemClickListener(
-                position,
-                listener,
-                movie.id!!.toLong(),
-                "Coach"
-            )
-        )
+//        holder.itemView.setOnClickListener(
+//            OnItemClickListener(
+//                position,
+//                listener,
+//                movie.id!!.toLong(),
+//                "Athlete"
+//            )
+//        )
+
+        holder.card.setOnClickListener {
+            val intent = Intent(context,GroupDetailActivity::class.java)
+            intent.putExtra("id", movie.id)
+            intent.putExtra("group_id", movie.group_id!!.toInt())
+            intent.putExtra("position", position)
+            context.startActivity(intent)
+        }
+
     }
 
     override fun getItemCount(): Int {
@@ -73,7 +87,7 @@ class GroupAdapter(
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var group_name: TextView = view.findViewById<View>(R.id.group_name) as TextView
         var tv_sport: TextView = view.findViewById<View>(R.id.tv_sport) as TextView
-        var rounded_image: RoundedImageView =
-            view.findViewById<View>(R.id.round_image) as RoundedImageView
+        var card: CardView = view.findViewById<View>(R.id.card) as CardView
+        var rounded_image: RoundedImageView = view.findViewById<View>(R.id.round_image) as RoundedImageView
     }
 }

@@ -46,7 +46,6 @@ class SignInActivity : AppCompatActivity() {
         checkFieldValue()
         checkButtonClick()
         checkChangeListner()
-
     }
 
     private fun checkChangeListner() {

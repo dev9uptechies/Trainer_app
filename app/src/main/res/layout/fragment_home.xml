@@ -282,7 +282,6 @@
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/select_ly"
-
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/_40sdp"
                                 android:layout_marginStart="@dimen/_10sdp"
@@ -1906,7 +1905,7 @@
         android:layout_gravity="start"
         android:background="#141414"
         android:fitsSystemWindows="true"
-        android:visibility="visible"
+        android:visibility="gone"
         app:headerLayout="@layout/header_layout"
         app:itemIconTint="@color/white"
         app:itemTextAppearance="@style/DrawerMenuTextAppearance"

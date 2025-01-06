@@ -102,6 +102,10 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     lateinit var start_error: AppCompatTextView
     lateinit var end_error: TextView
     var lessonId: IntArray = intArrayOf()
+
+    private var isMonViewAdded = false
+
+
     var testId: IntArray = intArrayOf()  // Initialize as an empty array or a default value
     var eventId: IntArray = intArrayOf()  // Initialize as an empty array or a default value
     var planningId: IntArray = intArrayOf()  // Initialize as an empty array or a default value
@@ -162,10 +166,13 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         end_error = inflater.findViewById(R.id.end_error)
 
 
+
         loadIdsFromPreferences()
         loadGroupData()
         loadDayTimesFromPreferences()
         setupTextWatcher()
+
+
 
         dayTimes.forEach { (day, times) ->
             val linearLayout = getLinearLayoutForDay(day)
@@ -191,6 +198,18 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
                     setDialogEnd(tv_End_time)
                 }
             }
+        }
+
+        if (!isMonViewAdded) {
+            toggleDay(
+                "monday",
+                createGroupBinding.weekMon,
+                mon_linearLayour,
+                createGroupBinding.monAddScheduleTime
+            )
+
+            mon_addView() // Add the view only if it hasn't been added yet
+            isMonViewAdded = true // Set the flag to true
         }
 
         lessonId = intent.getIntArrayExtra("lessonId") ?: intArrayOf()
@@ -622,6 +641,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 //            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
 
             getContent.launch("image/*")
+
         }
 
         createGroupBinding.back.setOnClickListener {
@@ -643,18 +663,19 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             Log.d("GHHGHGHGHGHGH", "onCreate: $start    $end")
             Log.d("GHHGHGHGHGHGH", "onCreate: ${start_error.text.toString()}    $end")
 
-                if (start == null || start == "") {
-                    start_error.visibility = View.VISIBLE
-                    Log.d("VMVMMVMVMVMVMMV", "onCreate: ${start_error.text}")
-                    Toast.makeText(this, "Start field is required", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
+            if (start == null || start == "") {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "Start field is required", Toast.LENGTH_SHORT)
+                    .show() // Toast for start field
+                return@setOnClickListener
+            }
 
-                if (end == null || end == "") {
-                    end_error.visibility = View.VISIBLE
-                    Toast.makeText(this, "End field is required", Toast.LENGTH_SHORT).show() // Toast for end field
-                    return@setOnClickListener
-                }
+            if (end == null || end == "") {
+                end_error.visibility = View.VISIBLE
+                Toast.makeText(this, "End field is required", Toast.LENGTH_SHORT)
+                    .show() // Toast for end field
+                return@setOnClickListener
+            }
 
 
             createGroupBinding.progressBar.visibility = View.VISIBLE
@@ -1197,7 +1218,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         super.onResume()
         loadGroupData()
         loadDayTimesFromPreferences()
-        restoreViewsForAllDays()
+//        restoreViewsForAllDays()
         clearGroupDataOnBack()
 
         Log.d("+++++++++++++", "onResume: ")
@@ -1206,16 +1227,53 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
     private fun restoreLastSelectedDay() {
         val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
-        val lastSelectedDay = sharedPreferences.getString("last_selected_day", null)
+        val lastSelectedDay =
+            sharedPreferences.getString("last_selected_day", "monday") // Default to "monday"
 
-        Log.d("+++++++++++++", "restoreLastSelectedDay: $lastSelectedDay")
+        Log.d("RestoreDayyyyyyyyy", "Retrieved last_selected_day: $lastSelectedDay")
 
-        if (lastSelectedDay != null) {
+        if (!lastSelectedDay.isNullOrEmpty()) {
             showDataForDay(lastSelectedDay)
         } else {
-            showDataForDay("monday")
+            Log.d("RestoreDay", "No last_selected_day found. Defaulting to Monday.")
+//            showDataForDay("monday") // Default if still null
         }
     }
+
+
+    private fun saveLastSelectedDay(selectedDay: String) { // Default to "monday"
+        val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("last_selected_day", selectedDay)
+        editor.apply()
+        Log.d("SaveDay", "Saved last_selected_day: $selectedDay")
+    }
+
+    private fun clearLastSelectedDay() {
+        val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.remove("last_selected_day") // Remove the specific key
+        editor.apply()
+        Log.d("ClearDay", "Cleared last_selected_day from SharedPreferences")
+    }
+
+
+    private fun saveViewStateForAllDays() {
+        val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        // Save state for each day
+        editor.putBoolean("monday_view_added", true)
+        editor.putBoolean("tuesday_view_added", true)
+        editor.putBoolean("wednesday_view_added", true)
+        editor.putBoolean("thursday_view_added", true)
+        editor.putBoolean("friday_view_added", true)
+        editor.putBoolean("saturday_view_added", true)
+        editor.putBoolean("sunday_view_added", true)
+
+        editor.apply()
+    }
+
 
     private fun restoreViewsForDay(container: LinearLayout, day: String) {
         val schedules = loadSchedules(day)
@@ -1251,10 +1309,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         clearGroupDataOnBack()
         clearDayTimesOnBack()
         clearAllSchedules()
-        val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.remove("last_selected_day")  // Remove the stored value
-        editor.apply()
+        clearLastSelectedDay()
         resetCardBackgroundColors()
 
     }
@@ -1284,6 +1339,8 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             val imageUri = selectedImageUri
             saveGroupData(groupName, imageUri, sportName, sportlId.id.toString())
             saveDayTimesToPreferences()
+            saveViewStateForAllDays()
+//            saveLastSelectedDay()
 
             Log.d("GroupData", "Data saved in onPause")
         } else {
@@ -1865,35 +1922,34 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     }
 
     // Save view state for all days
-    private fun saveViewStateForAllDays() {
-        val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
 
-        // Save state for each day
-        editor.putBoolean("monday_view_added", true)
-        editor.putBoolean("tuesday_view_added", true)
-        editor.putBoolean("wednesday_view_added", true)
-        editor.putBoolean("thursday_view_added", true)
-        editor.putBoolean("friday_view_added", true)
-        editor.putBoolean("saturday_view_added", true)
-        editor.putBoolean("sunday_view_added", true)
+//
+//    private fun restoreViewsForAllDays() {
+//        val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
+//
+//        // Hide all layouts to prevent overlap
+//        hideAllLayouts()
+//
+//        // Show only Monday's layout by default
+//        if (sharedPreferences.getBoolean("monday_view_added", false)) {
+//            mon_linearLayour.visibility = View.VISIBLE
+//            restoreViewsForDay(mon_linearLayour, "monday")
+//        }
+//    }
 
-        // Apply changes
-        editor.apply()
-    }
-
-    private fun restoreViewsForAllDays() {
-        val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
-
-        // Hide all layouts to prevent overlap
-        hideAllLayouts()
-
-        // Show only Monday's layout by default
-        if (sharedPreferences.getBoolean("monday_view_added", false)) {
-            mon_linearLayour.visibility = View.VISIBLE
-            restoreViewsForDay(mon_linearLayour, "monday")
-        }
-    }
+//    private fun restoreLastSelectedDay() {
+//        val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
+//        val lastSelectedDay = sharedPreferences.getString("last_selected_day", null)
+//
+//        Log.d("RestoreDay", "Retrieved last_selected_day: $lastSelectedDay")
+//
+//        if (!lastSelectedDay.isNullOrEmpty()) {
+//            showDataForDay(lastSelectedDay)
+//        } else {
+//            Log.d("RestoreDay", "No last_selected_day found. Defaulting to Monday.")
+//            showDataForDay("monday") // Default to Monday if no day is stored
+//        }
+//    }
 
     private fun showDataForDay(selectedDay: String) {
         val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
@@ -1910,13 +1966,12 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
         hideAllLayouts()
 
-        Log.d("DHDHHDHDHDHDHH", "showDataForDay: $dayToShow")
+        Log.d("ShowDay", "Showing data for day: $dayToShow")
 
         when (dayToShow) {
             "monday" -> {
                 mon_linearLayour.visibility = View.VISIBLE
                 restoreViewsForDay(mon_linearLayour, "monday")
-
                 createGroupBinding.monAddScheduleTime.visibility = View.VISIBLE
                 resetCardBackgroundsExcept("monday")
             }
@@ -1924,7 +1979,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             "tuesday" -> {
                 tue_linearLayout.visibility = View.VISIBLE
                 restoreViewsForDay(tue_linearLayout, "tuesday")
-
                 createGroupBinding.tueAddScheduleTime.visibility = View.VISIBLE
                 resetCardBackgroundsExcept("tuesday")
             }
@@ -1932,7 +1986,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             "wednesday" -> {
                 wed_linearLayout.visibility = View.VISIBLE
                 restoreViewsForDay(wed_linearLayout, "wednesday")
-
                 createGroupBinding.wedAddScheduleTime.visibility = View.VISIBLE
                 resetCardBackgroundsExcept("wednesday")
             }
@@ -1940,7 +1993,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             "thursday" -> {
                 thu_linearLayout.visibility = View.VISIBLE
                 restoreViewsForDay(thu_linearLayout, "thursday")
-
                 createGroupBinding.thuAddScheduleTime.visibility = View.VISIBLE
                 resetCardBackgroundsExcept("thursday")
             }
@@ -1948,7 +2000,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             "friday" -> {
                 fri_linearLayout.visibility = View.VISIBLE
                 restoreViewsForDay(fri_linearLayout, "friday")
-
                 createGroupBinding.friAddScheduleTime.visibility = View.VISIBLE
                 resetCardBackgroundsExcept("friday")
             }
@@ -1956,7 +2007,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             "saturday" -> {
                 sat_linearLayout.visibility = View.VISIBLE
                 restoreViewsForDay(sat_linearLayout, "saturday")
-
                 createGroupBinding.satAddScheduleTime.visibility = View.VISIBLE
                 resetCardBackgroundsExcept("saturday")
             }
@@ -1964,23 +2014,21 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             "sunday" -> {
                 sun_linearLayout.visibility = View.VISIBLE
                 restoreViewsForDay(sun_linearLayout, "sunday")
-
                 createGroupBinding.sunAddScheduleTime.visibility = View.VISIBLE
                 resetCardBackgroundsExcept("sunday")
             }
         }
 
-        // Save the last selected day to SharedPreferences
         val editor = sharedPreferences.edit()
         editor.putString("last_selected_day", dayToShow)
         editor.apply()
+        Log.d("SaveDay", "Saved last_selected_day: $dayToShow")
     }
 
     private fun resetCardBackgroundsExcept(selectedDay: String) {
         val defaultColor = resources.getColor(R.color.card_background)
         val splashColor = resources.getColor(R.color.splash_text_color)
 
-        // Reset all schedule times and card colors
         createGroupBinding.monAddScheduleTime.visibility = View.GONE
         createGroupBinding.tueAddScheduleTime.visibility = View.GONE
         createGroupBinding.wedAddScheduleTime.visibility = View.GONE
@@ -1997,7 +2045,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         createGroupBinding.weekSat.setCardBackgroundColor(defaultColor)
         createGroupBinding.weekSun.setCardBackgroundColor(defaultColor)
 
-        // Highlight the selected day's card
         when (selectedDay) {
             "monday" -> createGroupBinding.weekMon.setCardBackgroundColor(splashColor)
             "tuesday" -> createGroupBinding.weekTue.setCardBackgroundColor(splashColor)
@@ -2007,13 +2054,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             "saturday" -> createGroupBinding.weekSat.setCardBackgroundColor(splashColor)
             "sunday" -> createGroupBinding.weekSun.setCardBackgroundColor(splashColor)
         }
-
-        val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("last_selected_day", selectedDay)
-        editor.apply()
     }
-
 
     private fun hideAllLayouts() {
         mon_linearLayour.visibility = View.GONE
@@ -2027,37 +2068,50 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
     fun mon_addView() {
         addViewForDay(mon_linearLayour, "monday")
-        saveViewStateForAllDays()
+//        saveViewStateForAllDays()
+        saveLastSelectedDay("monday")
     }
 
     fun tue_addView() {
         addViewForDay(tue_linearLayout, "tuesday")
-        saveViewStateForAllDays()
+//        saveViewStateForAllDays()
+        saveLastSelectedDay("tuesday")
+
     }
 
     fun wed_addView() {
         addViewForDay(wed_linearLayout, "wednesday")
-        saveViewStateForAllDays()
+//        saveViewStateForAllDays()
+        saveLastSelectedDay("wednesday")
+
     }
 
     fun thu_addView() {
         addViewForDay(thu_linearLayout, "thursday")
-        saveViewStateForAllDays()
+//        saveViewStateForAllDays()
+        saveLastSelectedDay("thursday")
+
     }
 
     fun fri_addView() {
         addViewForDay(fri_linearLayout, "friday")
-        saveViewStateForAllDays()
+//        saveViewStateForAllDays()
+        saveLastSelectedDay("friday")
+
     }
 
     fun sat_addView() {
         addViewForDay(sat_linearLayout, "saturday")
-        saveViewStateForAllDays()
+//        saveViewStateForAllDays()
+        saveLastSelectedDay("saturday")
+
     }
 
     fun sun_addView() {
         addViewForDay(sun_linearLayout, "sunday")
-        saveViewStateForAllDays()
+//        saveViewStateForAllDays()
+        saveLastSelectedDay("sunday")
+
     }
 
 

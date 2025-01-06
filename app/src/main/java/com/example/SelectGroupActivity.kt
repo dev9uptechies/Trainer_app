@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -20,6 +19,8 @@ import com.example.trainerapp.R
 import com.example.trainerapp.SignInActivity
 import com.example.trainerapp.databinding.ActivitySelectGroupBinding
 import com.example.trainerapp.databinding.ActivityViewAetleteBinding
+import com.example.trainerappAthlete.model.GroupListAthlete
+import com.example.trainerappAthlete.model.selectGroupAdapterAthlete
 import org.checkerframework.checker.units.qual.A
 import retrofit2.Call
 import retrofit2.Callback
@@ -33,6 +34,7 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     lateinit var preferenceManager: PreferencesManager
     lateinit var apiClient: APIClient
     lateinit var groupadapter: selectGroupAdapter
+    lateinit var groupadapterAthlete: selectGroupAdapterAthlete
     var selectedGroupId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +43,14 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         setContentView(binding.root)
         initView()
         BUttonClick()
-        callGroupApi()
+
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete"){
+            callGroupApiAthlete()
+        }else{
+            callGroupApi()
+        }
     }
 
     private fun initView() {
@@ -53,24 +62,51 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     private fun BUttonClick() {
         binding.back.setOnClickListener { finish() }
 
-        binding.cardSave.setOnClickListener {
-            try {
-                val selectedGroupId = groupadapter.getSelectedGroupId()
+        val userType = preferenceManager.GetFlage()
 
-                if (selectedGroupId == null) {
-                    Toast.makeText(this, "Please select a group", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
+        if (userType == "Athlete"){
+            binding.cardSave.setOnClickListener {
+                try {
+                    val selectedGroupId = groupadapterAthlete.getSelectedGroupId()
+
+                    if (selectedGroupId == null) {
+                        Toast.makeText(this, "Please select a group", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
+                    Log.d("SelectedGroup", "Selected Group ID: $selectedGroupId")
+                    val intent = Intent(this, HomeActivity::class.java)
+                    intent.putExtra("idddd", selectedGroupId.toString())
+                    startActivity(intent)
+                    finish()
+                } catch (e: Exception) {
+                    Log.d("GHHGHGH", "BUttonClick: ${e.message.toString()}")
                 }
-
-                Log.d("SelectedGroup", "Selected Group ID: $selectedGroupId")
-                val intent = Intent(this, HomeActivity::class.java)
-                intent.putExtra("idddd", selectedGroupId.toString())
-                startActivity(intent)
-                finish()
-            } catch (e: Exception) {
-                Log.d("GHHGHGH", "BUttonClick: ${e.message.toString()}")
             }
+
+        }else{
+            binding.cardSave.setOnClickListener {
+                try {
+                    val selectedGroupId = groupadapter.getSelectedGroupId()
+
+                    if (selectedGroupId == null) {
+                        Toast.makeText(this, "Please select a group", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
+                    Log.d("SelectedGroup", "Selected Group ID: $selectedGroupId")
+                    val intent = Intent(this, HomeActivity::class.java)
+                    intent.putExtra("idddd", selectedGroupId.toString())
+                    startActivity(intent)
+                    finish()
+                } catch (e: Exception) {
+                    Log.d("GHHGHGH", "BUttonClick: ${e.message.toString()}")
+                }
+            }
+
         }
+
+
 
     }
 
@@ -134,10 +170,76 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         })
     }
 
+    private fun callGroupApiAthlete() {
+        binding.groupProgress.visibility = View.VISIBLE
+        apiInterface.GropListAthlete()?.enqueue(object : Callback<GroupListAthlete?> {
+            override fun onResponse(
+                call: Call<GroupListAthlete?>,
+                response: Response<GroupListAthlete?>
+            ) {
+
+                val code = response.code()
+                if (code == 200) {
+                    val resource: GroupListAthlete? = response.body()
+                    val Success: Boolean = resource?.status!!
+                    val Message: String = resource.message!!
+
+                    if (Success) {
+                        binding.groupProgress.visibility = View.GONE
+                        initrecyclerAthlee(resource.data!!)
+                    } else {
+                        binding.groupProgress.visibility = View.GONE
+                        Toast.makeText(this@SelectGroupActivity, "" + Message, Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                } else if (response.code() == 403) {
+                    binding.groupProgress.visibility = View.GONE
+                    val message = response.message()
+                    Toast.makeText(
+                        this@SelectGroupActivity,
+                        "" + message,
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    call.cancel()
+                    preferenceManager.setUserLogIn(false)
+                    startActivity(
+                        Intent(
+                            this@SelectGroupActivity,
+                            SignInActivity::class.java
+                        )
+                    )
+                    finish()
+                } else {
+                    binding.groupProgress.visibility = View.GONE
+                    val message = response.message()
+                    //                    Toast.makeText(requireContext(), "" + message, Toast.LENGTH_SHORT)
+                    //                        .show()
+
+                    call.cancel()
+                }
+            }
+
+            override fun onFailure(call: Call<GroupListAthlete?>, t: Throwable) {
+                Toast.makeText(this@SelectGroupActivity, "" + t.message, Toast.LENGTH_SHORT)
+                    .show()
+                call.cancel()
+                Log.d("GROOOOOOOP", t.message.toString() + "")
+                binding.groupProgress.visibility = View.GONE
+            }
+        })
+    }
+
     private fun initrecycler(data: ArrayList<GroupListData.groupData>) {
         binding.recylerSelectGroup.setLayoutManager(LinearLayoutManager(this))
         groupadapter = selectGroupAdapter(data, this, this)
         binding.recylerSelectGroup.adapter = groupadapter
+    }
+
+    private fun initrecyclerAthlee(data: List<GroupListAthlete.Data>) {
+        binding.recylerSelectGroup.setLayoutManager(LinearLayoutManager(this))
+        groupadapterAthlete = selectGroupAdapterAthlete(data, this, this)
+        binding.recylerSelectGroup.adapter = groupadapterAthlete
     }
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
