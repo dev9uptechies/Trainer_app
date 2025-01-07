@@ -17,6 +17,7 @@ import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.Adapter.lesson.SectionLessonAdapter
@@ -103,7 +105,6 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
     var fromDay: Boolean = false
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lessonBinding = ActivityLessonBinding.inflate(layoutInflater)
@@ -115,7 +116,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
     }
 
-    private fun getData(){
+    private fun getData() {
 
         lessonid = intent.getIntExtra("id", 0).toString()
         fromDay = intent.getBooleanExtra("fromday", false)
@@ -307,7 +308,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         }
 
         lessonBinding.cardTimeSelect.setOnClickListener {
-            SetDialog()
+//            SetDialog()
         }
 
         lessonBinding.edtGoal.setOnClickListener {
@@ -583,12 +584,41 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
     private fun setDialog() {
         val dialog = AlertDialog.Builder(this)
-        dialog.setTitle("Alert")
+
+        // Create a custom title TextView
+        val titleTextView = TextView(this).apply {
+            text = "Alert"
+            typeface =
+                ResourcesCompat.getFont(this@LessonActivity, R.font.poppins_medium) // Set the font
+            textSize = 20f
+            setPadding(50, 50, 50, 10) // Optional: add padding
+            setTextColor(Color.BLACK) // Set text color to black
+        }
+
+
+        dialog.setCustomTitle(titleTextView) // Set the custom title view
+
         dialog.setMessage("Please Select Program")
         dialog.setPositiveButton("Ok") { dialog, which ->
             dialog.dismiss()
         }
-        dialog.show()
+
+        // Create the AlertDialog
+        val alert = dialog.create()
+
+        val typeface = ResourcesCompat.getFont(this, R.font.poppins_medium)
+
+        alert.setOnShowListener {
+            val messageTextView = alert.findViewById<TextView>(android.R.id.message)
+            messageTextView?.typeface = typeface
+
+            // Set the font for the buttons
+            val positiveButton = alert.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton?.typeface = typeface
+        }
+
+        // Show the dialog
+        alert.show()
     }
 
     private fun setTimerDialog() {
@@ -667,11 +697,19 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_list, null)
+
+        val weightInPixels = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+            330f, // The value in dp
+            resources.displayMetrics // The display metrics
+        ).toInt()
+
         val popupWindow = PopupWindow(
             popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            true // Focusable to allow outside clicks to dismiss
+//            ViewGroup.LayoutParams.WRAP_CONTENT, // Wrap content width
+            weightInPixels,
+            ViewGroup.LayoutParams.WRAP_CONTENT, // Fixed height (100dp)
+            true
         )
         popupWindow.setBackgroundDrawable(
             ContextCompat.getDrawable(
@@ -686,6 +724,9 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
             object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
+                    val typeface =
+                        ResourcesCompat.getFont(this@LessonActivity, R.font.poppins_medium)
+                    view.typeface = typeface
                     view.setTextColor(Color.WHITE) // Set text color to white
                     return view
                 }
@@ -760,7 +801,8 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                     }
                 } else {
                     lessonBinding.tvNodata.visibility = View.VISIBLE
-                    Toast.makeText(this@LessonActivity, response.message(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LessonActivity, response.message(), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
 
@@ -833,31 +875,44 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                                 initRecyclerview(data)
                             } else {
                                 // Handle empty or null data
-                                Toast.makeText(this@LessonActivity, "No lessons available", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@LessonActivity,
+                                    "No lessons available",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         } else {
                             // Handle unsuccessful response if needed
-                            Toast.makeText(this@LessonActivity, "Error: $message", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@LessonActivity,
+                                "Error: $message",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     } else {
                         // Handle null response body
-                        Toast.makeText(this@LessonActivity, "Empty response body", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LessonActivity,
+                            "Empty response body",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else if (code == 403) {
                     Utils.setUnAuthDialog(this@LessonActivity)
                 } else {
-                    Toast.makeText(this@LessonActivity, response.message(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LessonActivity, response.message(), Toast.LENGTH_SHORT)
+                        .show()
                     call.cancel()
                 }
             }
 
             override fun onFailure(call: Call<Lesson>, t: Throwable) {
-                Toast.makeText(this@LessonActivity, "Error: " + t.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LessonActivity, "Error: " + t.message, Toast.LENGTH_SHORT)
+                    .show()
                 call.cancel()
             }
         })
     }
-
 
 
     private fun initRecyclerview(data: ArrayList<Lesson.LessonDatabase>) {
@@ -1274,7 +1329,42 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                     dialog.cancel()
                 }
 
+
             val alert = builder.create()
+
+            val titleTextView = TextView(this).apply {
+                text = "Success"
+                typeface =
+                    ResourcesCompat.getFont(this@LessonActivity, R.font.poppins_medium) // Set the font
+                textSize = 20f
+                setPadding(50, 50, 50, 5) // Optional: add padding
+                setTextColor(Color.BLACK) // Set text color to black
+            }
+
+
+
+            alert.setCustomTitle(titleTextView)
+
+
+            val typeface = ResourcesCompat.getFont(this, R.font.poppins_medium)
+
+
+            alert.setOnShowListener {
+                val titleTextView = alert.findViewById<TextView>(android.R.id.title)
+                titleTextView?.typeface = typeface
+
+
+                val messageTextView = alert.findViewById<TextView>(android.R.id.message)
+                messageTextView?.typeface = typeface
+
+                // Set the font for the buttons
+                val positiveButton = alert.getButton(AlertDialog.BUTTON_POSITIVE)
+                positiveButton?.typeface = typeface
+
+                val negativeButton = alert.getButton(AlertDialog.BUTTON_NEGATIVE)
+                negativeButton?.typeface = typeface
+            }
+
             alert.setTitle("Success")
             alert.show()
 

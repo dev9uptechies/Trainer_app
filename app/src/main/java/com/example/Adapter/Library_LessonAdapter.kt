@@ -43,7 +43,11 @@ class Library_LessonAdapter(
         val movie = splist!![position]
         holder.tvFname.text = movie.name
 
-        holder.tvgoal.text = movie.goal!!.get(0).goal!!.name
+        if (!movie.goal.isNullOrEmpty() && movie.goal!![0].goal != null) {
+            holder.tvgoal.text = movie.goal!![0].goal!!.name
+        } else {
+            holder.tvgoal.text = "No goal available" // Provide a fallback or empty state
+        }
 
         holder.time.text = movie.time
         if (movie.is_favourite!! == "1") {

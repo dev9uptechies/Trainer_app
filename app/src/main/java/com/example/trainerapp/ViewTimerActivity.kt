@@ -489,8 +489,8 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 it.pause()  // Pause the music
             }
         }
-
         viewTimerBinding.play.setImageDrawable(resources.getDrawable(R.drawable.ic_play_1))
+
     }
 
     fun resumeCountdown() {

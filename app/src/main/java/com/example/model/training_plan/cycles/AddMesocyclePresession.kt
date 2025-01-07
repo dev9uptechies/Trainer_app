@@ -6,7 +6,6 @@ data class AddMesocyclePresession(
     val name: String,
     val start_date: String,
     val end_date: String,
-    val periods: String
 )
 
 data class AddMesocyclePreCompatitive(

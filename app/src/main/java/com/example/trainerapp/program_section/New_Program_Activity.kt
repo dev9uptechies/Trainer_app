@@ -14,6 +14,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -323,12 +325,23 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
     ) {
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_list, null)
+
+        // Convert 100dp to pixels
+        val weightInPixels = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+            330f, // The value in dp
+            resources.displayMetrics // The display metrics
+        ).toInt()
+
         val popupWindow = PopupWindow(
             popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            true // Focusable to allow outside clicks to dismiss
+//            ViewGroup.LayoutParams.WRAP_CONTENT, // Wrap content width
+            weightInPixels,
+            ViewGroup.LayoutParams.WRAP_CONTENT, // Fixed height (100dp)
+            true
         )
+
+        // Set background drawable for the popup window
         popupWindow.setBackgroundDrawable(
             ContextCompat.getDrawable(
                 this@New_Program_Activity,
@@ -336,52 +349,55 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
             )
         )
         popupWindow.elevation = 10f
+
         val listView = popupView.findViewById<ListView>(R.id.listView)
 
-        // Create adapter for the list
-        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
-            // Keep track of the selected position
+        val adapter = object : ArrayAdapter<String>(this, R.layout.list_item_layout, list) {
             var selectedPosition = -1
 
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = super.getView(position, convertView, parent) as TextView
-                val typeface = ResourcesCompat.getFont(this@New_Program_Activity, R.font.poppins_medium)
-                view.typeface = typeface
-                // Set the text color for all items based on the selection
-                if (position == selectedPosition) {
+                val view: View = convertView ?: LayoutInflater.from(context).inflate(R.layout.list_item_layout, parent, false)
+                val textViewTitle = view.findViewById<TextView>(R.id.textViewTitle)
+                val linearLayout = view.findViewById<LinearLayout>(R.id.liner)
 
-                    view.setTextColor(Color.YELLOW) // Highlight selected item
+                textViewTitle.text = getItem(position)
+
+                // Highlight the selected item
+                if (position == selectedPosition) {
+                    textViewTitle.setTextColor(Color.YELLOW) // Selected item color
                 } else {
-                    view.setTextColor(Color.WHITE) // Default color for other items
+                    textViewTitle.setTextColor(Color.WHITE) // Default color for other items
+                }
+
+                // Set click listener for the entire LinearLayout
+                linearLayout.setOnClickListener {
+                    // Get the selected item from the list
+                    val selectedItem = list[position]
+
+                    // Set the selected item in the EditText
+                    editText.setText(selectedItem)
+
+                    // Set the ID of the selected item in the selectedValue
+                    selectedValue.id = data.filter { it.name == selectedItem }.first().id!!
+
+                    // Update the selected position
+                    selectedPosition = position
+
+                    // Refresh the ListView to reflect the updated selection
+                    notifyDataSetChanged()
+
+                    // Dismiss the popup window after selection
+                    popupWindow.dismiss()
+
+                    // Optional log or debug message
+                    println("Selected item: $selectedItem")
                 }
 
                 return view
             }
         }
 
-        // Set adapter to the ListView
         listView.adapter = adapter
-
-        listView.setOnItemClickListener { _, _, position, _ ->
-            // Get the selected item from the list
-            val selectedItem = list[position]
-
-            // Set the selected item in the EditText
-            editText.setText(selectedItem)
-
-            // Set the ID of the selected item in the selectedValue
-            selectedValue.id = data.filter { it.name == selectedItem }.first().id!!
-
-            // Update the selected position
-            adapter.selectedPosition = position
-
-            // Refresh the ListView to reflect the updated selection
-            adapter.notifyDataSetChanged()
-
-            // Dismiss the popup window after selection
-            println("Selected item: $selectedItem")
-            popupWindow.dismiss()
-        }
 
         // Show the popup window below the anchor view
         popupWindow.showAsDropDown(anchorView)
@@ -393,30 +409,9 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                 android.R.color.white
             )
         )
-
-        listView.adapter = adapter
-        listView.setOnItemClickListener { _, _, position, _ ->
-            // When an item is clicked, set it as selected and update the EditText
-            val selectedItem = list[position]
-            editText.setText(selectedItem)
-            selectedValue.id = data.filter { it.name == selectedItem }.first().id!!
-
-            // Update the selected position and notify adapter to refresh the ListView
-            adapter.selectedPosition = position
-            adapter.notifyDataSetChanged() // Refresh the list to show updated colors
-
-            println("Selected item: $selectedItem")
-            popupWindow.dismiss()
-        }
-
-        popupWindow.showAsDropDown(anchorView)
-        popupWindow.setBackgroundDrawable(
-            AppCompatResources.getDrawable(
-                this,
-                android.R.color.white
-            )
-        )
     }
+
+
 
 
     private fun getGoalData() {

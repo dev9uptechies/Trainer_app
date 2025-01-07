@@ -292,7 +292,6 @@ class EditMesocycleListActivity : AppCompatActivity() {
                             name = newName,
                             start_date = finalStartDate.toString(),
                             end_date = finalEndDate.toString(),
-                            periods = ""
                         )
                     )
 

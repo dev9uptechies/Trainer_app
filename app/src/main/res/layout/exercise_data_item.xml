@@ -49,8 +49,9 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:text="Test Name"
+                        android:fontFamily="@font/poppins_medium"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_15sdp" />
+                        android:textSize="@dimen/_14sdp" />
 
                     <CheckBox
                         android:id="@+id/checkbox"
@@ -68,7 +69,8 @@
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:text="Time or Reps: 01 Hour"
                     android:textColor="#BBBBBB"
-                    android:textSize="@dimen/_15sdp" />
+                    android:fontFamily="@font/poppins_medium"
+                    android:textSize="@dimen/_14sdp" />
 
                 <TextView
                     android:id="@+id/tv_athlet"
@@ -76,7 +78,8 @@
                     android:layout_height="wrap_content"
                     android:text="Weight: 1.2 KG"
                     android:textColor="#BBBBBB"
-                    android:textSize="@dimen/_15sdp" />
+                    android:fontFamily="@font/poppins_medium"
+                    android:textSize="@dimen/_14sdp" />
 
             </LinearLayout>
 

@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Adapter.competition.ViewAnalysisAdapter
 import com.example.model.SelectedValue
@@ -125,7 +126,6 @@ class ViewAnalysisActivity : AppCompatActivity() {
         viewAnalysisBinding.recViewAnalysis.adapter = viewAnalysisAthleteAdapter
     }
 
-
     private fun checkButtonClick() {
 
         viewAnalysisBinding.edtAthletes.setOnClickListener {
@@ -156,6 +156,8 @@ class ViewAnalysisActivity : AppCompatActivity() {
                         parent: ViewGroup
                     ): View {
                         val view = super.getView(position, convertView, parent) as TextView
+                        val typeface = ResourcesCompat.getFont(this@ViewAnalysisActivity, R.font.poppins_medium)
+                        view.typeface = typeface
                         view.setTextColor(Color.WHITE)
                         return view
                     }

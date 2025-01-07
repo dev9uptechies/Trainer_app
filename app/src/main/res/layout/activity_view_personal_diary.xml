@@ -92,9 +92,10 @@
                         android:layout_gravity="center"
                         android:layout_marginVertical="@dimen/_10sdp"
                         android:layout_weight="1"
+                        android:fontFamily="@font/poppins_medium"
                         android:text="Whant to share personal diary to coach"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_12sdp" />
+                        android:textSize="@dimen/_11sdp" />
 
 
                     <Switch

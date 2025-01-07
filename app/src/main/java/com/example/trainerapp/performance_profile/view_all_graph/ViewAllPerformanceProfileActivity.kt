@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import com.example.model.base_class.ChartBase
 import com.example.model.base_class.QualityBase
 import com.example.model.performance_profile.performance.category.PerformanceCategory
@@ -15,6 +16,7 @@ import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
 import com.example.trainerapp.PreferencesManager
+import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityViewAllPerformanceProfileBinding
 import com.highsoft.highcharts.common.HIColor
@@ -24,6 +26,7 @@ import com.highsoft.highcharts.common.hichartsclasses.HIChart
 import com.highsoft.highcharts.common.hichartsclasses.HIColumn
 import com.highsoft.highcharts.common.hichartsclasses.HICredits
 import com.highsoft.highcharts.common.hichartsclasses.HIExporting
+import com.highsoft.highcharts.common.hichartsclasses.HIGlobal
 import com.highsoft.highcharts.common.hichartsclasses.HILabels
 import com.highsoft.highcharts.common.hichartsclasses.HILegend
 import com.highsoft.highcharts.common.hichartsclasses.HIOptions
@@ -349,7 +352,7 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
                         } else {
                             Log.e("PerformanceQuality", "Failed to load qualities for ID $id: ${response.message()}")
                         }
-                        onComplete() // Notify completion
+                        onComplete()
                     }
                 }
 
@@ -362,149 +365,168 @@ class ViewAllPerformanceProfileActivity : AppCompatActivity() {
             })
     }
 
+    private fun setChartData() {
+        chartBase.clear()
 
-        private fun setChartData() {
-            chartBase.clear()
-
-            categoryData.forEach { category ->
-                chartBase.add(
-                    ChartBase(
-                        catId = category.id,
-                        catName = category.name,
-                        catQuality = mutableListOf()
-                    )
+        categoryData.forEach { category ->
+            chartBase.add(
+                ChartBase(
+                    catId = category.id,
+                    catName = category.name,
+                    catQuality = mutableListOf()
                 )
-            }
-
-            qualityData.forEach { quality ->
-                quality.performance_category_id?.toInt()?.let { categoryId ->
-                    chartBase.find { it.catId == categoryId }?.catQuality?.add(
-                        QualityBase(
-                            qualityName = quality.name,
-                            athleteScore = quality.athelet_score?.toFloat(),
-                            coachScore = quality.coach_score?.toFloat()
-                        )
-                    )
-                }
-            }
-
-            val athleteSeriesList: MutableList<Float> = mutableListOf()
-            val coachSeriesList: MutableList<Float> = mutableListOf()
-            val categoriesList: MutableList<String> = mutableListOf()
-
-            // For each category, create athlete and coach data for each quality
-            chartBase.forEach { category ->
-                category.catQuality?.forEach { quality ->
-                    // Add quality name to x-axis categories
-                    quality.qualityName?.let { categoriesList.add(it) }
-
-                    // Add scores to respective lists
-                    athleteSeriesList.add(quality.athleteScore?.takeIf { !it.isNaN() } ?: 0f)
-                    coachSeriesList.add(quality.coachScore?.takeIf { !it.isNaN() } ?: 0f)
-                }
-            }
-
-            // Set up the chart options
-            viewAllPerformanceProfileBinding.chartView.visibility = View.VISIBLE
-            val options = HIOptions()
-
-            val chart = HIChart().apply {
-                polar = true
-                height = "100%"
-            }
-            options.chart = chart
-            chartView.theme = "dark"
-
-            val pane = HIPane().apply {
-                startAngle = 0
-                endAngle = 360
-                background = arrayListOf(
-                    HIBackground().apply {
-                        backgroundColor = HIColor.initWithRGBA(255, 255, 255, 0.05)
-                        innerRadius = "0%"
-                        outerRadius = "100%"
-                        shape = "circle"
-                    }
-                )
-            }
-
-            options.pane = arrayListOf(pane)
-
-            val xAxis = HIXAxis().apply {
-                categories = ArrayList(categoriesList)
-                labels = HILabels().apply {
-                    style = HICSSObject().apply { color = "#FFFFFF" }
-                    distance = 2
-                    rotation = 0
-                }
-                title = HITitle().apply { text = "" }
-            }
-
-            options.xAxis = arrayListOf(xAxis)
-
-            val yAxis = HIYAxis().apply {
-                min = 0
-                tickPositions = arrayListOf(0, 2.5, 5, 10)
-                labels = HILabels().apply {
-                    enabled = true
-                    style = HICSSObject().apply {
-                        color = "#FFFFFF"
-                        fontSize = "12px"
-                    }
-                }
-                title = HITitle().apply { text = "" }
-            }
-            options.yAxis = arrayListOf(yAxis)
-
-            val plotOptions = HIPlotOptions().apply {
-                series = HISeries().apply { pointStart = 0 }
-                column = HIColumn().apply {
-                    pointPadding = 0
-                    groupPadding = 0
-                }
-            }
-            options.plotOptions = plotOptions
-            chart.backgroundColor = HIColor.initWithRGB(0, 0, 0)
-
-            val athleteSeries = HIColumn().apply {
-                name = "Athlete"
-                color = HIColor.initWithRGB(255, 0, 0) // Red for athlete
-                data = ArrayList(athleteSeriesList)
-            }
-
-            val coachSeries = HIColumn().apply {
-                name = "Coach"
-                color = HIColor.initWithRGB(83, 83, 83) // Grey for coach
-                data = ArrayList(coachSeriesList)
-            }
-
-            options.series = arrayListOf(athleteSeries, coachSeries)
-
-
-            // Other chart options
-            val hiTitle = HITitle()
-            hiTitle.text = ""
-            options.title = hiTitle
-
-            val legend = HILegend().apply {
-                enabled = true
-                itemStyle = HICSSObject().apply {
-                    fontSize = "14px"
-                    fontWeight = "regular"
-                    color = "#FFFFFF"
-                }
-            }
-            options.legend = legend
-            options.exporting = HIExporting().apply { enabled = false }
-            options.credits = HICredits().apply { enabled = false }
-
-            // Set the chart options to the view
-            chartView.options = options
-            chartView.invalidate()
-            chartView.requestLayout()
-
-            viewAllPerformanceProfileBinding.ProgressBar.visibility = View.GONE
+            )
         }
 
+        qualityData.forEach { quality ->
+            quality.performance_category_id?.toInt()?.let { categoryId ->
+                chartBase.find { it.catId == categoryId }?.catQuality?.add(
+                    QualityBase(
+                        qualityName = quality.name,
+                        athleteScore = quality.athelet_score?.toFloat(),
+                        coachScore = quality.coach_score?.toFloat()
+                    )
+                )
+            }
+        }
+
+        val athleteSeriesList: MutableList<Float> = mutableListOf()
+        val coachSeriesList: MutableList<Float> = mutableListOf()
+        val categoriesList: MutableList<String> = mutableListOf()
+
+        chartBase.forEach { category ->
+            category.catQuality?.forEach { quality ->
+                quality.qualityName?.let { categoriesList.add(it) }
+                athleteSeriesList.add(quality.athleteScore?.takeIf { !it.isNaN() } ?: 0f)
+                coachSeriesList.add(quality.coachScore?.takeIf { !it.isNaN() } ?: 0f)
+            }
+        }
+
+
+        viewAllPerformanceProfileBinding.chartView.visibility = View.VISIBLE
+        val options = HIOptions()
+
+        // Set chart configuration
+        options.chart = HIChart().apply {
+            polar = true
+            height = "100%"
+        }
+
+
+
+        options.chart?.style = HICSSObject().apply {
+            fontFamily = "Poppins, sans-serif"  // Set global font family
+        }
+
+        chartView.theme = "dark"
+
+        val pane = HIPane().apply {
+            startAngle = 0
+            endAngle = 360
+            background = arrayListOf(
+                HIBackground().apply {
+                    backgroundColor = HIColor.initWithRGBA(255, 255, 255, 0.05)
+                    innerRadius = "0%"
+                    outerRadius = "100%"
+                    shape = "circle"
+                }
+            )
+        }
+
+        options.pane = arrayListOf(pane)
+
+        val xAxis = HIXAxis().apply {
+            categories = ArrayList(categoriesList)
+            labels = HILabels().apply {
+                style = HICSSObject().apply {
+                    color = "#FFFFFF"
+                    fontFamily = "Poppins, sans-serif" // Set font family for x-axis labels
+                    fontSize = "12px"
+                    fontWeight = "bold"
+                }
+                distance = 2
+                rotation = 0
+            }
+            title = HITitle().apply {
+                text = ""
+                style = HICSSObject().apply {
+                    fontFamily = "Poppins, sans-serif"
+                    fontSize = "16px"
+                    color = "#333333"
+                }
+            }
+        }
+        options.xAxis = arrayListOf(xAxis)
+
+        val yAxis = HIYAxis().apply {
+            min = 0
+            tickPositions = arrayListOf(0, 2.5, 5, 10)
+            labels = HILabels().apply {
+                enabled = true
+                style = HICSSObject().apply {
+                    color = "#FFFFFF"
+                    fontFamily = "Poppins, sans-serif" // Set font family for y-axis labels
+                    fontSize = "12px"
+                }
+            }
+            title = HITitle().apply {
+                text = ""
+                style = HICSSObject().apply {
+                    fontFamily = "Poppins, sans-serif"
+                    fontSize = "16px"
+                    color = "#333333"
+                }
+            }
+        }
+        options.yAxis = arrayListOf(yAxis)
+
+        val plotOptions = HIPlotOptions().apply {
+            series = HISeries().apply { pointStart = 0 }
+            column = HIColumn().apply {
+                pointPadding = 0
+                groupPadding = 0
+            }
+        }
+        options.plotOptions = plotOptions
+        options.chart?.backgroundColor = HIColor.initWithRGB(0, 0, 0)
+
+        val athleteSeries = HIColumn().apply {
+            name = "Athlete"
+            color = HIColor.initWithRGB(255, 0, 0) // Red for athlete
+            data = ArrayList(athleteSeriesList)
+        }
+
+        val coachSeries = HIColumn().apply {
+            name = "Coach"
+            color = HIColor.initWithRGB(83, 83, 83) // Grey for coach
+            data = ArrayList(coachSeriesList)
+        }
+
+        options.series = arrayListOf(athleteSeries, coachSeries)
+
+        val hiTitle = HITitle()
+        hiTitle.text = ""
+        options.title = hiTitle
+
+        val legend = HILegend().apply {
+            enabled = true
+            itemStyle = HICSSObject().apply {
+                fontSize = "14px"
+                fontWeight = "regular"
+                color = "#FFFFFF"
+                fontFamily = "Poppins, Arial, sans-serif" // Apply font to legend
+            }
+        }
+
+        options.legend = legend
+        options.exporting = HIExporting().apply { enabled = false }
+        options.credits = HICredits().apply { enabled = false }
+
+        chartView.options = options
+        chartView.invalidate()
+        chartView.requestLayout()
+
+        viewAllPerformanceProfileBinding.ProgressBar.visibility = View.GONE
+    }
 
 }

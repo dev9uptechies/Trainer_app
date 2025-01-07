@@ -18,6 +18,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +38,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -571,9 +573,16 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
 
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_list, null)
+        val weightInPixels = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+            330f, // The value in dp
+            resources.displayMetrics // The display metrics
+        ).toInt()
+
         val popupWindow = PopupWindow(
             popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+            weightInPixels,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             true // Focusable to allow outside clicks to dismiss
         )
@@ -590,6 +599,8 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
             object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
+                    val typeface = ResourcesCompat.getFont(this@EdiExerciseActivity, R.font.poppins_medium)
+                    view.typeface = typeface
                     view.setTextColor(Color.WHITE) // Set text color to white
                     return view
                 }
@@ -615,11 +626,18 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
     private fun showTypePopup(anchorView: View?) {
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_list, null)
+        val weightInPixels = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+            330f, // The value in dp
+            resources.displayMetrics // The display metrics
+        ).toInt()
+
         val popupWindow = PopupWindow(
             popupView,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+            weightInPixels,
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            true
+            true // Focusable to allow outside clicks to dismiss
         )
         popupWindow.setBackgroundDrawable(
             ContextCompat.getDrawable(
@@ -633,6 +651,8 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
             object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, type) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
+                    val typeface = ResourcesCompat.getFont(this@EdiExerciseActivity, R.font.poppins_medium)
+                    view.typeface = typeface
                     view.setTextColor(Color.WHITE) // Set text color to white
                     return view
                 }
@@ -662,9 +682,16 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
     ) {
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_list, null)
+        val weightInPixels = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+            330f, // The value in dp
+            resources.displayMetrics // The display metrics
+        ).toInt()
+
         val popupWindow = PopupWindow(
             popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+            weightInPixels,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             true // Focusable to allow outside clicks to dismiss
         )
@@ -681,6 +708,8 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
             object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
+                    val typeface = ResourcesCompat.getFont(this@EdiExerciseActivity, R.font.poppins_medium)
+                    view.typeface = typeface
                     view.setTextColor(Color.WHITE) // Set text color to white
                     return view
                 }

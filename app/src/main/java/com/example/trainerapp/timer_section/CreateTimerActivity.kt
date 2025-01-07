@@ -3,12 +3,15 @@ package com.example.trainerapp.timer_section
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.EdiTimerActivity
 import com.example.Library_TimerAdapter
@@ -18,6 +21,7 @@ import com.example.model.newClass.timer.Timer
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
+import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.ViewTimerDetailsActivity
 import com.example.trainerapp.databinding.ActivityCreateTimerBinding
@@ -194,7 +198,38 @@ class CreateTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                         dialog.dismiss()
                     }
                 val alert = builder.create()
-                alert.setTitle("Delete")
+                val titleTextView = TextView(this).apply {
+                    text = "Delete"
+                    typeface =
+                        ResourcesCompat.getFont(this@CreateTimerActivity, R.font.poppins_medium) // Set the font
+                    textSize = 20f
+                    setPadding(50, 50, 50, 5) // Optional: add padding
+                    setTextColor(Color.BLACK) // Set text color to black
+                }
+
+
+
+                alert.setCustomTitle(titleTextView)
+
+
+                val typeface = ResourcesCompat.getFont(this, R.font.poppins_medium)
+
+
+                alert.setOnShowListener {
+                    val titleTextView = alert.findViewById<TextView>(android.R.id.title)
+                    titleTextView?.typeface = typeface
+
+
+                    val messageTextView = alert.findViewById<TextView>(android.R.id.message)
+                    messageTextView?.typeface = typeface
+
+                    // Set the font for the buttons
+                    val positiveButton = alert.getButton(AlertDialog.BUTTON_POSITIVE)
+                    positiveButton?.typeface = typeface
+
+                    val negativeButton = alert.getButton(AlertDialog.BUTTON_NEGATIVE)
+                    negativeButton?.typeface = typeface
+                }
                 alert.show()
             }
 

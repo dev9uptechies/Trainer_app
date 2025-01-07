@@ -129,7 +129,6 @@ class Select_ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemC
                 if (exerciselist[i].type == "Specific") {
                     specificlist.add(exerciselist[i])
                 }
-
             }
             checktype = true
             initRecycler(specificlist)
@@ -138,15 +137,16 @@ class Select_ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemC
 
         }
 
-
         selectExerciseBinding.save.setOnClickListener {
-            preferenceManager.setexercisedata(true)
-            adapter.resetExerciseList()
-            excIds.clear()
-            finish()
-
+            if (::adapter.isInitialized) {
+                preferenceManager.setexercisedata(true)
+                adapter.resetExerciseList()
+                excIds.clear()
+                finish()
+            } else {
+                Toast.makeText(this, "Adapter is not initialized.", Toast.LENGTH_SHORT).show()
+            }
         }
-
         selectExerciseBinding.back.setOnClickListener {
             finish()
         }

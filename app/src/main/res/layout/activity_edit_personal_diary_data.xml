@@ -52,9 +52,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:gravity="center"
+                android:fontFamily="@font/poppins_medium"
                 android:text="Notes - Please select each values between 1 to 5."
                 android:textColor="@android:color/white"
-                android:textSize="14sp" />
+                android:textSize="13sp" />
 
 
             <ScrollView
@@ -69,7 +70,7 @@
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_70sdp"
+                        android:layout_height="@dimen/_72sdp"
                         android:layout_margin="@dimen/_10sdp"
                         android:layout_marginBottom="8dp"
                         app:cardBackgroundColor="@color/cardview_dark_background"
@@ -92,7 +93,8 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="Date:"
-                                    android:textSize="@dimen/_13sdp"
+                                    android:textSize="@dimen/_12sdp"
+                                    android:fontFamily="@font/poppins_medium"
                                     android:textColor="@android:color/white" />
 
                                 <TextView
@@ -100,8 +102,9 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:textSize="@dimen/_13sdp"
                                     android:text="2024-06-21"
+                                    android:textSize="@dimen/_12sdp"
+                                    android:fontFamily="@font/poppins_medium"
                                     android:textColor="@android:color/white" />
 
                                 <ImageView
@@ -123,7 +126,8 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:textSize="@dimen/_13sdp"
+                                    android:textSize="@dimen/_12sdp"
+                                    android:fontFamily="@font/poppins_medium"
                                     android:text="SleepHours:"
                                     android:textColor="@android:color/white" />
 
@@ -132,7 +136,8 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:textSize="@dimen/_13sdp"
+                                    android:textSize="@dimen/_12sdp"
+                                    android:fontFamily="@font/poppins_medium"
                                     android:text="00:00:00"
                                     android:textColor="@android:color/white" />
 

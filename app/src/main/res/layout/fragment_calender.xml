@@ -67,6 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="12/55/5215"
+                android:fontFamily="@font/poppins_medium"
                 android:textColor="@color/white"
                 android:visibility="visible" />
 
@@ -102,10 +103,11 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_7sdp"
                             android:gravity="start"
+                            android:fontFamily="@font/poppins_medium"
                             android:paddingStart="@dimen/_10sdp"
                             android:text="Lesson List"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_15sdp" />
+                            android:textSize="@dimen/_14sdp" />
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -147,9 +149,10 @@
                             android:layout_marginTop="@dimen/_7sdp"
                             android:gravity="start"
                             android:paddingStart="@dimen/_10sdp"
+                            android:fontFamily="@font/poppins_medium"
                             android:text="Program List"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_15sdp" />
+                            android:textSize="@dimen/_14sdp" />
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -189,9 +192,10 @@
                             android:layout_marginTop="@dimen/_7sdp"
                             android:gravity="start"
                             android:paddingStart="@dimen/_10sdp"
+                            android:fontFamily="@font/poppins_medium"
                             android:text="Event List"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_15sdp" />
+                            android:textSize="@dimen/_14sdp" />
 
 
 
@@ -234,8 +238,9 @@
                             android:gravity="start"
                             android:paddingStart="@dimen/_10sdp"
                             android:text="Test List"
+                            android:fontFamily="@font/poppins_medium"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_15sdp" />
+                            android:textSize="@dimen/_14sdp" />
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView

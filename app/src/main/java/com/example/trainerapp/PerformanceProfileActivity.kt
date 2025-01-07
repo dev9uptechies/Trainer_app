@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Adapter.template.profile.PerformanceProfileAdapter
 import com.example.OnItemClickListener
@@ -404,12 +406,21 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
             Log.d("ida","${it.id}")
             val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_list, null)
+
+            val weightInPixels = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+                330f, // The value in dp
+                resources.displayMetrics // The display metrics
+            ).toInt()
+
             val popupWindow = PopupWindow(
                 popupView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+                weightInPixels,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 true // Focusable to allow outside clicks to dismiss
             )
+
             popupWindow.setBackgroundDrawable(
                 ContextCompat.getDrawable(
                     this@PerformanceProfileActivity,
@@ -427,6 +438,8 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                         parent: ViewGroup
                     ): View {
                         val view = super.getView(position, convertView, parent) as TextView
+                        val typeface = ResourcesCompat.getFont(this@PerformanceProfileActivity, R.font.poppins_medium)
+                        view.typeface = typeface
                         view.setTextColor(Color.WHITE) // Set text color to white
                         return view
                     }

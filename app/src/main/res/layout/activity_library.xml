@@ -117,6 +117,7 @@
                             android:layout_marginStart="@dimen/_20sdp"
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:text="Program"
+                            android:fontFamily="@font/poppins_medium"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_13sdp" />
 
@@ -139,6 +140,7 @@
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:text="Lesson"
                             android:textColor="@color/white"
+                            android:fontFamily="@font/poppins_medium"
                             android:textSize="@dimen/_13sdp" />
 
                     </androidx.cardview.widget.CardView>
@@ -159,6 +161,7 @@
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:text="Event"
                             android:textColor="@color/white"
+                            android:fontFamily="@font/poppins_medium"
                             android:textSize="@dimen/_13sdp" />
 
                     </androidx.cardview.widget.CardView>
@@ -178,6 +181,7 @@
                             android:layout_marginStart="@dimen/_20sdp"
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:text="Exercise"
+                            android:fontFamily="@font/poppins_medium"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_13sdp" />
 
@@ -199,6 +203,7 @@
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:text="Test"
                             android:textColor="@color/white"
+                            android:fontFamily="@font/poppins_medium"
                             android:textSize="@dimen/_13sdp" />
 
                     </androidx.cardview.widget.CardView>

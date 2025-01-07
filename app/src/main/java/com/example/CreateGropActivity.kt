@@ -15,6 +15,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -39,6 +40,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.Adapter.groups.SetAthleteInGroup
@@ -1530,9 +1532,16 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_list, null)
+        val weightInPixels = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+            330f, // The value in dp
+            resources.displayMetrics // The display metrics
+        ).toInt()
+
         val popupWindow = PopupWindow(
             popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+            weightInPixels,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             true // Focusable to allow outside clicks to dismiss
         )
@@ -1549,6 +1558,8 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
+                    val typeface = ResourcesCompat.getFont(this@CreateGropActivity, R.font.poppins_medium)
+                    view.typeface = typeface
                     view.setTextColor(Color.WHITE) // Set text color to white
                     return view
                 }

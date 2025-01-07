@@ -139,9 +139,9 @@
         <activity
             android:name=".competition.CompetitionActivity"
             android:exported="false" />
-        <activity
-            android:name=".competition.MainHomeActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".competition.MainHomeActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".program_section.ViewProgramActivity"
             android:exported="false" />

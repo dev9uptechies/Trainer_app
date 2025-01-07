@@ -13,6 +13,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.example.model.SelectedValue
 import com.example.model.competition.CompetitionData
 import com.example.model.newClass.athlete.AthleteData
@@ -327,11 +329,18 @@ class CompetitionActivity : AppCompatActivity() {
             val list = categoryData.map { it.name }
             val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_list, null)
+            val weightInPixels = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+                330f, // The value in dp
+                resources.displayMetrics // The display metrics
+            ).toInt()
+
             val popupWindow = PopupWindow(
                 popupView,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+                weightInPixels,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                true
+                true // Focusable to allow outside clicks to dismiss
             )
             popupWindow.setBackgroundDrawable(
                 ContextCompat.getDrawable(
@@ -350,6 +359,8 @@ class CompetitionActivity : AppCompatActivity() {
                         parent: ViewGroup
                     ): View {
                         val view = super.getView(position, convertView, parent) as TextView
+                        val typeface = ResourcesCompat.getFont(this@CompetitionActivity, R.font.poppins_medium)
+                        view.typeface = typeface
                         view.setTextColor(Color.WHITE) // Set text color to white
                         return view
                     }
@@ -375,9 +386,16 @@ class CompetitionActivity : AppCompatActivity() {
             val list = areaData.map { it.title }
             val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_list, null)
+            val weightInPixels = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+                330f, // The value in dp
+                resources.displayMetrics // The display metrics
+            ).toInt()
+
             val popupWindow = PopupWindow(
                 popupView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+                weightInPixels,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 true // Focusable to allow outside clicks to dismiss
             )
@@ -398,6 +416,8 @@ class CompetitionActivity : AppCompatActivity() {
                         parent: ViewGroup
                     ): View {
                         val view = super.getView(position, convertView, parent) as TextView
+                        val typeface = ResourcesCompat.getFont(this@CompetitionActivity, R.font.poppins_medium)
+                        view.typeface = typeface
                         view.setTextColor(Color.WHITE) // Set text color to white
                         return view
                     }
@@ -423,9 +443,16 @@ class CompetitionActivity : AppCompatActivity() {
             val list = athleteData.map { it.name }
             val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_list, null)
+            val weightInPixels = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+                330f, // The value in dp
+                resources.displayMetrics // The display metrics
+            ).toInt()
+
             val popupWindow = PopupWindow(
                 popupView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+                weightInPixels,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 true // Focusable to allow outside clicks to dismiss
             )
@@ -446,6 +473,8 @@ class CompetitionActivity : AppCompatActivity() {
                         parent: ViewGroup
                     ): View {
                         val view = super.getView(position, convertView, parent) as TextView
+                        val typeface = ResourcesCompat.getFont(this@CompetitionActivity, R.font.poppins_medium)
+                        view.typeface = typeface
                         view.setTextColor(Color.WHITE) // Set text color to white
                         return view
                     }

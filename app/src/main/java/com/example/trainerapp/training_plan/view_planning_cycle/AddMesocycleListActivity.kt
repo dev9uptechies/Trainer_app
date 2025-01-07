@@ -428,7 +428,6 @@ class AddMesocycleListActivity : AppCompatActivity() {
                             name = nameEditText.text.toString(),
                             start_date = startdatesent.toString(),
                             end_date = enddatesent.toString(),
-                            periods = "test"
 
                         )
                     )

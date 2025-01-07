@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:text="Date"
         android:textSize="@dimen/_12sdp"
+        android:fontFamily="@font/poppins_medium"
         android:textColor="@color/white"/>
 
     <androidx.cardview.widget.CardView
@@ -50,6 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/_10sdp"
+                android:fontFamily="@font/poppins_medium"
                 android:layout_weight="1"
                 android:maxLines="1"
                 android:background="@null"
@@ -77,6 +79,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Height in cm"
+        android:fontFamily="@font/poppins_medium"
         android:layout_marginTop="@dimen/_10sdp"
         android:textSize="@dimen/_12sdp"
         android:textColor="@color/white"/>
@@ -105,6 +108,7 @@
                 android:inputType="number"
                 android:background="@null"
                 android:maxLines="1"
+                android:fontFamily="@font/poppins_medium"
                 android:singleLine="true"
                 android:hint="Enter Height"
                 android:textColorHint="#BBBBBB"
@@ -121,6 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Weight in kg"
+        android:fontFamily="@font/poppins_medium"
         android:layout_marginTop="@dimen/_10sdp"
         android:textSize="@dimen/_12sdp"
         android:textColor="@color/white"/>
@@ -149,6 +154,7 @@
                 android:layout_weight="1"
                 android:maxLines="1"
                 android:background="@null"
+                android:fontFamily="@font/poppins_medium"
                 android:singleLine="true"
                 android:inputType="number"
                 android:hint="Enter Weight"
@@ -168,7 +174,8 @@
         android:layout_height="wrap_content"
         android:text="Fat in percentage"
         android:layout_marginTop="@dimen/_10sdp"
-        android:textSize="@dimen/_12sdp"
+      android:fontFamily="@font/poppins_medium"
+      android:textSize="@dimen/_12sdp"
         android:textColor="@color/white"/>
 
 
@@ -195,6 +202,7 @@
                 android:layout_weight="1"
                 android:maxLines="1"
                 android:singleLine="true"
+                android:fontFamily="@font/poppins_medium"
                 android:hint="Enter Fat"
                 android:background="@null"
                 android:textColorHint="#BBBBBB"

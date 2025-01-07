@@ -42,7 +42,6 @@
                 android:text="2024-06-21"
                 android:textColor="#F3F3F3"
                 android:textSize="@dimen/_16sdp"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

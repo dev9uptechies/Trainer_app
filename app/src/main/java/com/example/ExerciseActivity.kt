@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.model.SelectedValue
 import com.example.model.newClass.excercise.Exercise
@@ -172,12 +174,21 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
 
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_list, null)
+
+        val weightInPixels = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+            330f, // The value in dp
+            resources.displayMetrics // The display metrics
+        ).toInt()
+
         val popupWindow = PopupWindow(
             popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+            weightInPixels,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             true // Focusable to allow outside clicks to dismiss
         )
+
         popupWindow.setBackgroundDrawable(
             ContextCompat.getDrawable(
                 this,
@@ -191,6 +202,9 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
             object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
+
+                    val typeface = ResourcesCompat.getFont(this@ExerciseActivity, R.font.poppins_medium)
+                    view.typeface = typeface
                     view.setTextColor(Color.WHITE) // Set text color to white
                     return view
                 }
@@ -650,7 +664,40 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                     dialog.cancel()
                 }
             val alert = builder.create()
-            alert.setTitle("Delete")
+
+            val titleTextView = TextView(this).apply {
+                text = "Delete"
+                typeface = ResourcesCompat.getFont(this@ExerciseActivity, R.font.poppins_medium) // Set the font
+                textSize = 20f
+                setPadding(50, 50, 50, 5) // Optional: add padding
+                setTextColor(Color.BLACK) // Set text color to black
+            }
+
+
+
+            alert.setCustomTitle(titleTextView)
+//            alert.setTitle("Delete")
+
+
+            val typeface = ResourcesCompat.getFont(this, R.font.poppins_medium)
+
+
+            alert.setOnShowListener {
+                val titleTextView = alert.findViewById<TextView>(android.R.id.title)
+                titleTextView?.typeface = typeface
+
+
+                val messageTextView = alert.findViewById<TextView>(android.R.id.message)
+                messageTextView?.typeface = typeface
+
+                // Set the font for the buttons
+                val positiveButton = alert.getButton(AlertDialog.BUTTON_POSITIVE)
+                positiveButton?.typeface = typeface
+
+                val negativeButton = alert.getButton(AlertDialog.BUTTON_NEGATIVE)
+                negativeButton?.typeface = typeface
+            }
+
             alert.show()
 
         } else if (string == "fav") {

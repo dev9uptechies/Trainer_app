@@ -57,13 +57,14 @@
                 android:layout_weight="1"
                 android:maxLines="1"
                 android:paddingTop="@dimen/_5sdp"
+                android:fontFamily="@font/poppins_medium"
                 android:singleLine="true"
                 android:hint="Enter Title"
                 android:background="@null"
                 android:textColor="#BBBBBB"
                 android:gravity="top"
                 android:textColorHint="#BBBBBB"
-                android:textSize="@dimen/_13sdp" />
+                android:textSize="@dimen/_12sdp" />
 
         </LinearLayout>
 
@@ -107,10 +108,11 @@
                 android:background="@null"
                 android:gravity="top"
                 android:singleLine="true"
+                android:fontFamily="@font/poppins_medium"
                 android:hint="Enter Description"
                 android:textColorHint="#BBBBBB"
                 android:textColor="#BBBBBB"
-                android:textSize="@dimen/_13sdp" />
+                android:textSize="@dimen/_12sdp" />
 
 
         </LinearLayout>

@@ -15,6 +15,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -574,15 +575,24 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 
+
     private fun showTypePopup(anchorView: View?) {
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_list, null)
+        val weightInPixels = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+            330f, // The value in dp
+            resources.displayMetrics // The display metrics
+        ).toInt()
+
         val popupWindow = PopupWindow(
             popupView,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+            weightInPixels,
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            true
+            true // Focusable to allow outside clicks to dismiss
         )
+
         popupWindow.setBackgroundDrawable(
             ContextCompat.getDrawable(
                 this,
@@ -595,6 +605,9 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
             object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, unitArray) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
+
+                    val typeface = ResourcesCompat.getFont(this@TestActivity, R.font.poppins_medium)
+                    view.typeface = typeface
                     view.setTextColor(Color.WHITE) // Set text color to white
                     return view
                 }
@@ -625,12 +638,21 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
 
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.popup_list, null)
+
+        val weightInPixels = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+            330f, // The value in dp
+            resources.displayMetrics // The display metrics
+        ).toInt()
+
         val popupWindow = PopupWindow(
             popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+            weightInPixels,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             true // Focusable to allow outside clicks to dismiss
         )
+
         popupWindow.setBackgroundDrawable(
             ContextCompat.getDrawable(
                 this,
