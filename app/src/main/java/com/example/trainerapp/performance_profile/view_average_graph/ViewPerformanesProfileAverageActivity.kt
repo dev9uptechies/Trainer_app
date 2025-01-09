@@ -377,7 +377,7 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
                 )
             )
         }
-
+        viewAllPerformanceProfileBinding.chartView.addFont(R.font.poppins_medium)
         // Assign qualities to their respective categories
         qualityData.forEach { quality ->
             quality.performance_category_id?.toInt()?.let { categoryId ->
@@ -448,7 +448,11 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
         val xAxis = HIXAxis().apply {
             categories = ArrayList(categoriesList) // Use category names
             labels = HILabels().apply {
-                style = HICSSObject().apply { color = "#FFFFFF" }
+                style = HICSSObject().apply {
+                    color = "#FFFFFF"
+                    fontFamily =  "poppins_medium"
+                    fontSize = "12px"
+                }
                 distance = 2
                 rotation = 10
             }
@@ -463,6 +467,7 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
             labels = HILabels().apply {
                 enabled = true
                 style = HICSSObject().apply {
+                    fontFamily = "poppins_medium"
                     color = "#FFFFFF"
                     fontSize = "12px"
                 }
@@ -506,6 +511,7 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
         val legend = HILegend().apply {
             enabled = true
             itemStyle = HICSSObject().apply {
+                fontFamily = "poppins_medium"
                 fontSize = "14px"
                 fontWeight = "regular"
                 color = "#FFFFFF"

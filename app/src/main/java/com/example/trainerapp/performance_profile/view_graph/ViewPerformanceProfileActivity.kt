@@ -12,6 +12,7 @@ import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
 import com.example.trainerapp.PreferencesManager
+import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityViewPerformanceProfileBinding
 import com.highsoft.highcharts.common.HIColor
@@ -266,10 +267,11 @@ class ViewPerformanceProfileActivity : AppCompatActivity() {
 
         viewPerformanceProfileBinding.chartView.visibility = View.VISIBLE
         val options = HIOptions()
+        viewPerformanceProfileBinding.chartView.addFont(R.font.poppins_medium)
 
         val chart = HIChart()
         chart.polar = true
-        chart.height = "100%"
+        chart.height = "120%"
         options.chart = chart
         chartView.theme = "dark"
 
@@ -290,7 +292,12 @@ class ViewPerformanceProfileActivity : AppCompatActivity() {
         xAxis.min = 0
         xAxis.max = competitionProgress.size
         xAxis.labels = HILabels()
-        xAxis.labels.style = HICSSObject().apply { color = "#FFFFFF" }
+        xAxis.labels.style = HICSSObject().apply {
+            color = "#FFFFFF"
+            fontFamily = "poppins_medium"
+            color = "#FFFFFF"
+            fontSize = "12px"
+        }
         xAxis.categories =
             competitionProgress.mapIndexed { index, data -> data.name } as ArrayList
         xAxis.labels.distance = 2
@@ -314,6 +321,9 @@ class ViewPerformanceProfileActivity : AppCompatActivity() {
             labels = HILabels().apply {
                 enabled = true
                 style = HICSSObject().apply {
+                    color = "#FFFFFF"
+                    fontSize = "12px"
+                    fontFamily = "poppins_medium"
                     color = "#FFFFFF"
                     fontSize = "12px"
                 }
@@ -354,13 +364,25 @@ class ViewPerformanceProfileActivity : AppCompatActivity() {
         series3.color = HIColor.initWithRGB(83, 83, 83)
         series3.data = ArrayList(series3_data)
 
-        val legend = HILegend()
-        legend.enabled = true
-        val itemstyle = HICSSObject()
-        itemstyle.fontSize = "14px"
-        itemstyle.fontWeight = "regular"
-        itemstyle.color = "#FFFFFF"
-        legend.itemStyle = itemstyle
+//        val legend = HILegend()
+//        legend.enabled = true
+//        val itemstyle = HICSSObject()
+//        itemstyle.fontSize = "14px"
+//        itemstyle.fontWeight = "regular"
+//        itemstyle.color = "#FFFFFF"
+//        legend.itemStyle = itemstyle
+
+
+        val legend = HILegend().apply {
+            enabled = true
+            itemStyle = HICSSObject().apply {
+                fontSize = "14px"
+                fontWeight = "regular"
+                color = "#FFFFFF"
+                fontFamily = "poppins_medium"
+            }
+        }
+        options.legend = legend
         options.legend = legend
         options.series = ArrayList(Arrays.asList(series1, series3))
 
@@ -375,6 +397,8 @@ class ViewPerformanceProfileActivity : AppCompatActivity() {
         chartView.options = options
         chartView.invalidate() // Request a layout update
         chartView.requestLayout()
+
+
 
         viewPerformanceProfileBinding.ProgressBar.visibility = View.GONE
     }
