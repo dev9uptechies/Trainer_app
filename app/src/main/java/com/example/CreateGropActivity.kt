@@ -170,8 +170,8 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
 
         loadIdsFromPreferences()
-        loadGroupData()
-        loadDayTimesFromPreferences()
+//        loadGroupData()
+//        loadDayTimesFromPreferences()
         setupTextWatcher()
 
 
@@ -192,6 +192,8 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
                 val tv_start_timeCard: CardView = inflater.findViewById(R.id.start_time_card)
                 val tv_End_timeCard: CardView = inflater.findViewById(R.id.card_end_time)
+
+
 
                 tv_start_timeCard.setOnClickListener {
                     SetDialog_start(tv_start_time)
@@ -1340,7 +1342,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             val sportName = createGroupBinding.edtSport.text.toString()
             val imageUri = selectedImageUri
             saveGroupData(groupName, imageUri, sportName, sportlId.id.toString())
-            saveDayTimesToPreferences()
+//            saveDayTimesToPreferences()
             saveViewStateForAllDays()
 //            saveLastSelectedDay()
 
@@ -2309,14 +2311,21 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         val index = times.indexOfFirst { it.id == id }
 
         if (index >= 0) {
+            // Update existing dayTime
             times[index] = dayTime
         } else {
+            // Add new dayTime
             times.add(dayTime)
         }
 
+        // Update the dayTimes map
         dayTimes[dayKey] = times
+        Log.e("BKKKKKKAKAKAKAK", "updateDayTimes: " + dayTimes[dayKey])
+
+        // Call save method to persist the entire dayTimes map
         saveDayTimesToPreferences()
     }
+
 
     fun clearDayTimesOnBack() {
         // Clear the data in SharedPreferences
@@ -2334,17 +2343,21 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         val editor = sharedPreferences.edit()
         val gson = Gson()
 
-        // Convert the dayTimes map to a JSON string
+        // Convert the entire dayTimes map to a JSON string
         val jsonString = gson.toJson(dayTimes)
+
+        // Save the entire map to shared preferences
         editor.putString("day_times", jsonString)
-        editor.apply()
+        editor.apply()  // Commit the changes
     }
 
+
     // Load data for all days
-    fun loadDayTimesFromPreferences() {
+        fun loadDayTimesFromPreferences() {
         val sharedPreferences = getSharedPreferences("DayTimesPrefs", MODE_PRIVATE)
         val gson = Gson()
         val jsonString = sharedPreferences.getString("day_times", null)
+
 
         val type = object : TypeToken<Map<String, List<DayTime>>>() {}.type
         val loadedData: Map<String, List<DayTime>> = if (jsonString != null) {
@@ -2356,10 +2369,18 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         // Merge loaded data into the default `dayTimes` map
         loadedData.forEach { (day, times) ->
             dayTimes[day] = times.toMutableList()
+
         }
+        Log.e("KKTESTING", "loadDayTimesFromPreferences: "+dayTimes )
     }
 
+    fun saveDayTimesToPreferences(dayTimes: Map<String, List<DayTime>>) {
+        val sharedPreferences = getSharedPreferences("DayTimesPrefs", MODE_PRIVATE)
+        val gson = Gson()
+        val jsonString = gson.toJson(dayTimes)  // Serialize the map
 
+        sharedPreferences.edit().putString("day_times", jsonString).apply()  // Save serialized data
+    }
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
