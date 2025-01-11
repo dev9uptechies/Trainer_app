@@ -121,6 +121,7 @@ class FinalRegisterActivity : AppCompatActivity() {
 
         finalRegisterBinding.cardSignup.setOnClickListener {
             if (isValidate) {
+                Log.d("FHFHFFGGFG", "onCreate: ${preferenceManager.GetPassword()}")
                 progress_bar.visibility = View.VISIBLE
                 apiInterface.registerathlete(
                     preferenceManager.Getusername(),

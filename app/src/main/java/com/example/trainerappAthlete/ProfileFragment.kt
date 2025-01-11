@@ -53,7 +53,7 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
+class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
     lateinit var binding: FragmentProfileBinding
 
@@ -80,6 +80,10 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
         buttonClick()
         GetTestList()
 
+        val pass = preferenceManager.GetPassword()
+        binding.edtPassword.setText(pass)
+        Log.d("FHFHFFGGFG", "onCreate: ${preferenceManager.GetPassword()}")
+
         return binding.root
     }
 
@@ -87,7 +91,7 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
         binding.cardEdtSave.setOnClickListener {
             Log.d("IOIOIOIO", "buttonClick: $selectedImageUri")
 
-            UpdateProfile(requireContext(),selectedImageUri)
+            UpdateProfile(requireContext(), selectedImageUri)
         }
 
         binding.roundImage.setOnClickListener {
@@ -172,9 +176,13 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
         binding.edtZipCode.setText(data?.zipcode ?: "")
 
         binding.belowEdt.setText(/*"Below - " +*/ data?.below ?: "Enter below")
-        binding.athletesEdt.setText(/*"Athlete - "+*/ data?.athletes/* + " (Fat)" */?: "Enter Athletes")
+        binding.athletesEdt.setText(/*"Athlete - "+*/ data?.athletes/* + " (Fat)" */
+            ?: "Enter Athletes"
+        )
         binding.baselineEdt.setText(/*"Baseline - "+*/data?.baseline ?: "Enter Baseline")
-        binding.fatMassEdt.setText(/*"Fat mass - "+*/data?.fatMass /*+ " (KG)"*/ ?: "Enter Fat mass")
+        binding.fatMassEdt.setText(/*"Fat mass - "+*/data?.fatMass /*+ " (KG)"*/
+            ?: "Enter Fat mass"
+        )
 
         val transformation: Transformation = RoundedTransformationBuilder()
             .borderColor(Color.BLACK)
@@ -188,6 +196,15 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
             .fit()
             .transform(transformation)
             .into(binding.roundImage)
+
+        val imageUrl =
+            "https://trainers.codefriend.in" + (data?.image ?: "")
+        Log.d("ImageURL", "URL: $imageUrl")
+
+        val sharedPreferences = context?.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences?.edit()
+        editor?.putString("imageUrll", imageUrl)
+        editor?.apply()
 
 
         val image = data!!.image
@@ -264,11 +281,16 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
 
     private fun UpdateProfile(context: Context, imageUri: Uri?) {
         binding.progressBar.visibility = View.VISIBLE
+        if (!validations()) {
+            binding.progressBar.visibility = View.GONE
+            return // Stop execution if validation fails
+        }
+
 
         val imageFile = selectedImageUri?.let { getFileFromUri(it) }
         Log.d("VBBVBV", "UpdateProfile: $selectedImageUri")
         Log.d("VBBVBV", "UpdateProfile: $imageFile")
-//        Log.d("QPQPPQPQPQP", "setData: $sportsIds")
+        //        Log.d("QPQPPQPQPQP", "setData: $sportsIds")
 
 
         val imageParttest = processImage(context, imageUri)
@@ -276,11 +298,10 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
         Log.d("IMAGEPARTFORTEST", "UpdateProfile: $imageParttest")
 
         if (imageParttest == null) {
-            Log.e("ERROR", "Invalid file URI or file does not exist.")
+            Log.e("ERRORNUll", "Invalid file URI or file does not exist.")
             binding.progressBar.visibility = View.GONE
             return
         }
-
 
 
         val groupName = binding.groupName.text.toString()
@@ -308,11 +329,22 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
         val baselineRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), baseline)
         val fat_massRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), fat_mass)
         val sportidReuestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Sportsids)
-//        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), imageFile)
-//        val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
+        //        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), imageFile)
+        //        val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
 
-        apiInterface.EditProfileAthlete(nameRequestBody, emailRequestBody,birthdateRequestBody, addressRequestBody,
-            zipcodeRequestBody,imageParttest,sportidReuestBody,belowRequestBody,athletesRequestBody,baselineRequestBody,fat_massRequestBody)
+        apiInterface.EditProfileAthlete(
+            nameRequestBody,
+            emailRequestBody,
+            birthdateRequestBody,
+            addressRequestBody,
+            zipcodeRequestBody,
+            imageParttest,
+            sportidReuestBody,
+            belowRequestBody,
+            athletesRequestBody,
+            baselineRequestBody,
+            fat_massRequestBody
+        )
             ?.enqueue(object : Callback<RegisterData?> {
                 override fun onResponse(
                     call: Call<RegisterData?>,
@@ -384,8 +416,13 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
             if (imageUrl.startsWith("http") || imageUrl.startsWith("https")) {
                 val imageFileFromUrl = runBlocking { convertUrlToFile(context, imageUrl) }
                 if (imageFileFromUrl != null && imageFileFromUrl.exists()) {
-                    val imageRequestBody = imageFileFromUrl.asRequestBody("image/*".toMediaTypeOrNull())
-                    return MultipartBody.Part.createFormData("image", imageFileFromUrl.name, imageRequestBody)
+                    val imageRequestBody =
+                        imageFileFromUrl.asRequestBody("image/*".toMediaTypeOrNull())
+                    return MultipartBody.Part.createFormData(
+                        "image",
+                        imageFileFromUrl.name,
+                        imageRequestBody
+                    )
                 } else {
                     Log.e("ProcessImage", "Error creating image file from URL.")
                 }
@@ -395,14 +432,26 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
                 if (fileFromUri != null && fileFromUri.exists()) {
                     Log.d("ProcessImage", "Image file found from URL: ${fileFromUri.absolutePath}")
                     val imageRequestBody = fileFromUri.asRequestBody("image/*".toMediaTypeOrNull())
-                    return MultipartBody.Part.createFormData("image", fileFromUri.name, imageRequestBody)
+                    return MultipartBody.Part.createFormData(
+                        "image",
+                        fileFromUri.name,
+                        imageRequestBody
+                    )
                 } else {
                     Log.e("ProcessImage", "File from URL path does not exist, creating new file.")
                     // In case the file does not exist, try to create it again
-                    val fileFromUri = createFileFromContentUri(context, Uri.parse(imageUrl)) // Retry creating the file
+                    val fileFromUri = createFileFromContentUri(
+                        context,
+                        Uri.parse(imageUrl)
+                    ) // Retry creating the file
                     if (fileFromUri != null && fileFromUri.exists()) {
-                        val imageRequestBody = fileFromUri.asRequestBody("image/*".toMediaTypeOrNull())
-                        return MultipartBody.Part.createFormData("image", fileFromUri.name, imageRequestBody)
+                        val imageRequestBody =
+                            fileFromUri.asRequestBody("image/*".toMediaTypeOrNull())
+                        return MultipartBody.Part.createFormData(
+                            "image",
+                            fileFromUri.name,
+                            imageRequestBody
+                        )
                     } else {
                         Log.e("ProcessImage", "Failed to create the image file from fallback URL.")
                     }
@@ -420,7 +469,8 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
             when (contentUri.scheme) {
                 "content" -> {
                     // Handle content URIs (e.g., from content provider)
-                    val fileName = getFileNameFromUri(context, contentUri) ?: "temp_image_${System.currentTimeMillis()}"
+                    val fileName = getFileNameFromUri(context, contentUri)
+                        ?: "temp_image_${System.currentTimeMillis()}"
                     val tempFile = File(context.cacheDir, fileName)
 
                     // Try opening input stream and copying to a file
@@ -432,6 +482,7 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
                     Log.d("createFileFromContentUri", "File created at: ${tempFile.absolutePath}")
                     tempFile
                 }
+
                 "file" -> {
                     // Handle file URIs (local file paths)
                     val file = File(contentUri.path ?: return null)
@@ -439,10 +490,14 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
                         Log.d("createFileFromContentUri", "File exists at: ${file.absolutePath}")
                         file
                     } else {
-                        Log.e("createFileFromContentUri", "File does not exist at: ${file.absolutePath}")
+                        Log.e(
+                            "createFileFromContentUri",
+                            "File does not exist at: ${file.absolutePath}"
+                        )
                         null
                     }
                 }
+
                 else -> {
                     // Handle plain file paths (no scheme)
                     val file = File(contentUri.toString())
@@ -450,7 +505,10 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
                         Log.d("createFileFromContentUri", "File exists at: ${file.absolutePath}")
                         file
                     } else {
-                        Log.e("createFileFromContentUri", "File does not exist at: ${file.absolutePath}")
+                        Log.e(
+                            "createFileFromContentUri",
+                            "File does not exist at: ${file.absolutePath}"
+                        )
                         null
                     }
                 }
@@ -505,7 +563,10 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
                     Log.d("convertUrlToFile", "File downloaded and saved: ${file.absolutePath}")
                     return@withContext file
                 } else {
-                    Log.e("convertUrlToFile", "Failed to download file. Response code: ${connection.responseCode}")
+                    Log.e(
+                        "convertUrlToFile",
+                        "Failed to download file. Response code: ${connection.responseCode}"
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("convertUrlToFile", "Error downloading file: ${e.message}", e)
@@ -514,6 +575,69 @@ class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
         }
     }
 
+    private fun validations(): Boolean {
+        val email = binding.edtEmail.text
+        val password = binding.edtPassword.text
+        val birthday = binding.edtBirthday.text
+        val birthplace = binding.edtBirthdayPlace.text
+        val zipcode = binding.edtZipCode.text
+        val athlete = binding.athletesEdt.text
+        val below = binding.belowEdt.text
+        val baseline = binding.baselineEdt.text
+        val fatMass = binding.fatMassEdt.text
+
+        when {
+            email.isNullOrEmpty() -> {
+                Toast.makeText(requireContext(), "Please Enter Email", Toast.LENGTH_SHORT).show()
+                return false
+            }
+
+            password.isNullOrEmpty() -> {
+                Toast.makeText(requireContext(), "Please Enter Password", Toast.LENGTH_SHORT).show()
+                return false
+            }
+
+            birthday.isNullOrEmpty() -> {
+                Toast.makeText(requireContext(), "Please Enter Birthday", Toast.LENGTH_SHORT).show()
+                return false
+            }
+
+            birthplace.isNullOrEmpty() -> {
+                Toast.makeText(requireContext(), "Please Enter Birthplace", Toast.LENGTH_SHORT)
+                    .show()
+                return false
+            }
+
+            zipcode.isNullOrEmpty() -> {
+                Toast.makeText(requireContext(), "Please Enter Zipcode", Toast.LENGTH_SHORT).show()
+                return false
+            }
+
+            athlete.isNullOrEmpty() -> {
+                Toast.makeText(requireContext(), "Please Enter Athlete", Toast.LENGTH_SHORT).show()
+                return false
+            }
+
+            below.isNullOrEmpty() -> {
+                Toast.makeText(requireContext(), "Please Enter Below", Toast.LENGTH_SHORT).show()
+                return false
+            }
+
+            baseline.isNullOrEmpty() -> {
+                Toast.makeText(requireContext(), "Please Enter Baseline", Toast.LENGTH_SHORT).show()
+                return false
+            }
+
+            fatMass.isNullOrEmpty() -> {
+                Toast.makeText(requireContext(), "Please Enter Fatmass", Toast.LENGTH_SHORT).show()
+                return false
+            }
+
+            else -> {
+                return true
+            }
+        }
+    }
 
     private fun GetTestList() {
         try {

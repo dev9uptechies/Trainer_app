@@ -16,6 +16,7 @@ import com.example.model.base_class.BaseClass
 import com.example.model.base_class.PerformanceBase
 import com.example.model.competition.CompetitionData
 import com.example.model.competition.create.AddCompetitionBody
+import com.example.model.competition.create.AddCompetitionBodyAthlete
 import com.example.model.newClass.ProgramBody
 import com.example.model.newClass.athlete.AthleteData
 import com.example.model.newClass.audio.Audio
@@ -813,4 +814,8 @@ interface APIInterface {
         @Part("fat_mass") fat_mass: RequestBody?
     ): Call<RegisterData>?
 
+    @POST("Athlete/competition_analysis/add")
+    fun CreateCompetitionAnalysisDataAthelete(
+        @Body addBody: AddCompetitionBodyAthlete
+    ): Call<Competition>?
 }

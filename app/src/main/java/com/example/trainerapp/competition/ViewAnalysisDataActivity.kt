@@ -14,6 +14,7 @@ import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RatingItem
 import com.example.trainerapp.PreferencesManager
+import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityViewCompetitionAnalysisBinding
 import com.highsoft.highcharts.common.HIColor
@@ -55,6 +56,7 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
     lateinit var title: String
     lateinit var eventId: String
     var areaId = SelectedValue(null)
+    var userType:String? = null
 
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
@@ -73,16 +75,18 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         setContentView(viewAnalysisBinding.root)
         initViews()
 
+
+
         val userType = preferenceManager.GetFlage()
         if (userType == "Athlete"){
             getCompetitionDataAthlete()
+            setDefaultRecyclerAthlete()
+
         }else{
             getCompetitionData()
+            setDefaultRecycler()
         }
 
-//        getCompetitionData()
-        //getAnalysisData()
-        setDefaultRecycler()
         setData()
 
         viewAnalysisBinding.back.setOnClickListener(View.OnClickListener { finish() })
@@ -90,7 +94,12 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
 
     private fun setDefaultRecycler() {
         viewAnalysisBinding.performanceRly.layoutManager = LinearLayoutManager(this)
-        compAdapter = ViewCompetitionAdapter(analysisData, this, true, true)
+        compAdapter = ViewCompetitionAdapter(analysisData, this, true, false)
+        viewAnalysisBinding.performanceRly.adapter = compAdapter
+    }
+    private fun setDefaultRecyclerAthlete() {
+        viewAnalysisBinding.performanceRly.layoutManager = LinearLayoutManager(this)
+        compAdapter = ViewCompetitionAdapter(analysisData, this, false, true)
         viewAnalysisBinding.performanceRly.adapter = compAdapter
     }
 
@@ -135,6 +144,8 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
         chartView = viewAnalysisBinding.chartView
+
+        userType = preferenceManager.GetFlage()
     }
 
     private fun getCompetitionData() {
@@ -163,9 +174,12 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
 
                                 for (i in compData) {
                                     Log.d(
-                                        "Competition Data :-",
-                                        "${i.category} \n ${i.athlete!!.name}"
+                                        "Competition Datasssss :-",
+                                        "${i.id} \n ${i.athlete!!.name}"
                                     )
+
+
+                                    Log.e("IOIPO{O{{P{P{", "onResponse: ${i.competition_progress?.get(0)!!.id}", )
                                     competitionData.add(i)
                                 }
 
@@ -174,6 +188,7 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
                                         "Competition Data :-",
                                         "${filteredCompetitionData[0].category}"
                                     )
+
                                 } else {
                                     Log.d("Competition Data :-", "No data found for eventId: $eventId")
                                 }
@@ -293,12 +308,27 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
 
     private fun setChartData(competitionProgress: List<Competition.CompetitionProgress>?) {
         viewAnalysisBinding.chartView.visibility = View.VISIBLE
+        viewAnalysisBinding.chartView.addFont(R.font.poppins_medium)
+
         val options = HIOptions()
 
-        val chart = HIChart()
-        chart.polar = true
-        chart.height = "100%"
-        options.chart = chart
+//        val options = HIOptions()
+
+        // Set chart configuration
+        options.chart = HIChart().apply {
+            polar = true
+            height = "100%"
+            style = HICSSObject().apply {
+                fontFamily = "poppins_medium"
+                fontSize = "12px"
+                color = "#FFFFFF"
+            }
+        }
+
+//        val chart = HIChart()
+//        chart.polar = true
+//        chart.height = "100%"
+//        options.chart = chart
         chartView.theme = "dark"
 
         val pane = HIPane()
@@ -310,12 +340,29 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
 //        xAxis.tickInterval = 45
         xAxis.min = 0
         xAxis.max = competitionProgress!!.size
-        xAxis.labels = HILabels()
-        xAxis.labels.style = HICSSObject().apply { color = "#FFFFFF" }
-        xAxis.categories =
-            competitionProgress.mapIndexed { index, data -> (index + 1).toString() } as ArrayList
+//        xAxis.labels = HILabels()
+        xAxis.labels = HILabels().apply {
+            style = HICSSObject().apply {
+                fontFamily = "poppins_medium"
+                fontSize = "12px"
+                fontWeight = "bold"
+                color = "#FFFFFF"
+            }
+            distance = 2
+            rotation = 0
+        }
+        xAxis.categories = competitionProgress.mapIndexed { index, data -> (index + 1).toString() } as ArrayList
         xAxis.labels.distance = 10
         xAxis.labels.rotation = 0
+
+        xAxis.title = HITitle().apply {
+            text = ""
+            style = HICSSObject().apply {
+                fontFamily = "poppins_medium"
+                fontSize = "16px"
+                color = "#333333"
+            }
+        }
 
         xAxis.labels.formatter = HIFunction(
             HIFunctionInterface { f: HIChartContext ->
@@ -323,7 +370,9 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
                     "value"
                 ).toString() + ""
             }, arrayOf("value")
+
         )
+
         options.xAxis = object : ArrayList<HIXAxis?>() {
             init {
                 add(xAxis)
@@ -343,7 +392,7 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         plotOptions.column.pointPadding = 0
         plotOptions.column.groupPadding = 0
         options.plotOptions = plotOptions
-        chart.backgroundColor = HIColor.initWithRGB(0, 0, 0)
+        options.chart.backgroundColor = HIColor.initWithRGB(0, 0, 0)
 
         val athleteData =
             competitionProgress.mapNotNull { it.athlete_star?.toFloat() }.ifEmpty { emptyList() }
@@ -379,9 +428,12 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         itemstyle.fontSize = "14px"
         itemstyle.fontWeight = "regular"
         itemstyle.color = "#FFFFFF"
+        itemstyle.fontFamily = "poppins_medium"
+
         legend.itemStyle = itemstyle
         options.legend = legend
         options.series = ArrayList(Arrays.asList(series1, series3))
+
 
         val exporting = HIExporting()
         exporting.enabled = false
@@ -391,6 +443,15 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         credits.enabled = false
         options.credits = credits
 
+//        legend = HILegend().apply {
+//            enabled = true
+//            itemStyle = HICSSObject().apply {
+//                fontSize = "14px"
+//                fontWeight = "regular"
+//                color = "#FFFFFF"
+//                fontFamily = "poppins_medium"
+//            }
+//        }
 
         chartView.options = options
     }
@@ -412,8 +473,16 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
                 )
             }
         }
-        viewAnalysisBinding.performanceRly.visibility = View.VISIBLE
-        compAdapter = ViewCompetitionAdapter(analysisData, this, false, true)
-        viewAnalysisBinding.performanceRly.adapter = compAdapter
+
+        if (userType == "Athlete"){
+            viewAnalysisBinding.performanceRly.visibility = View.VISIBLE
+            compAdapter = ViewCompetitionAdapter(analysisData, this, false, true)
+            viewAnalysisBinding.performanceRly.adapter = compAdapter
+        }else{
+            viewAnalysisBinding.performanceRly.visibility = View.VISIBLE
+            compAdapter = ViewCompetitionAdapter(analysisData, this, true, false)
+            viewAnalysisBinding.performanceRly.adapter = compAdapter
+        }
+
     }
 }

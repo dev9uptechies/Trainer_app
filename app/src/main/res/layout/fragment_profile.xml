@@ -111,14 +111,17 @@
 
                         <EditText
                             android:id="@+id/edt_email"
-                            style="@style/EditText_bar_Login"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_20sdp"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
                             android:layout_marginEnd="@dimen/_20sdp"
+                            android:background="@null"
+                            android:textSize="@dimen/_14sdp"
                             android:hint="@string/enter_email"
                             android:imeOptions="actionNext"
+                            android:fontFamily="@font/poppins_medium"
                             android:singleLine="true"
+                            android:gravity="center_vertical"
                             android:textColor="#BBBBBB"
                             android:textColorHint="#BBBBBB" />
 
@@ -136,6 +139,7 @@
                     app:cardBackgroundColor="#1A929492"
                     app:cardCornerRadius="10dp"
                     app:cardMaxElevation="20dp"
+                    android:layout_gravity="center_vertical"
                     app:layout_constraintTop_toBottomOf="@+id/ly_email">
 
 
@@ -158,12 +162,14 @@
                         <EditText
                             android:id="@+id/edt_password"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_20sdp"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:layout_weight="1"
-                            android:background="#00000000"
+                            android:background="@null"
+                            android:textSize="@dimen/_14sdp"
                             android:hint="@string/enter_password"
+                            android:fontFamily="@font/poppins_medium"
                             android:imeOptions="actionNext"
                             android:inputType="textPassword"
                             android:maxLines="1"
@@ -207,11 +213,13 @@
                         <EditText
                             android:id="@+id/edt_birthday"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_20sdp"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:layout_weight="1"
-                            android:background="#00000000"
+                            android:background="@null"
+                            android:textSize="@dimen/_14sdp"
+                            android:fontFamily="@font/poppins_medium"
                             android:hint="Birth Date"
                             android:imeOptions="actionNext"
                             android:inputType="date"
@@ -256,14 +264,16 @@
                         <EditText
                             android:id="@+id/edt_birthday_place"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_20sdp"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:layout_weight="1"
-                            android:background="#00000000"
+                            android:background="@null"
+                            android:textSize="@dimen/_14sdp"
                             android:hint="@string/birth_place"
                             android:imeOptions="actionNext"
                             android:inputType="text"
+                            android:fontFamily="@font/poppins_medium"
                             android:maxLines="1"
                             android:singleLine="true"
                             android:textColor="#BBBBBB"
@@ -305,14 +315,16 @@
                         <EditText
                             android:id="@+id/edt_zip_code"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_20sdp"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:layout_weight="1"
-                            android:background="#00000000"
+                            android:background="@null"
+                            android:textSize="@dimen/_14sdp"
                             android:hint="Zip code"
                             android:imeOptions="actionNext"
                             android:inputType="number"
+                            android:fontFamily="@font/poppins_medium"
                             android:maxLines="1"
                             android:singleLine="true"
                             android:textColor="#BBBBBB"
@@ -429,12 +441,16 @@
 
                     <EditText
                         android:id="@+id/below_edt"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="@dimen/_10sdp"
+                        android:background="@null"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Below -"
+                        android:singleLine="true"
+                        android:imeOptions="actionNext"
+                        android:hint="Below -"
+                        android:textColorHint="@color/white"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_13sdp" />
 
@@ -454,13 +470,17 @@
 
                     <EditText
                         android:id="@+id/athletes_edt"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="@dimen/_10sdp"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Athletes -"
+                        android:hint="Athletes -"
+                        android:background="@null"
+                        android:singleLine="true"
+                        android:imeOptions="actionNext"
                         android:textColor="@color/white"
+                        android:textColorHint="@color/white"
                         android:textSize="@dimen/_13sdp" />
 
                 </androidx.cardview.widget.CardView>
@@ -479,12 +499,14 @@
 
                     <EditText
                         android:id="@+id/baseline_edt"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="@dimen/_10sdp"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Baseline -"
+                        android:hint="Baseline -"
+                        android:textColorHint="@color/white"
+                        android:background="@null"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_13sdp" />
 
@@ -504,12 +526,16 @@
 
                     <EditText
                         android:id="@+id/fat_mass_edt"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="@dimen/_10sdp"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Fat mass -"
+                        android:hint="Fat mass -"
+                        android:singleLine="true"
+                        android:textColorHint="@color/white"
+                        android:imeOptions="actionNext"
+                        android:background="@null"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_13sdp" />
 
@@ -555,7 +581,7 @@
                         <ImageView
                             android:layout_width="@dimen/_20sdp"
                             android:layout_height="@dimen/_20sdp"
-                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_7sdp"
                             android:gravity="start"
                             android:paddingStart="@dimen/_10sdp"
                             android:src="@drawable/white_test"
@@ -569,6 +595,7 @@
                             android:gravity="start"
                             android:paddingStart="@dimen/_10sdp"
                             android:text="Test List"
+                            android:fontFamily="@font/poppins_medium"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_15sdp" />
                     </LinearLayout>
@@ -598,6 +625,7 @@
                         android:gravity="start"
                         android:paddingStart="@dimen/_10sdp"
                         android:text="Profile Plans"
+                        android:fontFamily="@font/poppins_medium"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_15sdp" />
 

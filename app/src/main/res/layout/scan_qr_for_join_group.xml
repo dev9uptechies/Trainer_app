@@ -60,7 +60,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCancel"
-            android:layout_width="@dimen/_115sdp"
+            android:layout_width="@dimen/_110sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_marginEnd="@dimen/_5sdp"
             android:gravity="center"
@@ -76,7 +76,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnApply"
-            android:layout_width="@dimen/_115sdp"
+            android:layout_width="@dimen/_110sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_marginStart="@dimen/_5sdp"
             android:background="@drawable/active_save_btn"

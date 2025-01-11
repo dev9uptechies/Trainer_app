@@ -946,8 +946,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                             Log.e("SelectedGroup", "onResponse: " + selectedGroup.image)
                             Log.e("SelectedGroup", "onResponse: " + selectedGroup.coach_id)
 
-                            val imageUrl =
-                                "https://trainers.codefriend.in" + (selectedGroup.image ?: "")
+                            val imageUrl = "https://trainers.codefriend.in" + (selectedGroup.image ?: "")
                             Log.d("ImageURL", "URL: $imageUrl")
 
                             // Save the image URL in SharedPreferences

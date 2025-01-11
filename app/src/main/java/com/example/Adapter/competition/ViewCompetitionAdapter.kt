@@ -18,6 +18,7 @@ class ViewCompetitionAdapter(
     private var splist: MutableList<RatingItem>,
     var context: Context,
     var isCoach: Boolean,
+    var isAthlete: Boolean,
     var isSetData: Boolean? = false
 ) :
     RecyclerView.Adapter<ViewCompetitionAdapter.MyViewHolder>() {
@@ -39,15 +40,17 @@ class ViewCompetitionAdapter(
         holder.coachRating.rating = movie.coachRating!!.toFloat()
         holder.athleteRating.rating = movie.athleteRating!!.toFloat()
         if (isSetData!!) {
-            holder.athleteRating.isEnabled = true
+            holder.athleteRating.isEnabled = false
             holder.coachRating.isEnabled = false
-            
+
             holder.athleteRating.progressTintList =
                 context.resources.getColorStateList(R.color.yellow, null)
             holder.coachRating.progressTintList =
                 context.resources.getColorStateList(R.color.red, null)
         } else {
-            if (isCoach) {
+            if (isCoach == true) {
+                Log.d("tetttssttsstst", "onBindViewHolder: Coachhhhhhhhh")
+
                 holder.coachRating.isEnabled = true
                 holder.athleteRating.isEnabled = false
                 holder.athleteRating.isClickable = false
@@ -61,18 +64,20 @@ class ViewCompetitionAdapter(
                         movie.coachRating = rating.toInt()
                     }
                 }
-            } else {
-            holder.athleteRating.isEnabled = false
-            holder.athleteRating.progressTintList =
-                context.resources.getColorStateList(R.color.yellow, null)
-            holder.athleteRating.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-                if (fromUser) {
-                    Log.d("Rating", "$rating")
-                    // Update the item's rating dynamically based on user input
-                    Toast.makeText(context, "$rating", Toast.LENGTH_SHORT).show()
-                    movie.athleteRating = rating.toInt()
+            } else if (isAthlete == true){
+                Log.d("tetttssttsstst", "onBindViewHolder: Athleteeeeeeeeee")
+                holder.athleteRating.isEnabled = true
+                holder.coachRating.isEnabled = false
+                holder.coachRating.isClickable = false
+                holder.coachRating.isFocusable = false
+                holder.athleteRating.progressTintList = context.resources.getColorStateList(R.color.yellow, null)
+                holder.athleteRating.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                    if (fromUser) {
+                        Log.d("Rating", "$rating")
+                        Toast.makeText(context, "$rating", Toast.LENGTH_SHORT).show()
+                        movie.athleteRating = rating.toInt()
+                    }
                 }
-            }
             }
         }
     }

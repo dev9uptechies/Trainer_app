@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Adapter.competition.ViewCompetitionAdapter
 import com.example.model.SelectedValue
 import com.example.model.competition.create.AddCompetitionBody
+import com.example.model.competition.create.AddCompetitionBodyAthlete
 import com.example.model.competition.create.RatingData
+import com.example.model.competition.create.RatingDataAthlete
 import com.example.model.newClass.competition.Competition
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
@@ -67,6 +69,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
     lateinit var chartView: HIChartView
 
     var coach = true
+    var athlete = true
     lateinit var compAdapter: ViewCompetitionAdapter
     lateinit var analysisData: MutableList<RatingItem>
 
@@ -170,6 +173,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
 
         viewCompetitionAnalysisBinding.save.setOnClickListener {
             val dataList: MutableList<RatingData> = mutableListOf()
+            val dataListAthlete: MutableList<RatingDataAthlete> = mutableListOf()
             for (i in analysisData) {
 
                 val userType = preferenceManager.GetFlage()
@@ -177,7 +181,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                 if (userType == "Athlete"){
                     if (i.athleteRating != 0) {
                         viewCompetitionAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
-                        dataList.add(RatingData(i.name!!, i.athleteRating!!))
+                        dataListAthlete.add(RatingDataAthlete(i.name!!, i.athleteRating!!))
                     } else {
                         Toast.makeText(this, "Please Rating Athlete All Fields", Toast.LENGTH_SHORT)
                             .show()
@@ -197,7 +201,24 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
 
             }
             if (dataList.isNotEmpty()) {
-                saveCompetitionData(dataList)
+
+                val userType = preferenceManager.GetFlage()
+
+                if (userType == "Athlete") {
+                    saveCompetitionDataAthlete(dataListAthlete)
+                }else{
+                    saveCompetitionData(dataList)
+                }
+            }
+            if (dataListAthlete.isNotEmpty()) {
+
+                val userType = preferenceManager.GetFlage()
+
+                if (userType == "Athlete") {
+                    saveCompetitionDataAthlete(dataListAthlete)
+                }else{
+                    saveCompetitionData(dataList)
+                }
             }
         }
 
@@ -269,6 +290,73 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
             Log.d("Exception Object :-", "${e.message}")
         }
     }
+
+    private fun saveCompetitionDataAthlete(data: MutableList<RatingDataAthlete>) {
+        try {
+            viewCompetitionAnalysisBinding.progressBar.visibility = View.VISIBLE
+            val addCompetitionData = AddCompetitionBodyAthlete(
+                athleteId = athleteId.id!!,
+                eventId = eventId.id!!,
+                categoryName = catName,
+                date = compDate,
+                areaId = areaId.id!!,
+                data = data
+            )
+
+            Log.d("AddCompetition Data :-", "$addCompetitionData")
+            apiInterface.CreateCompetitionAnalysisDataAthelete(addCompetitionData)!!.enqueue(object :
+                Callback<Competition> {
+                override fun onResponse(
+                    call: Call<Competition>,
+                    response: Response<Competition>
+                ) {
+                    viewCompetitionAnalysisBinding.progressBar.visibility = View.GONE
+                    Log.d("TAG", response.code().toString() + "")
+
+                    val code = response.code()
+                    if (code == 200) {
+                        val success: Boolean = response.body()!!.status!!
+                        if (success) {
+                            val data = response.body()!!
+                            Log.d("Athlete :- Data ", "${data}")
+                            val message = data.message ?: "Success"
+                            Toast.makeText(
+                                this@ViewCompetitionAnalysisActivity,
+                                message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+//                            val chartData = data.data!!
+                            if (data.data!!.competition_progress != null) {
+                                val chartData = data.data.competition_progress
+                                if (chartData!!.isNotEmpty()) {
+                                    setChartOnlineData(chartData)
+                                }
+                            }
+                            //setRadarChart(rangeData)
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(this@ViewCompetitionAnalysisActivity)
+                    } else {
+                        Toast.makeText(
+                            this@ViewCompetitionAnalysisActivity,
+                            "Failed",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<Competition>, t: Throwable) {
+                    viewCompetitionAnalysisBinding.progressBar.visibility = View.GONE
+                    Log.d("Tag", t.message.toString())
+                }
+
+            })
+        } catch (e: Exception) {
+            Log.d("Exception Object :-", "${e.message}")
+        }
+    }
+
 
     private fun setChartOnlineData(chartData: List<Competition.CompetitionProgress>) {
         viewCompetitionAnalysisBinding.chartView.visibility = View.VISIBLE
@@ -387,87 +475,175 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
             "${athleteId.id}\n${catId.id}\n${areaId.id}\n${areaName}\n${compDate}\n${compName}\n${eventId.id}"
         )
         viewCompetitionAnalysisBinding.tvTitle.text = areaName
-        when (areaId.id) {
-            1 -> {
-                viewCompetitionAnalysisBinding.tvSubTitle.text = warmupDesc
-                for (i in arrWarmup) {
-                    analysisData.add(
-                        RatingItem(
-                            name = i,
-                            coachRating = 0,
-                            athleteRating = 0,
-                            isByCoach = coach,
-                            isByAthlete = false
-                        )
-                    )
-                }
-                setRecyclerView()
 
+        val usertype = preferenceManager.GetFlage()
+        if (usertype == "Athlete") {
+            when (areaId.id) {
+                1 -> {
+                    viewCompetitionAnalysisBinding.tvSubTitle.text = warmupDesc
+                    for (i in arrWarmup) {
+                        analysisData.add(
+                            RatingItem(
+                                name = i,
+                                coachRating = 0,
+                                athleteRating = 0,
+                                isByCoach = false,
+                                isByAthlete = athlete
+                            )
+                        )
+                    }
+                    setRecyclerViewAthlete()
+
+                }
+
+                2 -> {
+                    viewCompetitionAnalysisBinding.tvSubTitle.text = mentalDesc
+                    for (i in arrMentalArea) {
+                        analysisData.add(
+                            RatingItem(
+                                name = i,
+                                coachRating = 0,
+                                athleteRating = 0,
+                                isByCoach = false,
+                                isByAthlete = athlete
+                            )
+                        )
+                    }
+                    setRecyclerViewAthlete()
+                }
+
+                3 -> {
+                    viewCompetitionAnalysisBinding.tvSubTitle.text = physicalDesc
+                    for (i in arrPhysicalArea) {
+                        analysisData.add(
+                            RatingItem(
+                                name = i,
+                                coachRating = 0,
+                                athleteRating = 0,
+                                isByCoach = false,
+                                isByAthlete = athlete
+                            )
+                        )
+                    }
+                    setRecyclerViewAthlete()
+                }
+
+                4 -> {
+                    viewCompetitionAnalysisBinding.tvSubTitle.text = strategyDesc
+                    for (i in arrStrategy) {
+                        analysisData.add(
+                            RatingItem(
+                                name = i.toString(),
+                                coachRating = 0,
+                                athleteRating = 0,
+                                isByCoach = false,
+                                isByAthlete = athlete
+                            )
+                        )
+                    }
+                    setRecyclerViewAthlete()
+                }
+
+                5 -> {
+                    viewCompetitionAnalysisBinding.tvSubTitle.text = techniqueDesc
+                    for (i in arrTechniqueAndTactic) {
+                        analysisData.add(
+                            RatingItem(
+                                name = i.toString(),
+                                coachRating = 0,
+                                athleteRating = 0,
+                                isByCoach = false,
+                                isByAthlete = athlete
+                            )
+                        )
+                    }
+                    setRecyclerViewAthlete()
+                }
+            }
+        }else{
+            when (areaId.id) {
+                1 -> {
+                    viewCompetitionAnalysisBinding.tvSubTitle.text = warmupDesc
+                    for (i in arrWarmup) {
+                        analysisData.add(
+                            RatingItem(
+                                name = i,
+                                coachRating = 0,
+                                athleteRating = 0,
+                                isByCoach = coach,
+                                isByAthlete = false
+                            )
+                        )
+                    }
+                    setRecyclerView()
+
+                }
+
+                2 -> {
+                    viewCompetitionAnalysisBinding.tvSubTitle.text = mentalDesc
+                    for (i in arrMentalArea) {
+                        analysisData.add(
+                            RatingItem(
+                                name = i,
+                                coachRating = 0,
+                                athleteRating = 0,
+                                isByCoach = coach,
+                                isByAthlete = false
+                            )
+                        )
+                    }
+                    setRecyclerView()
+                }
+
+                3 -> {
+                    viewCompetitionAnalysisBinding.tvSubTitle.text = physicalDesc
+                    for (i in arrPhysicalArea) {
+                        analysisData.add(
+                            RatingItem(
+                                name = i,
+                                coachRating = 0,
+                                athleteRating = 0,
+                                isByCoach = coach,
+                                isByAthlete = false
+                            )
+                        )
+                    }
+                    setRecyclerView()
+                }
+
+                4 -> {
+                    viewCompetitionAnalysisBinding.tvSubTitle.text = strategyDesc
+                    for (i in arrStrategy) {
+                        analysisData.add(
+                            RatingItem(
+                                name = i.toString(),
+                                coachRating = 0,
+                                athleteRating = 0,
+                                isByCoach = coach,
+                                isByAthlete = false
+                            )
+                        )
+                    }
+                    setRecyclerView()
+                }
+
+                5 -> {
+                    viewCompetitionAnalysisBinding.tvSubTitle.text = techniqueDesc
+                    for (i in arrTechniqueAndTactic) {
+                        analysisData.add(
+                            RatingItem(
+                                name = i.toString(),
+                                coachRating = 0,
+                                athleteRating = 0,
+                                isByCoach = coach,
+                                isByAthlete = false
+                            )
+                        )
+                    }
+                    setRecyclerView()
+                }
             }
 
-            2 -> {
-                viewCompetitionAnalysisBinding.tvSubTitle.text = mentalDesc
-                for (i in arrMentalArea) {
-                    analysisData.add(
-                        RatingItem(
-                            name = i,
-                            coachRating = 0,
-                            athleteRating = 0,
-                            isByCoach = coach,
-                            isByAthlete = false
-                        )
-                    )
-                }
-                setRecyclerView()
-            }
-
-            3 -> {
-                viewCompetitionAnalysisBinding.tvSubTitle.text = physicalDesc
-                for (i in arrPhysicalArea) {
-                    analysisData.add(
-                        RatingItem(
-                            name = i,
-                            coachRating = 0,
-                            athleteRating = 0,
-                            isByCoach = coach,
-                            isByAthlete = false
-                        )
-                    )
-                }
-                setRecyclerView()
-            }
-
-            4 -> {
-                viewCompetitionAnalysisBinding.tvSubTitle.text = strategyDesc
-                for (i in arrStrategy) {
-                    analysisData.add(
-                        RatingItem(
-                            name = i.toString(),
-                            coachRating = 0,
-                            athleteRating = 0,
-                            isByCoach = coach,
-                            isByAthlete = false
-                        )
-                    )
-                }
-                setRecyclerView()
-            }
-
-            5 -> {
-                viewCompetitionAnalysisBinding.tvSubTitle.text = techniqueDesc
-                for (i in arrTechniqueAndTactic) {
-                    analysisData.add(
-                        RatingItem(
-                            name = i.toString(),
-                            coachRating = 0,
-                            athleteRating = 0,
-                            isByCoach = coach,
-                            isByAthlete = false
-                        )
-                    )
-                }
-                setRecyclerView()
-            }
         }
     }
 
@@ -527,7 +703,13 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
 
     private fun setRecyclerView() {
         viewCompetitionAnalysisBinding.performanceRly.layoutManager = LinearLayoutManager(this)
-        compAdapter = ViewCompetitionAdapter(analysisData, this, coach)
+        compAdapter = ViewCompetitionAdapter(analysisData, this, coach,false)
+        viewCompetitionAnalysisBinding.performanceRly.adapter = compAdapter
+    }
+
+    private fun setRecyclerViewAthlete() {
+        viewCompetitionAnalysisBinding.performanceRly.layoutManager = LinearLayoutManager(this)
+        compAdapter = ViewCompetitionAdapter(analysisData, this, false,athlete)
         viewCompetitionAnalysisBinding.performanceRly.adapter = compAdapter
     }
 }
