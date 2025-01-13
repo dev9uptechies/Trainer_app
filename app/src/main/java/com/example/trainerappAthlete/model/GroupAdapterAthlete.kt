@@ -56,10 +56,18 @@ class GroupAdapterAthlete(
             .build()
 
         Picasso.get()
-            .load("https://trainers.codefriend.in" + movie.group!!.image)
+            .load("https://4trainersapp.com/api/" + movie.group!!.image)
             .fit()
             .transform(transformation)
-            .into(holder.rounded_image)
+            .into(holder.rounded_image, object : com.squareup.picasso.Callback {
+                override fun onSuccess() {
+                    Log.d("Picasso", "Image loaded successfully.")
+                }
+
+                override fun onError(e: Exception?) {
+                    Log.e("PicassoError", "Image load failed: ${e?.message}")
+                }
+            })
 
 //        holder.itemView.setOnClickListener(
 //            OnItemClickListener(

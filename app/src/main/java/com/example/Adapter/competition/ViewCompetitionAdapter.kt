@@ -59,7 +59,6 @@ class ViewCompetitionAdapter(
                     context.resources.getColorStateList(R.color.red, null)
                 holder.coachRating.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
                     if (fromUser) {
-                        // Update the item's rating dynamically based on user input
                         Log.d("Rating", "$rating")
                         movie.coachRating = rating.toInt()
                     }
@@ -81,7 +80,6 @@ class ViewCompetitionAdapter(
             }
         }
     }
-
 
     override fun getItemCount(): Int {
         return splist.size

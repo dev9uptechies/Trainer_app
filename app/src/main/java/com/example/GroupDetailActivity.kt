@@ -196,7 +196,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                 val scanQr = dialog.findViewById<ImageView>(R.id.scan_qr)
 
                 Picasso.get()
-                    .load("https://trainers.codefriend.in" + selectedImageUri)
+                    .load("https://4trainersapp.com/api/" + selectedImageUri)
                     .fit()
                     .into(scanQr)
 

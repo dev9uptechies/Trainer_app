@@ -189,7 +189,6 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                     }
                 }else{
                     if (i.coachRating != 0) {
-                    viewCompetitionAnalysisBinding.save.isEnabled = true
                         viewCompetitionAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
                         dataList.add(RatingData(i.name!!, i.coachRating!!))
                     } else {

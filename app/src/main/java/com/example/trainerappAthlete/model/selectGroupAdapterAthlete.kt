@@ -25,6 +25,7 @@ class selectGroupAdapterAthlete(
 
     private var selectedPosition = -1
     private var selectedGroupId: String? = null
+    private var selectedGroup_Id: String? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -58,6 +59,7 @@ class selectGroupAdapterAthlete(
                 val previousSelectedPosition = selectedPosition
                 selectedPosition = currentPosition
                 selectedGroupId = group.id.toString()
+                selectedGroup_Id = group.group_id.toString()
 
                 holder.itemView.post {
                     notifyItemChanged(previousSelectedPosition)
@@ -68,8 +70,8 @@ class selectGroupAdapterAthlete(
 
     }
 
-    fun getSelectedGroupId(): String? {
-        return selectedGroupId
+    fun getSelectedGroupId(): Pair<String?, String?> {
+        return Pair(selectedGroupId, selectedGroup_Id)
     }
 
     override fun getItemCount(): Int {

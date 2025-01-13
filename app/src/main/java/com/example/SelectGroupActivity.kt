@@ -67,16 +67,19 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         if (userType == "Athlete"){
             binding.cardSave.setOnClickListener {
                 try {
-                    val selectedGroupId = groupadapterAthlete.getSelectedGroupId()
+                    val selectedGroupId = groupadapterAthlete.getSelectedGroupId().first
+                    val selectedGroup_Id = groupadapterAthlete.getSelectedGroupId().second
 
                     if (selectedGroupId == null) {
                         Toast.makeText(this, "Please select a group", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
 
-                    Log.d("SelectedGroup", "Selected Group ID: $selectedGroupId")
+                    Log.d("SelectedGroupAthlete", "Selected Group ID: $selectedGroupId")
+                    Log.d("SelectedGroupAthlete", "Selected Group ID: $selectedGroup_Id")
                     val intent = Intent(this, HomeActivity::class.java)
                     intent.putExtra("idddd", selectedGroupId.toString())
+                    intent.putExtra("group_idddd", selectedGroup_Id.toString())
                     startActivity(intent)
                     finish()
                 } catch (e: Exception) {

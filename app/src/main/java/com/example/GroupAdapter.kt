@@ -51,10 +51,11 @@ class GroupAdapter(
             .build()
 
         Picasso.get()
-            .load("https://trainers.codefriend.in" + movie.image)
+            .load("https://4trainersapp.com/api/" + movie.image)
             .fit()
             .transform(transformation)
             .into(holder.rounded_image)
+
 
         holder.itemView.setOnClickListener(
             OnItemClickListener(

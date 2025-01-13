@@ -50,6 +50,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
     private var receivedId: String = ""
+    private var receivedGropu_Id: String = ""
     lateinit var lessonadapter: LessonAdapter
     lateinit var eventadapter: eventAdapter
     lateinit var testadapter: testAdapter
@@ -129,6 +130,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
         initViews()
         setUpCalendar()
+//        loadData()
 
         return calenderBinding.root
     }
@@ -136,6 +138,8 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     @SuppressLint("NewApi")
     private fun loadData() {
         selectDate(LocalDate.now())
+
+        val userType = preferenceManager.GetFlage()
 
         if (userType == "Athlete") {
             fetchDayDataAthlete(LocalDate.now())
@@ -267,6 +271,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             calenderBinding.frgCalendarView.scrollToMonth(YearMonth.from(date))
             updateAdapterForDate(date)
 
+            val userType = preferenceManager.GetFlage()
             if (userType == "Athlete") {
                 fetchDayDataAthlete(date)
             }else {
@@ -359,9 +364,10 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     private fun fetchDayDataAthlete(selectedDate: LocalDate) {
         try {
             val formattedDate = selectionFormatter.format(selectedDate)
-            Log.d("CalendarFragment", "Fetching data for date: $formattedDate with ID: $receivedId")
+            Log.d("CalendarFragmentF", "Fetching data for date: $formattedDate with ID: $receivedId")
+            Log.d("CalendarFragmentF", "Fetching data for date: $formattedDate with ID: $receivedGropu_Id")
 
-            apiInterface.GetSelectedDays(formattedDate, receivedId)!!
+            apiInterface.GetSelectedDaysAthlete(formattedDate, receivedGropu_Id)!!
                 .enqueue(object : Callback<SelectedDaysModel> {
                     override fun onResponse(
                         call: Call<SelectedDaysModel>,
@@ -375,6 +381,19 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                             if (data != null) {
                                 if (::eventadapter.isInitialized) {
                                     eventadapter.clearData()
+                                }
+
+                                if (data.tests.isNotEmpty() || data.lessons.isNotEmpty() || data.events.isNotEmpty()) {
+                                    if (!datesWithData.contains(selectedDate)) {
+                                        datesWithData.add(selectedDate)
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                } else {
+                                    if (datesWithData.contains(selectedDate)) {
+                                        datesWithData.remove(selectedDate)
+                                        // Notify the calendar view to remove the dot
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
                                 }
 
                                 initTestRecyclerView(data.tests)
@@ -433,11 +452,12 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         preferenceManager = PreferencesManager(requireContext())
         apiInterface = apiClient.client().create(APIInterface::class.java)
 
-        val sharedPreferences =
-            requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
         receivedId = sharedPreferences.getString("id", "default_value") ?: ""
+        receivedGropu_Id = sharedPreferences.getString("group_id", "default_value") ?: ""
 
-        Log.d("CalenderFragment", "Received ID from SharedPreferences: $receivedId")
+        Log.d("CalenderFragmentR", "Received ID from SharedPreferences: $receivedId")
+        Log.d("CalenderFragmentR", "Received ID from SharedPreferences: $receivedGropu_Id")
     }
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {

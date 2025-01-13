@@ -1,7 +1,7 @@
-package com.example.trainerapp.ApiClass
+package com.example.model.competition.create
 
-data class RatingItem(
-    val competition_progress_id: Int? = null,
+data class RatingItemEdit(
+    val competition_progress_id: String? = null,
     val name: String? = null,
     var coachRating: Int? = null,
     var athleteRating: Int? = null,

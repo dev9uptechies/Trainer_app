@@ -55,6 +55,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var preferenceManager: PreferencesManager
 
     var id: String = ""
+    var group_id: String = ""
 
     private val sharedPreferences by lazy {
         this.getSharedPreferences("RemindMePrefs", MODE_PRIVATE)
@@ -73,6 +74,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("id", id)
+        editor.putString("group_id", group_id)
         editor.apply()
 
     }
@@ -83,6 +85,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.remove("id")
+        editor.putString("group_id", group_id)
         editor.apply()
 
         Log.d("desss", "onDestroy: App destroyed, ID removed")
@@ -100,6 +103,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("id", id)
+        editor.putString("group_id", group_id)
         editor.apply()
 
         Log.d("desss", "onResume: App resumed, ID saved")
@@ -177,7 +181,9 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         preferenceManager = PreferencesManager(this)
 
         id = intent.getStringExtra("idddd") ?: ""
+        group_id = intent.getStringExtra("group_idddd") ?: ""
         Log.d("ID", "Received ID: $id")
+        Log.d("ID", "Received ID: $group_id")
 
 
         if (preferenceManager.GetFlage() == "Athlete") {

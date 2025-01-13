@@ -17,10 +17,13 @@ import com.example.model.base_class.PerformanceBase
 import com.example.model.competition.CompetitionData
 import com.example.model.competition.create.AddCompetitionBody
 import com.example.model.competition.create.AddCompetitionBodyAthlete
+import com.example.model.competition.create.RatingData
+import com.example.model.competition.create.RatingDataEdite
 import com.example.model.newClass.ProgramBody
 import com.example.model.newClass.athlete.AthleteData
 import com.example.model.newClass.audio.Audio
 import com.example.model.newClass.competition.Competition
+import com.example.model.newClass.competition.EditeAnalsisData
 import com.example.model.newClass.competition.GetCompetition
 import com.example.model.newClass.cycle.AddTimerBody
 import com.example.model.newClass.delete.DeleteBase
@@ -172,8 +175,6 @@ interface APIInterface {
     ): Call<Any>
 
 
-
-
     @DELETE("group")
     fun DeleteGroup(@Query("id") id: Int?): Call<GroupListData>?
 
@@ -239,7 +240,7 @@ interface APIInterface {
         @Part id: MultipartBody.Part
     ): Call<RegisterData>?
 
-//    @DELETE("favourite/exercise")
+    //    @DELETE("favourite/exercise")
     fun DeleteFavourite_Exercise(@Query("id") id: Int?): Call<RegisterData>?
 
     @DELETE("favourite/event")
@@ -358,8 +359,6 @@ interface APIInterface {
         @Field("name") name: String?,
         @Field("email") email: String?,
     ): Call<RegisterData>?
-
-
 
 
     //new functions
@@ -521,6 +520,13 @@ interface APIInterface {
 
     @GET("competition_analysis_star")
     fun GetCompetitionAnalysisData(): Call<GetCompetition>
+
+    @PUT("competition_analysis_star")
+    fun EditCompetitionAnalysisData(
+        @Query("competition_progress_id") competitionProgressId: Int,
+        @Query("coach_star") coachStar: Int
+    ): Call<EditeAnalsisData>
+
 
     @GET("performance_template")
     fun GetPerformanceTemplate(): Call<PerformanceProfileData>
@@ -786,6 +792,12 @@ interface APIInterface {
     @GET("Athlete/personal_diary/share")
     fun updateShareStatus(): Call<Void>
 
+    @POST("Athlete/select-day")
+    fun GetSelectedDaysAthlete(
+        @Query("date") date: String?,
+        @Query("group_id") gid: String?
+    ): Call<SelectedDaysModel>?
+
     @GET("Athlete/event")
     fun GetEventAthlete(): Call<EventListData>?
 
@@ -793,7 +805,7 @@ interface APIInterface {
     fun GetCompetitionAnalysisDataAthlete(): Call<GetCompetition>
 
     @POST("Athlete/group/join")
-    fun JoinGroup(@Query ("group_id") Group_id: String): Call<Any>
+    fun JoinGroup(@Query("group_id") Group_id: String): Call<Any>
 
     @GET("Athlete/profile")
     fun ProfileDataAthlete(): Call<RegisterData>?
@@ -818,4 +830,6 @@ interface APIInterface {
     fun CreateCompetitionAnalysisDataAthelete(
         @Body addBody: AddCompetitionBodyAthlete
     ): Call<Competition>?
+
+
 }
