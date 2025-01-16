@@ -35,6 +35,7 @@ import com.example.trainerapp.TestListData
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.FragmentHomeBinding
 import com.example.trainerapp.databinding.FragmentProfileBinding
+import com.example.trainerappAthlete.model.SetTestInProfile
 import com.makeramen.roundedimageview.RoundedTransformationBuilder
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
@@ -63,10 +64,8 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     private lateinit var Container: LinearLayout
     private lateinit var Sportlist: java.util.ArrayList<Sport_list>
     private var selectedImageUri: Uri? = null
-    lateinit var adapterTest: SetTestInGroup
+    lateinit var adapterTest: SetTestInProfile
     val sportsIds = mutableListOf<Int>()
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,7 +77,7 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         GetProfile()
         checkBoxManage()
         buttonClick()
-        GetTestList()
+//        GetTestList()
 
         val pass = preferenceManager.GetPassword()
         binding.edtPassword.setText(pass)
@@ -141,6 +140,7 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                     val data = resource?.data
                     if (data != null) {
                         Sportlist.clear()
+                        initrecyclerTest(resource.data!!.test_athlete)
 
                         setData(data)
                     } else {
@@ -577,7 +577,6 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
     private fun validations(): Boolean {
         val email = binding.edtEmail.text
-        val password = binding.edtPassword.text
         val birthday = binding.edtBirthday.text
         val birthplace = binding.edtBirthdayPlace.text
         val zipcode = binding.edtZipCode.text
@@ -589,11 +588,6 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         when {
             email.isNullOrEmpty() -> {
                 Toast.makeText(requireContext(), "Please Enter Email", Toast.LENGTH_SHORT).show()
-                return false
-            }
-
-            password.isNullOrEmpty() -> {
-                Toast.makeText(requireContext(), "Please Enter Password", Toast.LENGTH_SHORT).show()
                 return false
             }
 
@@ -639,65 +633,173 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         }
     }
 
-    private fun GetTestList() {
-        try {
+//    private fun GetTestList() {
+//        try {
+//
+//            binding.progressBar.visibility = View.VISIBLE
+//            apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
+//                override fun onResponse(
+//                    call: Call<TestListData?>,
+//                    response: Response<TestListData?>
+//                ) {
+//                    Log.d("TAG", response.code().toString() + "")
+//                    val code = response.code()
+//                    if (code == 200) {
+//                        val resource: TestListData? = response.body()
+//                        val Success: Boolean = resource?.status!!
+//                        val Message: String = resource.message!!
+//                        if (Success == true) {
+//                            try {
+//                                if (resource.data!! != null) {
+//                                } else {
+//                                }
+//                            } catch (e: Exception) {
+//                                e.printStackTrace()
+//                            }
+//                        } else {
+//                            binding.progressBar.visibility = View.GONE
+//                        }
+//                    } else if (response.code() == 403) {
+//                        Utils.setUnAuthDialog(requireContext())
+//
+//                    } else {
+//                        val message = response.message()
+//                        Log.d("ERRROR", "onResponse: $message")
+//                        call.cancel()
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<TestListData?>, t: Throwable) {
+//                    binding.progressBar.visibility = View.GONE
+//                    Log.d("ERRROR", "onFailure: ${t.message}")
+//                    call.cancel()
+//                }
+//            })
+//
+//        } catch (e: Exception) {
+//            Log.d("ERROR", "GetTestList Catch: ${e.message.toString()}")
+//        }
+//
+//    }
 
-            binding.progressBar.visibility = View.VISIBLE
-            apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
-                override fun onResponse(
-                    call: Call<TestListData?>,
-                    response: Response<TestListData?>
-                ) {
-                    Log.d("TAG", response.code().toString() + "")
-                    val code = response.code()
-                    if (code == 200) {
-                        val resource: TestListData? = response.body()
-                        val Success: Boolean = resource?.status!!
-                        val Message: String = resource.message!!
-                        if (Success == true) {
-                            try {
-                                if (resource.data!! != null) {
-                                    initrecyclerTest(resource.data)
-                                } else {
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        } else {
-                            binding.progressBar.visibility = View.GONE
-                        }
-                    } else if (response.code() == 403) {
-                        Utils.setUnAuthDialog(requireContext())
-
-                    } else {
-                        val message = response.message()
-                        Log.d("ERRROR", "onResponse: $message")
-                        call.cancel()
-                    }
-                }
-
-                override fun onFailure(call: Call<TestListData?>, t: Throwable) {
-                    binding.progressBar.visibility = View.GONE
-                    Log.d("ERRROR", "onFailure: ${t.message}")
-                    call.cancel()
-                }
-            })
-
-        } catch (e: Exception) {
-            Log.d("ERROR", "GetTestList Catch: ${e.message.toString()}")
-        }
-
-    }
-
-    private fun initrecyclerTest(testdatalist: ArrayList<TestListData.testData>?) {
+    private fun initrecyclerTest(testdatalist: ArrayList<RegisterData.TestAthletes>?) {
         binding.progressBar.visibility = View.GONE
         binding.rcvtest.layoutManager = LinearLayoutManager(requireContext())
-        adapterTest = SetTestInGroup(testdatalist, requireContext(), this)
+        adapterTest = SetTestInProfile(testdatalist, requireContext(), this)
         binding.rcvtest.adapter = adapterTest
     }
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
-        TODO("Not yet implemented")
+        if (string == "favtest") {
+
+            Log.d("FAVTEST", "onItemClicked: FIRST")
+            binding.progressBar.visibility = View.VISIBLE
+            val id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.Favourite_Test(id)?.enqueue(object : Callback<RegisterData?> {
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+
+                    Log.d("FAVTEST", "onItemClicked: SECOND")
+
+                    binding.progressBar.visibility = View.GONE
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: RegisterData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success) {
+                            Log.d("FAVTEST", "onItemClicked: THIRD")
+
+                            binding.progressBar.visibility = View.GONE
+//                            loadData()
+                        } else {
+
+                            binding.progressBar.visibility = View.GONE
+                            Toast.makeText(
+                                requireContext(),
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(requireContext())
+                    } else {
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(
+                            requireContext(),
+                            "" + response.message(),
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+        }else if (string == "unfavtest"){
+            binding.progressBar.visibility = View.VISIBLE
+            var id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.DeleteFavourite_Test(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        binding.progressBar.visibility = View.GONE
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            if (Success) {
+                                binding.progressBar.visibility = View.GONE
+//                                loadData()
+                            } else {
+                                binding.progressBar.visibility = View.GONE
+                                Toast.makeText(
+                                    requireContext(),
+                                    "" + Message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(requireContext())
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "" + response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(
+                            requireContext(),
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                })
+        }
     }
 
 }

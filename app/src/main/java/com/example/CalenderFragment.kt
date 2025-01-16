@@ -73,8 +73,10 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
     private lateinit var calenderBinding: FragmentCalenderBinding
 
-    private val datesWithData = mutableSetOf<LocalDate>() // Set to track dates with data
-    
+    private val datesWithDataTest = mutableSetOf<LocalDate>() // Set to track dates with data
+    private val datesWithDataLesson = mutableSetOf<LocalDate>() // Set to track dates with data
+    private val datesWithDataEvent = mutableSetOf<LocalDate>() // Set to track dates with data
+
     private fun checkUser() {
         try {
             apiInterface.ProfileData()?.enqueue(object : Callback<RegisterData?> {
@@ -213,10 +215,25 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                                 }
                             }
                         }
-                        if (datesWithData.contains(day.date)) {
-                            container.binding.dotLinear.visibility = View.VISIBLE
+
+                        Log.d("DOTTTTT", "bind: $datesWithDataTest")
+                        Log.d("DOTTTTT", "bind: $datesWithDataEvent")
+                        Log.d("DOTTTTT", "bind: $datesWithDataLesson")
+
+                        if (datesWithDataLesson.contains(day.date)) {
+                            container.binding.dotLesson.visibility = View.VISIBLE
                         } else {
-                            container.binding.dotLinear.visibility = View.GONE
+                            container.binding.dotLesson.visibility = View.GONE
+                        }
+                        if (datesWithDataTest.contains(day.date)) {
+                            container.binding.dotTest.visibility = View.VISIBLE
+                        } else {
+                            container.binding.dotTest.visibility = View.GONE
+                        }
+                        if (datesWithDataEvent.contains(day.date)) {
+                            container.binding.dotEvent.visibility = View.VISIBLE
+                        } else {
+                            container.binding.dotEvent.visibility = View.GONE
                         }
 
                     } else {
@@ -271,6 +288,15 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             calenderBinding.frgCalendarView.scrollToMonth(YearMonth.from(date))
             updateAdapterForDate(date)
 
+            val data = SelectedDaysModel.Data(
+                lessons = listOf(), // Provide a valid list of lessons
+                events = listOf(),  // Provide a valid list of events
+                tests = listOf(),    // Provide a valid list of tests
+                programs = listOf(),    // Provide a valid list of tests
+            )
+            checkDatesForMonth(LocalDate.now(), data)
+
+
             val userType = preferenceManager.GetFlage()
             if (userType == "Athlete") {
                 fetchDayDataAthlete(date)
@@ -280,6 +306,53 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkDatesForMonth(selectedDate: LocalDate, data: SelectedDaysModel.Data) {
+        val currentMonth = YearMonth.from(selectedDate)
+        val daysInMonth = currentMonth.lengthOfMonth()
+
+        for (day in 1..31) {
+            // Skip invalid days for the current month
+            if (day > daysInMonth) break
+
+            val date = currentMonth.atDay(day)
+
+            // Check and update lessons
+            updateDatesList(date, data.lessons.map { it.date }, datesWithDataLesson, "Lesson")
+
+            // Check and update events
+            updateDatesList(date, data.events.map { it.date }, datesWithDataEvent, "Event")
+
+            // Check and update tests
+            updateDatesList(date, data.tests.map { it.date }, datesWithDataTest, "Test")
+        }
+    }
+
+    private fun updateDatesList(
+        date: LocalDate,
+        dataDates: List<String>,
+        dateSet: MutableSet<LocalDate>,
+        type: String
+    ) {
+        val dateStr = date.toString()
+
+        if (dataDates.contains(dateStr)) {
+            if (!dateSet.contains(date)) {
+                dateSet.add(date)
+                calendarView?.notifyDateChanged(date)
+                Log.d("CheckedDates", "$type date added: $date")
+            }
+        } else {
+            if (dateSet.contains(date)) {
+                dateSet.remove(date)
+                calendarView?.notifyDateChanged(date)
+                Log.d("CheckedDates", "$type date removed: $date")
+            }
+        }
+    }
+
+
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -325,24 +398,46 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                                 initLessonRecyclerView(data.lessons)
                                 initEventRecyclerView(data.events)
 
-                                // Add or remove the dot based on the data
-                                if (data.tests.isNotEmpty() || data.lessons.isNotEmpty() || data.events.isNotEmpty()) {
-                                    if (!datesWithData.contains(selectedDate)) {
-                                        datesWithData.add(selectedDate)
+                                if (data.lessons.isNotEmpty()) {
+                                    if (!datesWithDataLesson.contains(selectedDate)) {
+                                        datesWithDataLesson.add(selectedDate)
                                         // Notify the calendar view to update this date
                                         calendarView!!.notifyDateChanged(selectedDate)
                                     }
-                                } else {
-                                    if (datesWithData.contains(selectedDate)) {
-                                        datesWithData.remove(selectedDate)
+                                }else if (data.events.isNotEmpty()) {
+                                    if (!datesWithDataEvent.contains(selectedDate)) {
+                                        datesWithDataEvent.add(selectedDate)
+                                        // Notify the calendar view to update this date
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                }else if (data.tests.isNotEmpty()){
+                                    if (!datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.add(selectedDate)
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                }else{
+                                    if (datesWithDataLesson.contains(selectedDate)) {
+                                        datesWithDataLesson.remove(selectedDate)
+                                        // Notify the calendar view to remove the dot
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    } else if (datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.remove(selectedDate)
+                                        // Notify the calendar view to remove the dot
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    } else if (datesWithDataEvent.contains(selectedDate)) {
+                                        datesWithDataEvent.remove(selectedDate)
                                         // Notify the calendar view to remove the dot
                                         calendarView!!.notifyDateChanged(selectedDate)
                                     }
                                 }
+
+
                             } else {
                                 Log.e("API Response", "Data is null. No dot added.")
                                 // Remove any dots for this date if data is null
-                                datesWithData.remove(selectedDate)
+                                datesWithDataTest.remove(selectedDate)
+                                datesWithDataEvent.remove(selectedDate)
+                                datesWithDataLesson.remove(selectedDate)
                                 calendarView!!.notifyDateChanged(selectedDate)
                             }
                         } else {
@@ -383,28 +478,53 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                                     eventadapter.clearData()
                                 }
 
-                                if (data.tests.isNotEmpty() || data.lessons.isNotEmpty() || data.events.isNotEmpty()) {
-                                    if (!datesWithData.contains(selectedDate)) {
-                                        datesWithData.add(selectedDate)
+                                if (data.lessons.isNotEmpty()) {
+                                    if (!datesWithDataLesson.contains(selectedDate)) {
+                                        datesWithDataLesson.add(selectedDate)
+                                        // Notify the calendar view to update this date
                                         calendarView!!.notifyDateChanged(selectedDate)
                                     }
                                 } else {
-                                    if (datesWithData.contains(selectedDate)) {
-                                        datesWithData.remove(selectedDate)
+                                    if (datesWithDataLesson.contains(selectedDate)) {
+                                        datesWithDataLesson.remove(selectedDate)
                                         // Notify the calendar view to remove the dot
                                         calendarView!!.notifyDateChanged(selectedDate)
                                     }
                                 }
 
+                                if (data.events.isNotEmpty()) {
+                                    if (!datesWithDataEvent.contains(selectedDate)) {
+                                        datesWithDataEvent.add(selectedDate)
+                                        // Notify the calendar view to update this date
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                } else {
+                                    if (datesWithDataEvent.contains(selectedDate)) {
+                                        datesWithDataEvent.remove(selectedDate)
+                                        // Notify the calendar view to remove the dot
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                }
+
+                                if (data.tests.isNotEmpty()) {
+                                    if (!datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.add(selectedDate)
+                                        // Notify the calendar view to update this date
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                } else {
+                                    if (datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.remove(selectedDate)
+                                        // Notify the calendar view to remove the dot
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                }
+
+
                                 initTestRecyclerView(data.tests)
                                 initLessonRecyclerView(data.lessons)
                                 initEventRecyclerView(data.events)
 
-                                if (data.tests.isNotEmpty() || data.lessons.isNotEmpty() || data.events.isNotEmpty()) {
-
-                                } else {
-
-                                }
                             } else {
                                 Log.e("API Response", "Data is null. No dot added.")
                                 // Remove any dots for this date if data is null

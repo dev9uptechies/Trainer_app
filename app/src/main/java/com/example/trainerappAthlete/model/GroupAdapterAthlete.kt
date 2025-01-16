@@ -56,7 +56,7 @@ class GroupAdapterAthlete(
             .build()
 
         Picasso.get()
-            .load("https://4trainersapp.com/api/" + movie.group!!.image)
+            .load("https://trainers.codefriend.in" + movie.group!!.image)
             .fit()
             .transform(transformation)
             .into(holder.rounded_image, object : com.squareup.picasso.Callback {

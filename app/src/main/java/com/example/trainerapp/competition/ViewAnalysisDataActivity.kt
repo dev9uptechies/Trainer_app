@@ -98,6 +98,7 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
 //            updateCompetitionProgress()
             checkButtonCLick()
         }
+
         setData()
 
         viewAnalysisBinding.back.setOnClickListener(View.OnClickListener { finish() })

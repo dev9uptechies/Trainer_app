@@ -34,7 +34,7 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
     private lateinit var viewShareDiary: PersonalDiaryShareAdapter
     lateinit var preferenceManager: PreferencesManager
     private var mainId: Int = 0
-    private var isUserInteraction = false // Flag to track user interaction
+    private var isUserInteraction = false
 
 
 
@@ -198,14 +198,12 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
         val savedStatus = getShareStatus()
         binding.switchShare.isChecked = (savedStatus == 1)
 
-        // Listen for changes only when the user interacts
         binding.switchShare.setOnCheckedChangeListener { _, isChecked ->
-            isUserInteraction = true // Mark as user-initiated action
+            isUserInteraction = true
             val shareValue = if (isChecked) 1 else 0
             AddShareData(shareValue)
         }
     }
-
 
     private fun initViews() {
         apiInterface = APIClient(this).client().create(APIInterface::class.java)

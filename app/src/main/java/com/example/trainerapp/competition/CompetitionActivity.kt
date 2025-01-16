@@ -683,51 +683,99 @@ class CompetitionActivity : AppCompatActivity() {
         athleteData = arrayListOf()
         categoryData = arrayListOf()
         areaData = arrayListOf()
+
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete"){
+            competitionBinding.edtAthletes.visibility = View.GONE
+        }else{
+            competitionBinding.edtAthletes.visibility = View.VISIBLE
+        }
     }
 
     private val isValidate: Boolean
         get() {
-            val athleteName = competitionBinding.edtAthletes.text.toString()
-            val categoryName = competitionBinding.edtCategory.text.toString()
-            val competitionName = competitionBinding.edtCompetition.text.toString()
-            val dateName = competitionBinding.edtDate.text.toString()
-            val areaName = competitionBinding.edtArea.text.toString()
 
-            if (athleteName == "") {
-                competitionBinding.errorSelectAthlete.visibility = View.VISIBLE
-                return false
-            } else {
-                competitionBinding.errorSelectAthlete.visibility = View.GONE
+            val userType = preferenceManager.GetFlage()
+
+            if (userType == "Athlete"){
+                val categoryName = competitionBinding.edtCategory.text.toString()
+                val competitionName = competitionBinding.edtCompetition.text.toString()
+                val dateName = competitionBinding.edtDate.text.toString()
+                val areaName = competitionBinding.edtArea.text.toString()
+
+                if (categoryName == "") {
+                    competitionBinding.errorSelectCategory.visibility = View.VISIBLE
+                    return false
+                } else {
+                    competitionBinding.errorSelectCategory.visibility = View.GONE
+                }
+
+                if (competitionName == "") {
+                    competitionBinding.errorSelectCompetition.visibility = View.VISIBLE
+                    return false
+                } else {
+                    competitionBinding.errorSelectCompetition.visibility = View.GONE
+                }
+
+                if (dateName == "") {
+                    competitionBinding.errorSelectDate.visibility = View.VISIBLE
+                    return false
+                } else {
+                    competitionBinding.errorSelectDate.visibility = View.GONE
+                }
+
+                if (areaName == "") {
+                    competitionBinding.errorSelectArea.visibility = View.VISIBLE
+                    return false
+                } else {
+                    competitionBinding.errorSelectArea.visibility = View.GONE
+                }
+                return true
+            }else{
+                val athleteName = competitionBinding.edtAthletes.text.toString()
+                val categoryName = competitionBinding.edtCategory.text.toString()
+                val competitionName = competitionBinding.edtCompetition.text.toString()
+                val dateName = competitionBinding.edtDate.text.toString()
+                val areaName = competitionBinding.edtArea.text.toString()
+
+                if (athleteName == "") {
+                    competitionBinding.errorSelectAthlete.visibility = View.VISIBLE
+                    return false
+                } else {
+                    competitionBinding.errorSelectAthlete.visibility = View.GONE
+                }
+
+                if (categoryName == "") {
+                    competitionBinding.errorSelectCategory.visibility = View.VISIBLE
+                    return false
+                } else {
+                    competitionBinding.errorSelectCategory.visibility = View.GONE
+                }
+
+                if (competitionName == "") {
+                    competitionBinding.errorSelectCompetition.visibility = View.VISIBLE
+                    return false
+                } else {
+                    competitionBinding.errorSelectCompetition.visibility = View.GONE
+                }
+
+                if (dateName == "") {
+                    competitionBinding.errorSelectDate.visibility = View.VISIBLE
+                    return false
+                } else {
+                    competitionBinding.errorSelectDate.visibility = View.GONE
+                }
+
+                if (areaName == "") {
+                    competitionBinding.errorSelectArea.visibility = View.VISIBLE
+                    return false
+                } else {
+                    competitionBinding.errorSelectArea.visibility = View.GONE
+                }
+                return true
             }
 
-            if (categoryName == "") {
-                competitionBinding.errorSelectCategory.visibility = View.VISIBLE
-                return false
-            } else {
-                competitionBinding.errorSelectCategory.visibility = View.GONE
-            }
-
-            if (competitionName == "") {
-                competitionBinding.errorSelectCompetition.visibility = View.VISIBLE
-                return false
-            } else {
-                competitionBinding.errorSelectCompetition.visibility = View.GONE
-            }
-
-            if (dateName == "") {
-                competitionBinding.errorSelectDate.visibility = View.VISIBLE
-                return false
-            } else {
-                competitionBinding.errorSelectDate.visibility = View.GONE
-            }
-
-            if (areaName == "") {
-                competitionBinding.errorSelectArea.visibility = View.VISIBLE
-                return false
-            } else {
-                competitionBinding.errorSelectArea.visibility = View.GONE
-            }
-            return true
         }
 
     fun getObjectJson(c: Context, key: String): List<Int> {

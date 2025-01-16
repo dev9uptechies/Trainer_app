@@ -562,7 +562,7 @@
                                         android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Lesson List"
                                         android:textColor="@color/white"
-                                        android:textSize="@dimen/_16sdp" />
+                                        android:textSize="@dimen/_15sdp" />
 
                                     <ImageView
                                         android:id="@+id/add"
@@ -606,7 +606,7 @@
                                         android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Event List"
                                         android:textColor="@color/white"
-                                        android:textSize="@dimen/_16sdp" />
+                                        android:textSize="@dimen/_15sdp" />
 
                                     <ImageView
                                         android:id="@+id/event_add"
@@ -649,7 +649,7 @@
                                         android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Program List"
                                         android:textColor="@color/white"
-                                        android:textSize="@dimen/_16sdp" />
+                                        android:textSize="@dimen/_15sdp" />
 
                                     <ImageView
                                         android:id="@+id/add_program"
@@ -694,7 +694,7 @@
                                         android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Test List"
                                         android:textColor="@color/white"
-                                        android:textSize="@dimen/_16sdp" />
+                                        android:textSize="@dimen/_15sdp" />
 
                                     <ImageView
                                         android:id="@+id/add_test"

@@ -197,7 +197,6 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                         break
                     }
                 }
-
             }
             if (dataList.isNotEmpty()) {
 
@@ -294,7 +293,6 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         try {
             viewCompetitionAnalysisBinding.progressBar.visibility = View.VISIBLE
             val addCompetitionData = AddCompetitionBodyAthlete(
-                athleteId = athleteId.id!!,
                 eventId = eventId.id!!,
                 categoryName = catName,
                 date = compDate,

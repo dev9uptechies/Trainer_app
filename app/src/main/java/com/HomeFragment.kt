@@ -105,10 +105,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     lateinit var eventadapter: eventAdapter
     lateinit var testadapter: testAdapter
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     private val selectionFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
 
     private val sharedPreferences by lazy {
         requireContext().getSharedPreferences("RemindMePrefs", MODE_PRIVATE)
@@ -135,16 +133,17 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         homeFragmentBinding.seasonLy
         homeFragmentBinding.nextTv
         homeFragmentBinding.viewRecycler
+        homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+
 
         initViews()
         setDrawerToggle()
         getInstraction()
-
-
         GetNews()
         setUpCalendar()
 
         val receivedIdInt = receivedIds.toIntOrNull()
+        Log.d("QOQOQOQOQOOQOQO", "onCreateView: $receivedIds")
 
         val userType = preferenceManager.GetFlage()
 
@@ -158,7 +157,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 clearSavedGroupData()
             }
 
-
         } else {
             if (receivedIdInt != null) {
                 callGroupApi(receivedIdInt)
@@ -170,9 +168,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_library).isVisible = true
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = true
         }
-
-
-
 
         val (savedGroupName, savedStartDate) = getSavedGroupData()
 
@@ -1223,14 +1218,12 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
 
-        WorkOutlist
         when (position) {
             0 -> {
                 homeFragmentBinding.informationLinear.visibility = View.GONE
                 homeFragmentBinding.InstructionLinera.visibility = View.GONE
                 homeFragmentBinding.NewsLinera.visibility = View.VISIBLE
                 homeFragmentBinding.linerAthlete.visibility = View.GONE
-
             }
 
             1 -> {
@@ -1244,7 +1237,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 homeFragmentBinding.informationLinear.visibility = View.VISIBLE
                 homeFragmentBinding.InstructionLinera.visibility = View.GONE
                 homeFragmentBinding.NewsLinera.visibility = View.GONE
-                homeFragmentBinding.linerAthlete.visibility = View.GONE
+                homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
             }
         }
     }
