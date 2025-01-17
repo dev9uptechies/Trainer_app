@@ -40,9 +40,9 @@ class SignInActivity : AppCompatActivity() {
 //        signInBinding.edtPassword.setText("Gaurav@7613")
         signInBinding.edtEmail.setText("testusernew@gmail.com")
         signInBinding.edtPassword.setText("Testing@112")
-//        signInBinding.edtEmail.setText("4trainersapp@gmail.com")
-//        signInBinding.edtPassword.setText("4Trainersapp!")
-//
+        signInBinding.edtEmail.setText("4trainersapp@gmail.com")
+        signInBinding.edtPassword.setText("4Trainersapp!")
+
         checkFieldValue()
         checkButtonClick()
         checkChangeListner()
@@ -177,7 +177,7 @@ class SignInActivity : AppCompatActivity() {
                                         finish()
                                     } else {
 //                                val intent =
-//                                    Intent(this@SignInActivity, MainHomeActivity::class.java)
+//                                      Intent(this@SignInActivity, MainHomeActivity::class.java)
 //                                startActivity(intent)
 //                                finish()
                                         startActivity(

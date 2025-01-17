@@ -128,12 +128,10 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
         binding.switchShare.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 AddShareData(1)
-
             } else {
                 AddShareData(0)
             }
         }
-
     }
 
 
@@ -141,10 +139,14 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
     private fun AddShareData(shareValue: Int) {
         try {
 
-            apiInterface.updateShareStatus().enqueue(object : Callback<Void> {
+            val requestBody = mapOf("share" to shareValue)
+
+            apiInterface.updateShareStatus(requestBody).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    if (response.isSuccessful) {
-                        saveShareStatus(shareValue) // Save only the switch's status
+                    if (response.isSuccessful) { saveShareStatus(shareValue) // Save only the switch's status
+
+
+                        Log.d("GFGGGFGFGFG", "onResponse: $shareValue")
 
                         if (isUserInteraction) {
                             val message = if (shareValue == 0) {

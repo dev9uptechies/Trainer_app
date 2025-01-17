@@ -597,11 +597,9 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                 "Too Many Requests. Retry after some time.",
                 Toast.LENGTH_SHORT
             ).show()
-            else -> Toast.makeText(
-                this@PerformanceProfileActivity,
-                message,
-                Toast.LENGTH_SHORT
-            ).show()
+            else -> {
+                Log.d("OPOOOPOPOPP", "handleApiError: $message")
+            }
         }
     }
 
@@ -1061,6 +1059,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                 } else if (response.code() == 403) {
                     Utils.setUnAuthDialog(this@PerformanceProfileActivity)
                 } else {
+                    Log.d("OPOOOPOPOPP", "onResponse: ${response.message()}")
                     Toast.makeText(this@PerformanceProfileActivity, response.message(), Toast.LENGTH_SHORT).show()
                 }
             }

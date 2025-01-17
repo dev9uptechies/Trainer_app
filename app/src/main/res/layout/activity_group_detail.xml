@@ -88,6 +88,18 @@
                             app:riv_border_color="@color/white"
                             app:riv_border_width="@dimen/_1sdp"/>
 
+                        <ProgressBar
+                            android:id="@+id/progressBarImage"
+                            android:layout_width="@dimen/_30sdp"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_centerInParent="true"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="@+id/rounded_img"
+                            app:layout_constraintEnd_toEndOf="@+id/rounded_img"
+                            app:layout_constraintStart_toStartOf="@+id/rounded_img"
+                            app:layout_constraintTop_toTopOf="@+id/rounded_img" />
+
+
                         <TextView
                             android:id="@+id/tv_group_name"
                             android:layout_width="wrap_content"

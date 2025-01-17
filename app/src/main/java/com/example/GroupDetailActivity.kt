@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -194,13 +195,26 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
                 val close = dialog.findViewById<CardView>(R.id.next_card)
                 val scanQr = dialog.findViewById<ImageView>(R.id.scan_qr)
+                val scanQrprogress = dialog.findViewById<ProgressBar>(R.id.progressBarImage)
 
                 Log.d("FFHHF", "onCreate: $selectedImageUri")
+
+                scanQrprogress.visibility = View.VISIBLE
 
                 Picasso.get()
                     .load("https://trainers.codefriend.in" + selectedImageUri)
                     .fit()
-                    .into(scanQr)
+                    .into(scanQr, object : com.squareup.picasso.Callback {
+                        override fun onSuccess() {
+                            scanQrprogress.visibility = View.GONE
+                            Log.d("Picasso", "Image loaded successfully.")
+                        }
+
+                        override fun onError(e: Exception?) {
+                            scanQrprogress.visibility = View.GONE
+                            Log.e("PicassoError", "Image load failed: ${e?.message}")
+                        }
+                    })
 
                 close.setOnClickListener {
                     groupDetailBinding.main.setBackgroundColor(resources.getColor(R.color.black))
@@ -240,10 +254,22 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                 val close = dialog.findViewById<CardView>(R.id.next_card)
                 val scanQr = dialog.findViewById<ImageView>(R.id.scan_qr)
 
+                groupDetailBinding.progressBarImage.visibility = View.VISIBLE
+
                 Picasso.get()
                     .load("https://trainers.codefriend.in" + selectedImageUri)
                     .fit()
-                    .into(scanQr)
+                    .into(scanQr, object : com.squareup.picasso.Callback {
+                        override fun onSuccess() {
+                            groupDetailBinding.progressBarImage.visibility = View.GONE
+                            Log.d("Picasso", "Image loaded successfully.")
+                        }
+
+                        override fun onError(e: Exception?) {
+                            groupDetailBinding.progressBarImage.visibility = View.GONE
+                            Log.e("PicassoError", "Image load failed: ${e?.message}")
+                        }
+                    })
 
                 close.setOnClickListener {
                     groupDetailBinding.main.setBackgroundColor(resources.getColor(R.color.black))
@@ -357,11 +383,23 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                                     .oval(false)
                                     .build()
 
+                                groupDetailBinding.progressBarImage.visibility = View.GONE
+
                                 Picasso.get()
                                     .load("https://trainers.codefriend.in${data.image}")
                                     .fit()
                                     .transform(transformation)
-                                    .into(groupDetailBinding.roundedImg)
+                                    .into(groupDetailBinding.roundedImg, object : com.squareup.picasso.Callback {
+                                        override fun onSuccess() {
+                                            groupDetailBinding.progressBarImage.visibility = View.GONE
+                                            Log.d("Picasso", "Image loaded successfully.")
+                                        }
+
+                                        override fun onError(e: Exception?) {
+                                            groupDetailBinding.progressBarImage.visibility = View.GONE
+                                            Log.e("PicassoError", "Image load failed: ${e?.message}")
+                                        }
+                                    })
 
                                 initPlanningData(data.group_plannings)
                                 initLessonData(data.group_lessions)
@@ -470,11 +508,23 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                                     .oval(false)
                                     .build()
 
+                                groupDetailBinding.progressBarImage.visibility = View.VISIBLE
+
                                 Picasso.get()
                                     .load("https://trainers.codefriend.in${data.group!!.image}")
                                     .fit()
                                     .transform(transformation)
-                                    .into(groupDetailBinding.roundedImg)
+                                    .into(groupDetailBinding.roundedImg, object : com.squareup.picasso.Callback {
+                                        override fun onSuccess() {
+                                            groupDetailBinding.progressBarImage.visibility = View.GONE
+                                            Log.d("Picasso", "Image loaded successfully.")
+                                        }
+
+                                        override fun onError(e: Exception?) {
+                                            groupDetailBinding.progressBarImage.visibility = View.GONE
+                                            Log.e("PicassoError", "Image load failed: ${e?.message}")
+                                        }
+                                    })
 
                                 selectedImageUri = data.group!!.qr_code
 

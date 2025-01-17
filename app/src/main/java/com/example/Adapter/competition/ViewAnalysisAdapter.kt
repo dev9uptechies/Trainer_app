@@ -53,6 +53,7 @@ class ViewAnalysisAdapter(
             val intent = Intent(context, ViewAnalysisDataActivity::class.java).apply {
                 putExtra("title", splist[position].category)
                 putExtra("eventId", splist[position].id)
+                putExtra("Date", splist[position].date)
                 putExtra("areaId", splist[position].competition_analysis_area_id)
             }
             context.startActivity(intent)

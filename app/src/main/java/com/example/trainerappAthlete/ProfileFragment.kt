@@ -195,6 +195,7 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             .load("https://trainers.codefriend.in" + data?.image)
             .fit()
             .transform(transformation)
+            .error(R.drawable.app_icon)
             .into(binding.roundImage)
 
         val imageUrl =

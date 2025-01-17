@@ -1,5 +1,6 @@
 package com.example.trainerapp.competition
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Adapter.competition.ViewCompetitionAdapter
 import com.example.model.SelectedValue
+import com.example.model.competition.create.AddCompetitionBodyAthlete
 import com.example.model.competition.create.RatingDataAthlete
 import com.example.model.competition.create.RatingDataEdite
 import com.example.model.newClass.competition.Competition
@@ -20,6 +22,7 @@ import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityViewCompetitionAnalysisBinding
+import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped
 import com.highsoft.highcharts.common.HIColor
 import com.highsoft.highcharts.common.hichartsclasses.HICSSObject
 import com.highsoft.highcharts.common.hichartsclasses.HIChart
@@ -58,10 +61,11 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
 
     lateinit var title: String
     lateinit var eventId: String
+    lateinit var eventIdss: String
     var areaId = SelectedValue(null)
     var userType: String? = null
     var catName = "fggcg"
-    var compDate = "2025-01-11"
+    var compDate: String? = null
 
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
@@ -81,7 +85,6 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         setContentView(viewAnalysisBinding.root)
         initViews()
 
-
         val userType = preferenceManager.GetFlage()
         if (userType == "Athlete") {
             getCompetitionDataAthlete()
@@ -94,10 +97,9 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
 
         }
 
-        viewAnalysisBinding.save.setOnClickListener {
 //            updateCompetitionProgress()
             checkButtonCLick()
-        }
+
 
         setData()
 
@@ -105,6 +107,10 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
     }
 
     private fun checkButtonCLick() {
+
+        viewAnalysisBinding.save.isActivated
+        viewAnalysisBinding.save.isEnabled = true
+
         viewAnalysisBinding.save.setOnClickListener {
             val dataList: MutableList<RatingDataEdite> = mutableListOf()
             val dataListAthlete: MutableList<RatingDataAthlete> = mutableListOf()
@@ -119,6 +125,7 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
                         viewAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
                         dataListAthlete.add(RatingDataAthlete(i.name ?: "Unknown", i.athleteRating!!))
                     } else {
+                        viewAnalysisBinding.save.setCardBackgroundColor(Color.parseColor("#535353"))
                         Toast.makeText(this, "Please rate all fields for Athlete", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
@@ -144,7 +151,7 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
             if (userType == "Athlete" && dataListAthlete.isNotEmpty()) {
                 Log.d("SAVE_DATA", "Athlete data being saved: $dataListAthlete")
                 // Add saving logic for Athlete if needed
-//                saveCompetitionDataAthleteForEdit(dataListAthlete)
+                saveCompetitionDataAthleteForEdit(dataListAthlete)
                 updateCompetitionProgress(dataList)
 
             }
@@ -200,8 +207,13 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         title = intent.getStringExtra("title").toString()
         areaId.id = intent.getStringExtra("areaId")!!.toInt()
         eventId = intent.getIntExtra("eventId", 0).toString()
+        eventIdss = intent.getStringExtra("eventIdss") ?: "DefaultEventId"
+        compDate = intent.getStringExtra("Date") ?: "DefaultDate"
+        Log.d("ReceivedDate", "compDate: $compDate")
+        Log.d("ReceivedIDDDDDDD", "compDate: $eventIdss")
 
-        Log.d("Event Data :- ", "$title \n area Id - ${areaId.id} \n eventId - $eventId")
+
+        Log.d("Event Data :- ", "$title \n area Id - ${areaId.id} \n eventId - $eventId \n Date - $compDate")
 
         competitionData = mutableListOf()
         competition = mutableListOf()
@@ -580,8 +592,12 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
     }
 
     private fun updateCompetitionProgress(data: MutableList<RatingDataEdite>) {
-
         Log.d("OKKKKKK", "updateCompetitionProgress: OKKKK")
+
+        var successfulUpdates = 0
+        var failedUpdates = 0
+        val totalRequests = data.size
+
         data.forEach { item ->
             Log.d("API_DEBUG", "Sending competition_progress_id=${item.competitionProgressId}, coachStar=${item.coachStar}")
 
@@ -596,123 +612,134 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val responseBody = response.body()
                         if (responseBody != null && responseBody.status) {
-                            if (response.code() == 200){
-                                Toast.makeText(this@ViewAnalysisDataActivity, "Update Successfully", Toast.LENGTH_SHORT).show()
-                            }
+                            successfulUpdates++
                         } else {
-                            val errorMessage = responseBody?.message ?: "Unknown error"
-                            Toast.makeText(
-                                this@ViewAnalysisDataActivity,
-                                "Update failed: $errorMessage",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            failedUpdates++
                         }
                     } else {
-                        Toast.makeText(
-                            this@ViewAnalysisDataActivity,
-                            "Failed with code: ${response.code()}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        failedUpdates++
+                    }
+
+                    // Check if all requests are completed
+                    if (successfulUpdates + failedUpdates == totalRequests) {
+                        displayToast(successfulUpdates, failedUpdates)
                     }
                 }
 
                 override fun onFailure(call: Call<EditeAnalsisData>, t: Throwable) {
-                    Toast.makeText(
-                        this@ViewAnalysisDataActivity,
-                        "Request failed: ${t.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    failedUpdates++
                     Log.d("API_ERROR", "onFailure: ${t.message}")
+
+                    if (successfulUpdates + failedUpdates == totalRequests) {
+                        displayToast(successfulUpdates, failedUpdates)
+                    }
                 }
             })
         }
     }
 
+    private fun displayToast(successfulUpdates: Int, failedUpdates: Int) {
+        val message = if (failedUpdates == 0) {
+            "updates successful."
+        } else {
+            "Updates Successful."
+        }
 
-//    private fun saveCompetitionDataAthleteForEdit(data: MutableList<RatingDataAthlete>) {
-//        try {
-//            viewAnalysisBinding.progressBar.visibility = View.VISIBLE
-//
-//            // Log event IDs
-//            Log.d("BMMBMBMM", "Logging all event IDs:")
-//            competitionData.forEach { competition ->
-//                Log.d("BMMBMBMM", "Event ID: ${competition.event_id}")
-//            }
-//
-//            // Safely fetch the first event ID or default to 0
+        Toast.makeText(this@ViewAnalysisDataActivity, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveCompetitionDataAthleteForEdit(data: MutableList<RatingDataAthlete>) {
+        try {
+            // Show progress bar
+            viewAnalysisBinding.progressBar.visibility = View.VISIBLE
+
+            // Log competition data for debugging
+            Log.d("CompetitionData", "Logging all competition event IDs:")
+            competitionData.forEach { competition ->
+                Log.d("CompetitionData", "Event ID: ${competition.event_id}")
+            }
 //            val eventId = competitionData.firstOrNull()?.event_id?.toInt() ?: 0
 //            Log.d("BMMBMBMM", "Selected Event ID for Edit: $eventId")
-//
-//            // Prepare the request body with updated data
-//            val editCompetitionData = AddCompetitionBodyAthlete(
-//                athleteId = 196,
-//                eventId = eventId, // Single Event ID
-//                categoryName = catName,
-//                date = compDate,
-//                areaId = areaId.id!!,
-//                data = data // Updated data for editing
-//            )
-//
-//            Log.d("EditCompetition Data :-", "$editCompetitionData")
-//
-//            // API call for editing the data
-//            apiInterface.CreateCompetitionAnalysisDataAthelete(editCompetitionData)!!.enqueue(object :
-//                Callback<Competition> {
-//                override fun onResponse(call: Call<Competition>, response: Response<Competition>) {
-//                    viewAnalysisBinding.progressBar.visibility = View.GONE
-//
-//                    val code = response.code()
-//                    if (code == 200) {
-//                        val success = response.body()?.status ?: false
-//                        if (success) {
-//                            val responseData = response.body()
-//                            Log.d("Athlete Edit :- Data", "$responseData")
-//
-//                            val message = responseData?.message ?: "Edit Successful"
-//                            Toast.makeText(
-//                                this@ViewAnalysisDataActivity,
-//                                message,
-//                                Toast.LENGTH_SHORT
-//                            ).show()
-//
-//                            // Update chart data if available
-//                            responseData?.data?.competition_progress?.let { chartData ->
-//                                if (chartData.isNotEmpty()) {
-//                                    // Uncomment and update this to handle chart data
-//                                    // setChartOnlineData(chartData)
-//                                }
-//                            }
-//                        } else {
-//                            val errorMsg = response.body()?.message ?: "Edit Failed"
-//                            Toast.makeText(
-//                                this@ViewAnalysisDataActivity,
-//                                errorMsg,
-//                                Toast.LENGTH_SHORT
-//                            ).show()
-//                            Log.d("Response Error", "Code: ${response.code()}, Message: $errorMsg")
-//                        }
-//                    } else if (code == 403) {
-//                        Utils.setUnAuthDialog(this@ViewAnalysisDataActivity)
-//                    } else {
-//                        Toast.makeText(
-//                            this@ViewAnalysisDataActivity,
-//                            "Failed with code $code",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                        Log.e("Error", "Failed response code: $code")
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<Competition>, t: Throwable) {
-//                    viewAnalysisBinding.progressBar.visibility = View.GONE
-//                    Log.e("Edit Failure Tag", "Error: ${t.message}")
-//                }
-//            })
-//        } catch (e: Exception) {
-//            viewAnalysisBinding.progressBar.visibility = View.GONE
-//            Log.e("Exception in Edit", "Error: ${e.message}")
-//        }
-//    }
+
+
+            val editCompetitionData = AddCompetitionBodyAthlete(
+                eventId = eventIdss.toInt(), // Replace with the actual existing event ID
+                categoryName = title,
+                date = compDate.toString(),
+                areaId = areaId.id!!,
+                data = data
+            )
+
+            Log.d("EditCompetitionRequest", "Request Data: $editCompetitionData")
+
+            // Make the API call
+            apiInterface.CreateCompetitionAnalysisDataAthelete(editCompetitionData)?.enqueue(object :
+                Callback<Competition> {
+                override fun onResponse(call: Call<Competition>, response: Response<Competition>) {
+                    // Hide progress bar
+                    viewAnalysisBinding.progressBar.visibility = View.GONE
+
+                    val code = response.code()
+                    if (code == 200) {
+                        val responseData = response.body()
+                        val success = responseData?.status ?: false
+
+                        if (success) {
+                            Log.d("EditCompetitionResponse", "Data: ${responseData!!.data}")
+                            Log.d("EditCompetitionResponse", "Message: ${responseData.message}")
+                            Log.d("EditCompetitionResponse", "Status: ${responseData.status}")
+
+                            // Show success message
+                            val message = responseData.message ?: "Edit Successful"
+                            Toast.makeText(
+                                this@ViewAnalysisDataActivity,
+                                message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            // Optionally update chart data
+                            responseData.data?.competition_progress?.let { chartData ->
+                                if (chartData.isNotEmpty()) {
+                                    // Handle chart data update here
+                                    // setChartOnlineData(chartData)
+                                }
+                            }
+                        } else {
+                            // Handle error in response
+                            val errorMsg = responseData?.message ?: "Edit Failed"
+                            Toast.makeText(
+                                this@ViewAnalysisDataActivity,
+                                errorMsg,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            Log.e("EditError", "Code: $code, Message: $errorMsg")
+                        }
+                    } else if (code == 403) {
+                        // Unauthorized access
+                        Utils.setUnAuthDialog(this@ViewAnalysisDataActivity)
+                    } else {
+                        // Other errors
+                        Toast.makeText(
+                            this@ViewAnalysisDataActivity,
+                            "Failed with code $code",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Log.e("EditError", "Failed with code: $code")
+                    }
+                }
+
+                override fun onFailure(call: Call<Competition>, t: Throwable) {
+                    // Hide progress bar
+                    viewAnalysisBinding.progressBar.visibility = View.GONE
+                    Log.e("EditFailure", "Error: ${t.message}")
+                }
+            })
+        } catch (e: Exception) {
+            // Hide progress bar on exception
+            viewAnalysisBinding.progressBar.visibility = View.GONE
+            Log.e("EditException", "Error: ${e.message}")
+        }
+    }
 
 
 

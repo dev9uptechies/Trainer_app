@@ -30,7 +30,7 @@ class APIClient(context: Context) {
             .setLenient()
             .create()
         retrofit = Retrofit.Builder()
-            .baseUrl("https://4trainersapp.com/api/")
+            .baseUrl("https://trainers.codefriend.in/api/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(client)
             .build()

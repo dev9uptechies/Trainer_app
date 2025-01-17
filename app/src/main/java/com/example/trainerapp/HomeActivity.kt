@@ -53,7 +53,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
     lateinit var preferenceManager: PreferencesManager
-
     var id: String = ""
     var group_id: String = ""
 
@@ -68,8 +67,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         initViews()
         setFragments()
         setDrawerToggle()
-
-
 
         val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -158,7 +155,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fragment2.arguments
         fragment3.arguments
         fragment4.arguments
-
 
         val addGroupBack = intent.getStringExtra("group") ?: ""
         Log.d("addGroupBack", "Value received: $addGroupBack")
@@ -255,6 +251,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 PorterDuff.Mode.MULTIPLY
             )
             Log.d("addGroupBack", "Condition not met. Received value: $addGroupBack")
+
+            Log.d("addGroupBack","Condition not met. Received value")
         }
 
 

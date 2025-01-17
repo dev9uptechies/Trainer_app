@@ -789,8 +789,16 @@ interface APIInterface {
         @Query("performance_category_id") performId: Int? = null
     ): Call<PerformanceQuality>
 
-    @GET("Athlete/personal_diary/share")
-    fun updateShareStatus(): Call<Void>
+//    @GET("Athlete/personal_diary/share")
+//    fun updateShareStatus(): Call<Void>
+
+
+//    @GET("Athlete/personal_diary/share")
+//    fun updateShareStatus(@Body body: Map<String, Int>): Call<Void>
+//
+    @POST("personal_diary/share")
+    fun updateShareStatus(@Body body: Map<String, Int>): Call<Void>
+
 
     @POST("Athlete/select-day")
     fun GetSelectedDaysAthlete(

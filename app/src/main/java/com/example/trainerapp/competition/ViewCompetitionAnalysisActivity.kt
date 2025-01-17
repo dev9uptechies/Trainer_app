@@ -158,8 +158,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewCompetitionAnalysisBinding =
-            ActivityViewCompetitionAnalysisBinding.inflate(layoutInflater)
+        viewCompetitionAnalysisBinding = ActivityViewCompetitionAnalysisBinding.inflate(layoutInflater)
         setContentView(viewCompetitionAnalysisBinding.root)
         initViews()
         checkButtonClick()
@@ -169,22 +168,26 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         viewCompetitionAnalysisBinding.save.isActivated
         viewCompetitionAnalysisBinding.save.isEnabled = true
         viewCompetitionAnalysisBinding.save.isClickable = true
-
+        viewCompetitionAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
 
         viewCompetitionAnalysisBinding.save.setOnClickListener {
             val dataList: MutableList<RatingData> = mutableListOf()
             val dataListAthlete: MutableList<RatingDataAthlete> = mutableListOf()
+
+
             for (i in analysisData) {
 
                 val userType = preferenceManager.GetFlage()
+                preferenceManager.GetFlage()
+
+
 
                 if (userType == "Athlete"){
                     if (i.athleteRating != 0) {
                         viewCompetitionAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
                         dataListAthlete.add(RatingDataAthlete(i.name!!, i.athleteRating!!))
                     } else {
-                        Toast.makeText(this, "Please Rating Athlete All Fields", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(this, "Please Rating Athlete All Fields", Toast.LENGTH_SHORT).show()
                         break
                     }
                 }else{
@@ -192,8 +195,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                         viewCompetitionAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
                         dataList.add(RatingData(i.name!!, i.coachRating!!))
                     } else {
-                        Toast.makeText(this, "Please Rating Coach All Fields", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(this, "Please Rating Coach All Fields", Toast.LENGTH_SHORT).show()
                         break
                     }
                 }

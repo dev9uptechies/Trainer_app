@@ -73,7 +73,7 @@ class ViewCompetitionAdapter(
                 holder.athleteRating.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
                     if (fromUser) {
                         Log.d("Rating", "$rating")
-                        Toast.makeText(context, "$rating", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context, "$rating", Toast.LENGTH_SHORT).show()
                         movie.athleteRating = rating.toInt()
                     }
                 }

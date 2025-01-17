@@ -358,6 +358,7 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                     call.cancel()
                     Log.d("GROOOOOOOP", t.message.toString())
                     groupBinding.groupProgress.visibility = View.GONE
+                    groupBinding.groupProgress.visibility
                 }
             })
         } catch (e: Exception) {
@@ -368,7 +369,6 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
     private fun callGroupApi() {
         try {
-
             groupBinding.groupProgress.visibility = View.VISIBLE
             apiInterface.GropList()?.enqueue(object : Callback<GroupListData?> {
                 override fun onResponse(
@@ -384,7 +384,7 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
                         if (Success) {
                             groupBinding.groupProgress.visibility = View.GONE
-                            groupList = resource.data!! // Populate the groupList here
+                            groupList = resource.data!!
                             initrecycler(resource.data!!)
 
 
@@ -451,6 +451,9 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             groupBinding.groupRly.layoutManager = LinearLayoutManager(requireActivity())
             groupadapterAthlete = GroupAdapterAthlete(data, requireContext(), this)
             groupBinding.groupRly.adapter = groupadapterAthlete
+
+
+
         } catch (e: Exception) {
             Log.d("catch", "initrecyclerAthlete: ${e.message}")
         }

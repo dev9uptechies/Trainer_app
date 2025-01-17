@@ -46,6 +46,7 @@ class NewsAdapter(
 
         Glide.with(holder.itemView.context)
             .load("https://trainers.codefriend.in" + news.image)
+            .error(R.drawable.app_icon)
             .into(holder.tvimage)
 
         holder.itemView.setOnClickListener {

@@ -178,7 +178,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             homeFragmentBinding.edtStartDate.text = ""
         }
 
-
         homeFragmentBinding.dialogButton.setOnClickListener {
 //                showWorkoutInfoDialog(requireContext())
             homeFragmentBinding.dialog.visibility = View.VISIBLE

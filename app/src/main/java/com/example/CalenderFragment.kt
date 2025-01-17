@@ -2,18 +2,25 @@ package com.example
 
 import android.annotation.SuppressLint
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.core.view.children
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.FavoriteActivity
 import com.example.Adapter.selected_day.LessonAdapter
 import com.example.Adapter.selected_day.eventAdapter
 import com.example.Adapter.selected_day.testAdapter
@@ -21,12 +28,23 @@ import com.example.model.SelectedDaysModel
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
+import com.example.trainerapp.LibraryActivity
+import com.example.trainerapp.MainActivity
+import com.example.trainerapp.PerformanceProfileActivity
 import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
+import com.example.trainerapp.RemindMe.ViewRemindMeActivity
+import com.example.trainerapp.SettingActivity
 import com.example.trainerapp.Utils
+import com.example.trainerapp.competition.CompetitionActivity
 import com.example.trainerapp.databinding.Example3CalendarDayBinding
 import com.example.trainerapp.databinding.Example3CalendarHeaderBinding
 import com.example.trainerapp.databinding.FragmentCalenderBinding
+import com.example.trainerapp.notification.NotificationActivity
+import com.example.trainerapp.personal_diary.ViewPersonalDiaryActivity
+import com.example.trainerapp.privacy_policy.PrivacyPolicyActivity
+import com.example.trainerapp.view_analysis.ViewAnalysisActivity
+import com.google.android.material.navigation.NavigationView
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
@@ -45,7 +63,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.WeekFields
 import java.util.Locale
 
-class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
+class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, NavigationView.OnNavigationItemSelectedListener {
     lateinit var preferenceManager: PreferencesManager
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
@@ -55,6 +73,8 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     lateinit var eventadapter: eventAdapter
     lateinit var testadapter: testAdapter
     var date: String = ""
+    var actionBarDrawerToggle: ActionBarDrawerToggle? = null
+
     var userType: String? = null
     var calendarView: CalendarView? = null
     private var selectedDate: LocalDate? = null
@@ -72,6 +92,10 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     private val selectionFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     private lateinit var calenderBinding: FragmentCalenderBinding
+
+    private val sharedPreferences by lazy {
+        requireContext().getSharedPreferences("RemindMePrefs", MODE_PRIVATE)
+    }
 
     private val datesWithDataTest = mutableSetOf<LocalDate>() // Set to track dates with data
     private val datesWithDataLesson = mutableSetOf<LocalDate>() // Set to track dates with data
@@ -132,10 +156,35 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
         initViews()
         setUpCalendar()
+        setDrawerToggle()
+        ButtonClick()
 //        loadData()
+
 
         return calenderBinding.root
     }
+
+    private fun ButtonClick() {
+        calenderBinding.sidemenu.setOnClickListener {
+            calenderBinding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+    }
+
+    private fun setDrawerToggle() {
+        actionBarDrawerToggle = ActionBarDrawerToggle(
+            requireActivity(),
+            calenderBinding.drawerLayout,
+            R.string.nav_open,
+            R.string.nav_close
+        )
+
+        calenderBinding.drawerLayout.addDrawerListener(actionBarDrawerToggle!!)
+        actionBarDrawerToggle?.syncState()
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        calenderBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        calenderBinding.navigationView.setNavigationItemSelectedListener(this)
+    }
+
 
     @SuppressLint("NewApi")
     private fun loadData() {
@@ -886,4 +935,136 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                 })
         }
     }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.tv_notification) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            val intent = Intent(requireContext(), NotificationActivity::class.java)
+            startActivity(intent)
+            return true
+        } else if (item.itemId == R.id.tv_policy) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            val intent = Intent(requireContext(), PrivacyPolicyActivity::class.java)
+            startActivity(intent)
+            return true
+        }
+        //        else if (item.itemId == R.id.tv_invited_friend) {
+        //            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+        //            val intent = Intent(requireContext(), Invite_friendActivity::class.java)
+        //            startActivity(intent)
+        //            return true
+        //        }
+        else if (item.itemId == R.id.tv_library) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            val intent = Intent(requireContext(), LibraryActivity::class.java)
+            startActivity(intent)
+            return true
+        } else if (item.itemId == R.id.tv_favorite) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            val intent = Intent(requireContext(), FavoriteActivity::class.java)
+            startActivity(intent)
+            return true
+        } else if (item.itemId == R.id.tv_athletes) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            val intent = Intent(requireContext(), AthletesActivity::class.java)
+            startActivity(intent)
+            return true
+        } else if (item.itemId == R.id.tv_view_analysis) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            val intent = Intent(requireContext(), ViewAnalysisActivity::class.java)
+            startActivity(intent)
+            return true
+        } else if (item.itemId == R.id.tv_profile) {
+            val intent = Intent(requireContext(), PerformanceProfileActivity::class.java)
+            startActivity(intent)
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            return true
+        } else if (item.itemId == R.id.tv_analysis) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            preferenceManager.setSelectEvent(false)
+            val intent = Intent(requireContext(), CompetitionActivity::class.java)
+            startActivity(intent)
+            //Toast.makeText(requireContext(), "Competition Analysis", Toast.LENGTH_SHORT).show()
+            return true
+        } else if (item.itemId == R.id.tv_personal_diary) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            val intent = Intent(requireContext(), ViewPersonalDiaryActivity::class.java)
+            startActivity(intent)
+            //          Toast.makeText(requireContext(), "Personal Diary", Toast.LENGTH_SHORT).show()
+            return true
+        } else if (item.itemId == R.id.tv_setting) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            val intent = Intent(requireContext(), SettingActivity::class.java)
+            startActivity(intent)
+            return true
+        } else if (item.itemId == R.id.tv_remind) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            val intent = Intent(requireContext(), ViewRemindMeActivity::class.java)
+            startActivity(intent)
+            return true
+        } else if (item.itemId == R.id.logout) {
+            calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
+
+            calenderBinding.progressCalender.visibility = View.VISIBLE
+            apiInterface.LogOut()?.enqueue(object : Callback<RegisterData?> {
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+                    calenderBinding.progressCalender.visibility = View.GONE
+                    Log.d("TAG", response.code().toString() + "")
+                    val resource: RegisterData? = response.body()
+                    //                    val Success: Boolean = resource?.status!!
+
+                    if (response.code() == 200) {
+                        val Message: String = resource!!.message!!
+                        Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
+                        preferenceManager.setUserLogIn(false)
+                        with(sharedPreferences.edit()) {
+                            clear()
+                            apply()
+                        }
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().finish()
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(requireContext())
+                        //                        Toast.makeText(
+                        //                            requireContext(),
+                        //                            "" + response.message(),
+                        //                            Toast.LENGTH_SHORT
+                        //                        ).show()
+                        //                        preferenceManager.setUserLogIn(false)
+                        //                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        //                        startActivity(intent)
+                        //                        requireActivity().finish()
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "" + response.message(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        call.cancel()
+                        //                        preferenceManager.setUserLogIn(false)
+                        //                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        //                        startActivity(intent)
+                        //                        requireActivity().finish()
+                    }
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                    calenderBinding.progressCalender.visibility = View.GONE
+                }
+            })
+
+
+            return true
+        } else {
+            return false
+        }
+    }
+
 }
