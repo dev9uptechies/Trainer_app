@@ -41,6 +41,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.Adapter.lesson.SectionLessonAdapter
+import com.example.Adapter.selected_day.programAdapter
 import com.example.model.SelectedValue
 import com.example.model.newClass.lesson.Lesson
 import com.example.trainerapp.ApiClass.APIClient
@@ -358,8 +359,21 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
             .setCalendarDisplayMode(CalendarMode.MONTHS)
             .commit()
 
+        val today = CalendarDay.today()
+
+        // Decorator to disable past dates
         calendarView.addDecorator(object : DayViewDecorator {
-            val today = CalendarDay.today()
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day != null && day.isBefore(today)
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.setDaysDisabled(true) // Disable past dates
+            }
+        })
+
+        // Decorator to highlight today's date
+        calendarView.addDecorator(object : DayViewDecorator {
             override fun shouldDecorate(day: CalendarDay?): Boolean {
                 return day == today
             }
@@ -371,7 +385,6 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                 }
             }
         })
-
 
         confirmButton.setOnClickListener {
             val selectedDates = calendarView.selectedDates
@@ -720,8 +733,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         popupWindow.elevation = 10f
         val listView = popupView.findViewById<ListView>(R.id.listView)
 
-        val adapter =
-            object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
+        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
                     val typeface =
@@ -917,8 +929,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
     private fun initRecyclerview(data: ArrayList<Lesson.LessonDatabase>) {
         lessonBinding.exerciseRecycler.layoutManager = LinearLayoutManager(this)
-        adapter =
-            LessionAdapter(data, this, this)
+        adapter = LessionAdapter(data, this, this)
         lessonBinding.exerciseRecycler.adapter = adapter
     }
 
@@ -964,12 +975,8 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         })
     }
 
-    private fun initRecycler(
-        sectionData: MutableList<TestListData.testData>,
-        initialSelectId: Int?
-    ) {
-        lessonBinding.sectionRecycler.layoutManager =
-            LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+    private fun initRecycler(sectionData: MutableList<TestListData.testData>, initialSelectId: Int?) {
+        lessonBinding.sectionRecycler.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         sectionAdapter = SectionLessonAdapter(sectionData, this, this, initialSelectId)
         lessonBinding.sectionRecycler.adapter = sectionAdapter
     }
@@ -1338,21 +1345,16 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                     ResourcesCompat.getFont(this@LessonActivity, R.font.poppins_medium) // Set the font
                 textSize = 20f
                 setPadding(50, 50, 50, 5) // Optional: add padding
-                setTextColor(Color.BLACK) // Set text color to black
+                setTextColor(Color.BLACK)
             }
-
-
 
             alert.setCustomTitle(titleTextView)
 
-
             val typeface = ResourcesCompat.getFont(this, R.font.poppins_medium)
-
 
             alert.setOnShowListener {
                 val titleTextView = alert.findViewById<TextView>(android.R.id.title)
                 titleTextView?.typeface = typeface
-
 
                 val messageTextView = alert.findViewById<TextView>(android.R.id.message)
                 messageTextView?.typeface = typeface
@@ -1369,30 +1371,34 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
             alert.show()
 
         }
-
     }
 
     private fun setLessonData(lessonDatabase: Lesson.LessonDatabase) {
-        Log.d("DATA BASE :-", "${lessonDatabase.lesson_programs!!.size}")
-        for (i in lessonDatabase.lesson_programs) {
-            Log.d("Lesson Database :-", "${i.program!!.name} \t ${i.program.id}")
+        Log.d("DATA BASE :-", "${lessonDatabase.lesson_programs?.size ?: 0}")
+        lessonDatabase.lesson_programs?.forEach {
+            Log.d("Lesson Database :-", "${it.program?.name} \t ${it.program?.id}")
         }
+
         id.clear()
-        for (i in lessonDatabase.lesson_programs) {
-            id.add(i.program!!.id!!)
+        lessonDatabase.lesson_programs?.forEach {
+            it.program?.id?.let { programId -> id.add(programId) }
         }
-        lessonBinding.edtLessonName.setText(lessonDatabase.name)
-        lessonBinding.edtTime.setText(lessonDatabase.time)
-        lessonBinding.tvSelectionTime.setText(lessonDatabase.section_time)
+
+        lessonBinding.edtLessonName.setText(lessonDatabase.name ?: "")
+        lessonBinding.edtTime.setText(lessonDatabase.time ?: "")
+        lessonBinding.tvSelectionTime.setText(lessonDatabase.section_time ?: "")
+
         try {
-            lessonBinding.edtGoal.setText(lessonDatabase.lesson_goal!![0].goal!!.name)
-            goalId.id = lessonDatabase.lesson_goal[0].goal_id!!.toInt()
-            sectionId.id = lessonDatabase.section_id!!.toInt()
+            val lessonGoal = lessonDatabase.lesson_goal?.getOrNull(0)
+            lessonBinding.edtGoal.setText(lessonGoal?.goal?.name ?: "")
+            goalId.id = lessonGoal?.goal_id?.toInt() ?: 0
+            sectionId.id = lessonDatabase.section_id?.toInt() ?: 0
             sectionAdapter.updateSelectedId(sectionId.id!!)
         } catch (e: Exception) {
             Log.d("Exception :-", "$e 	 ${e.message}")
         }
-        lessonBinding.etSelectTestDate.setText(lessonDatabase.date)
+
+        lessonBinding.etSelectTestDate.setText(lessonDatabase.date ?: "")
     }
 
     override fun onItemClick(id: Int, name: String, position: Int) {

@@ -570,10 +570,6 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                     jsonObject.addProperty("time", newProgramBinding.edtTime.text.toString())
                     jsonObject.addProperty("section_id", sectionId.id.toString())
                     jsonObject.add("exercise_ids", array)
-                    jsonObject.addProperty(
-                        "date",
-                        datesent
-                    )
 
 
                     apiInterface.CreateProgram(
@@ -862,7 +858,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
     private val isValidate: Boolean
         get() {
             val program_name = newProgramBinding.edtProgramName.text.toString()
-            val date = newProgramBinding.etSelectTestDate.text.toString()
+//            val date = newProgramBinding.etSelectTestDate.text.toString()
             val time = newProgramBinding.edtTime.text.toString()
             val goal = newProgramBinding.edtGoal.text.toString()
             val section = newProgramBinding.edtSection.text.toString()
@@ -893,13 +889,13 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
             } else {
                 newProgramBinding.errorSection.visibility = View.GONE
             }
-
-            if (date == "") {
-                newProgramBinding.errorDate.visibility = View.VISIBLE
-                return false
-            } else {
-                newProgramBinding.errorDate.visibility = View.GONE
-            }
+//
+//            if (date == "") {
+//                newProgramBinding.errorDate.visibility = View.VISIBLE
+//                return false
+//            } else {
+//                newProgramBinding.errorDate.visibility = View.GONE
+//            }
 
             return true
         }

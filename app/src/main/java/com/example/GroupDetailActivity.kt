@@ -195,15 +195,16 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
                 val close = dialog.findViewById<CardView>(R.id.next_card)
                 val scanQr = dialog.findViewById<ImageView>(R.id.scan_qr)
-                val scanQrprogress = dialog.findViewById<ProgressBar>(R.id.progressBarImage)
+                val scanQrprogress = dialog.findViewById<ProgressBar>(R.id.progressBarImages)
 
                 Log.d("FFHHF", "onCreate: $selectedImageUri")
 
                 scanQrprogress.visibility = View.VISIBLE
 
                 Picasso.get()
-                    .load("https://trainers.codefriend.in" + selectedImageUri)
+                    .load("https://trainers.codefriend.in" +selectedImageUri)
                     .fit()
+                    .error(R.drawable.group_chate_boarder)
                     .into(scanQr, object : com.squareup.picasso.Callback {
                         override fun onSuccess() {
                             scanQrprogress.visibility = View.GONE
@@ -211,7 +212,6 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                         }
 
                         override fun onError(e: Exception?) {
-                            scanQrprogress.visibility = View.GONE
                             Log.e("PicassoError", "Image load failed: ${e?.message}")
                         }
                     })

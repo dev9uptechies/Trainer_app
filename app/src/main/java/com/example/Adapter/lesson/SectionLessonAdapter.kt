@@ -37,7 +37,7 @@ class SectionLessonAdapter(
         val movie = splist[position]
 
         if (movie.id == selectId) {
-            holder.name.setBackgroundResource(R.drawable.card_select_1)  // Set red color
+            holder.name.setBackgroundResource(R.drawable.card_select_1)
         } else {
             holder.name.setBackgroundResource(R.drawable.card_unselect_1)
         }

@@ -148,12 +148,16 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                         return@setOnClickListener
                     }
 
+                    // Safely convert to array only if data exists
+                    val lessonIdArray = selectedLessonIds.mapNotNull { it }.toIntArray()
+
                     val intent = Intent(this, CreateGropActivity::class.java)
-                    intent.putExtra("lessonId", selectedLessonIds.toIntArray())
+                    intent.putExtra("lessonId", lessonIdArray)
                     intent.putExtra("load", "load")
                     startActivity(intent)
                     finish()
                 }
+
 
                 "event" -> {
                     val selecteTestIds = adapterEvent.getSelectedEventData()
@@ -356,6 +360,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
 
                             }
                         } else {
+                            binding.saveBtn.isEnabled = false
                             Log.d("DATA_TAG", "No Data Available")
                         }
                     } else if (code == 403) {
@@ -407,6 +412,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                             }
                             initrecycler(resource.data)
                         } else {
+                            binding.saveBtn.isEnabled = false
                             initrecycler(arrayListOf())
                         }
                     } else {
@@ -454,6 +460,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                                 lessonData.addAll(data)
                                 initRecyclerview(data)
                             } else {
+                                binding.saveBtn.isEnabled = false
                                 Toast.makeText(this@LessonListActivity, "No lessons available", Toast.LENGTH_SHORT).show()
                             }
                         } else {
@@ -493,6 +500,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                             if (resource.data!! != null) {
                                 initrecyclerTest(resource.data)
                             }else{
+                                binding.saveBtn.isEnabled = false
                                 Toast.makeText(this@LessonListActivity, "No Test available", Toast.LENGTH_SHORT).show()
                             }
                         } catch (e: Exception) {
@@ -598,6 +606,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                                 initrecyclerAthlete(athleteData)
                             }
                         }else{
+                            binding.saveBtn.isEnabled = false
                             Toast.makeText(this@LessonListActivity, "No Athlete available", Toast.LENGTH_SHORT).show()
                         }
 

@@ -31,11 +31,11 @@
             android:layout_marginTop="@dimen/_30sdp"/>
 
         <ProgressBar
-            android:id="@+id/progressBarImage"
+            android:id="@+id/progressBarImages"
             android:layout_width="@dimen/_35sdp"
             android:layout_height="@dimen/_35sdp"
             android:layout_centerInParent="true"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/scan_qr"
             app:layout_constraintEnd_toEndOf="@+id/scan_qr"
             app:layout_constraintStart_toStartOf="@+id/scan_qr"

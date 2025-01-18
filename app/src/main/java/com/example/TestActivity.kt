@@ -185,8 +185,21 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
             .setCalendarDisplayMode(CalendarMode.MONTHS)
             .commit()
 
+        val today = CalendarDay.today()
+
+        // Decorator to disable past dates
         calendarView.addDecorator(object : DayViewDecorator {
-            val today = CalendarDay.today()
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day != null && day.isBefore(today)
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.setDaysDisabled(true) // Disable past dates
+            }
+        })
+
+        // Decorator to highlight today's date
+        calendarView.addDecorator(object : DayViewDecorator {
             override fun shouldDecorate(day: CalendarDay?): Boolean {
                 return day == today
             }
@@ -198,7 +211,6 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
                 }
             }
         })
-
 
         confirmButton.setOnClickListener {
             val selectedDates = calendarView.selectedDates
@@ -222,6 +234,7 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
 
         dialog.show()
     }
+
 
     private fun formatDate2(dateMillis: Long): String {
         val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())

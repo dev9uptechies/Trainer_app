@@ -179,8 +179,10 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
                 val start = startDate.text.toString().trim()
                 val end = endDate.text.toString().trim()
+                var isss = selectedAbilityIds.toString()
 
-                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty()) {
+
+                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty()) {
                     preSeason.add(
                         AddMicrocyclePreSeason(
                             id = 0,
@@ -242,6 +244,19 @@ class AddMicroCycleActivity : AppCompatActivity() {
         }
     }
 
+    private val isValidate: Boolean
+        get() {
+            var email = addMicroCycleBinding.startDate.text.toString()
+            var password = addMicroCycleBinding.endDate.text.toString()
+            if (email == "") {
+
+                return false
+            } else {
+            }
+
+            return true
+        }
+
     private fun SaveMicrocyclePreCompatitive() {
         try {
             preCompetitive.clear()
@@ -266,7 +281,11 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 val start = startDate.text.toString().trim()
                 val end = endDate.text.toString().trim()
 
-                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty()) {
+                var isss = selectedAbilityIds.toString()
+
+                Log.d("FFHHFHFHH", "SaveMicrocyclePreCompatitive: $isss")
+
+                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty()  && isss.isNotEmpty()) {
                     preCompetitive.add(
                         AddMicrocyclePreCompatitive(
                             id = 0,
@@ -280,6 +299,7 @@ class AddMicroCycleActivity : AppCompatActivity() {
                         )
                     )
                 } else {
+                    addMicroCycleBinding.cardSave.setCardBackgroundColor(ContextCompat.getColor(this, R.color.grey))
                     Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
                     return
                 }
@@ -351,8 +371,10 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
                 val start = startDate.text.toString().trim()
                 val end = endDate.text.toString().trim()
+                var isss = selectedAbilityIds.toString()
 
-                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty()) {
+
+                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty()) {
                     competitive.add(
                         AddMicrocycleCompatitive(
                             id = 0,
@@ -437,8 +459,10 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
                 val start = startDate.text.toString().trim()
                 val end = endDate.text.toString().trim()
+                var isss = selectedAbilityIds.toString()
 
-                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty()) {
+
+                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty()) {
                     transient.add(
                         AddMicrocycleTransition(
                             id = 0,
@@ -600,6 +624,13 @@ class AddMicroCycleActivity : AppCompatActivity() {
                     )
                 }
             }, currentProgress)
+        }
+
+        val start = startDateEditText.text.toString()
+        val end = endDateEditText.text.toString()
+
+        if (start == null || start == ""){
+
         }
 
 

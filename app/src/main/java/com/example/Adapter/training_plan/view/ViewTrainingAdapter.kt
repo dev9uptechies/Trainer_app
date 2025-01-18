@@ -86,9 +86,9 @@ class ViewTrainingAdapter(
                 holder.card.visibility = View.GONE
             }
             if (preSeason.mesocycle != null) {
-                holder.mesocycles.text = "Mesocycle: " + preSeason.mesocycle
+                holder.mesocycles.text = "Mesocycle: " + preSeason.mesocycle +" Cycle"
             } else {
-                holder.mesocycles.text = "Mesocycle: " + "0 Days"
+                holder.mesocycles.text = "Mesocycle: " + "0 Cycle"
             }
         } ?: run {
             holder.card.visibility = View.GONE
@@ -116,10 +116,10 @@ class ViewTrainingAdapter(
             }
 
             if (preCompetitive.mesocycle != null) {
-                holder.mesocycles2.text = "Mesocycle: " + preCompetitive.mesocycle
+                holder.mesocycles2.text = "Mesocycle: " + preCompetitive.mesocycle+" Cycle"
                 hasValidData = true
             } else {
-                holder.mesocycles2.text = "Mesocycle: 0 Days"
+                holder.mesocycles2.text = "Mesocycle: 0 Cycle"
             }
 
             if (!hasValidData) {
@@ -151,9 +151,9 @@ class ViewTrainingAdapter(
                 holder.card3.visibility = View.GONE
             }
             if (competitive.mesocycle != null) {
-                holder.mesocycles3.text = "Mesocycle: " + competitive.mesocycle
+                holder.mesocycles3.text = "Mesocycle: " + competitive.mesocycle+" Cycle"
             } else {
-                holder.mesocycles3.text = "Mesocycle: " + "0 Days"
+                holder.mesocycles3.text = "Mesocycle: " + "0 Cycle"
             }
         } ?: run {
             holder.card3.visibility = View.GONE
@@ -180,9 +180,9 @@ class ViewTrainingAdapter(
                 holder.card4.visibility = View.GONE
             }
             if (transition.mesocycle != null) {
-                holder.mesocycles4.text = "Mesocycle: " + transition.mesocycle
+                holder.mesocycles4.text = "Mesocycle: " + transition.mesocycle+" Cycle"
             } else {
-                holder.mesocycles4.text = "Mesocycle: " + "0 Days"
+                holder.mesocycles4.text = "Mesocycle: " + "0 Cycle"
             }
         } ?: run {
             holder.card4.visibility = View.GONE

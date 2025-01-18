@@ -26,6 +26,7 @@ import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.NumberPicker
@@ -117,6 +118,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     lateinit var goalData: MutableList<SportlistData.sportlist>
     var Goal = ArrayList<String>()
     private var firstTimeId: Int = -1
+    var datecheckstart:Boolean = false
+    var datecheckend:Boolean = false
 
 
     private val PREF_NAME = "MyPreferences"
@@ -645,20 +648,23 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
 
         binding.nextButtonText.setOnClickListener {
+
+
+
             val start = tv_start_time.text.toString()
             val end = tv_End_time.text.toString()
 
             Log.d("GHHGHGHGHGHGH", "onCreate: $start    $end")
             Log.d("GHHGHGHGHGHGH", "onCreate: ${start_error.text.toString()}    $end")
 
-            if (start == null || start == "") {
+            if (datecheckstart == false) {
                 start_error.visibility = View.VISIBLE
                 Toast.makeText(this, "Start field is required", Toast.LENGTH_SHORT)
                     .show() // Toast for start field
                 return@setOnClickListener
             }
 
-            if (end == null || end == "") {
+            if (datecheckend == false) {
                 end_error.visibility = View.VISIBLE
                 Toast.makeText(this, "End field is required", Toast.LENGTH_SHORT)
                     .show() // Toast for end field
@@ -1002,6 +1008,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                                 schedule.start_time?.toString() ?: "",
                                                 schedule.end_time?.toString() ?: ""
                                             )
+                                            datecheckstart = true
+                                            datecheckend = true
                                         }
 
                                         "tue", "tuesday" -> {
@@ -1019,7 +1027,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                                 schedule.start_time?.toString() ?: "",
                                                 schedule.end_time?.toString() ?: ""
                                             )
-                                        }
+                                            datecheckstart = true
+                                            datecheckend = true                                        }
 
                                         "wed", "wednesday" -> {
                                             toggleDay(
@@ -1036,6 +1045,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                                 schedule.start_time?.toString() ?: "",
                                                 schedule.end_time?.toString() ?: ""
                                             )
+                                            datecheckstart = true
+                                            datecheckend = true
                                         }
 
                                         "thu", "thursday" -> {
@@ -1053,6 +1064,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                                 schedule.start_time?.toString() ?: "",
                                                 schedule.end_time?.toString() ?: ""
                                             )
+                                            datecheckstart = true
+                                            datecheckend = true
                                         }
 
                                         "fri", "friday" -> {
@@ -1070,6 +1083,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                                 schedule.start_time?.toString() ?: "",
                                                 schedule.end_time?.toString() ?: ""
                                             )
+                                            datecheckstart = true
+                                            datecheckend = true
                                         }
 
                                         "sat", "saturday" -> {
@@ -1087,6 +1102,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                                 schedule.start_time?.toString() ?: "",
                                                 schedule.end_time?.toString() ?: ""
                                             )
+                                            datecheckstart = true
+                                            datecheckend = true
                                         }
 
                                         "sun", "sunday" -> {
@@ -1104,6 +1121,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                                 schedule.start_time?.toString() ?: "",
                                                 schedule.end_time?.toString() ?: ""
                                             )
+                                            datecheckstart = true
+                                            datecheckend = true
                                         }
 
                                         else -> {
@@ -1476,14 +1495,12 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     fun processImage(context: Context, imageUri: Uri?): MultipartBody.Part? {
         Log.d("SUJALLLLLLGGGGG", "processImage: $imageUri")
 
-        // Use the passed image URI (from gallery)
         val imageFile = imageUri?.let { createFileFromContentUri(context, it) }
         if (imageFile != null && imageFile.exists()) {
             val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
             return MultipartBody.Part.createFormData("image", imageFile.name, imageRequestBody)
         }
 
-        // Fallback to the image in SharedPreferences if no new image is selected
         val imageUrl = getImageUriFromPreferences(context)?.toString()
         Log.e("ProcessImage", "Image URL from SharedPreferences: $imageUrl")
 
@@ -1547,7 +1564,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             } catch (e: Exception) {
                 Log.e("ConvertUrlToFile", "Error converting URL to file: ${e.message}", e)
             }
-
             return@withContext null
         }
     }
@@ -1623,8 +1639,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
     }
 
-
-
     fun getFileNameFromUri(context: Context, uri: Uri): String? {
         return if (uri.scheme == "content") {
             context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
@@ -1637,7 +1651,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             }
         }
     }
-
 
 //    fun createFileFromLocalPath(context: Context, localPath: String): File? {
 //        val correctedPath = if (localPath.startsWith("/")) {
@@ -1713,9 +1726,19 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 Log.d("GroupData999", "Image successfully loaded into ImageView")
             } else if (!imageUri.isAbsolute) {
                 val completeUrl = "https://trainers.codefriend.in$imageUriString"
-                Glide.with(this)
+                Picasso.get()
                     .load(completeUrl)
-                    .into(binding.imageUpload)
+                    .error(R.drawable.app_icon) // Fallback image in case of error
+                    .into(binding.imageUpload, object : com.squareup.picasso.Callback {
+                        override fun onSuccess() {
+                            Log.d("Picasso", "Image loaded successfully.")
+                        }
+
+                        override fun onError(e: Exception?) {
+                            Log.e("PicassoError", "Image load failed: ${e?.message}")
+                        }
+                    })
+
 
                 binding.selectUploadLy.visibility = View.GONE
                 binding.imageUpload.visibility = View.VISIBLE
@@ -1727,13 +1750,11 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             Log.d("GroupData", "Skipping image loading as selectedImageUri is already set: $selectedImageUri")
         }
 
-        // Set sport name
         sportName?.let {
             binding.edtSport.setText(it)
             Log.d("GroupData", "Loaded sportName: $it")
         }
 
-        // Set sport ID
         sportId?.let {
             try {
                 sportlId.id = it.toInt() // Convert to int if valid
@@ -1983,7 +2004,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         startTime: String?,
         endTime: String?
     ) {
-
         val inflater = LayoutInflater.from(this).inflate(R.layout.time_layout_group, null)
         linearLayout.addView(inflater, linearLayout.childCount)
 
@@ -1991,45 +2011,44 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val tvEndTime: AppCompatEditText = inflater.findViewById(R.id.tv_End_time)
         val tvStartTimeCard: CardView = inflater.findViewById(R.id.start_time_card)
         val tvEndTimeCard: CardView = inflater.findViewById(R.id.card_end_time)
+        val delete: ImageView = inflater.findViewById(R.id.img_delete)
 
         val id = linearLayout.childCount.toString()
 
         tvStartTime.setText(startTime)
         tvEndTime.setText(endTime)
 
-        // Update the dayTimes map and save to preferences only if both times are valid
-//        if (isStartTimeValidation && isEndTimeValidation) {
         updateDayTimes(dayKey, id, startTime ?: "", endTime ?: "")
         saveDayTimesToPreferences()
-//        }
 
         // Set listeners for the time fields
         tvStartTimeCard.setOnClickListener {
             SetDialog_start(tvStartTime)
-
+            checkDateValidity(tvStartTime, tvEndTime)
         }
 
         tvEndTimeCard.setOnClickListener {
             setDialogEnd(tvEndTime)
+            checkDateValidity(tvStartTime, tvEndTime)
         }
 
         tvStartTime.setOnClickListener {
             Log.d("CLICK", "Start time clicked")
             SetDialog_start(tvStartTime)
+            checkDateValidity(tvStartTime, tvEndTime)
         }
 
         tvEndTime.setOnClickListener {
             Log.d("CLICK", "End time clicked")
             setDialogEnd(tvEndTime)
+            checkDateValidity(tvStartTime, tvEndTime)
         }
 
         // TextChangedListener for the start time field
         tvStartTime.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
-                if (isStartTimeValidation) {
-                    // Update the time in the dayTimes map when the start time is changed
-                    updateDayTimes(dayKey, id, s.toString(), tvEndTime.text.toString())
-                }
+                updateDayTimes(dayKey, id, s.toString(), tvEndTime.text.toString())
+                checkDateValidity(tvStartTime, tvEndTime)
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -2039,15 +2058,32 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         // TextChangedListener for the end time field
         tvEndTime.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
-                if (isEndTimeValidation) {
-                    // Update the time in the dayTimes map when the end time is changed
-                    updateDayTimes(dayKey, id, tvStartTime.text.toString(), s.toString())
-                }
+                updateDayTimes(dayKey, id, tvStartTime.text.toString(), s.toString())
+                checkDateValidity(tvStartTime, tvEndTime)
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
+        delete.setOnClickListener {
+            linearLayout.removeView(inflater)
+        }
+    }
+
+    private fun checkDateValidity(tvStartTime: AppCompatEditText, tvEndTime: AppCompatEditText) {
+        val start = tvStartTime.text.toString()
+        val end = tvEndTime.text.toString()
+
+        if (start.isEmpty() || end.isEmpty()) {
+            datecheckstart = false
+            datecheckend = false
+        } else {
+            datecheckstart = true
+            datecheckend = true
+        }
+
+        Log.d("DATECHECK", "Date check: $datecheckstart    $datecheckend")
     }
 
     // Save dayTimes to SharedPreferences
@@ -2056,7 +2092,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val editor = sharedPreferences.edit()
         val gson = Gson()
 
-        // Convert the dayTimes map to a JSON string
         val jsonString = gson.toJson(dayTimes)
         editor.putString("day_times", jsonString)
         editor.apply()

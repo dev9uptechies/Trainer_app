@@ -239,7 +239,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
                 android:layout_margin="@dimen/_10sdp"
-                app:cardBackgroundColor="@color/grey"
+                app:cardBackgroundColor="@color/splash_text_color"
                 app:cardCornerRadius="@dimen/_10sdp"
                 app:layout_constraintBottom_toBottomOf="parent">
 

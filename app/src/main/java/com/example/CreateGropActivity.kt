@@ -25,6 +25,7 @@ import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.NumberPicker
@@ -106,7 +107,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     var lessonId: IntArray = intArrayOf()
 
     private var isMonViewAdded = false
-
+    private var firstview = false
 
     var testId: IntArray = intArrayOf()  // Initialize as an empty array or a default value
     var eventId: IntArray = intArrayOf()  // Initialize as an empty array or a default value
@@ -211,9 +212,13 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
                 mon_linearLayour,
                 createGroupBinding.monAddScheduleTime
             )
+            firstview = true // Set the flag to true
+
 
             mon_addView() // Add the view only if it hasn't been added yet
             isMonViewAdded = true // Set the flag to true
+
+            Log.d("TYTYTYT","GDGDGDGG :- $firstview")
         }
 
         lessonId = intent.getIntArrayExtra("lessonId") ?: intArrayOf()
@@ -2263,6 +2268,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         tv_End_time = inflater.findViewById(R.id.tv_End_time)
         val tv_start_timeCard: CardView = inflater.findViewById(R.id.start_time_card)
         val tv_End_timeCard: CardView = inflater.findViewById(R.id.card_end_time)
+        val delete: ImageView = inflater.findViewById(R.id.img_delete)
 
         val id = linearLayout.childCount.toString()
         updateDayTimes(dayKey, id, "", "")
@@ -2303,6 +2309,20 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
+        Log.d("TYTYTYT", "addViewForDay: $firstview")
+
+        if (firstview == true){
+            delete.setOnClickListener {
+                tv_start_time.setText("")
+                tv_End_time.setText("")
+            }
+        }else{
+            delete.setOnClickListener {
+                linearLayout.removeView(inflater)
+            }
+        }
+
     }
 
     private fun updateDayTimes(dayKey: String, id: String, startTime: String, endTime: String) {

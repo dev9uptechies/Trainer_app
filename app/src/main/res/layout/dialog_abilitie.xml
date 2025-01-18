@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Add Microcycle"
+            android:text="Add Ability"
             android:fontFamily="@font/poppins_medium"
             android:textColor="@color/white"
             android:textSize="@dimen/_13sdp" />

@@ -26,30 +26,41 @@ class ViewLessionAdapter(
         return MyViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: ViewLessionAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val movie = splist[position].program
-        holder.tvFname.text = movie!!.name
-        holder.tv_goal.text = movie.goal!!.name
-        holder.tv_total_time.text = movie.time
 
-        if (movie.id == selectId) {
-            holder.click.setBackgroundResource(R.drawable.card_select_1)
-        } else {
-            holder.click.setBackgroundResource(R.drawable.card_unselect_1)
+        // Null-safe check for movie object and its properties
+        movie?.let {
+            holder.tvFname.text = it.name ?: "No Name"  // Use default text if name is null
+            holder.tv_goal.text = it.goal?.name ?: "No Goal"  // Use default text if goal is null
+            holder.tv_total_time.text = it.time ?: "No Time"  // Use default text if time is null
+
+            // Set background for selected item
+            if (it.id == selectId) {
+                holder.click.setBackgroundResource(R.drawable.card_select_1)
+            } else {
+                holder.click.setBackgroundResource(R.drawable.card_unselect_1)
+            }
+
+            // Set favorite image based on `is_favourite`
+            if (it.is_favourite?.toString() == "1") {
+                holder.image.setImageResource(R.drawable.ic_favorite_select)
+            } else {
+                holder.image.setImageResource(R.drawable.ic_favorite_red)
+            }
+
+            // Handle click event
+            holder.click.setOnClickListener {
+                selectId = it.id
+                notifyDataSetChanged()
+                listener.onItemClicked(it, position, it.id!!.toLong(), "Click")
+            }
+        } ?: run {
+            // Handle case when movie is null (optional)
+            holder.tvFname.text = "No Program"
+            holder.tv_goal.text = "No Goal"
+            holder.tv_total_time.text = "No Time"
         }
-
-        if (movie.is_favourite!!.toString() == "1") {
-            holder.image.setImageResource(R.drawable.ic_favorite_select)
-        } else {
-            holder.image.setImageResource(R.drawable.ic_favorite_red)
-        }
-
-        holder.click.setOnClickListener {
-            selectId = movie.id
-            notifyDataSetChanged()
-            listener.onItemClicked(it, position, movie.id!!.toLong(), "Click")
-        }
-
     }
 
     override fun getItemCount(): Int {
