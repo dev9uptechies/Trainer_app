@@ -3,6 +3,7 @@ package com.example
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trainerapp.ApiClass.ProgramListData
 import com.example.trainerapp.PreferencesManager
@@ -21,6 +23,7 @@ class ProgramListAdapter(
     var context: Context,
     val listener: OnItemClickListener.OnItemClickCallback,
     private var selectId: ArrayList<Int>? = null,
+    private var Sname: String? = null,
     private var type: String? = null
 ) : RecyclerView.Adapter<ProgramListAdapter.MyViewHolder>() {
 
@@ -59,30 +62,38 @@ class ProgramListAdapter(
 
     override fun onBindViewHolder(holder: ProgramListAdapter.MyViewHolder, position: Int) {
         val movie = splist!![position]
-        holder.image.visibility = View.GONE
-        holder.tvFname.text = movie.name
-        holder.tvgoal.text = "Goal: " + movie.goal!!.name
-        holder.tv_athlet.text = "Time: " + movie.time
 
+        // Check if Sname matches movie.section!!.name
+        if (Sname == movie.section!!.name) {
+            // Display the item's data
+            holder.image.visibility = View.GONE
+            holder.tvFname.text = movie.name
+            holder.tvgoal.text = "Goal: " + movie.goal!!.name
+            holder.tv_athlet.text = "Time: " + movie.time
+
+            Log.d("MATCHING ITEM", "Sname: $Sname matches Section Name: ${movie.section!!.name}")
+        } else {
+            // Keep the layout unchanged, but do not set data
+            holder.image.visibility = View.GONE
+            holder.card.visibility = View.GONE
+            holder.tvFname.text = ""
+            holder.tvgoal.text = ""
+            holder.tv_athlet.text = ""
+
+            Log.d("NON-MATCHING ITEM", "Sname: $Sname does not match Section Name: ${movie.section!!.name}")
+        }
+
+        // Handle checkbox state
         holder.checkbox.isChecked = selectId?.contains(movie.id) == true
 
-        holder.checkbox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
-            if (b) {
+        holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
                 setdata1(position)  // Add to selection
             } else {
                 OnItemClickListener(position, listener, movie.id!!.toLong(), "remove")
                 removeData(movie.id!!)  // Remove from selection
             }
-        })
-
-//        holder.checkbox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
-//            if (b.equals(true)) {
-//                setdata1(position)
-//            } else {
-//                OnItemClickListener(position, listener, movie.id!!.toLong(), "remove")
-//            }
-//        })
-
+        }
     }
 
     override fun getItemCount(): Int {
@@ -95,6 +106,8 @@ class ProgramListAdapter(
         var tv_athlet: TextView = view.findViewById<View>(R.id.tv_athlet) as TextView
         var image: ImageView = view.findViewById<View>(R.id.image) as ImageView
         var checkbox: CheckBox = view.findViewById<View>(R.id.checkbox) as CheckBox
+        var card: CardView = view.findViewById<View>(R.id.card) as CardView
+
     }
 
     private fun removeData(id: Int) {

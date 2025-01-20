@@ -991,6 +991,7 @@ class EditMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                 val finalStartDate = if (startdatesent.isNullOrEmpty()) errorstartdate.toString() else startdatesent
                 val finalEndDate = if (enddatesent.isNullOrEmpty()) errorenddate.toString() else enddatesent
                 val finalAbility: List<Int> = if (selectedAbilityIds.isNullOrEmpty()) { listOfNotNull(abilityid?.toIntOrNull())
+
                 } else {
                     selectedAbilityIds
                 }

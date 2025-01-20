@@ -38,6 +38,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.Adapter.lesson.SectionLessonAdapter
@@ -53,6 +54,7 @@ import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityLessonBinding
+import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -94,6 +96,10 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
     var sectionId = SelectedValue(null)
     var lessonType = "create"
     var lessonId = ""
+    var sectionName = "General Warm-up"
+
+    private val sectionDataMap: MutableMap<String, ArrayList<ProgramListData.testData>> =
+        mutableMapOf()
 
     private lateinit var Lid: ArrayList<Int>
     private lateinit var Lname: ArrayList<String>
@@ -158,7 +164,6 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
         lessonBinding.edtGoal.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -168,11 +173,11 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
             override fun afterTextChanged(s: Editable?) {
                 updateUI(lessonBinding.cardSave)
             }
+
         })
 
         lessonBinding.edtTime.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -249,7 +254,9 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         lessonBinding.cardSave.isEnabled = false
         lessonBinding.cardSave.setCardBackgroundColor(resources.getColor(R.color.grey))
         exercise_list.clear()
+        clearAllSectionsData()
         lessonBinding.programRecycler.visibility = View.GONE
+
     }
 
     private fun checkButtonTap() {
@@ -257,9 +264,11 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         lessonBinding.cardLoadExercise.setOnClickListener {
 
             Log.d("lesson type :-", "$lessonType")
+            Log.d("lesson Name :-", "$sectionName")
             if (lessonType == "create") {
                 val i = Intent(this, LoadProgramActivity::class.java).apply {
                     putExtra("type", "create")
+                    putExtra("SectionName", sectionName)
                 }
                 startActivity(i)
             } else if (lessonType == "edit") {
@@ -301,10 +310,10 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                     Toast.makeText(this, "Invalid operation", Toast.LENGTH_SHORT).show()
                 }
             }
-
         }
 
         lessonBinding.back.setOnClickListener {
+            clearAllSectionsData()
             finish()
         }
 
@@ -439,20 +448,17 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                 array.add(id.get(i))
             }
 
-            // Prepare goalArray for goal_ids (replace goalId.id with LidToUse)
             val goalArray = JsonArray()
             for (i in 0 until LidToUse.size) {
                 goalArray.add(LidToUse[i])
             }
 
-            // Use lessonId or lessonid (fallback to lessonid if lessonId is null or empty)
             val idToUse = if (lessonId.isNullOrEmpty()) {
                 lessonid
             } else {
                 lessonId.toInt().toString()
             }
 
-            // Create the JSON object to send to the API
             val jsonObject = JsonObject()
             jsonObject.addProperty("id", idToUse)
             jsonObject.addProperty("name", lessonBinding.edtLessonName.text.toString())
@@ -465,7 +471,6 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
             Log.d("Lesson Data :- ", jsonObject.toString())
 
-            // Show progress while API call is being made
             lessonBinding.lessionProgress.visibility = View.VISIBLE
             apiInterface.EditLesson(jsonObject)?.enqueue(object : Callback<LessonData?> {
                 override fun onResponse(call: Call<LessonData?>, response: Response<LessonData?>) {
@@ -550,10 +555,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                     call: Call<LessonData?>,
                     response: Response<LessonData?>
                 ) {
-                    Log.d(
-                        "Lesson Data TAG :-",
-                        response.code().toString() + "" + response.body()!!.message
-                    )
+                    Log.d("Lesson Data TAG :-", response.code().toString() + "" + response.body()!!.message)
                     val code = response.code()
                     if (code == 200) {
                         val resource: LessonData? = response.body()
@@ -598,25 +600,21 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
     private fun setDialog() {
         val dialog = AlertDialog.Builder(this)
 
-        // Create a custom title TextView
         val titleTextView = TextView(this).apply {
             text = "Alert"
-            typeface =
-                ResourcesCompat.getFont(this@LessonActivity, R.font.poppins_medium) // Set the font
+            typeface = ResourcesCompat.getFont(this@LessonActivity, R.font.poppins_medium)
             textSize = 20f
-            setPadding(50, 50, 50, 10) // Optional: add padding
-            setTextColor(Color.BLACK) // Set text color to black
+            setPadding(50, 50, 50, 10)
+            setTextColor(Color.BLACK)
         }
 
-
-        dialog.setCustomTitle(titleTextView) // Set the custom title view
+        dialog.setCustomTitle(titleTextView)
 
         dialog.setMessage("Please Select Program")
         dialog.setPositiveButton("Ok") { dialog, which ->
             dialog.dismiss()
         }
 
-        // Create the AlertDialog
         val alert = dialog.create()
 
         val typeface = ResourcesCompat.getFont(this, R.font.poppins_medium)
@@ -733,7 +731,8 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         popupWindow.elevation = 10f
         val listView = popupView.findViewById<ListView>(R.id.listView)
 
-        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
+        val adapter =
+            object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
                     val typeface =
@@ -975,11 +974,16 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         })
     }
 
-    private fun initRecycler(sectionData: MutableList<TestListData.testData>, initialSelectId: Int?) {
-        lessonBinding.sectionRecycler.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+    private fun initRecycler(
+        sectionData: MutableList<TestListData.testData>,
+        initialSelectId: Int?
+    ) {
+        lessonBinding.sectionRecycler.layoutManager =
+            LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         sectionAdapter = SectionLessonAdapter(sectionData, this, this, initialSelectId)
         lessonBinding.sectionRecycler.adapter = sectionAdapter
     }
+
 
     private val isValidate: Boolean
         get() {
@@ -1090,6 +1094,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
+//                        exercise_list.clear()
                         Log.d("Get Profile Data ", "${response.body()}")
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@LessonActivity)
@@ -1119,30 +1124,6 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        checkUser()
-        if (preferenceManager.getexercisedata()) {
-
-            exercise_list.clear()
-            val exerciseData = getObject(this, "Exercise")
-            if (exerciseData != null) {
-                exercise_list = exerciseData as ArrayList<ProgramListData.testData>
-                lessonBinding.edtTime.setText(exercise_list[0].time)
-                lessonBinding.programRecycler.visibility = View.VISIBLE
-                lessonBinding.programRecycler.layoutManager = LinearLayoutManager(
-                    this,
-                    LinearLayoutManager.HORIZONTAL, false
-                )
-                adapter1 = Exercise_select_Adapter(exercise_list, this)
-                lessonBinding.programRecycler.adapter = adapter1
-            } else {
-                lessonBinding.programRecycler.visibility = View.GONE
-                lessonBinding.edtTime.setText("") // Clear the time field or provide a default value
-            }
-        }
-
-    }
 
     fun getObject(c: Context, key: String): List<ProgramListData.testData>? {
         val appSharedPrefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(
@@ -1342,7 +1323,10 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
             val titleTextView = TextView(this).apply {
                 text = "Success"
                 typeface =
-                    ResourcesCompat.getFont(this@LessonActivity, R.font.poppins_medium) // Set the font
+                    ResourcesCompat.getFont(
+                        this@LessonActivity,
+                        R.font.poppins_medium
+                    ) // Set the font
                 textSize = 20f
                 setPadding(50, 50, 50, 5) // Optional: add padding
                 setTextColor(Color.BLACK)
@@ -1359,7 +1343,6 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                 val messageTextView = alert.findViewById<TextView>(android.R.id.message)
                 messageTextView?.typeface = typeface
 
-                // Set the font for the buttons
                 val positiveButton = alert.getButton(AlertDialog.BUTTON_POSITIVE)
                 positiveButton?.typeface = typeface
 
@@ -1401,8 +1384,156 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         lessonBinding.etSelectTestDate.setText(lessonDatabase.date ?: "")
     }
 
-    override fun onItemClick(id: Int, name: String, position: Int) {
-        sectionId.id = id
-        Log.d("New Id :-", "$id \t ${sectionId.id}")
+
+    private fun saveSectionDataToPreferences(
+        sectionName: String,
+        sectionId: Int,
+        newData: ArrayList<ProgramListData.testData>
+    ) {
+        val sharedPreferences = getSharedPreferences("SectionData", Context.MODE_PRIVATE)
+        val existingData = loadSectionDataFromPreferences(sectionName)
+
+        val finalData = if (existingData != null) {
+            // Merge existing and new data while avoiding duplicates
+            val combinedList = ArrayList(existingData.second)
+            for (item in newData) {
+                if (!combinedList.contains(item)) { // Avoid duplicates
+                    combinedList.add(item)
+                }
+            }
+            combinedList
+        } else {
+            newData
+        }
+
+        val sectionData = mapOf(
+            "sectionId" to sectionId,
+            "data" to finalData
+        )
+
+        val jsonString = Gson().toJson(sectionData)
+        sharedPreferences.edit().putString(sectionName, jsonString).apply()
+        Log.d("SharedPreferences", "Data saved for section: $sectionName with ID: $sectionId")
     }
+
+    private fun loadSectionDataFromPreferences(sectionName: String): Pair<Int, ArrayList<ProgramListData.testData>>? {
+        val sharedPreferences = getSharedPreferences("SectionData", Context.MODE_PRIVATE)
+        val jsonString = sharedPreferences.getString(sectionName, null)
+
+        return if (!jsonString.isNullOrEmpty()) {
+            val type = object : TypeToken<Map<String, Any>>() {}.type
+            val sectionMap: Map<String, Any> = Gson().fromJson(jsonString, type)
+
+            val sectionIdx = (sectionMap["sectionId"] as? Double)?.toInt() ?: return null
+            sectionId.id = sectionIdx  // Wrap the sectionIdx in an ArrayList
+
+            val dataType = object : TypeToken<ArrayList<ProgramListData.testData>>() {}.type
+            val data = Gson().fromJson<ArrayList<ProgramListData.testData>>(
+                Gson().toJson(sectionMap["data"]),
+                dataType
+            )
+
+            println("Saved Section ID: ${sectionId.id}") // Debugging output
+
+            Pair(sectionIdx, data)
+        } else {
+            null
+        }
+    }
+
+
+    private fun clearAllSectionsData() {
+        val sharedPreferences = getSharedPreferences("SectionData", Context.MODE_PRIVATE)
+        sharedPreferences.edit().clear().apply()
+        Log.d("clearAllSectionsData", "Cleared all section data")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("onResume", "Called onResume()")
+
+        if (preferenceManager.getexercisedata()) {
+            Log.d("onResume", "Preference manager indicates exercise data exists")
+
+            var sectionExercises = sectionDataMap[sectionName]
+            Log.d(
+                "onResume",
+                "Section name: '$sectionName', Existing data in map: ${sectionExercises?.getOrNull(0)?.section?.name}"
+            )
+
+            if (sectionExercises == null || sectionExercises.isEmpty()) {
+                val exerciseData =
+                    getObject(this, "Exercise") as? ArrayList<ProgramListData.testData>
+                Log.d("onResume", "Loaded exercise data from storage: $exerciseData")
+                if (exerciseData != null) {
+                    sectionExercises = exerciseData
+                    sectionDataMap[sectionName] = sectionExercises // Cache the loaded data
+                    Log.d("onResume", "Data cached for section: $sectionName")
+                }
+            }
+
+            if (!sectionExercises.isNullOrEmpty()) {
+                exercise_list = sectionExercises
+                Log.d("onResume", "Setting exercise list: $exercise_list")
+
+                // Update UI
+                val time = exercise_list[0].time
+                lessonBinding.edtTime.setText(time)
+                lessonBinding.programRecycler.visibility = View.VISIBLE
+                lessonBinding.programRecycler.layoutManager = LinearLayoutManager(
+                    this, LinearLayoutManager.HORIZONTAL, false
+                )
+                adapter1 = Exercise_select_Adapter(exercise_list, sectionName, this)
+                lessonBinding.programRecycler.adapter = adapter1
+
+//                id = arrayListOf(exercise_list.getOrNull(0)?.id ?: 0)  // Only the first id
+                exercise_list.forEach { exercise ->
+                    id.add(exercise.id!!)  // Add each id to the list
+                }
+
+                Log.d("onResumerrrr", "All ids added: $id")  // Log all the ids in the list
+
+
+            } else {
+                lessonBinding.programRecycler.visibility = View.VISIBLE
+                lessonBinding.edtTime.setText("")
+                Log.d("onResume", "No data found. RecyclerView hidden, EditText cleared")
+            }
+        } else {
+            Log.d("onResume", "Preference manager indicates no exercise data")
+        }
+
+        checkUser()
+
+    }
+
+    override fun onItemClick(ids: Int, name: String, position: Int) {
+        if (sectionName.isNotEmpty() && exercise_list.isNotEmpty()) {
+            saveSectionDataToPreferences(sectionName, ids, ArrayList(exercise_list)) // Save data
+            Log.d("onItemClick", "Saved and cleared data for section: $sectionName")
+        }
+
+        sectionId.id = ids
+        sectionName = name
+        Log.d("onItemClick", "Switched to section: $sectionName")
+
+        val sectionData = loadSectionDataFromPreferences(sectionName)
+        val exercise_list = sectionData?.second ?: arrayListOf()
+
+        if (exercise_list.isNotEmpty()) {
+            lessonBinding.programRecycler.visibility = View.VISIBLE
+            lessonBinding.edtTime.setText(exercise_list[0].time)
+            lessonBinding.programRecycler.layoutManager =
+                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            adapter1 = Exercise_select_Adapter(exercise_list, sectionName, this)
+            lessonBinding.programRecycler.adapter = adapter1
+
+            Log.d("onItemClick}}}}", "RecyclerView updated with data for section: $id")
+        } else {
+            lessonBinding.programRecycler.visibility = View.GONE
+            lessonBinding.edtTime.setText("")
+            Log.d("onItemClick", "No data found for section: $sectionName")
+        }
+    }
+
 }

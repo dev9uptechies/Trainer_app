@@ -45,6 +45,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.Adapter.EditGroup.SetEditAthleteAdapter
@@ -2013,12 +2014,16 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val tvEndTimeCard: CardView = inflater.findViewById(R.id.card_end_time)
         val delete: ImageView = inflater.findViewById(R.id.img_delete)
 
-        val id = linearLayout.childCount.toString()
+
+        val id = linearLayout.childCount
+
+
+        Log.d("HGHGHGHGH", "addViewForDay: $id")
 
         tvStartTime.setText(startTime)
         tvEndTime.setText(endTime)
 
-        updateDayTimes(dayKey, id, startTime ?: "", endTime ?: "")
+        updateDayTimes(dayKey, id.toString(), startTime ?: "", endTime ?: "")
         saveDayTimesToPreferences()
 
         // Set listeners for the time fields
@@ -2047,7 +2052,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         // TextChangedListener for the start time field
         tvStartTime.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
-                updateDayTimes(dayKey, id, s.toString(), tvEndTime.text.toString())
+                updateDayTimes(dayKey, id.toString(), s.toString(), tvEndTime.text.toString())
                 checkDateValidity(tvStartTime, tvEndTime)
             }
 
@@ -2058,7 +2063,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         // TextChangedListener for the end time field
         tvEndTime.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
-                updateDayTimes(dayKey, id, tvStartTime.text.toString(), s.toString())
+                updateDayTimes(dayKey, id.toString(), tvStartTime.text.toString(), s.toString())
                 checkDateValidity(tvStartTime, tvEndTime)
             }
 
@@ -2066,8 +2071,15 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        delete.setOnClickListener {
-            linearLayout.removeView(inflater)
+        if (linearLayout.size == 1){
+            delete.setOnClickListener {
+                tv_start_time.setText("")
+                tv_End_time.setText("")
+            }
+        }else{
+            delete.setOnClickListener {
+                linearLayout.removeView(inflater)
+            }
         }
     }
 

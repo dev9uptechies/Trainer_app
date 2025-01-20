@@ -12,6 +12,7 @@
         android:layout_marginTop="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_10sdp"
         android:elevation="@dimen/_10sdp"
+        android:id="@+id/card"
         app:cardBackgroundColor="#313131"
         app:cardCornerRadius="@dimen/_10sdp"
         tools:ignore="MissingConstraints">

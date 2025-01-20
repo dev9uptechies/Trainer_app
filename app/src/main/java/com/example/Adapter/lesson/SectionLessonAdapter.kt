@@ -1,6 +1,7 @@
 package com.example.Adapter.lesson
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
+import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped
 
 class SectionLessonAdapter(
     private var splist: MutableList<TestListData.testData>,
@@ -19,6 +21,9 @@ class SectionLessonAdapter(
     interface OnItemClickListener {
         fun onItemClick(id: Int, name: String, position: Int)
     }
+
+    private var selectedName: String? = null
+
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.name)
@@ -38,6 +43,7 @@ class SectionLessonAdapter(
 
         if (movie.id == selectId) {
             holder.name.setBackgroundResource(R.drawable.card_select_1)
+            selectedName = movie.name
         } else {
             holder.name.setBackgroundResource(R.drawable.card_unselect_1)
         }
@@ -48,6 +54,11 @@ class SectionLessonAdapter(
             notifyDataSetChanged()
             itemClickListener.onItemClick(movie.id!!, movie.name!!, position)
         }
+
+
+        Log.d("NAMEEEE","NAme:-   $selectedName")
+
+
     }
 
     override fun getItemCount(): Int {

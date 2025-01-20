@@ -217,6 +217,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
             mon_addView() // Add the view only if it hasn't been added yet
             isMonViewAdded = true // Set the flag to true
+            firstview = false
 
             Log.d("TYTYTYT","GDGDGDGG :- $firstview")
         }

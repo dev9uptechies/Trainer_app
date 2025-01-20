@@ -29,6 +29,8 @@ class PreferencesManager(context: Context) {
         return sharedPreferences.getBoolean(SETEXERCISE, false)
     }
 
+
+
     fun setToken(tokenId: String?) {
         spEditor.putString(TOKEN, tokenId)
         spEditor.apply()

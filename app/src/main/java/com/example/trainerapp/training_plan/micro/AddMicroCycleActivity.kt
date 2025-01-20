@@ -181,8 +181,10 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 val end = endDate.text.toString().trim()
                 var isss = selectedAbilityIds.toString()
 
+                Log.d("RTTTRTRTRTR", "SaveMicrocycleTransition: $isss")
 
-                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty()) {
+
+                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty()  && isss != "[]") {
                     preSeason.add(
                         AddMicrocyclePreSeason(
                             id = 0,
@@ -281,11 +283,11 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 val start = startDate.text.toString().trim()
                 val end = endDate.text.toString().trim()
 
-                var isss = selectedAbilityIds.toString()
+                val isss = selectedAbilityIds.toString()
 
                 Log.d("FFHHFHFHH", "SaveMicrocyclePreCompatitive: $isss")
 
-                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty()  && isss.isNotEmpty()) {
+                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty()  && isss.isNotEmpty() && isss != "[]") {
                     preCompetitive.add(
                         AddMicrocyclePreCompatitive(
                             id = 0,
@@ -374,7 +376,7 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 var isss = selectedAbilityIds.toString()
 
 
-                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty()) {
+                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty() && isss != "[]") {
                     competitive.add(
                         AddMicrocycleCompatitive(
                             id = 0,
@@ -462,7 +464,9 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 var isss = selectedAbilityIds.toString()
 
 
-                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty()) {
+                Log.d("RTTTRTRTRTR", "SaveMicrocycleTransition: $isss")
+
+                if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty() && isss != "[]" ) {
                     transient.add(
                         AddMicrocycleTransition(
                             id = 0,

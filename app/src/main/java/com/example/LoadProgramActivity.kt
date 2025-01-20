@@ -26,6 +26,7 @@ class LoadProgramActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
     private var lessonIds: ArrayList<Int> = ArrayList()
     private var type: String? = ""
+    private var Sname: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,13 +34,14 @@ class LoadProgramActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         setContentView(loadProgramBinding.root)
         initViews()
 
-        GetTestList()
+        GetProgramList()
 
         loadProgramBinding.back.setOnClickListener { finish() }
 
         loadProgramBinding.cardSave.setOnClickListener {
             preferenceManager.setexercisedata(true)
             finish()
+
         }
     }
 
@@ -92,6 +94,9 @@ class LoadProgramActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         preferenceManager = PreferencesManager(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
         type = intent.getStringExtra("type")
+        Sname = intent.getStringExtra("SectionName").toString()
+
+        Log.d("YUYUYUUUY","JUST:- $Sname")
         if (!type.isNullOrEmpty()) {
             when (type!!) {
                 "create" -> {
@@ -110,7 +115,7 @@ class LoadProgramActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         Log.d("time Ids :", "$type \t $lessonIds")
     }
 
-    private fun GetTestList() {
+    private fun GetProgramList() {
         loadProgramBinding.programProgress.visibility = View.VISIBLE
         apiInterface.GetProgam()?.enqueue(object : Callback<ProgramListData?> {
             override fun onResponse(
@@ -159,10 +164,10 @@ class LoadProgramActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         loadProgramBinding.programRly.layoutManager = LinearLayoutManager(this)
 
         if (lessonIds.size != 0) {
-            adapter = ProgramListAdapter(data, this, this, lessonIds, type)
+            adapter = ProgramListAdapter(data, this, this, lessonIds, Sname,type)
             loadProgramBinding.programRly.adapter = adapter
         } else {
-            adapter = ProgramListAdapter(data, this, this, null, type)
+            adapter = ProgramListAdapter(data, this, this, null, Sname,type)
             loadProgramBinding.programRly.adapter = adapter
         }
 //        adapter = ProgramListAdapter(data, this, this)
