@@ -352,6 +352,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                         if (response.isSuccessful && response.body() != null) {
                             val data = response.body()?.data ?: mutableListOf()
                             if (data.isNotEmpty()) {
+                                binding.saveBtn.isEnabled = true
                                 plainngData = data.toMutableList()
 //                                setAdapter(trainingData)
                                 initrecyclerplanning(plainngData)
@@ -406,6 +407,8 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                     val Message: String = resource.message!!
                     if (Success == true) {
                         if (resource.data != null) {
+                            binding.saveBtn.isEnabled = true
+
                             EventList = resource.data!!
                             resource.data!!.forEach {
                                 Log.d("EventTitle", it.title ?: "No title")
@@ -456,6 +459,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                         if (success) {
                             val data = resource.data
                             if (!data.isNullOrEmpty()) {
+                                binding.saveBtn.isEnabled = true
                                 Log.d("Lesson Data :-", "$success $message \t $data")
                                 lessonData.addAll(data)
                                 initRecyclerview(data)
@@ -498,9 +502,13 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                     if (Success == true) {
                         try {
                             if (resource.data!! != null) {
+                                binding.saveBtn.isEnabled = true
+
                                 initrecyclerTest(resource.data)
                             }else{
                                 binding.saveBtn.isEnabled = false
+                                binding.saveBtn.isClickable = false
+
                                 Toast.makeText(this@LessonListActivity, "No Test available", Toast.LENGTH_SHORT).show()
                             }
                         } catch (e: Exception) {
@@ -601,6 +609,8 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                         val data = resource?.data
 
                         if (resource?.data!! != null) {
+                            binding.saveBtn.isEnabled = true
+
                             if (data != null) {
                                 athleteData.addAll(data)
                                 initrecyclerAthlete(athleteData)
@@ -627,7 +637,6 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
             }
         })
     }
-
 
     private fun initrecyclerAthlete(testdatalist: MutableList<AthleteData.Athlete>) {
         binding.progresBar.visibility = View.GONE

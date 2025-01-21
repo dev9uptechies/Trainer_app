@@ -217,32 +217,38 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
         mainId = intent.getIntExtra("athleteId", 0)
         Log.d("MAINID", "MAINID:- $mainId")
 
-        if (mainId != 0) {
-            getpersonaldiaryshare(mainId)
-            binding.swipeReferesh.isRefreshing = false
-
-        } else {
-            loadData()
-            binding.swipeReferesh.isRefreshing = false
-        }
+//        if (mainId != 0) {
+//            getpersonaldiaryshare(mainId)
+//            binding.swipeReferesh.isRefreshing = false
+//
+//        } else {
+//            loadData()
+//            binding.swipeReferesh.isRefreshing = false
+//        }
     }
 
     private fun loadData() {
-        getpersonaldiary()
-        binding.swipeReferesh.isRefreshing = false
 
-            val userType = preferenceManager.GetFlage()
+        val userType = preferenceManager.GetFlage()
 
-            if (userType == "Athlete") {
-                binding.shareCard.visibility = View.VISIBLE
+        if (userType == "Athlete") {
+            binding.shareCard.visibility = View.VISIBLE
+            val savedStatus = getShareStatus()
+            binding.switchShare.isChecked = savedStatus == 1
+        } else {
+            binding.shareCard.visibility = View.GONE
 
-                val savedStatus = getShareStatus()
-                binding.switchShare.isChecked = savedStatus == 1
+            diaryshareData.clear()
+
+            if (mainId != 0) {
+                binding.add.visibility = View.GONE
+                getpersonaldiaryshare(mainId)
             } else {
-                binding.shareCard.visibility = View.GONE
+                getpersonaldiary()
             }
 
-
+            binding.swipeReferesh.isRefreshing = false
+        }
     }
 
 //    private fun getpersonaldiary() {

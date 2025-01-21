@@ -40,14 +40,13 @@
 
         <ImageView
             android:id="@+id/add"
-            android:layout_width="@dimen/_22sdp"
-            android:layout_height="@dimen/_22sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:src="@drawable/create_image"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_credit"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:scaleType="fitXY"
+            android:src="@drawable/create_group"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_credit" />
-
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <ListView
             android:id="@+id/reminderListView"

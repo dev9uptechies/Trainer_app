@@ -39,6 +39,10 @@ class ViewCompetitionAdapter(
         holder.titleItem.text = movie.name
         holder.coachRating.rating = movie.coachRating!!.toFloat()
         holder.athleteRating.rating = movie.athleteRating!!.toFloat()
+
+
+        Log.d("FGGFFGGFG", "onBindViewHolder: $isCoach")
+
         if (isSetData!!) {
             holder.athleteRating.isEnabled = false
             holder.coachRating.isEnabled = false
@@ -51,12 +55,11 @@ class ViewCompetitionAdapter(
             if (isCoach == true) {
                 Log.d("tetttssttsstst", "onBindViewHolder: Coachhhhhhhhh")
 
-                holder.coachRating.isEnabled = true
+                holder.coachRating.isEnabled = false
                 holder.athleteRating.isEnabled = false
                 holder.athleteRating.isClickable = false
                 holder.athleteRating.isFocusable = false
-                holder.coachRating.progressTintList =
-                    context.resources.getColorStateList(R.color.red, null)
+                holder.coachRating.progressTintList = context.resources.getColorStateList(R.color.red, null)
                 holder.coachRating.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
                     if (fromUser) {
                         Log.d("Rating", "$rating")

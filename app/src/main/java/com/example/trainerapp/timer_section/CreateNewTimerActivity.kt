@@ -127,7 +127,7 @@ class CreateNewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         }
 
         createNewTimerBinding.createCycle.setOnClickListener {
-            createNewTimerBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
+                createNewTimerBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
             goalDialog()
         }
 

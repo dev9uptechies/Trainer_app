@@ -3,6 +3,7 @@ package com.example.trainerapp.view_analysis
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -110,7 +111,10 @@ class ViewAnalysisActivity : AppCompatActivity() {
             viewAnalysisBinding.edtAthletes.visibility = View.VISIBLE
 
             if (aid != 0 || Name != null){
-                checkButtonClick2()
+
+                viewAnalysisBinding.edtAthletes.visibility = View.GONE
+                getCompetitionDataAid()
+//                checkButtonClick2()
             }else{
                 checkButtonClick()
             }
@@ -132,12 +136,21 @@ class ViewAnalysisActivity : AppCompatActivity() {
             val list = athleteData.map { it.name }
             val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_list, null)
+
+            val weightInPixels = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                330f,
+                resources.displayMetrics
+            ).toInt()
+
             val popupWindow = PopupWindow(
                 popupView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+                weightInPixels,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 true
             )
+
             popupWindow.setBackgroundDrawable(
                 ContextCompat.getDrawable(
                     this@ViewAnalysisActivity,
@@ -148,8 +161,7 @@ class ViewAnalysisActivity : AppCompatActivity() {
 
             val listView = popupView.findViewById<ListView>(R.id.listView)
 
-            val adapter =
-                object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
+            val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
                     override fun getView(
                         position: Int,
                         convertView: View?,
@@ -186,7 +198,6 @@ class ViewAnalysisActivity : AppCompatActivity() {
     }
 
     private fun checkButtonClick2() {
-        // Check if athleteData is empty before proceeding
         if (athleteData.isEmpty()) {
             Log.e("PopupError", "Athlete data is empty, cannot display athlete name")
             return // Exit the method early if no athletes are found
@@ -196,14 +207,11 @@ class ViewAnalysisActivity : AppCompatActivity() {
 
         val selectedAthlete = athleteData.find { it.name == Name }
 
-        // Hide the EditText field regardless of whether an athlete is selected
         viewAnalysisBinding.edtAthletes.visibility = View.GONE
 
         if (selectedAthlete != null) {
-            // Assign the athlete's ID to aid
             aid = selectedAthlete.id!!
 
-            // Proceed to set the RecyclerView with the selected athlete's ID
             setRecyclerView(aid)
         } else {
             // Log an error if no athlete is found by the name
@@ -332,6 +340,64 @@ class ViewAnalysisActivity : AppCompatActivity() {
                                         "${i.category} \n ${i.athlete!!.name}"
                                     )
                                     competitionData.add(i)
+
+                                }
+                                Log.d("Competition Data :-", "${competitionData}")
+                            }
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(this@ViewAnalysisActivity)
+                    } else {
+                        Toast.makeText(
+                            this@ViewAnalysisActivity,
+                            "Failed",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(p0: Call<GetCompetition>, p1: Throwable) {
+                    viewAnalysisBinding.ProgressBar.visibility = View.GONE
+                }
+
+            })
+        } catch (e: Exception) {
+            Log.d("Error :-", "${e.message}")
+        }
+    }
+
+
+    private fun getCompetitionDataAid() {
+        try {
+
+            Log.d("TESTSS", "getCompetitionData: ")
+
+            competitionData.clear()
+            apiInterface.GetCompetitionAnalysisData().enqueue(object : Callback<GetCompetition> {
+                override fun onResponse(
+                    call: Call<GetCompetition>,
+                    response: Response<GetCompetition>
+                ) {
+                    viewAnalysisBinding.ProgressBar.visibility = View.GONE
+                    Log.d("TAG", response.code().toString() + "")
+
+                    val code = response.code()
+                    if (code == 200) {
+                        val success: Boolean = response.body()!!.status!!
+                        if (success) {
+                            val data = response.body()!!
+                            Log.d("Athlete :- Data ", "${data}")
+                            val message = data.message ?: "Success"
+                            val compData = data.data!!
+                            if (compData != null) {
+                                for (i in compData) {
+                                    Log.d(
+                                        "Competition Data :-",
+                                        "${i.category} \n ${i.athlete!!.name}"
+                                    )
+                                    competitionData.add(i)
+
+                                    setRecyclerView(aid)
 
                                 }
                                 Log.d("Competition Data :-", "${competitionData}")

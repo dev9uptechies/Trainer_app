@@ -166,6 +166,7 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
     }
 
     private fun setDefaultRecycler() {
+        viewAnalysisBinding.save.visibility = View.GONE
         viewAnalysisBinding.performanceRly.layoutManager = LinearLayoutManager(this)
         compAdapter = ViewCompetitionAdapter(analysisData, this, true, false)
         viewAnalysisBinding.performanceRly.adapter = compAdapter

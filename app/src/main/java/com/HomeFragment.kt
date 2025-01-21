@@ -148,6 +148,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         val userType = preferenceManager.GetFlage()
 
         if (userType == "Athlete") {
+            homeFragmentBinding.linerAthlete.visibility =View.VISIBLE
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_library).isVisible = false
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = false
             if (receivedIdInt != null) {
@@ -158,6 +159,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             }
 
         } else {
+            homeFragmentBinding.linerAthlete.visibility =View.GONE
             if (receivedIdInt != null) {
                 callGroupApi(receivedIdInt)
             } else {
@@ -445,7 +447,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 //                // Set the TextView with the formatted month and year
 //                homeFragmentBinding.tvDate.text = formattedMonth
 
-            val formattedMonth = DateTimeFormatter.ofPattern("MMM,yyyy").format(today.yearMonth)
+            val formattedMonth = DateTimeFormatter.ofPattern("MMM yyyy").format(today.yearMonth)
             homeFragmentBinding.tvDate.text = formattedMonth
 
             // Optionally, apply custom formatting logic
@@ -677,7 +679,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         val editor = sharedPreferences.edit()
         editor.remove("selectedGroupName")
         editor.remove("selectedStartDate")
-        editor.remove("selectedId") // Clear the saved ID
+        editor.remove("selectedId")
         editor.apply()
     }
 
@@ -705,8 +707,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         Sportlist = ArrayList()
         WorkOutlist = ArrayList()
 
-        val sharedPreferences =
-            requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
+
+        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
         receivedIds = sharedPreferences.getString("id", "default_value") ?: ""
 
         Log.d("CalenderFragment", "Received ID from SharedPreferences: $receivedIds")
@@ -1217,27 +1219,59 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
 
-        when (position) {
-            0 -> {
-                homeFragmentBinding.informationLinear.visibility = View.GONE
-                homeFragmentBinding.InstructionLinera.visibility = View.GONE
-                homeFragmentBinding.NewsLinera.visibility = View.VISIBLE
-                homeFragmentBinding.linerAthlete.visibility = View.GONE
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete") {
+            homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+
+            when (position) {
+                0 -> {
+                    homeFragmentBinding.informationLinear.visibility = View.GONE
+                    homeFragmentBinding.InstructionLinera.visibility = View.GONE
+                    homeFragmentBinding.NewsLinera.visibility = View.VISIBLE
+                    homeFragmentBinding.linerAthlete.visibility = View.GONE
+                }
+
+                1 -> {
+                    homeFragmentBinding.informationLinear.visibility = View.GONE
+                    homeFragmentBinding.InstructionLinera.visibility = View.VISIBLE
+                    homeFragmentBinding.NewsLinera.visibility = View.GONE
+                    homeFragmentBinding.linerAthlete.visibility = View.GONE
+                }
+
+                2 -> {
+                    homeFragmentBinding.informationLinear.visibility = View.VISIBLE
+                    homeFragmentBinding.InstructionLinera.visibility = View.GONE
+                    homeFragmentBinding.NewsLinera.visibility = View.GONE
+                    homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+                }
+            }
+        }else{
+            homeFragmentBinding.linerAthlete.visibility = View.GONE
+
+            when (position) {
+                0 -> {
+                    homeFragmentBinding.informationLinear.visibility = View.GONE
+                    homeFragmentBinding.InstructionLinera.visibility = View.GONE
+                    homeFragmentBinding.NewsLinera.visibility = View.VISIBLE
+                    homeFragmentBinding.linerAthlete.visibility = View.GONE
+                }
+
+                1 -> {
+                    homeFragmentBinding.informationLinear.visibility = View.GONE
+                    homeFragmentBinding.InstructionLinera.visibility = View.VISIBLE
+                    homeFragmentBinding.NewsLinera.visibility = View.GONE
+                    homeFragmentBinding.linerAthlete.visibility = View.GONE
+                }
+
+                2 -> {
+                    homeFragmentBinding.informationLinear.visibility = View.VISIBLE
+                    homeFragmentBinding.InstructionLinera.visibility = View.GONE
+                    homeFragmentBinding.NewsLinera.visibility = View.GONE
+                    homeFragmentBinding.linerAthlete.visibility = View.GONE
+                }
             }
 
-            1 -> {
-                homeFragmentBinding.informationLinear.visibility = View.GONE
-                homeFragmentBinding.InstructionLinera.visibility = View.VISIBLE
-                homeFragmentBinding.NewsLinera.visibility = View.GONE
-                homeFragmentBinding.linerAthlete.visibility = View.GONE
-            }
-
-            2 -> {
-                homeFragmentBinding.informationLinear.visibility = View.VISIBLE
-                homeFragmentBinding.InstructionLinera.visibility = View.GONE
-                homeFragmentBinding.NewsLinera.visibility = View.GONE
-                homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
-            }
         }
     }
 }

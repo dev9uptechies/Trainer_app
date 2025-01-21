@@ -43,6 +43,8 @@ class ViewMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         startDate = intent.getStringExtra("startDate")
         endDate = intent.getStringExtra("endDate")
 
+        Log.d("DHDHDHDHDH", "onCreate: $startDate     $endDate")
+
         initViews()
         setupListeners()
         refreshData()

@@ -159,16 +159,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:cardBackgroundColor="#535353"
+                android:clickable="false"
+                android:focusable="false"
                 app:cardCornerRadius="@dimen/_10sdp"
                 app:layout_constraintBottom_toBottomOf="parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <Button
+                    android:id="@+id/btn_all_qulity"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
                     android:gravity="center"
+                    android:enabled="false"
+                    android:clickable="false"
+                    android:background="@drawable/btn_sel_bg_color"
                     android:text="View All Quality graph"
+                    android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_12sdp" />
             </androidx.cardview.widget.CardView>
@@ -186,16 +193,23 @@
                 android:id="@+id/view_average_graph"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clickable="false"
+                android:focusable="false"
                 app:cardBackgroundColor="#535353"
                 app:cardCornerRadius="@dimen/_10sdp"
                 app:layout_constraintBottom_toBottomOf="parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <Button
+                    android:id="@+id/btn_average"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
                     android:gravity="center"
+                    android:textAllCaps="false"
+                    android:enabled="false"
+                    android:clickable="false"
+                    android:background="@drawable/btn_sel_bg_color"
                     android:text="View Average graph"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_12sdp" />

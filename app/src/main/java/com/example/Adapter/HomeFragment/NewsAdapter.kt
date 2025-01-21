@@ -54,6 +54,7 @@ class NewsAdapter(
             intent.putExtra("title", news.title)
             intent.putExtra("dec", news.description)
             intent.putExtra("image", news.image)
+            intent.putExtra("date", news.created_at)
             context.startActivity(intent)
         }
 

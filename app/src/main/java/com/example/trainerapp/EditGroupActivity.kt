@@ -45,6 +45,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -1998,7 +1999,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
 
-    // Add view for a specific day
     private fun addViewForDay(
         linearLayout: LinearLayout,
         dayKey: String,
@@ -2014,10 +2014,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val tvEndTimeCard: CardView = inflater.findViewById(R.id.card_end_time)
         val delete: ImageView = inflater.findViewById(R.id.img_delete)
 
-
         val id = linearLayout.childCount
-
-
         Log.d("HGHGHGHGH", "addViewForDay: $id")
 
         tvStartTime.setText(startTime)
@@ -2071,17 +2068,41 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        if (linearLayout.size == 1){
-            delete.setOnClickListener {
-                tv_start_time.setText("")
-                tv_End_time.setText("")
+        Log.d("OPOOOOOO", "addViewForDay: ${linearLayout.size}")
+        Log.d("OPOOOOOO", "addViewForDay: ${linearLayout.childCount}")
+
+        delete.setOnClickListener {
+            // Remove the current view
+            linearLayout.removeView(inflater)
+
+            // Check the updated child count
+            val updatedCount = linearLayout.childCount
+            Log.d("LINEAR_LAYOUT", "Updated child count: $updatedCount")
+
+            if (updatedCount == 1) {
+                val remainingView = linearLayout.getChildAt(0)
+                val remainingDelete: ImageView = remainingView.findViewById(R.id.img_delete)
+                remainingDelete.isEnabled = true
+
+                tvStartTime.setText("")
+                tvStartTime.setText("")
+
             }
-        }else{
-            delete.setOnClickListener {
-                linearLayout.removeView(inflater)
+
+            if (updatedCount == 0) {
+                Log.d("LINEAR_LAYOUT", "No children left in the layout")
             }
         }
+
+        if (linearLayout.childCount > 1) {
+            delete.isEnabled = true
+            delete.alpha = 1.0f
+        } else {
+            delete.isEnabled = false
+            delete.alpha = 0.5f
+        }
     }
+
 
     private fun checkDateValidity(tvStartTime: AppCompatEditText, tvEndTime: AppCompatEditText) {
         val start = tvStartTime.text.toString()
@@ -2554,7 +2575,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         val btnApply = dialog.findViewById<Button>(R.id.btnApply)
         val btnCancel = dialog.findViewById<Button>(R.id.btnCancel)
 
-        // Set initial values for NumberPickers
         hourPicker.minValue = 1
         hourPicker.maxValue = 24
         minPicker.minValue = 0

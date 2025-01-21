@@ -439,58 +439,64 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                             Log.d("API Response", "Response: $selectedDaysModel")
 
                             val data = selectedDaysModel?.data
+
                             if (data != null) {
                                 if (::eventadapter.isInitialized) {
                                     eventadapter.clearData()
                                 }
-                                initTestRecyclerView(data.tests)
-                                initLessonRecyclerView(data.lessons)
-                                initEventRecyclerView(data.events)
 
                                 if (data.lessons.isNotEmpty()) {
                                     if (!datesWithDataLesson.contains(selectedDate)) {
                                         datesWithDataLesson.add(selectedDate)
-                                        // Notify the calendar view to update this date
+                                        // Notify the calendar view to update this data
                                         calendarView!!.notifyDateChanged(selectedDate)
                                     }
-                                }else if (data.events.isNotEmpty()) {
+                                } else {
+                                    if (datesWithDataLesson.contains(selectedDate)) {
+                                        datesWithDataLesson.remove(selectedDate)
+                                        // Notify the calendar view to remove the dot
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                }
+
+                                if (data.events.isNotEmpty()) {
                                     if (!datesWithDataEvent.contains(selectedDate)) {
                                         datesWithDataEvent.add(selectedDate)
                                         // Notify the calendar view to update this date
                                         calendarView!!.notifyDateChanged(selectedDate)
                                     }
-                                }else if (data.tests.isNotEmpty()){
-                                    if (!datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.add(selectedDate)
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                }else{
-                                    if (datesWithDataLesson.contains(selectedDate)) {
-                                        datesWithDataLesson.remove(selectedDate)
-                                        // Notify the calendar view to remove the dot
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    } else if (datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.remove(selectedDate)
-                                        // Notify the calendar view to remove the dot
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    } else if (datesWithDataEvent.contains(selectedDate)) {
+                                } else {
+                                    if (datesWithDataEvent.contains(selectedDate)) {
                                         datesWithDataEvent.remove(selectedDate)
                                         // Notify the calendar view to remove the dot
                                         calendarView!!.notifyDateChanged(selectedDate)
                                     }
                                 }
 
+                                if (data.tests.isNotEmpty()) {
+                                    if (!datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.add(selectedDate)
+                                        // Notify the calendar view to update this date
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                } else {
+                                    if (datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.remove(selectedDate)
+                                        // Notify the calendar view to remove the dot
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                }
+
+
+                                initTestRecyclerView(data.tests)
+                                initLessonRecyclerView(data.lessons)
+                                initEventRecyclerView(data.events)
 
                             } else {
                                 Log.e("API Response", "Data is null. No dot added.")
                                 // Remove any dots for this date if data is null
-                                datesWithDataTest.remove(selectedDate)
-                                datesWithDataEvent.remove(selectedDate)
-                                datesWithDataLesson.remove(selectedDate)
-                                calendarView!!.notifyDateChanged(selectedDate)
                             }
-                        } else {
-                            Log.e("API Response", "Failed to fetch data: ${response.message()}")
+
                         }
                     }
 

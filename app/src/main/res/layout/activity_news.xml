@@ -119,7 +119,7 @@
                 android:layout_marginStart="@dimen/_10sdp"
                 android:fontFamily="@font/poppins_medium"
                 android:text="Sport in the office"
-                android:textColor="@color/grey"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_12sdp" />
 
         </androidx.cardview.widget.CardView>

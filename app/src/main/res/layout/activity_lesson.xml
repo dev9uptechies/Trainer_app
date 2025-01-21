@@ -276,7 +276,7 @@
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:hint="Enter Lesson Date"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp"
                     android:textColorHint="@color/dark_text"

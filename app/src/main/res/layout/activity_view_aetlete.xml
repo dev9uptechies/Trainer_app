@@ -308,6 +308,7 @@
             android:focusable="false"
             android:maxHeight="@dimen/_5sdp"
             android:progress="1"
+            android:enabled="false"
             android:progressDrawable="@drawable/custom_progress"
             android:progressBackgroundTint="@color/white"
             android:progressTint="@color/white"

@@ -3,22 +3,28 @@ package com
 import android.app.DatePickerDialog
 import com.example.model.AthleteDataPackage.AthleteDatas
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.style.ForegroundColorSpan
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.EventAdapterAthlete
 import com.example.OnItemClickListener
@@ -39,6 +45,11 @@ import com.example.trainerapp.performance_profile.ViewTemplateActivity
 import com.example.trainerapp.performance_profile.view_all_graph.ViewAllPerformanceProfileActivity
 import com.example.trainerapp.personal_diary.ViewPersonalDiaryActivity
 import com.example.trainerapp.view_analysis.ViewAnalysisActivity
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import com.prolificinteractive.materialcalendarview.CalendarMode
+import com.prolificinteractive.materialcalendarview.DayViewDecorator
+import com.prolificinteractive.materialcalendarview.DayViewFacade
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -66,7 +77,6 @@ class ViewAetleteActivity : AppCompatActivity(),  OnItemClickListener.OnItemClic
     private var athleteDetails: MutableList<AthleteDetails.Athlete> = mutableListOf()
 
     private var mainId: Int = 0
-
 
     override fun onResume() {
         checkUser()
@@ -150,6 +160,7 @@ class ViewAetleteActivity : AppCompatActivity(),  OnItemClickListener.OnItemClic
                 putExtra("athleteId", mainId)
             })
         }
+
         viewAetleteBinding.cards.setOnClickListener {
             val intent = Intent(this, ViewAnalysisActivity::class.java)
             intent.putExtra("athleteId", mainId)
@@ -174,6 +185,8 @@ class ViewAetleteActivity : AppCompatActivity(),  OnItemClickListener.OnItemClic
 
         mainId = intent.getIntExtra("MainId", 0)
         Name = intent.getStringExtra("Name")
+
+        viewAetleteBinding.seekbarLessonAttendances.isEnabled = false
 
         Log.d("MainId","MainID:- "+ mainId)
         Log.d("MainId","MainID:- "+ Name)
@@ -386,8 +399,8 @@ class ViewAetleteActivity : AppCompatActivity(),  OnItemClickListener.OnItemClic
                 val lastItem = data.last()
 
                 viewAetleteBinding.HeightEdt.text = "Height - ${lastItem.baseline} cm"
-                viewAetleteBinding.WeightEdt.text = "Weight - ${lastItem.weight} kg"
-                viewAetleteBinding.FatEdt.text = "Fat - ${lastItem.fatData}%"
+                viewAetleteBinding.WeightEdt.text = "Weight - ${lastItem.fatData} kg"
+                viewAetleteBinding.FatEdt.text = "Fat - ${lastItem.weight}%"
             } else {
                 Log.d("TAG","No data available for the selected training plan.")
             }
@@ -395,6 +408,96 @@ class ViewAetleteActivity : AppCompatActivity(),  OnItemClickListener.OnItemClic
             Log.d("Exss", e.message.toString())
         }
     }
+
+
+    fun showDateRangePickerDialog(
+        context: Context,
+        callback: (start: Long) -> Unit
+    ) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.date_range_picker_dialog)
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#80000000")))
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        dialog.window?.setGravity(Gravity.CENTER)
+
+        val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
+        val textView = dialog.findViewById<TextView>(R.id.textView)
+        val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
+        val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
+
+        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE)
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+
+        calendarView.state().edit()
+            .setCalendarDisplayMode(CalendarMode.MONTHS)
+            .commit()
+
+        val today = CalendarDay.today()
+
+        // Decorator to disable past dates
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day != null && day.isBefore(today)
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.setDaysDisabled(true) // Disable past dates
+            }
+        })
+
+        // Decorator to highlight today's date
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                return day == today
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today
+                ContextCompat.getDrawable(context, R.drawable.todays_date_selecte)?.let {
+                    view?.setBackgroundDrawable(it)
+                }
+            }
+        })
+
+        confirmButton.setOnClickListener {
+            val selectedDates = calendarView.selectedDates
+
+            if (selectedDates.isNotEmpty()) {
+                val selectedDate = selectedDates.first().calendar
+
+                selectedDate.set(Calendar.HOUR_OF_DAY, 0)
+                selectedDate.set(Calendar.MINUTE, 0)
+                selectedDate.set(Calendar.SECOND, 0)
+                selectedDate.set(Calendar.MILLISECOND, 0)
+
+                callback(selectedDate.timeInMillis)
+
+                dialog.dismiss()
+            } else {
+                textView.text = "Please select a date"
+                textView.setTextColor(Color.RED)
+            }
+        }
+
+        dialog.show()
+    }
+
+//
+//    private fun formatDate2(dateMillis: Long): String {
+//        val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+//        return format.format(Date(dateMillis))
+//    }
+
+    private fun formatDate(dateMillis: Long): String {
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return format.format(Date(dateMillis))
+    }
+
 
 
     private fun showDialog(data : MutableList<AthleteDatas.AthleteList> = mutableListOf()) {
@@ -423,30 +526,16 @@ class ViewAetleteActivity : AppCompatActivity(),  OnItemClickListener.OnItemClic
             val dateedt = dialog.findViewById<androidx.appcompat.widget.AppCompatEditText>(R.id.edt_name)
             dateedt.setText(athleteData.get(0).date)
             dateedt.setOnClickListener {
-                val calendar = Calendar.getInstance()
+                showDateRangePickerDialog(
+                    dateedt.context,
+                ) { start ->
+                    val formattedDate = formatDate2(start)
+                    val formattedStartDate = formatDate(start)
 
-                // Create a DatePickerDialog to select a date
-                val datePickerDialog = DatePickerDialog(
-                    this,
-                    { _, year, monthOfYear, dayOfMonth ->
-                        // Create a calendar instance and set the selected date
-                        calendar.set(year, monthOfYear, dayOfMonth)
-
-                        // Format the date as "dd MMM, yyyy"
-                        val dateFormat = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
-                        val formattedDate = dateFormat.format(calendar.time)
-
-                        // Set the formatted date in the EditText
-                        dateedt.setText(formattedDate)
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-                )
-
-                // Show the DatePickerDialog
-                datePickerDialog.show()
+                    dateedt.setText(formattedDate)
+                }
             }
+
 
 
             val heightedt = dialog.findViewById<EditText>(R.id.Height_edt)

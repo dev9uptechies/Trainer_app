@@ -48,6 +48,11 @@ class PersonalDiaryShareAdapter(
         }
     }
 
+    fun clearData() {
+        diaryList.clear()
+        notifyDataSetChanged()
+    }
+
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val date: TextView = view.findViewById(R.id.training_name_one)
         val sleepHours: TextView = view.findViewById(R.id.start_date_one)

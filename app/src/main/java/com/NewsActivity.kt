@@ -17,6 +17,7 @@ class NewsActivity : AppCompatActivity() {
     var title:String?= null
     var dec:String?= null
     var image:String?= null
+    var date:String?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,10 +35,12 @@ class NewsActivity : AppCompatActivity() {
         title =  intent.getStringExtra("title")
         dec =  intent.getStringExtra("dec")
         image =  intent.getStringExtra("image")
+        date =  intent.getStringExtra("date")
 
 
-        binding.title.text = title
-        binding.newsDescripiton.text = dec
+        binding.tvCredit.text = title
+        binding.title.text = date?.take(10)
+        binding.newsDescripiton.text = "Description: "+dec
 
         Glide.with(binding.newsImage.context)
             .load("https://trainers.codefriend.in" + image)

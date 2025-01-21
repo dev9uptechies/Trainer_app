@@ -138,7 +138,10 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
     private fun duplicateLesson() {
         viewLessonBinding.viewLessonProgress.visibility = View.VISIBLE
-        val idPart = MultipartBody.Part.createFormData("id", intent.getStringExtra("id")!!)
+
+        val iddd = intent.getIntExtra("id",0)
+        
+        val idPart = MultipartBody.Part.createFormData("id", iddd.toString())
         apiInterface.Duplicate_lession(idPart)?.enqueue(object : Callback<LessonData?> {
             override fun onResponse(call: Call<LessonData?>, response: Response<LessonData?>) {
                 viewLessonBinding.viewLessonProgress.visibility = View.GONE

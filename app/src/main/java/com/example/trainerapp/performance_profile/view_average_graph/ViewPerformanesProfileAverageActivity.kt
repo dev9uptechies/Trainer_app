@@ -55,6 +55,7 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
     var qualityBase: MutableList<QualityBase> = mutableListOf()
     var title = ""
     var athleteId = ""
+    var athleteIdd = ""
     lateinit var chartView: HIChartView
 
     private fun checkUser() {
@@ -116,8 +117,14 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
         if (userType == "Athlete") {
             loadPerformanceAthlete()
         } else {
-            if (athleteId != null && athleteId.toString().isNotEmpty() && athleteId.toString() != "null") {
-                loadPerformance(athleteId.toInt())
+
+            Log.d("IDIIDIDIDIDI", "onCreate: $athleteId")
+            Log.d("IDIIDIDIDIDI", "onCreate: $athleteIdd")
+
+            val finalID = if (athleteId == null || athleteId.isEmpty() || athleteId == "0" || athleteId == "null") athleteIdd else athleteId
+
+            if (finalID != null && finalID.toString().isNotEmpty() && finalID.toString() != "null") {
+                loadPerformance(finalID.toInt())
             }
         }
 
@@ -138,7 +145,8 @@ class ViewPerformanesProfileAverageActivity : AppCompatActivity() {
         categoryData = mutableListOf()
 
         athleteId = intent.getStringExtra("athleteId").toString()
-        Log.d("Athlete Id :-", "$athleteId")
+        athleteIdd = intent.getStringExtra("athleteIdd").toString()
+        Log.d("Athlete Id :-", "$athleteId   $athleteIdd")
         title = intent.getStringExtra("catName").toString()
         viewAllPerformanceProfileBinding.title.text = title
 

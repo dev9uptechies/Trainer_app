@@ -222,33 +222,36 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
 //
         val trainingData = programData.get(position)
 
+
+        Log.d("DATE","START ${trainingData.start_date}     ${trainingData.competition_date}")
+
         when (string) {
             "pre_session" -> {
                 intent.putExtra("seasonId", trainingData.pre_season?.id)
                 intent.putExtra("mainId", id)
-                intent.putExtra("startDate", trainingData.start_date)
-                intent.putExtra("endDate", trainingData.competition_date)
+                intent.putExtra("startDate", trainingData.pre_season?.start_date)
+                intent.putExtra("endDate", trainingData.pre_season?.end_date)
             }
 
             "pre_competitive" -> {
                 intent.putExtra("seasonId", trainingData.pre_competitive?.id)
                 intent.putExtra("mainId", trainingData.id)
-                intent.putExtra("startDate", trainingData.start_date)
-                intent.putExtra("endDate", trainingData.competition_date)
+                intent.putExtra("startDate", trainingData.pre_season?.start_date)
+                intent.putExtra("endDate", trainingData.pre_season?.end_date)
             }
 
             "competitive" -> {
                 intent.putExtra("seasonId", trainingData.competitive?.id)
                 intent.putExtra("mainId", trainingData.id)
-                intent.putExtra("startDate", trainingData.start_date)
-                intent.putExtra("endDate", trainingData.competition_date)
+                intent.putExtra("startDate", trainingData.pre_season?.start_date)
+                intent.putExtra("endDate", trainingData.pre_season?.end_date)
             }
 
             "transition" -> {
                 intent.putExtra("seasonId", trainingData.transition?.id)
                 intent.putExtra("mainId", trainingData.id)
-                intent.putExtra("startDate", trainingData.start_date)
-                intent.putExtra("endDate", trainingData.competition_date)
+                intent.putExtra("startDate", trainingData.pre_season?.start_date)
+                intent.putExtra("endDate", trainingData.pre_season?.end_date)
             }
         }
         intent.putExtra("CardType", string)

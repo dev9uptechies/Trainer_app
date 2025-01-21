@@ -52,9 +52,8 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     lateinit var groupadapterAthlete: GroupAdapterAthlete
     private var receivedId: String = ""
     private var groupList: ArrayList<GroupListData.groupData> = ArrayList()
-    private var groupListAthlete: List<GroupListAthlete.Data>? = null // Store a list of items
+    private var groupListAthlete: List<GroupListAthlete.Data>? = null
 
-    private lateinit var codeScanner: CodeScanner
 
 
     override fun onResume() {

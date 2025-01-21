@@ -1358,7 +1358,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         }
     }
 
-
     private fun clearGroupDataOnBack() {
         val sharedPreferences = getSharedPreferences("GroupData", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -1372,7 +1371,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
         Log.d("GroupData", "Data cleared successfully on back")
     }
-
 
     private fun saveIdsToPreferences() {
         val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)

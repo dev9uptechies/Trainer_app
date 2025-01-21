@@ -36,10 +36,10 @@ class EventAdapterAthlete(
 
         holder.tvdate.visibility = View.VISIBLE
         holder.tvunit.visibility = View.VISIBLE
-        holder.tvimage.visibility = View.GONE
+        holder.tvimage.visibility = View.VISIBLE
         holder.tvunit.visibility = View.GONE
 
-            holder.tvFname.text = "Event Name: "+ (athlete.event?.title ?: "")
+            holder.tvFname.text =(athlete.event?.title ?: "")
             holder.tvgoal.text = athlete.event?.type ?: ""
             holder.tvtime.text = athlete.athlete?.name ?: ""
             holder.tvdate.text = athlete.event?.date?.take(10) ?: ""

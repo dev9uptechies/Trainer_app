@@ -1140,6 +1140,8 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
         if (string == "Edit") {
+
+            newProgramBinding.scrollView3.smoothScrollTo(0, 0)
             typeData = "edit"
             setProgramData(position, type)
 //            startActivity(Intent(this, EditProgramActivity::class.java))

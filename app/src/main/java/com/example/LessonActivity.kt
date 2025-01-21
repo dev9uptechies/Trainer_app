@@ -555,7 +555,10 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                     call: Call<LessonData?>,
                     response: Response<LessonData?>
                 ) {
-                    Log.d("Lesson Data TAG :-", response.code().toString() + "" + response.body()!!.message)
+                    Log.d(
+                        "Lesson Data TAG :-",
+                        response.code().toString() + "" + response.body()!!.message
+                    )
                     val code = response.code()
                     if (code == 200) {
                         val resource: LessonData? = response.body()
@@ -882,8 +885,10 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                             val data = resource.data
                             if (!data.isNullOrEmpty()) {
                                 Log.d("Lesson Data :-", "$success $message \t $data")
+
+                                lession_data1.clear()
                                 lession_data1.addAll(data)
-                                initRecyclerview(data)
+                                initRecyclerview(lession_data1)
                             } else {
                                 // Handle empty or null data
                                 Toast.makeText(
@@ -1284,7 +1289,12 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                                         Toast.LENGTH_SHORT
                                     )
                                         .show()
+                                    lession_data1.removeAll { it.id == type.toInt() }
+                                    lession_data1.clear()
+                                    adapter.notifyDataSetChanged()
+
                                     loadData()
+
                                 } else if (code == 403) {
                                     Utils.setUnAuthDialog(this@LessonActivity)
                                 } else {

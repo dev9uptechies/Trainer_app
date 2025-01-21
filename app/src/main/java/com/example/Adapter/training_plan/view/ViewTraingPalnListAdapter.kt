@@ -51,8 +51,8 @@ class ViewTraingPalnListAdapter(
             intent.putExtra("mainId", mainId)
             intent.putExtra("seasonId", item.id)
             intent.putExtra("CardType", type)
-            intent.putExtra("startDate", startDate)
-            intent.putExtra("endDate", endDate)
+            intent.putExtra("startDate", item.start_date)
+            intent.putExtra("endDate", item.end_date)
             context.startActivity(intent)
         }
 
@@ -62,8 +62,8 @@ class ViewTraingPalnListAdapter(
             intent.putExtra("mainId", mainId)
             intent.putExtra("seasonId", item.id)
             intent.putExtra("CardType", type)
-            intent.putExtra("startDate", startDate)
-            intent.putExtra("endDate", endDate)
+            intent.putExtra("startDate", item.start_date)
+            intent.putExtra("endDate", item.end_date)
             context.startActivity(intent)
         }
 
@@ -74,8 +74,8 @@ class ViewTraingPalnListAdapter(
             intent.putExtra("mainId", mainId)
             intent.putExtra("seasonId", item.id)
             intent.putExtra("CardType", type)
-            intent.putExtra("startDate", startDate)
-            intent.putExtra("endDate", endDate)
+            intent.putExtra("startDate", item.start_date)
+            intent.putExtra("endDate", item.end_date)
             context.startActivity(intent)
         }
 
@@ -86,8 +86,8 @@ class ViewTraingPalnListAdapter(
             intent.putExtra("mainId", mainId)
             intent.putExtra("seasonId", item.id)
             intent.putExtra("CardType", type)
-            intent.putExtra("startDate", startDate)
-            intent.putExtra("endDate", endDate)
+            intent.putExtra("startDate", item.start_date)
+            intent.putExtra("endDate", item.end_date)
             context.startActivity(intent)
         }
     }

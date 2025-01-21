@@ -57,6 +57,7 @@
         var qualityBase: MutableList<QualityBase> = mutableListOf()
         var title = ""
         var athleteId = ""
+        var athleteIdd = ""
         lateinit var chartView: HIChartView
     
         private fun checkUser() {
@@ -106,10 +107,12 @@
             if (userType == "Athlete") {
                 loadPerformanceAthlete()
             } else {
-                if (athleteId != null && athleteId.toString()
-                        .isNotEmpty() && athleteId.toString() != "null"
-                ) {
-                    loadPerformance(athleteId.toInt())
+
+
+                val finalID = if (athleteId == null || athleteId.isEmpty() || athleteId == "0" || athleteId == "null") athleteIdd else athleteId
+
+                if (finalID != null && finalID.toString().isNotEmpty() && finalID.toString() != "null") {
+                    loadPerformance(finalID.toInt())
                 }
     
             }
@@ -129,6 +132,7 @@
             categoryData = mutableListOf()
     
             athleteId = intent.getStringExtra("athleteId").toString()
+            athleteIdd = intent.getStringExtra("athleteIdd").toString()
             Log.d("Athlete Id :-", "$athleteId")
             title = intent.getStringExtra("catName").toString()
             viewAllPerformanceProfileBinding.title.text = title

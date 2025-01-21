@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -367,6 +368,13 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+
+        val menu = homeBinding.navigationView.menu
+
+        if (item.itemId == R.id.tv_personal_diary) {
+            val menuItem = menu.findItem(R.id.tv_personal_diary)
+            menuItem.icon = ContextCompat.getDrawable(this, R.drawable.ic_diaryy)
+        }
 
         item.itemId == R.id.tv_notification
         if (item.itemId == R.id.tv_notification) {
