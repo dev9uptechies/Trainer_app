@@ -100,7 +100,6 @@ class EditMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
     private var transient: MutableList<AddMicrocycleTransition> = mutableListOf()
 
 
-
     private var startdatesent:String? = null
     private var enddatesent:String? = null
     private val trainingPlanLayouts = mutableListOf<View>()
@@ -502,11 +501,24 @@ class EditMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                     enddatesent = formattedStartDate
                 }
             }
-            // Delete button listener
+
             val delete: ImageView = newTrainingPlanLayout.findViewById(R.id.img_delete)
             delete.setOnClickListener {
                 trainingPlanContainer.removeView(newTrainingPlanLayout)
-                trainingPlanLayouts.removeAt(indexToAdd)
+                if (indexToAdd in trainingPlanLayouts.indices) {
+                    trainingPlanLayouts.removeAt(indexToAdd)
+                    Log.d("EditMicroCycleActivity", "Removed layout at index: $indexToAdd")
+                } else {
+                    Log.e(
+                        "EditMicroCycleActivity",
+                        "Index $indexToAdd is out of bounds for trainingPlanLayouts of size ${trainingPlanLayouts.size}"
+                    )
+                    Toast.makeText(
+                        this,
+                        "Error: Unable to remove training plan. Invalid index.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
                 removeTrainingPlan(newTrainingPlanLayout, mesocycle!!.id!!)
             }
 
@@ -520,6 +532,14 @@ class EditMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                     Color.parseColor("#FF0000")  // Blue
                 )
             )
+
+
+            if(startdatesent == enddatesent){
+                editMicroCycleActivity.cardSave.isEnabled = false
+            }else{
+                editMicroCycleActivity.cardSave.isEnabled = true
+            }
+
 
             gradientDrawable.gradientType = GradientDrawable.LINEAR_GRADIENT
             gradientDrawable.cornerRadius = 8f

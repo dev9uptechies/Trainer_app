@@ -308,7 +308,17 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 //                end_error.visibility = View.GONE
 //                mon_addView()
 //            }
-            mon_addView()
+            val linearLayout = binding.MonLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                mon_addView()
+            }
+
+
         }
         binding.tueAddScheduleTime.setOnClickListener {
 //            if (isValidate){
@@ -316,7 +326,18 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 //                end_error.visibility = View.GONE
 //                tue_addView()
 //            }
-            tue_addView()
+
+            val linearLayout = binding.TueLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                tue_addView()
+            }
+
+//            tue_addView()
         }
         binding.wedAddScheduleTime.setOnClickListener {
 //            if (isValidate){
@@ -324,7 +345,17 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 //                end_error.visibility = View.GONE
 //                wed_addView()
 //            }
-            wed_addView()
+            val linearLayout = binding.WedLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                wed_addView()
+            }
+
+//            wed_addView()
 
         }
         binding.thuAddScheduleTime.setOnClickListener {
@@ -334,7 +365,15 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 //
 //
 //            }
-            thu_addView()
+            val linearLayout = binding.ThuLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                thu_addView()
+            }
         }
         binding.friAddScheduleTime.setOnClickListener {
 //            if (isValidate){
@@ -342,7 +381,15 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 //                end_error.visibility = View.GONE
 //
 //            }
-            fri_addView()
+            val linearLayout = binding.FriLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                fri_addView()
+            }
 
         }
         binding.satAddScheduleTime.setOnClickListener {
@@ -351,7 +398,15 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 //                end_error.visibility = View.GONE
 //
 //            }
-            sat_addView()
+            val linearLayout = binding.SatLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                sat_addView()
+            }
 
         }
         binding.sunAddScheduleTime.setOnClickListener {
@@ -360,7 +415,15 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 //                end_error.visibility = View.GONE
 //
 //            }
-            sun_addView()
+            val linearLayout = binding.SunLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                sun_addView()
+            }
         }
 
 
@@ -611,6 +674,17 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
 
         binding.scanQr.setOnClickListener {
+
+            binding.main.setBackgroundColor(resources.getColor(R.color.grey))
+
+            binding.MonLinearLayout.visibility = View.GONE
+            binding.TueLinearLayout.visibility = View.GONE
+            binding.WedLinearLayout.visibility = View.GONE
+            binding.ThuLinearLayout.visibility = View.GONE
+            binding.FriLinearLayout.visibility = View.GONE
+            binding.SatLinearLayout.visibility = View.GONE
+            binding.SunLinearLayout.visibility = View.GONE
+
             val dialog = Dialog(this, R.style.Theme_Dialog)
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setCancelable(true)
@@ -629,15 +703,26 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
+            dialog.window!!.setLayout(width, height)
+
             dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
 
             val close = dialog.findViewById<CardView>(R.id.next_card)
-            close.setOnClickListener { dialog.dismiss() }
+            close.setOnClickListener {
+                binding.main.setBackgroundColor(resources.getColor(R.color.black))
+                binding.MonLinearLayout.visibility = View.VISIBLE
+                binding.TueLinearLayout.visibility = View.VISIBLE
+                binding.WedLinearLayout.visibility = View.VISIBLE
+                binding.ThuLinearLayout.visibility = View.VISIBLE
+                binding.FriLinearLayout.visibility = View.VISIBLE
+                binding.SatLinearLayout.visibility = View.VISIBLE
+                binding.SunLinearLayout.visibility = View.VISIBLE
+
+                dialog.dismiss() }
 
             dialog.show()
         }
-
 
         binding.selectImage.setOnClickListener {
 //            val intent = Intent()
@@ -658,6 +743,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
             Log.d("GHHGHGHGHGHGH", "onCreate: $start    $end")
             Log.d("GHHGHGHGHGHGH", "onCreate: ${start_error.text.toString()}    $end")
+
+            Log.d("FGFGGFGFGFGG", "ButtonClick: $datecheckstart    $datecheckend")
 
             if (datecheckstart == false) {
                 start_error.visibility = View.VISIBLE
@@ -716,7 +803,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
                 Picasso.get()
                     .load(uri)
-                    .error(R.drawable.app_icon)
+                    .error(R.drawable.group_chate_boarder)
                     .into(binding.imageUpload, object : com.squareup.picasso.Callback {
                         override fun onSuccess() {
                             Log.d("Picasso", "Image loaded successfully")
@@ -881,6 +968,9 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             val imageUri = selectedImageUri ?: selectedImageUri2
             saveGroupData(groupName, imageUri, sportName, sportlId.id.toString())
             saveDayTimesToPreferences()
+            saveIdsToPreferences()
+            mergeIdsAndSave()
+
 
             Log.d("GroupData", "Data saved in onPause")
         } else {
@@ -926,6 +1016,19 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
     }
 
+
+    private fun validateAllFields(linearLayout: LinearLayout): Boolean {
+        for (i in 0 until linearLayout.childCount) {
+            val childView = linearLayout.getChildAt(i)
+            val startTime = childView.findViewById<TextView>(R.id.tv_start_time).text.toString()
+            val endTime = childView.findViewById<TextView>(R.id.tv_End_time).text.toString()
+
+            if (startTime.isBlank() || endTime.isBlank()) {
+                return false // Validation failed
+            }
+        }
+        return true // All fields are valid
+    }
 
     private fun callGroupApi(ids: String) {
         binding.progressBar.visibility = View.VISIBLE
@@ -980,7 +1083,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                 .load(imageUrl)
                                 .fit()
                                 .transform(transformation)
-                                .error(R.drawable.app_icon)
+                                .error(R.drawable.group_chate_boarder)
                                 .into(binding.imageUpload, object : com.squareup.picasso.Callback {
                                     override fun onSuccess() {
                                         Log.d("Picasso", "Image loaded successfully")
@@ -1413,6 +1516,10 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         binding.progressBar.visibility = View.VISIBLE
 
         val timingFormatted = collectTimings().toString()
+
+
+        Log.d("DDHHDHDHHD", "editGroupWithImageApiCall: $timingFormatted")
+
         val daysids = selectedDays.joinToString(prefix = "[", postfix = "]", separator = ", ") { "\"$it\"" }
         val sportids = sportlId.id.toString()
         val lessonids = lessonId.joinToString(", ", prefix = "[", postfix = "]")
@@ -1453,6 +1560,13 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 if (response.isSuccessful) {
                     Log.e("KLKLKLKLKLKL", "onResponse: " + response.body())
                     Toast.makeText(context, "Group Edited Successfully", Toast.LENGTH_SHORT).show()
+
+                    Log.d("TYTYYTYT","RRERER :-  ${response.body().toString()}")
+                    Log.d("TYTYYTYT","RRERER :-  ${response.errorBody().toString()}")
+                    Log.d("TYTYYTYT","RRERER :-  ${response.code().toString()}")
+                    Log.d("TYTYYTYT","RRERER :-  ${response.toString()}")
+
+
                     val intent = Intent(context, HomeActivity::class.java)
                     intent.putExtra("group", "addGroup")
                     context.startActivity(intent)
@@ -1830,8 +1944,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
     private fun collectTimings(): String {
         if (!hasChanges) {
-            // No changes, return the old timings (assuming it's saved in SharedPreferences or other means)
-            return loadDayTimesFromPreferences() // Retrieve saved timings from SharedPreferences or other storage
+            return loadDayTimesFromPreferences()
         }
 
         val timingList = mutableListOf<List<Map<String, String>>>()
@@ -1849,8 +1962,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         for ((layout, day) in daysLayout) {
             if (selectedDays.contains(day)) { // Only collect timings for the selected days
-                val dailyTimings =
-                    mutableListOf<Map<String, String>>() // Collect timings for the specific day
+                val dailyTimings = mutableListOf<Map<String, String>>() // Collect timings for the specific day
 
                 for (i in 0 until layout.childCount) {
                     val childView = layout.getChildAt(i)
@@ -1860,27 +1972,30 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                     val startTime = formatTime(tvStartTime.text.toString().trim())
                     val endTime = formatTime(tvEndTime.text.toString().trim())
 
-                    // Check if both start and end times are not empty
-                    if (startTime.isNotEmpty() && endTime.isNotEmpty()) {
-                        val timingMap = mapOf(
-                            "start_time" to startTime,
-                            "end_time" to endTime
-                        )
-                        dailyTimings.add(timingMap) // Add this timing to the day's list
-                    }
+                    Log.d("TIMINGS_DEBUG", "collectTimings: Start Time: '$startTime'  End Time: '$endTime'")
+
+                    // If both startTime and endTime are empty, still add them as empty strings
+                    val timingMap = mapOf(
+                        "start_time" to startTime.ifEmpty { "" }, // If startTime is empty, use ""
+                        "end_time" to endTime.ifEmpty { "" }      // If endTime is empty, use ""
+                    )
+                    dailyTimings.add(timingMap) // Add this timing to the day's list
                 }
 
-                // Only add the day's timings if there is at least one timing
-                if (dailyTimings.isNotEmpty()) {
-                    timingList.add(dailyTimings) // Add daily timings directly as a list of maps
-                }
+                // Only add the day's timings if there is at least one timing (even if empty)
+                timingList.add(dailyTimings) // Add daily timings directly as a list of maps
             }
         }
 
-        // Convert the list of timings to JSON
-        val gson = Gson()
-        Log.d("TIMINGS_DEBUG", "Timing List: $timingList")
-        return gson.toJson(timingList)
+        // If timingList is empty, log as an empty string and return a JSON array with empty objects
+        if (timingList.isEmpty()) {
+            Log.d("TIMINGS_DEBUG", "Timing List: [[]]")  // Log empty array if no timings are collected
+            return "[[]]" // Return a JSON array with an empty object for each day
+        } else {
+            val gson = Gson()
+            Log.d("TIMINGS_DEBUG", "Timing List: $timingList")
+            return gson.toJson(timingList) // Return the serialized list as JSON
+        }
     }
 
     private fun toggleDay(
@@ -2072,35 +2187,76 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         Log.d("OPOOOOOO", "addViewForDay: ${linearLayout.childCount}")
 
         delete.setOnClickListener {
-            // Remove the current view
-            linearLayout.removeView(inflater)
+            val currentCount = linearLayout.childCount
 
-            // Check the updated child count
+            if (currentCount > 1) {
+                // Find the index of the view to remove
+                val indexToRemove = linearLayout.indexOfChild(inflater)
+
+                // Remove the current view from the layout
+                linearLayout.removeView(inflater)
+
+                if (dayTimes.containsKey(dayKey)) {
+                    val times = dayTimes[dayKey]?.toMutableList() ?: mutableListOf()
+                    if (indexToRemove >= 0 && indexToRemove < times.size) {
+                        times.removeAt(indexToRemove)
+                        dayTimes[dayKey] = times
+                        Log.d("DayTimesPrefsffffff", "Updated timings for $dayKey: $times")
+                    }
+                }
+                clearAllPreferences()
+                saveDayTimesToPreferences()
+            } else if (currentCount == 1) {
+                // Clear the text fields of the last remaining view instead of removing it
+                val remainingView = linearLayout.getChildAt(0)
+                val remainingStartTime: TextView = remainingView.findViewById(R.id.tv_start_time)
+                val remainingEndTime: TextView = remainingView.findViewById(R.id.tv_End_time)
+
+                remainingStartTime.text = ""
+                remainingEndTime.text = ""
+
+                // Set start and end time as empty strings for all entries in the dayTimes list
+                if (dayTimes.containsKey(dayKey)) {
+                    val times = dayTimes[dayKey]?.toMutableList() ?: mutableListOf()
+
+                    // Create a list of DayTime objects with empty start and end times
+                    val updatedTimes = times.map {
+                        DayTime(id = it.id, startTime = "", endTime = "") // Create new DayTime objects with empty times
+                    }
+
+                    // Update the dayTimes map with the modified list of DayTime objects
+                    dayTimes[dayKey] = updatedTimes.toMutableList()  // Save the updated times
+
+                    // Log the output in the desired format
+                    val formattedTimes = updatedTimes.joinToString(", ") {
+                        "{start_time=\"${it.startTime}\", end_time=\"${it.endTime}\"}"
+                    }
+                    Log.d("DayTimesPrefsfffffdddf", "Cleared start and end times for $dayKey: [$formattedTimes]")
+                }
+
+                // Clear the preferences and save updated data
+                clearAllPreferences()
+                saveDayTimesToPreferences()
+
+                datecheckstart = true
+                datecheckend = true
+                Log.d("LINEAR_LAYOUT", "Cleared text fields of the last remaining view    $datecheckstart    $datecheckend")
+            }
+
             val updatedCount = linearLayout.childCount
             Log.d("LINEAR_LAYOUT", "Updated child count: $updatedCount")
 
-            if (updatedCount == 1) {
-                val remainingView = linearLayout.getChildAt(0)
-                val remainingDelete: ImageView = remainingView.findViewById(R.id.img_delete)
-                remainingDelete.isEnabled = true
-
-                tvStartTime.setText("")
-                tvStartTime.setText("")
-
-            }
-
-            if (updatedCount == 0) {
-                Log.d("LINEAR_LAYOUT", "No children left in the layout")
+            // Enable or disable delete button based on child count
+            if (updatedCount > 1) {
+                delete.isEnabled = true
+                delete.alpha = 1.0f
+            } else {
+                delete.isEnabled = false
+                delete.alpha = 0.5f
             }
         }
 
-        if (linearLayout.childCount > 1) {
-            delete.isEnabled = true
-            delete.alpha = 1.0f
-        } else {
-            delete.isEnabled = false
-            delete.alpha = 0.5f
-        }
+
     }
 
 
@@ -2130,7 +2286,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         editor.apply()
 
         // Log the data being saved
-        Log.d("DayTimesPrefs", "Saved dayTimes: $jsonString")
+        Log.d("DayTimesPrefssssss", "Saved dayTimes: $jsonString")
     }
 
     // Load dayTimes from SharedPreferences
@@ -2154,6 +2310,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         return gson.toJson(loadedData)
     }
 
+
     fun clearAllPreferences() {
         val sharedPreferences = getSharedPreferences("DayTimesPrefs", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -2167,7 +2324,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
 
     private fun saveIdsToPreferences() {
-        val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("MyAppPrefsforEdit", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
         // Save each ID array
@@ -2182,7 +2339,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
     private fun loadIdsFromPreferences() {
-        val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("MyAppPrefsforEdit", MODE_PRIVATE)
 
         lessonId =
             sharedPreferences.getString("lessonId", "")?.split(",")?.mapNotNull { it.toIntOrNull() }
@@ -2206,7 +2363,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
     private fun mergeIdsAndSave() {
-        val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("MyAppPrefsforEdit", MODE_PRIVATE)
 
         val existingLessonIds = sharedPreferences.getString("lessonId", "")?.split(",")?.mapNotNull { it.toIntOrNull() }
             ?.toSet() ?: emptySet()
@@ -2238,7 +2395,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
     private fun clearIdsFromPreferences() {
-        val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("MyAppPrefsforEdit", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
         editor.remove("lessonId")

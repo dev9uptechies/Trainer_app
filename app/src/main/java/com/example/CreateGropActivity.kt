@@ -312,7 +312,17 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 //                end_error.visibility = View.GONE
 //                mon_addView()
 //            }
-            mon_addView()
+            val linearLayout = createGroupBinding.MonLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                mon_addView()
+            }
+
+
         }
         createGroupBinding.tueAddScheduleTime.setOnClickListener {
 //            if (isValidate){
@@ -320,7 +330,18 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 //                end_error.visibility = View.GONE
 //                tue_addView()
 //            }
-            tue_addView()
+
+            val linearLayout = createGroupBinding.TueLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                tue_addView()
+            }
+
+//            tue_addView()
         }
         createGroupBinding.wedAddScheduleTime.setOnClickListener {
 //            if (isValidate){
@@ -328,7 +349,17 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 //                end_error.visibility = View.GONE
 //                wed_addView()
 //            }
-            wed_addView()
+            val linearLayout = createGroupBinding.WedLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                wed_addView()
+            }
+
+//            wed_addView()
 
         }
         createGroupBinding.thuAddScheduleTime.setOnClickListener {
@@ -338,7 +369,15 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 //
 //
 //            }
-            thu_addView()
+            val linearLayout = createGroupBinding.ThuLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                thu_addView()
+            }
         }
         createGroupBinding.friAddScheduleTime.setOnClickListener {
 //            if (isValidate){
@@ -346,7 +385,15 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 //                end_error.visibility = View.GONE
 //
 //            }
-            fri_addView()
+            val linearLayout = createGroupBinding.FriLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                fri_addView()
+            }
 
         }
         createGroupBinding.satAddScheduleTime.setOnClickListener {
@@ -355,7 +402,15 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 //                end_error.visibility = View.GONE
 //
 //            }
-            sat_addView()
+            val linearLayout = createGroupBinding.SatLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                sat_addView()
+            }
 
         }
         createGroupBinding.sunAddScheduleTime.setOnClickListener {
@@ -364,7 +419,15 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 //                end_error.visibility = View.GONE
 //
 //            }
-            sun_addView()
+            val linearLayout = createGroupBinding.SunLinearLayout
+
+            val isValid = validateAllFields(linearLayout)
+            if (!isValid) {
+                start_error.visibility = View.VISIBLE
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+            } else {
+                sun_addView()
+            }
         }
 
 
@@ -615,6 +678,17 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         }
 
         createGroupBinding.scanQr.setOnClickListener {
+
+            createGroupBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
+
+            createGroupBinding.MonLinearLayout.visibility = View.GONE
+            createGroupBinding.TueLinearLayout.visibility = View.GONE
+            createGroupBinding.WedLinearLayout.visibility = View.GONE
+            createGroupBinding.ThuLinearLayout.visibility = View.GONE
+            createGroupBinding.FriLinearLayout.visibility = View.GONE
+            createGroupBinding.SatLinearLayout.visibility = View.GONE
+            createGroupBinding.SunLinearLayout.visibility = View.GONE
+
             val dialog = Dialog(this, R.style.Theme_Dialog)
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setCancelable(true)
@@ -633,12 +707,23 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-//            dialog.window!!.setLayout(width, height)
+            dialog.window!!.setLayout(width, height)
             dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
 
             val close = dialog.findViewById<CardView>(R.id.next_card)
-            close.setOnClickListener { dialog.dismiss() }
+            close.setOnClickListener {
+                createGroupBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+                createGroupBinding.MonLinearLayout.visibility = View.VISIBLE
+                createGroupBinding.TueLinearLayout.visibility = View.VISIBLE
+                createGroupBinding.WedLinearLayout.visibility = View.VISIBLE
+                createGroupBinding.ThuLinearLayout.visibility = View.VISIBLE
+                createGroupBinding.FriLinearLayout.visibility = View.VISIBLE
+                createGroupBinding.SatLinearLayout.visibility = View.VISIBLE
+                createGroupBinding.SunLinearLayout.visibility = View.VISIBLE
+
+                dialog.dismiss()
+            }
 
             dialog.show()
         }
@@ -682,8 +767,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
             if (end == null || end == "") {
                 end_error.visibility = View.VISIBLE
-                Toast.makeText(this, "End field is required", Toast.LENGTH_SHORT)
-                    .show() // Toast for end field
+                Toast.makeText(this, "End field is required", Toast.LENGTH_SHORT).show() // Toast for end field
                 return@setOnClickListener
             }
 
@@ -1348,8 +1432,9 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             val sportName = createGroupBinding.edtSport.text.toString()
             val imageUri = selectedImageUri
             saveGroupData(groupName, imageUri, sportName, sportlId.id.toString())
-//            saveDayTimesToPreferences()
+            saveDayTimesToPreferences()
             saveViewStateForAllDays()
+            saveIdsToPreferences()
 //            saveLastSelectedDay()
 
             Log.d("GroupData", "Data saved in onPause")
@@ -2257,6 +2342,19 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         dialog.show()
     }
 
+    private fun validateAllFields(linearLayout: LinearLayout): Boolean {
+        for (i in 0 until linearLayout.childCount) {
+            val childView = linearLayout.getChildAt(i)
+            val startTime = childView.findViewById<TextView>(R.id.tv_start_time).text.toString()
+            val endTime = childView.findViewById<TextView>(R.id.tv_End_time).text.toString()
+
+            if (startTime.isBlank() || endTime.isBlank()) {
+                return false // Validation failed
+            }
+        }
+        return true // All fields are valid
+    }
+
 
     // Save data for all days
     private fun addViewForDay(linearLayout: LinearLayout, dayKey: String) {
@@ -2311,16 +2409,49 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
         Log.d("TYTYTYT", "addViewForDay: $firstview")
 
-        if (firstview == true){
-            delete.setOnClickListener {
-                tv_start_time.setText("")
-                tv_End_time.setText("")
-            }
-        }else{
-            delete.setOnClickListener {
+        delete.setOnClickListener {
+            val currentCount = linearLayout.childCount
+
+            if (currentCount > 1) {
+                // Remove the specified child view
+                val indexToRemove = linearLayout.indexOfChild(inflater)
                 linearLayout.removeView(inflater)
+            } else if (currentCount == 1) {
+                // If only one child is present, clear its data
+                val remainingView = linearLayout.getChildAt(0)
+                val remainingStartTime: TextView = remainingView.findViewById(R.id.tv_start_time)
+                val remainingEndTime: TextView = remainingView.findViewById(R.id.tv_End_time)
+
+                remainingStartTime.text = ""
+                remainingEndTime.text = ""
+            }
+
+            val updatedCount = linearLayout.childCount
+            Log.d("LINEAR_LAYOUT", "Updated child count: $updatedCount")
+
+            // Update the state of the delete button
+            if (updatedCount == 0) {
+                delete.isEnabled = false
+                delete.alpha = 0.5f
+            } else {
+                delete.isEnabled = true
+                delete.alpha = 1.0f
             }
         }
+
+
+
+
+//        if (firstview == true){
+//            delete.setOnClickListener {
+//                tv_start_time.setText("")
+//                tv_End_time.setText("")
+//            }
+//        }else{
+//            delete.setOnClickListener {
+//                linearLayout.removeView(inflater)
+//            }
+//        }
 
     }
 

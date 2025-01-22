@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginBottom
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.Adapter.training_plan.view.AbilitiesAdapter
@@ -67,6 +68,11 @@ class AddMicroCycleActivity : AppCompatActivity() {
     private var trainingPlanCount = 0
     private var id: Int = 0
     private var cardType: String? = null
+
+    private val dateRangeMap = mutableMapOf<Int, Pair<String, String>>()
+    private val dateRangeMapend = mutableMapOf<Int, Pair<String, String>>()
+    private var activeLayoutIndex: Int? = null
+    private val selectedDateRanges = mutableListOf<Pair<Long, Long>>()
 
     private lateinit var apiInterface: APIInterface
     private lateinit var preferenceManager: PreferencesManager
@@ -130,7 +136,9 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
         addMicroCycleBinding.back.setOnClickListener { finish() }
 
-        addMicroCycleBinding.cardAddAbility.setOnClickListener { showAbilityDialog() }
+        addMicroCycleBinding.cardAddAbility.setOnClickListener {
+            showAbilityDialog()
+        }
 
         addMicroCycleBinding.cardSave.setOnClickListener { loadData() }
     }
@@ -451,17 +459,15 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 val workloadProgress = seekBar.progress
                 val (colorCode, _) = getWorkloadColorAndString(workloadProgress)
 
-                Log.d(
-                    "TAG",
-                    "Name: ${nameEditText.text} \n StartDate: ${startDate.text} \n enddate: ${endDate.text}"
-                )
+                Log.d("TAGGGGGG", "Name: ${nameEditText.text} \n StartDate: ${startDate.text} \n enddate: ${endDate.text}")
+
                 Log.d("TAG", "Selected Ability IDs: $selectedAbilityIds")
                 Log.d("TAG", "Selected Color Code: $colorCode")
                 Log.d("TAG", "Selected Workload Progress: $workloadProgress")
 
                 val start = startDate.text.toString().trim()
                 val end = endDate.text.toString().trim()
-                var isss = selectedAbilityIds.toString()
+                val isss = selectedAbilityIds.toString()
 
 
                 Log.d("RTTTRTRTRTR", "SaveMicrocycleTransition: $isss")
@@ -552,66 +558,133 @@ class AddMicroCycleActivity : AppCompatActivity() {
             newTrainingPlanLayout.findViewById(R.id.ent_pre_sea_name)
         nameEditText.setText("Microcycle ${indexToAdd + 1}")
 
-        val startDateEditText: AppCompatEditText =
-            newTrainingPlanLayout.findViewById(R.id.ent_start_date_liner)
-
-        startDateEditText.setOnClickListener {
-            val minDateMillis = formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
-            val maxDateMillis = formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
-
-            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
-                val formattedStartDate = formatDate(start)
-                val formattedStartDate2 = formatDate2(start)
-
-                startDateEditText.setText(formattedStartDate2)
-                startdatesent = formattedStartDate
-            }
-        }
+        val startDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_start_date_liner)
 
         val startDateCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_start_date_list)
-        startDateCard.setOnClickListener {
-            val minDateMillis = formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
-            val maxDateMillis = formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
-
-            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
-                val formattedStartDate = formatDate(start)
-                val formattedStartDate2 = formatDate2(start)
-
-                startDateEditText.setText(formattedStartDate2)
-                startdatesent = formattedStartDate
-            }
-        }
 
         val endDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_ent_date_liner)
-        endDateEditText.setOnClickListener {
-            val minDateMillis = formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
-            val maxDateMillis = formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
 
-            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
+        val endDateCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_end_pick_list)
+
+        startDateEditText.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
+            activeLayoutIndex = layoutIndex
+
+            val minDateMillis =
+                formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
+            val maxDateMillis =
+                formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialogfor(
+                startDateEditText.context,
+                minDateMillis,
+                maxDateMillis,
+                layoutIndex
+            ) { start, end ->
                 val formattedStartDate = formatDate(start)
                 val formattedStartDate2 = formatDate2(start)
+                val formattedEndDate = formatDate(end)
+                val formattedEndDate2 = formatDate2(end)
 
-                endDateEditText.setText(formattedStartDate2)
-                enddatesent = formattedStartDate
+                startDateEditText.setText(formattedStartDate2)
+                endDateEditText.setText(formattedEndDate2)
+                startdatesent = formattedStartDate
+                enddatesent = formattedEndDate
+                dateRangeMap[layoutIndex] = Pair(formattedStartDate, formattedEndDate)
+
+//                        updateDaysTextView()
             }
         }
 
-        val endDateCard: CardView = newTrainingPlanLayout.findViewById(R.id.card_end_pick_list)
-        endDateCard.setOnClickListener {
-            val minDateMillis = formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
-            val maxDateMillis = formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
+        endDateEditText.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
+            activeLayoutIndex = layoutIndex
 
-            showDateRangePickerDialog(startDateEditText.context, minDateMillis, maxDateMillis) { start ->
+
+            val minDateMillis =
+                formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
+            val maxDateMillis =
+                formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialogfor(
+                startDateEditText.context,
+                minDateMillis,
+                maxDateMillis,
+                layoutIndex
+            ) { start, end ->
                 val formattedStartDate = formatDate(start)
                 val formattedStartDate2 = formatDate2(start)
+                val formattedEndDate = formatDate(end)
+                val formattedEndDate2 = formatDate2(end)
 
-                endDateEditText.setText(formattedStartDate2)
-                enddatesent = formattedStartDate
+                startDateEditText.setText(formattedStartDate2)
+                endDateEditText.setText(formattedEndDate2)
+                dateRangeMap[layoutIndex] = Pair(formattedStartDate, formattedEndDate)
+//                        updateDaysTextView()
+            }
+        }
+
+        startDateCard.setOnClickListener {
+            // Get the layout index based on the active layout in the container
+            val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
+            activeLayoutIndex = layoutIndex
+
+            val minDateMillis =
+                formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
+            val maxDateMillis =
+                formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialogfor(
+                startDateEditText.context,
+                minDateMillis,
+                maxDateMillis,
+                layoutIndex
+            ) { start, end ->
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+                val formattedEndDate = formatDate(end)
+                val formattedEndDate2 = formatDate2(end)
+
+                startDateEditText.setText(formattedStartDate2)
+                endDateEditText.setText(formattedEndDate2)
+                startdatesent = formattedStartDate
+                enddatesent = formattedEndDate
+                dateRangeMap[layoutIndex] = Pair(formattedStartDate, formattedEndDate)
+
+//                        updateDaysTextView()
+            }
+        }
+
+        endDateCard.setOnClickListener {
+            val layoutIndex = trainingPlanContainer.indexOfChild(newTrainingPlanLayout)
+            activeLayoutIndex = layoutIndex
+
+
+            val minDateMillis =
+                formatDateToMillis(addMicroCycleBinding.startDate.text.toString())
+            val maxDateMillis =
+                formatDateToMillis(addMicroCycleBinding.endDate.text.toString())
+
+            showDateRangePickerDialogfor(
+                startDateEditText.context,
+                minDateMillis,
+                maxDateMillis,
+                layoutIndex
+            ) { start, end ->
+                val formattedStartDate = formatDate(start)
+                val formattedStartDate2 = formatDate2(start)
+                val formattedEndDate = formatDate(end)
+                val formattedEndDate2 = formatDate2(end)
+
+                startDateEditText.setText(formattedStartDate2)
+                endDateEditText.setText(formattedEndDate2)
+                dateRangeMap[layoutIndex] = Pair(formattedStartDate, formattedEndDate)
+//                        updateDaysTextView()
             }
         }
 
         val seekBar: SeekBar = newTrainingPlanLayout.findViewById(R.id.seekbar_workload_layout)
-        seekBar.isEnabled = false // Disable SeekBar in the layout
+        seekBar.isEnabled = false
 
         val workloadTextView: TextView = newTrainingPlanLayout.findViewById(R.id.edit_worklord_txt)
         workloadTextView.setOnClickListener {
@@ -633,9 +706,12 @@ class AddMicroCycleActivity : AppCompatActivity() {
         val start = startDateEditText.text.toString()
         val end = endDateEditText.text.toString()
 
-        if (start == null || start == ""){
-
+        if(startdatesent == enddatesent){
+            addMicroCycleBinding.cardSave.isEnabled = false
+        }else{
+            addMicroCycleBinding.cardSave.isEnabled = true
         }
+
 
 
         val gradientDrawable = GradientDrawable(
@@ -743,11 +819,12 @@ class AddMicroCycleActivity : AppCompatActivity() {
         }
     }
 
-    fun showDateRangePickerDialog(
+    fun showDateRangePickerDialogfor(
         context: Context,
         minDateMillis: Long,
         maxDateMillis: Long,
-        callback: (start: Long) -> Unit
+        layoutIndex: Int?,
+        callback: (start: Long, end: Long) -> Unit
     ) {
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.date_range_picker_dialog)
@@ -764,7 +841,7 @@ class AddMicroCycleActivity : AppCompatActivity() {
         val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
         val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
 
-        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE)
+        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_RANGE)
 
         cancelButton.setOnClickListener { dialog.dismiss() }
 
@@ -774,17 +851,21 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
         calendarView.addDecorator(object : DayViewDecorator {
             val today = CalendarDay.today()
+
             override fun shouldDecorate(day: CalendarDay?): Boolean {
+                // Only decorate today
                 return day == today
             }
 
             override fun decorate(view: DayViewFacade?) {
-                view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today
                 ContextCompat.getDrawable(context, R.drawable.todays_date_selecte)?.let {
                     view?.setBackgroundDrawable(it)
                 }
+                view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today (non-selected)
+
             }
         })
+
 
         // Disable dates outside the min-max range
         calendarView.addDecorator(object : DayViewDecorator {
@@ -799,27 +880,215 @@ class AddMicroCycleActivity : AppCompatActivity() {
             }
         })
 
+
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                if (day == null || day.calendar == null) return false
+
+                val dateInMillis = day.calendar.timeInMillis
+
+                if (layoutIndex == null || layoutIndex == 0) return false
+
+                if (selectedDateRanges == null) return false
+
+                return selectedDateRanges.withIndex().any { (index, range) ->
+                    val (start, end) = range
+                    index < layoutIndex && dateInMillis in start..end
+                }
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.GRAY))
+                view?.setDaysDisabled(true)
+            }
+        })
+
+        // Disable overlapping dates with previous plans
         confirmButton.setOnClickListener {
             val selectedDates = calendarView.selectedDates
 
-            if (selectedDates.isNotEmpty()) {
-                val selectedDate = selectedDates.first().calendar
+            if (selectedDates.size >= 2) {
+                // Sort the selected dates to ensure proper range order
+                val sortedDates = selectedDates.sortedBy { it.calendar.timeInMillis }
 
-                selectedDate.set(Calendar.HOUR_OF_DAY, 0)
-                selectedDate.set(Calendar.MINUTE, 0)
-                selectedDate.set(Calendar.SECOND, 0)
-                selectedDate.set(Calendar.MILLISECOND, 0)
+                // Get the first and second selected dates
+                val startDate = sortedDates.first().calendar
+                val endDate = sortedDates[1].calendar // Adjusted logic for the end date
 
-                callback(selectedDate.timeInMillis)
+                // Set the start date to the start of the day
+                startDate.set(Calendar.HOUR_OF_DAY, 0)
+                startDate.set(Calendar.MINUTE, 0)
+                startDate.set(Calendar.SECOND, 0)
+                startDate.set(Calendar.MILLISECOND, 0)
 
-                dialog.dismiss()
+                // If the selected dates are non-contiguous, set the end date to the day before the second date
+                if (selectedDates.size > 2 || sortedDates.last() != sortedDates[1]) {
+                    endDate.add(Calendar.DAY_OF_MONTH, -1)
+                }
+
+                // Set the end date to the end of the day
+                endDate.set(Calendar.HOUR_OF_DAY, 23)
+                endDate.set(Calendar.MINUTE, 59)
+                endDate.set(Calendar.SECOND, 59)
+                endDate.set(Calendar.MILLISECOND, 999)
+
+                val startMillis = startDate.timeInMillis
+                val endMillis = endDate.timeInMillis
+
+                if (layoutIndex == 0) {
+                    // Update or add the selected range
+                    updateOrAddDateRange(layoutIndex, startMillis, endMillis)
+                    callback(startMillis, endMillis)
+                    dialog.dismiss()
+                } else {
+                    // Check for conflicts with other plans
+                    val conflict =
+                        isConflictWithPreviousPlans(startMillis, endMillis, layoutIndex ?: 0)
+
+                    if (conflict) {
+                        textView.text = "Selected dates conflict with another plan"
+                        textView.setTextColor(Color.RED)
+                        Toast.makeText(
+                            context,
+                            "Plan $layoutIndex conflicts with earlier plans",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        updateOrAddDateRange(layoutIndex, startMillis, endMillis)
+                        callback(startMillis, endMillis)
+                        dialog.dismiss()
+                    }
+                }
             } else {
-                textView.text = "Please select a date"
+                textView.text = "Please select both start and end dates"
+                textView.setTextColor(Color.RED)
+            }
+        }
+
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay?): Boolean {
+                // Check if the day is part of the selected range (selected dates)
+                return calendarView.selectedDates.contains(day)
+            }
+
+            override fun decorate(view: DayViewFacade?) {
+                view?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+                view?.addSpan(ForegroundColorSpan(Color.BLACK))
+            }
+        })
+
+
+        confirmButton.setOnClickListener {
+            val selectedDates = calendarView.selectedDates
+
+            if (selectedDates.size >= 2) {
+                // Sort the selected dates to ensure proper range order
+                val sortedDates = selectedDates.sortedBy { it.calendar.timeInMillis }
+
+                // Get the first and last selected dates
+                val startDate = sortedDates.first().calendar
+                val endDate = sortedDates.last().calendar
+
+                // Set the start date to the start of the day
+                startDate.set(Calendar.HOUR_OF_DAY, 0)
+                startDate.set(Calendar.MINUTE, 0)
+                startDate.set(Calendar.SECOND, 0)
+                startDate.set(Calendar.MILLISECOND, 0)
+
+                // Adjust the end date for non-contiguous selections
+                if (endDate.timeInMillis - startDate.timeInMillis > 24 * 60 * 60 * 1000) {
+                    endDate.add(Calendar.DAY_OF_MONTH, -0)
+                }
+
+                // Set the end date to the end of the day
+                endDate.set(Calendar.HOUR_OF_DAY, 23)
+                endDate.set(Calendar.MINUTE, 59)
+                endDate.set(Calendar.SECOND, 59)
+                endDate.set(Calendar.MILLISECOND, 999)
+
+                val startMillis = startDate.timeInMillis
+                val endMillis = endDate.timeInMillis
+
+                if (layoutIndex == 0) {
+                    // Update or add the selected range
+                    updateOrAddDateRange(layoutIndex, startMillis, endMillis)
+                    callback(startMillis, endMillis)
+                    dialog.dismiss()
+                } else {
+                    // Check for conflicts with other plans
+                    val conflict =
+                        isConflictWithPreviousPlans(startMillis, endMillis, layoutIndex ?: 0)
+
+                    if (conflict) {
+                        textView.text = "Selected dates conflict with another plan"
+                        textView.setTextColor(Color.RED)
+                        Toast.makeText(
+                            context,
+                            "Plan $layoutIndex conflicts with earlier plans",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        // Update or add the selected range
+                        updateOrAddDateRange(layoutIndex, startMillis, endMillis)
+                        callback(startMillis, endMillis)
+                        dialog.dismiss()
+                    }
+                }
+            } else {
+                textView.text = "Please select both start and end dates"
                 textView.setTextColor(Color.RED)
             }
         }
 
         dialog.show()
+    }
+
+    fun updateOrAddDateRange(
+        layoutIndex: Int?,
+        startMillis: Long,
+        endMillis: Long,
+        remove: Boolean = false
+    ) {
+        layoutIndex?.let {
+            if (remove) {
+                // Remove the date range if it exists
+                if (it < selectedDateRanges.size) {
+                    selectedDateRanges.removeAt(it)
+                    Log.d("UpdateOrAddDateRange", "Date range at index $it removed.")
+                } else {
+
+                }
+            } else {
+                // Add or update the date range
+                if (it < selectedDateRanges.size) {
+                    selectedDateRanges[it] = startMillis to endMillis
+                    Log.d("UpdateOrAddDateRange", "Date range at index $it updated.")
+                } else {
+                    selectedDateRanges.add(startMillis to endMillis)
+                    Log.d("UpdateOrAddDateRange", "Date range added at index $it.")
+                }
+            }
+        }
+    }
+
+
+    fun isConflictWithPreviousPlans(startMillis: Long, endMillis: Long, layoutIndex: Int): Boolean {
+        if (layoutIndex <= 0 || selectedDateRanges.isEmpty()) {
+            return false
+        }
+
+        for (i in 0 until layoutIndex) {
+            if (i >= selectedDateRanges.size) {
+                break // Prevent out-of-bounds access
+            }
+            val (planStart, planEnd) = selectedDateRanges[i]
+            if ((startMillis in planStart..planEnd) || (endMillis in planStart..planEnd) ||
+                (startMillis < planStart && endMillis > planEnd)
+            ) {
+                return true
+            }
+        }
+        return false
     }
 
 
@@ -1060,8 +1329,12 @@ class AddMicroCycleActivity : AppCompatActivity() {
             selectedAbilityIds.clear()
             selectedAbilityIds.addAll(selectedAbilities.map { it.id })
 
-            addMicroCycleBinding.card.visibility =
-                if (selectedAbilities.isNotEmpty()) View.VISIBLE else View.GONE
+            addMicroCycleBinding.card.visibility = if (selectedAbilities.isNotEmpty()) View.VISIBLE else View.GONE
+            val params = addMicroCycleBinding.linearLayout6.layoutParams as? ViewGroup.MarginLayoutParams
+            params?.let {
+                it.bottomMargin = 0
+                addMicroCycleBinding.linearLayout6.layoutParams = it
+            }
 
             for (ability in selectedAbilities) {
                 val abilityLayout = LayoutInflater.from(this)

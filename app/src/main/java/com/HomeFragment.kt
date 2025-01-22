@@ -697,6 +697,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         homeFragmentBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         homeFragmentBinding.navigationView.setNavigationItemSelectedListener(this)
+
     }
 
     private fun initViews() {

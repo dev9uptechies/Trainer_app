@@ -425,15 +425,14 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             Log.d("AddTrainingPlan", "Reusing missing index: $reusedIndex")
             reusedIndex
         } else {
-            trainingPlanLayouts.size // Append at the end if no missing indices
+            trainingPlanLayouts.size
         }
 
         val newTrainingPlanLayout = LayoutInflater.from(this)
             .inflate(R.layout.add_training_plan_list, trainingPlanContainer, false)
 
-        val nameEditText: AppCompatEditText =
-            newTrainingPlanLayout.findViewById(R.id.ent_pre_sea_name)
-        nameEditText.hint = getTrainingPlanDetails(indexToAdd) // Use the correct index
+        val nameEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_pre_sea_name)
+        nameEditText.hint = getTrainingPlanDetails(indexToAdd)
 
         val startDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_start_date_liner)
         val endDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_ent_date_liner)
@@ -620,14 +619,18 @@ class AddTrainingPlanActivity : AppCompatActivity() {
         trainingPlanContainer.addView(newTrainingPlanLayout, indexToAdd)
         Log.d("AddTrainingPlan", "Added training plan at index: $indexToAdd")
         val delete: ImageView = newTrainingPlanLayout.findViewById(R.id.img_delete)
-        delete.setOnClickListener {
-            activeLayoutIndex = activeLayoutIndex?.minus(1)
+        delete.setOnClickListener { activeLayoutIndex = activeLayoutIndex?.minus(1)
 
             Log.d("RTTRTRTRT", "addTrainingPlan: $activeLayoutIndex")
 
             removeTrainingPlan(newTrainingPlanLayout)
         }
+
+//        if (nameEditText == null || nameEditText.i)
         updateTrainingPlanIndices()
+
+
+
     }
 
     private fun removeTrainingPlan(trainingPlanLayout: View) {
@@ -638,7 +641,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             trainingPlanLayouts.remove(trainingPlanLayout)
             trainingPlanCount--
             Log.d("RemoveTrainingPlan", "Removed training plan at index: $index")
-
             dateRangeMap.remove(index)
             Log.d("RemoveTrainingPlan", "Date range for training plan at index $index removed from map.")
 
@@ -662,24 +664,20 @@ class AddTrainingPlanActivity : AppCompatActivity() {
     private fun updateTrainingPlanIndices() {
         hyy = true
         // Define a list of default names
-        val defaultNames = listOf("Pre Season", "Pre Competititve", "Compatitive", "Transition")
+        val defaultNames = listOf("Enter Pre Season", "Enter Pre Competitive", "Enter Competitive", "Enter Transition")
 
         for (i in trainingPlanLayouts.indices) {
             val layout = trainingPlanLayouts[i]
-            val indexTextView: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
+            val nameEditText: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
 
-            // Get the current name from the EditText
-            val currentName = indexTextView.text?.toString()
+            val currentName = nameEditText.text?.toString()?.trim()
 
-            // Check if the name is null or empty
             if (currentName.isNullOrEmpty()) {
-                // Set the corresponding default name, or a fallback if out of range
                 val defaultName = if (i < defaultNames.size) defaultNames[i] else "Default Text"
-                indexTextView.setText(defaultName)
+                nameEditText.setText(defaultName)
             }
 
-            // Update the hint with training plan details
-            indexTextView.hint = getTrainingPlanDetails(i + 1)
+            nameEditText.hint = getTrainingPlanDetails(i + 1)
         }
 
         Log.d(
@@ -687,6 +685,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             "Updated indices for ${trainingPlanLayouts.size} training plans."
         )
     }
+
 
     private fun findConflictingRange(start: Long, end: Long, layoutIndex: Int): Pair<Long, Long> {
         return selectedDateRanges
