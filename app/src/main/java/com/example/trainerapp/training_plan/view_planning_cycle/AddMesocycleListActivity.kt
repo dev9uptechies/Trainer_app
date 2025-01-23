@@ -208,9 +208,35 @@ class AddMesocycleListActivity : AppCompatActivity() {
                 val endDate: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
                 val delete: ImageView = layout.findViewById(R.id.img_delete)
 
-                val start = startDate.text.toString()
-                val end = endDate.text.toString()
 
+                val startDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_start_date_liner)
+                val endDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
+
+                val start = startDateEditText.text.toString().trim()
+                val end = endDateEditText.text.toString().trim()
+
+
+                val startDateMillis = formatDateToMillistest(start)
+                val endDateMillis = formatDateToMillistest(end)
+
+                val formattedStartDate = formatMillisToDateString(startDateMillis)
+                val formattedEndDate = formatMillisToDateString(endDateMillis)
+
+                val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
+                val errorTestDateMillis = parseFormattedDateToMillis(formattedEndDate)
+
+                val finalStartDates = formatDate(errorStartDateMillis)
+                val finalEndDates = formatDate(errorTestDateMillis)
+
+
+                if (start == "" || start.isNullOrEmpty()){
+                    Toast.makeText(this, "Please Fill All Filed", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                if (end == "" || end.isNullOrEmpty()){
+                    Toast.makeText(this, "Please Fill All Filed", Toast.LENGTH_SHORT).show()
+                    return
+                }
 
                 Log.d("TAG", "$start   $end")
 
@@ -219,8 +245,8 @@ class AddMesocycleListActivity : AppCompatActivity() {
                         id = 0,
                         planning_t_id = seasonId.toString(),
                         name = nameEditText.text.toString(),
-                        start_date = startdatesent.toString(),
-                        end_date = enddatesent.toString(),
+                        start_date = finalStartDates.toString(),
+                        end_date = finalEndDates.toString(),
                         periods = "0"
 
                     )
@@ -285,13 +311,43 @@ class AddMesocycleListActivity : AppCompatActivity() {
                 val endDate: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
                 val delete: ImageView = layout.findViewById(R.id.img_delete)
 
+
+                val startDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_start_date_liner)
+                val endDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
+
+                val start = startDateEditText.text.toString().trim()
+                val end = endDateEditText.text.toString().trim()
+
+
+                val startDateMillis = formatDateToMillistest(start)
+                val endDateMillis = formatDateToMillistest(end)
+
+                val formattedStartDate = formatMillisToDateString(startDateMillis)
+                val formattedEndDate = formatMillisToDateString(endDateMillis)
+
+                val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
+                val errorTestDateMillis = parseFormattedDateToMillis(formattedEndDate)
+
+                val finalStartDates = formatDate(errorStartDateMillis)
+                val finalEndDates = formatDate(errorTestDateMillis)
+
+
+                if (start == "" || start.isNullOrEmpty()){
+                    Toast.makeText(this, "Please Fill All Filed", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                if (end == "" || end.isNullOrEmpty()){
+                    Toast.makeText(this, "Please Fill All Filed", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
                 competitive.add(
                     AddMesocycleCompatitive(
                         id = 0,
                         planning_c_id = seasonId.toString(),
                         name = nameEditText.text.toString(),
-                        start_date = startdatesent.toString(),
-                        end_date = endDateMillis.toString(),
+                        start_date = finalStartDates.toString(),
+                        end_date = finalEndDates.toString(),
                         periods = "0"
                     )
                 )
@@ -353,13 +409,44 @@ class AddMesocycleListActivity : AppCompatActivity() {
                 val endDate: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
                 val delete: ImageView = layout.findViewById(R.id.img_delete)
 
+
+                val startDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_start_date_liner)
+                val endDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
+
+                val start = startDateEditText.text.toString().trim()
+                val end = endDateEditText.text.toString().trim()
+
+
+                val startDateMillis = formatDateToMillistest(start)
+                val endDateMillis = formatDateToMillistest(end)
+
+                val formattedStartDate = formatMillisToDateString(startDateMillis)
+                val formattedEndDate = formatMillisToDateString(endDateMillis)
+
+                val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
+                val errorTestDateMillis = parseFormattedDateToMillis(formattedEndDate)
+
+                val finalStartDates = formatDate(errorStartDateMillis)
+                val finalEndDates = formatDate(errorTestDateMillis)
+
+
+                if (start == "" || start.isNullOrEmpty()){
+                    Toast.makeText(this, "Please Fill All Filed", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                if (end == "" || end.isNullOrEmpty()){
+                    Toast.makeText(this, "Please Fill All Filed", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+
                 preCompetitive.add(
                     AddMesocyclePreCompatitive(
                         id = 0,
                         planning_pc_id = seasonId.toString(),
                         name = nameEditText.text.toString(),
-                        start_date = startdatesent.toString(),
-                        end_date = enddatesent.toString(),
+                        start_date = finalStartDates.toString(),
+                        end_date = finalEndDates.toString(),
                         periods = "0"
 
                     )
@@ -414,6 +501,40 @@ class AddMesocycleListActivity : AppCompatActivity() {
         }
     }
 
+    private fun parseFormattedDateToMillis(dateString: String?): Long {
+        return try {
+            val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+            val date = format.parse(dateString)
+            date?.time ?: System.currentTimeMillis()
+        } catch (e: Exception) {
+            Log.e("DateConversion", "Error parsing formatted date: ${e.message}")
+            System.currentTimeMillis()
+        }
+    }
+    private fun formatMillisToDateString(millis: Long): String {
+        val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+        return format.format(millis)
+    }
+
+
+
+    private fun formatDateToMillistest(dateString: String?): Long {
+        return try {
+            Log.d("VBBVBBBBB", "formatDateToMillistest: ok")
+            val format = SimpleDateFormat(
+                "dd MMM, yyyy",
+                Locale.getDefault()
+            ) // Updated format to match "02 Jan, 2025"
+            val date = format.parse(dateString)
+            date?.time ?: System.currentTimeMillis() // Fallback to current time if parsing fails
+        } catch (e: Exception) {
+            Log.e("DateConversion009990", "Error converting date: ${e.message}")
+            System.currentTimeMillis() // Fallback to current time
+        }
+    }
+
+
+
     private fun savePresession() {
         try {
             preSeason.clear()
@@ -421,17 +542,45 @@ class AddMesocycleListActivity : AppCompatActivity() {
             for (i in 0 until trainingPlanContainer.childCount) {
                 val layout = trainingPlanContainer.getChildAt(i)
                 val nameEditText: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
-//                val startDate: AppCompatEditText = layout.findViewById(R.id.ent_start_date_liner)
-//                val endDate: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
+                val startDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_start_date_liner)
+                val endDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
 
-                if (nameEditText.text!!.isNotEmpty() && startdatesent!!.isNotEmpty() && enddatesent!!.isNotEmpty()) {
+                val start = startDateEditText.text.toString().trim()
+                val end = endDateEditText.text.toString().trim()
+
+
+                val startDateMillis = formatDateToMillistest(start)
+                val endDateMillis = formatDateToMillistest(end)
+
+                val formattedStartDate = formatMillisToDateString(startDateMillis)
+                val formattedEndDate = formatMillisToDateString(endDateMillis)
+
+                val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
+                val errorTestDateMillis = parseFormattedDateToMillis(formattedEndDate)
+
+                val finalStartDates = formatDate(errorStartDateMillis)
+                val finalEndDates = formatDate(errorTestDateMillis)
+
+                if (start == "" || start.isNullOrEmpty()){
+                    Toast.makeText(this, "Start date is Required", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                if (end == "" || end.isNullOrEmpty()){
+                    Toast.makeText(this, "End date is Required", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+
+                Log.d("LLDLDLDLLD", "savePresession: $finalStartDates   $finalEndDates")
+
+                if (nameEditText.text!!.isNotEmpty() && start!!.isNotEmpty() && end!!.isNotEmpty()) {
                     preSeason.add(
                         AddMesocyclePresession(
                             id = id,
                             planning_ps_id = seasonId.toString(),
                             name = nameEditText.text.toString(),
-                            start_date = startdatesent.toString(),
-                            end_date = enddatesent.toString(),
+                            start_date = finalStartDates.toString(),
+                            end_date = finalEndDates.toString(),
 
                         )
                     )
@@ -637,11 +786,11 @@ class AddMesocycleListActivity : AppCompatActivity() {
         }
 
 
-        if(startdatesent == enddatesent){
-            addMesoCycleBinding.cardSave.isEnabled = false
-        }else{
-            addMesoCycleBinding.cardSave.isEnabled = true
-        }
+//        if(startdatesent == enddatesent){
+//            addMesoCycleBinding.cardSave.isEnabled = false
+//        }else{
+//            addMesoCycleBinding.cardSave.isEnabled = true
+//        }
 
 
 
@@ -728,10 +877,25 @@ class AddMesocycleListActivity : AppCompatActivity() {
 
                 if (selectedDateRanges == null) return false
 
-                return selectedDateRanges.withIndex().any { (index, range) ->
-                    val (start, end) = range
-                    index < layoutIndex && dateInMillis in start..end
+                // First decorator logic (Disable dates in selectedDateRanges)
+                if (selectedDateRanges.withIndex().any { (index, range) ->
+                        val (start, end) = range
+                        index < layoutIndex && dateInMillis in start..end
+                    }) {
+                    return true
                 }
+
+                // Second decorator logic (Disable dates before the previous range's start date)
+                if (layoutIndex != null && layoutIndex > 0 && selectedDateRanges.size >= layoutIndex) {
+                    val (prevStart, _) = selectedDateRanges[layoutIndex - 1]
+
+                    // Disable dates before the previous range's start date
+                    if (dateInMillis < prevStart) {
+                        return true
+                    }
+                }
+
+                return false
             }
 
             override fun decorate(view: DayViewFacade?) {
@@ -928,9 +1092,7 @@ class AddMesocycleListActivity : AppCompatActivity() {
         return false
     }
 
-
     private fun selectTrainingPlanStartDate(editText: AppCompatEditText) {
-        // Get the main start and max end dates from the binding
         val mainStartDate = addMesoCycleBinding.startDate.text.toString()
         val maxStartDate = addMesoCycleBinding.endDate.text.toString()
 
@@ -996,13 +1158,10 @@ class AddMesocycleListActivity : AppCompatActivity() {
             ?: Long.MAX_VALUE // Return millis or a very high value if parsing fails
     }
 
-
-    // Utility function to format the date to a readable format
     private fun formatDate(dateMillis: Long): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(Date(dateMillis))
     }
-
 
     private fun removeTrainingPlan(trainingPlanLayout: View) {
         val index = trainingPlanLayouts.indexOf(trainingPlanLayout)

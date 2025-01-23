@@ -73,7 +73,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
     private var startdatesent: String? = null
     private var enddatesent: String? = null
 
-
     private var startdatesentlist: String? = null
     private var enddatesentlist: String? = null
 
@@ -112,7 +111,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
     private fun updateUI(addButton: CardView) {
         if (areAllFieldsFilled()) {
             addButton.isEnabled = true
-            addButton.setCardBackgroundColor(resources.getColor(R.color.splash_text_color)) // Change to your desired color
+            addButton.setCardBackgroundColor(resources.getColor(R.color.splash_text_color)) // Change to your desired colo
         } else {
             addButton.isEnabled = false
             addButton.setCardBackgroundColor(resources.getColor(R.color.grey)) // Disabled color
@@ -223,7 +222,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                 set(Calendar.MILLISECOND, 999)
             }.timeInMillis
 
-            val currentLayoutIndex = activeLayoutIndex // Pass layoutIndex of current plan or null
+            val currentLayoutIndex = activeLayoutIndex
 
             showDateRangePickerDialogfor(
                 context = editTrainingPlanBinding.edtStartDate.context,
@@ -379,12 +378,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                 } else if (code == 403) {
                     Utils.setUnAuthDialog(this@EditTrainingPlanActivity)
                 } else {
-                    Toast.makeText(
-                        this@EditTrainingPlanActivity,
-                        "" + response.message(),
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    Toast.makeText(this@EditTrainingPlanActivity, "" + response.message(), Toast.LENGTH_SHORT).show()
                     call.cancel()
                 }
             }
@@ -403,6 +397,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         layoutIndex: Int?,
         callback: (start: Long, end: Long) -> Unit
     ) {
+
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.date_range_picker_dialog)
 
@@ -468,10 +463,25 @@ class EditTrainingPlanActivity : AppCompatActivity() {
 
                 if (selectedDateRanges == null) return false
 
-                return selectedDateRanges.withIndex().any { (index, range) ->
-                    val (start, end) = range
-                    index < layoutIndex && dateInMillis in start..end
+                // First decorator logic (Disable dates in selectedDateRanges)
+                if (selectedDateRanges.withIndex().any { (index, range) ->
+                        val (start, end) = range
+                        index < layoutIndex && dateInMillis in start..end
+                    }) {
+                    return true
                 }
+
+                // Second decorator logic (Disable dates before the previous range's start date)
+                if (layoutIndex != null && layoutIndex > 0 && selectedDateRanges.size >= layoutIndex) {
+                    val (prevStart, _) = selectedDateRanges[layoutIndex - 1]
+
+                    // Disable dates before the previous range's start date
+                    if (dateInMillis < prevStart) {
+                        return true
+                    }
+                }
+
+                return false
             }
 
             override fun decorate(view: DayViewFacade?) {
@@ -544,7 +554,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
 
         calendarView.addDecorator(object : DayViewDecorator {
             override fun shouldDecorate(day: CalendarDay?): Boolean {
-                // Check if the day is part of the selected range (selected dates)
                 return calendarView.selectedDates.contains(day)
             }
 
@@ -605,7 +614,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        // Update or add the selected range
                         updateOrAddDateRange(layoutIndex, startMillis, endMillis)
                         callback(startMillis, endMillis)
                         dialog.dismiss()
@@ -688,7 +696,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         }
     }
 
-
     fun isOverlapping(start1: Long, end1: Long, start2: Long, end2: Long): Boolean {
         return start1 < end2 && start2 < end1
     }
@@ -722,19 +729,45 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         val enddatecard: CardView = trainingPlanView.findViewById(R.id.card_end_pick_list)
         val mesocycles: TextView = trainingPlanView.findViewById(R.id.linear_days_list)
 
-        val startDateMillis = formatDateToMillis2(startDate)
-        val formattedStartDate = formatMillisToDateString(startDateMillis)
+        val startDateMillis = if (!startDate.isNullOrEmpty()) formatDateToMillis2(startDate) else null
+        val formattedStartDate = startDateMillis?.let { formatMillisToDateString(it) } ?: ""
 
-        val endDateInMillis = formatDateToMillis2(endDate)
-        val formattedEndDate = formatMillisToDateString(endDateInMillis)
+        val endDateInMillis = if (!endDate.isNullOrEmpty()) formatDateToMillis2(endDate) else null
+        val formattedEndDate = endDateInMillis?.let { formatMillisToDateString(it) } ?: ""
+
+        Log.d("AKAKAKAKK", "addTrainingPlanView: $formattedStartDate      $formattedEndDate")
+        Log.d("AKAKAKAKK", "addTrainingPlanView: $startDate      $endDate")
+
+
+        Log.d("AKAKAKAKK", "addTrainingPlanView: $formattedStartDate      $formattedEndDate")
+        Log.d("AKAKAKAKK", "addTrainingPlanView: $startDate      $endDate")
 
         nameEditText.setText(name)
         startDateEditText.setText(formattedStartDate)
         endDateEditText.setText(formattedEndDate)
         mesocycles.setText(mesocycle)
 
-        nameEditText = trainingPlanView.findViewById(R.id.ent_pre_sea_name)
-        nameEditText.hint = getTrainingPlanDetails(indexToAdd)
+
+//        val nameEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_pre_sea_name)
+//        nameEditText.hint = getTrainingPlanDetails(indexToAdd)
+
+        val startDateMillisssss = formatDateToMillis2(startDate)
+        val endDateMillisssss = formatDateToMillis2(endDate)
+
+        val formattedStartDatesss = formatMillisToDateString(startDateMillisssss)
+        val formattedEndDatesss = formatMillisToDateString(endDateMillisssss)
+
+        selectedDateRanges.add(startDateMillisssss to endDateMillisssss)
+
+        Log.d("TYTYYTYTY", "Set Date : ${startDate}     ${endDate}")
+
+        Log.d("TYTYYTYTY", "Formated Dates: ${formattedStartDatesss}     ${formattedEndDatesss}")
+
+        Log.d("TYTYYTYTY", "Date in mille: ${startDateMillisssss}     ${endDateMillisssss}")
+
+        Log.d("TYTYYTYTY", "SelectedRanges: ${selectedDateRanges.first().toString()}   ${selectedDateRanges.toString()}")
+
+
 
         val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
         val errorEndDateMillis = parseFormattedDateToMillis(formattedEndDate)
@@ -791,14 +824,14 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             if (editTrainingPlanBinding.edtStartDate.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
             } else {
-                val minDateMillis =
-                    formatDateToMillis(editTrainingPlanBinding.edtStartDate.text.toString())
-                val maxDateMillis =
-                    formatDateToMillis(editTrainingPlanBinding.edtEndDate.text.toString())
+                val minDateMillis = formatDateToMillis(editTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis = formatDateToMillis(editTrainingPlanBinding.edtEndDate.text.toString())
 
                 showDateRangePickerDialogfor(
                     startDateEditText.context,
                     minDateMillis,
+
+
                     maxDateMillis,
                     layoutIndex
                 ) { start, end ->
@@ -941,10 +974,13 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         enddatecard.setOnFocusChangeListener { _, _ -> updateDaysTextViewlist() }
         mesocycles.setOnFocusChangeListener { _, _ -> updateDaysTextViewlist() }
 
-        trainingPlanContainer.addView(trainingPlanView)
-        trainingPlanLayouts.add(trainingPlanView)
+        trainingPlanContainer.addView(trainingPlanView, indexToAdd)
+        trainingPlanLayouts.add(indexToAdd,trainingPlanView)
 
         updateTrainingPlanIndices()
+//        nameEditText = trainingPlanView.findViewById(R.id.ent_pre_sea_name)
+//        nameEditText.hint = getTrainingPlanDetails(indexToAdd)
+
         Log.d("AddTrainingPlan", "Training plan added for phase: $phaseType")
     }
 
@@ -978,7 +1014,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                     "EditeProgramData: $errorstartdatelist    END:-  $errorenddatelist"
                 )
 
-                val name = nameEditText.text.toString().trim()
+                var name = nameEditText.text.toString().trim()
                 val mesocycle = mesocycles.text.toString().trim()
                 val startDate = startDateEditText.text.toString().trim()
                 val endDate = endDateEditText.text.toString().trim()
@@ -990,17 +1026,17 @@ class EditTrainingPlanActivity : AppCompatActivity() {
 
                 val errorTextView: TextView = layout.findViewById(R.id.error_start_date_list)
 
-                if (name.isEmpty() && startdatesentlist!!.isEmpty() && enddatesentlist!!.isEmpty()) {
-                    continue
-                }
-                if (name.isEmpty()) {
-                    Toast.makeText(
-                        this,
-                        "Please fill in all fields for plan ${i + 1}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return
-                }
+//                if (startdatesentlist.isEmpty() && enddatesentlist!!.isEmpty()) {
+//                    continue
+//                }
+//                if (name.isEmpty()) {
+//                    Toast.makeText(
+//                        this,
+//                        "Please fill in all fields for plan ${i + 1}",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                    return
+//                }
 
                 val startDateMillis = formatDateToMillistest(startDate)
                 val endDateMillis = formatDateToMillistest(endDate)
@@ -1011,12 +1047,13 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                 val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
                 val errorTestDateMillis = parseFormattedDateToMillis(formattedEndDate)
 
-                val finalStartDate = formatDate(errorStartDateMillis)
-                val finalEndDate = formatDate(errorTestDateMillis)
+                val finalStartDates = formatDate(errorStartDateMillis)
+                val finalEndDates = formatDate(errorTestDateMillis)
 
+                Log.d("DEBUUUUUG", "Final formatted date: $finalStartDates    end:- $finalEndDates")
 
-                Log.d("DEBUUUUUG", "Final formatted date: $finalStartDate    end:- $finalEndDate")
-
+                val finalStartDate = if (finalStartDates.isNullOrEmpty()) errorstartdatelist.toString() else finalStartDates
+                val finalEndDate = if (finalEndDates.isNullOrEmpty()) errorenddatelist.toString() else finalEndDates
 
 
                 Log.d("HFHFHFHFH", "EditeProgramData   START: $finalStartDate")
@@ -1070,15 +1107,27 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                     "EditeProgramData: $errorstartdatelist    END:-  $errorenddatelist"
                 )
 
+
+
                 when (i) {
                     0 -> {
                         if (preSeason.name.isEmpty()) {
+                            if (name == "" || name.isNullOrEmpty()){
+                                name = "Pre Season"
+                            }else{
+                                name
+                            }
                             preSeason = PreSeason(name, finalStartDate, finalEndDate, mesocycle)
                         }
                     }
 
                     1 -> {
                         if (preCompetitive.name.isEmpty()) {
+                            if (name == "" || name.isNullOrEmpty()){
+                                name = "Pre Competitive"
+                            }else{
+                                name
+                            }
                             preCompetitive =
                                 PreCompetitive(name, finalStartDate, finalEndDate, mesocycle)
                         }
@@ -1086,12 +1135,22 @@ class EditTrainingPlanActivity : AppCompatActivity() {
 
                     2 -> {
                         if (competitive.name.isEmpty()) {
+                            if (name == "" || name.isNullOrEmpty()){
+                                name = "Competitive"
+                            }else{
+                                name
+                            }
                             competitive = Competitive(name, finalStartDate, finalEndDate, mesocycle)
                         }
                     }
 
                     3 -> {
                         if (transition.name.isEmpty()) {
+                            if (name == "" || name.isNullOrEmpty()){
+                                name = "Transition"
+                            }else{
+                                name
+                            }
                             transition = Transition(name, finalStartDate, finalEndDate, mesocycle)
                         }
                     }
@@ -1118,8 +1177,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                 return
             }
 
-            val finalStartDate =
-                startdatesent?.takeIf { it.isNotEmpty() } ?: errorstartdate.toString()
+            val finalStartDate = startdatesent?.takeIf { it.isNotEmpty() } ?: errorstartdate.toString()
             val finalEndDate = enddatesent?.takeIf { it.isNotEmpty() } ?: errorenddate.toString()
 
             Log.d("final", "EditeProgramData: $finalEndDate   $finalStartDate")
@@ -1199,10 +1257,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             val existingStartMillis = convertDateToMillis(existingStartDate.text.toString().trim())
             val existingEndMillis = convertDateToMillis(existingEndDate.text.toString().trim())
 
-            Log.d(
-                "DATE_CHECK",
-                "Plan ${i + 1}: Start: $existingStartMillis, End: $existingEndMillis"
-            )
+            Log.d("DATE_CHECK", "Plan ${i + 1}: Start: $existingStartMillis, End: $existingEndMillis")
 
             if (isOverlapping(startMillis, endMillis, existingStartMillis, existingEndMillis)) {
                 Log.d("DATE_CHECK", "Conflict detected between Plan 1 and Plan ${i + 1}")
@@ -1212,7 +1267,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         Log.d("DATE_CHECK", "No conflict detected for Plan 1")
         return false
     }
-
 
     private fun setProgramDataset(data: TrainingPlanData.TrainingPlan) {
 
@@ -1225,9 +1279,10 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         editTrainingPlanBinding.edtProgramName.setText(data.name)
         editTrainingPlanBinding.edtStartDate.setText(formattedStartDate)
         editTrainingPlanBinding.edtEndDate.setText(formattedEndDate)
-        editTrainingPlanBinding.days.text = data.mesocycle
+        editTrainingPlanBinding.days.text = data.mesocycle + " Days"
 
         updateDaysTextView()
+
 
         val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
         val errorEndDateMillis = parseFormattedDateToMillis(formattedEndDate)
@@ -1295,20 +1350,27 @@ class EditTrainingPlanActivity : AppCompatActivity() {
 
 
     private fun updateTrainingPlanIndices() {
-        val defaultNames = listOf("Pre Season", "Pre Competititve", "Compatitive", "Transition")
+        // Define a list of default names
+        val defaultNames = listOf("Enter Pre Season", "Enter Pre Competitive", "Enter Competitive", "Enter Transition")
 
-        for (i in trainingPlanLayouts.indices) {
-            val layout = trainingPlanLayouts[i]
-            val indexTextView: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
+        // Iterate through the current list of training plans
+        trainingPlanLayouts.forEachIndexed { index, layout ->
+            val nameEditText: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
 
-            val currentName = indexTextView.text?.toString()
+            // Get the current name or trim any whitespace
+            val currentName = nameEditText.text?.toString()?.trim()
 
+            // If the name is null or empty, set a default hint
             if (currentName.isNullOrEmpty()) {
-                val defaultName = if (i < defaultNames.size) defaultNames[i] else "Default Text"
-                indexTextView.setText(defaultName)
+                val defaultName = if (index < defaultNames.size) defaultNames[index] else "Default Text"
+                nameEditText.hint = defaultName
+            } else {
+                // If a name is already provided, keep it as is
+                nameEditText.hint = currentName
             }
 
-            indexTextView.hint = getTrainingPlanDetails(i + 1)
+            // Optionally set additional details if required
+            nameEditText.hint = getTrainingPlanDetails(index + 1)
         }
 
         Log.d(
@@ -1513,9 +1575,9 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                 layout.findViewById(R.id.ent_start_date_liner)
             val endDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
 
-            if (nameEditText.text.isNullOrEmpty()) {
-                return false
-            }
+//            if (nameEditText.text.isNullOrEmpty()) {
+//                return false
+//            }
 
             if (startDateEditText.text.isNullOrEmpty()) {
                 layout.findViewById<TextView>(R.id.error_start_date_list).visibility = View.VISIBLE

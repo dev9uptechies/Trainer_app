@@ -174,7 +174,7 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
         viewTrainingPlanBinding.edtProgramName.setText(data[0].name)
         viewTrainingPlanBinding.edtStartDate.setText(formattedStartDate)
         viewTrainingPlanBinding.edtEndDate.setText(formattedEndDate)
-        viewTrainingPlanBinding.days.text = data[0].mesocycle+" Days"
+        viewTrainingPlanBinding.days.text = data[0].mesocycle
 
         initRecyclerView(arrayListOf(data[0]))
     }

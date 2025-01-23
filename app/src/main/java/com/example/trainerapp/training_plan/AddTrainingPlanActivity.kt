@@ -441,7 +441,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
         val mesocycles: TextView = newTrainingPlanLayout.findViewById(R.id.linear_days_list)
 
-        // Function to update the mesocycles text based on selected dates
         val updateDaysTextView = {
             val startDate = startdatesentlist.toString()
             val endDate = enddatesentlist.toString()
@@ -615,8 +614,8 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             }
         }
 
-        trainingPlanLayouts.add(indexToAdd, newTrainingPlanLayout)
         trainingPlanContainer.addView(newTrainingPlanLayout, indexToAdd)
+        trainingPlanLayouts.add(indexToAdd, newTrainingPlanLayout)
         Log.d("AddTrainingPlan", "Added training plan at index: $indexToAdd")
         val delete: ImageView = newTrainingPlanLayout.findViewById(R.id.img_delete)
         delete.setOnClickListener { activeLayoutIndex = activeLayoutIndex?.minus(1)
@@ -628,8 +627,6 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
 //        if (nameEditText == null || nameEditText.i)
         updateTrainingPlanIndices()
-
-
 
     }
 
@@ -674,7 +671,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
             if (currentName.isNullOrEmpty()) {
                 val defaultName = if (i < defaultNames.size) defaultNames[i] else "Default Text"
-                nameEditText.setText(defaultName)
+                nameEditText.setHint(defaultName)
             }
 
             nameEditText.hint = getTrainingPlanDetails(i + 1)
@@ -767,10 +764,25 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
                 if (selectedDateRanges == null) return false
 
-                return selectedDateRanges.withIndex().any { (index, range) ->
-                    val (start, end) = range
-                    index < layoutIndex && dateInMillis in start..end
+                // First decorator logic (Disable dates in selectedDateRanges)
+                if (selectedDateRanges.withIndex().any { (index, range) ->
+                        val (start, end) = range
+                        index < layoutIndex && dateInMillis in start..end
+                    }) {
+                    return true
                 }
+
+                // Second decorator logic (Disable dates before the previous range's start date)
+                if (layoutIndex != null && layoutIndex > 0 && selectedDateRanges.size >= layoutIndex) {
+                    val (prevStart, _) = selectedDateRanges[layoutIndex - 1]
+
+                    // Disable dates before the previous range's start date
+                    if (dateInMillis < prevStart) {
+                        return true
+                    }
+                }
+
+                return false
             }
 
             override fun decorate(view: DayViewFacade?) {
@@ -1157,14 +1169,15 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                 val errorTextView: TextView =
                     layout.findViewById(R.id.error_start_date_list)  // Make sure you have this TextView in your layout
 
-                val name = nameEditText.text.toString().trim()
+                var name = nameEditText.text.toString().trim()
                 val mesocycleValue = mesocycleTextView.text.toString().split(" ")[0]
                 val mesocycle = mesocycleValue.toIntOrNull()
 
                 val startDate = startDateEditText.text.toString().trim()
                 val endDate = endDateEditText.text.toString().trim()
 
-                if (name.isEmpty() || startDate.isEmpty() || endDate.isEmpty()) {
+                if (
+                    startDate.isEmpty() || endDate.isEmpty()) {
                     Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                     return
                 }
@@ -1194,9 +1207,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                         val (startDate, endDate) = dateRange
 
                         val layout = trainingPlanContainer.getChildAt(i)
-                        val planName =
-                            layout.findViewById<AppCompatEditText>(R.id.ent_pre_sea_name).text.toString()
-                                .trim()
+                        var planName = layout.findViewById<AppCompatEditText>(R.id.ent_pre_sea_name).text.toString().trim()
 
                         if (startDate < startdatesent.toString() || endDate > enddatesent.toString()) {
                             errorTextView.visibility = View.VISIBLE
@@ -1206,33 +1217,64 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                         }
 
                         when (i) {
-                            0 -> preSeason = PreSeason(
-                                name = planName,
-                                start_date = startDate,
-                                end_date = endDate,
-                                mesocycle = mesocycle.toString()
-                            )
+                            0 ->{
+                                if (planName == "" || planName.isNullOrEmpty()){
+                                    planName = "Pre Season"
+                                }else{
+                                    planName
+                                }
+                                preSeason = PreSeason(
+                                    name = planName,
+                                    start_date = startDate,
+                                    end_date = endDate,
+                                    mesocycle = mesocycle.toString()
+                                )
+                            }
 
-                            1 -> preCompetitive = PreCompetitive(
-                                name = planName,
-                                start_date = startDate,
-                                end_date = endDate,
-                                mesocycle = mesocycle.toString()
-                            )
 
-                            2 -> competitive = Competitive(
-                                name = planName,
-                                start_date = startDate,
-                                end_date = endDate,
-                                mesocycle = mesocycle.toString()
-                            )
 
-                            3 -> transition = Transition(
-                                name = planName,
-                                start_date = startDate,
-                                end_date = endDate,
-                                mesocycle = mesocycle.toString()
-                            )
+                            1 -> {
+                                if (planName == "" || planName.isNullOrEmpty()){
+                                    planName = "Pre Competitive"
+                                }else{
+                                    planName
+                                }
+                                preCompetitive = PreCompetitive(
+                                    name = planName,
+                                    start_date = startDate,
+                                    end_date = endDate,
+                                    mesocycle = mesocycle.toString()
+                                )
+                            }
+
+                            2 -> {
+                                if (planName == "" || planName.isNullOrEmpty()){
+                                    planName = "Competitive"
+                                }else{
+                                    planName
+                                }
+                                competitive = Competitive(
+                                    name = planName,
+                                    start_date = startDate,
+                                    end_date = endDate,
+                                    mesocycle = mesocycle.toString()
+                                )
+                            }
+
+                            3 -> {
+                                if (planName == "" || planName.isNullOrEmpty()){
+                                    planName = "Transition"
+                                }else{
+                                    planName
+                                }
+
+                                transition = Transition(
+                                    name = planName,
+                                    start_date = startDate,
+                                    end_date = endDate,
+                                    mesocycle = mesocycle.toString()
+                                )
+                            }
                         }
                     } else {
                         Log.e("DATE_RANGE_ERROR", "No date range found for index: $i")
@@ -1410,9 +1452,9 @@ class AddTrainingPlanActivity : AppCompatActivity() {
             val statdateList = startDateEditText.text.toString()
             val enddateList = endDateEditText.text.toString()
 
-            if (nameEditText == null || nameEditText.equals("")) {
-
-            }
+//            if (nameEditText == null || nameEditText.equals("")) {
+//
+//            }
 
             if (statdateList == "") {
                 layout.findViewById<TextView>(R.id.error_start_date_list).visibility = View.VISIBLE

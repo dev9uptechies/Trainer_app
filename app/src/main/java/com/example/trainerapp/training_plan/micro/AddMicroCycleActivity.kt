@@ -191,6 +191,41 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
                 Log.d("RTTTRTRTRTR", "SaveMicrocycleTransition: $isss")
 
+                val startDateMillis = formatDateToMillistest(start)
+                val endDateMillis = formatDateToMillistest(end)
+
+                val formattedStartDate = formatMillisToDateString(startDateMillis)
+                val formattedEndDate = formatMillisToDateString(endDateMillis)
+
+                val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
+                val errorTestDateMillis = parseFormattedDateToMillis(formattedEndDate)
+
+                val finalStartDates = formatDate(errorStartDateMillis)
+                val finalEndDates = formatDate(errorTestDateMillis)
+
+                val name = nameEditText?.text.toString().trim()
+                val errorTextView: TextView = layout.findViewById(R.id.error_start_date_list)
+                val EndDateErrorTextView: TextView = layout.findViewById(R.id.error_end_date_list)
+
+                if (name.isEmpty()) {
+                    Toast.makeText(this, "Please fill name fields.", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                if (start.isNullOrEmpty()){
+                    errorTextView.visibility = View.VISIBLE
+                    return
+                }else{
+                    errorTextView.visibility = View.GONE
+                }
+
+                if (end.isNullOrEmpty()){
+                    EndDateErrorTextView.visibility = View.VISIBLE
+                    return
+                }else{
+                    EndDateErrorTextView.visibility = View.GONE
+                }
+
 
                 if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty()  && isss != "[]") {
                     preSeason.add(
@@ -198,8 +233,8 @@ class AddMicroCycleActivity : AppCompatActivity() {
                             id = 0,
                             ps_mesocycle_id = id,
                             name = nameEditText.text.toString(),
-                            start_date = startdatesent.toString(),
-                            end_date = enddatesent.toString(),
+                            start_date = finalStartDates.toString(),
+                            end_date = finalEndDates.toString(),
                             workload = workloadProgress,
                             workload_color = colorCode,
                             ability_ids = selectedAbilityIds
@@ -293,6 +328,44 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
                 val isss = selectedAbilityIds.toString()
 
+
+                val startDateMillis = formatDateToMillistest(start)
+                val endDateMillis = formatDateToMillistest(end)
+
+                val formattedStartDate = formatMillisToDateString(startDateMillis)
+                val formattedEndDate = formatMillisToDateString(endDateMillis)
+
+                val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
+                val errorTestDateMillis = parseFormattedDateToMillis(formattedEndDate)
+
+                val finalStartDates = formatDate(errorStartDateMillis)
+                val finalEndDates = formatDate(errorTestDateMillis)
+
+                val name = nameEditText?.text.toString().trim()
+                val errorTextView: TextView = layout.findViewById(R.id.error_start_date_list)
+                val EndDateErrorTextView: TextView = layout.findViewById(R.id.error_end_date_list)
+
+                if (name.isEmpty()) {
+                    Toast.makeText(this, "Please fill name fields.", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                if (start.isNullOrEmpty()){
+                    errorTextView.visibility = View.VISIBLE
+                    return
+                }else{
+                    errorTextView.visibility = View.GONE
+                }
+
+                if (end.isNullOrEmpty()){
+                    EndDateErrorTextView.visibility = View.VISIBLE
+                    return
+                }else{
+                    EndDateErrorTextView.visibility = View.GONE
+                }
+
+
+
                 Log.d("FFHHFHFHH", "SaveMicrocyclePreCompatitive: $isss")
 
                 if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty()  && isss.isNotEmpty() && isss != "[]") {
@@ -301,8 +374,8 @@ class AddMicroCycleActivity : AppCompatActivity() {
                             id = 0,
                             pc_mesocycle_id = id,
                             name = nameEditText.text.toString(),
-                            start_date = startdatesent.toString(),
-                            end_date = enddatesent.toString(),
+                            start_date = finalStartDates.toString(),
+                            end_date = finalEndDates.toString(),
                             workload = workloadProgress,
                             workload_color = colorCode,
                             ability_ids = selectedAbilityIds
@@ -384,14 +457,52 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 var isss = selectedAbilityIds.toString()
 
 
+                val startDateMillis = formatDateToMillistest(start)
+                val endDateMillis = formatDateToMillistest(end)
+
+                val formattedStartDate = formatMillisToDateString(startDateMillis)
+                val formattedEndDate = formatMillisToDateString(endDateMillis)
+
+                val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
+                val errorTestDateMillis = parseFormattedDateToMillis(formattedEndDate)
+
+                val finalStartDates = formatDate(errorStartDateMillis)
+                val finalEndDates = formatDate(errorTestDateMillis)
+
+                val name = nameEditText?.text.toString().trim()
+                val errorTextView: TextView = layout.findViewById(R.id.error_start_date_list)
+                val EndDateErrorTextView: TextView = layout.findViewById(R.id.error_end_date_list)
+
+                if (name.isEmpty()) {
+                    Toast.makeText(this, "Please fill name fields.", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                if (start.isNullOrEmpty()){
+                    errorTextView.visibility = View.VISIBLE
+                    return
+                }else{
+                    errorTextView.visibility = View.GONE
+                }
+
+                if (end.isNullOrEmpty()){
+                    EndDateErrorTextView.visibility = View.VISIBLE
+                    return
+                }else{
+                    EndDateErrorTextView.visibility = View.GONE
+                }
+
+
+
+
                 if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty() && isss != "[]") {
                     competitive.add(
                         AddMicrocycleCompatitive(
                             id = 0,
                             c_mesocycle_id = id,
                             name = nameEditText.text.toString(),
-                            start_date = startdatesent.toString(),
-                            end_date = enddatesent.toString(),
+                            start_date = finalStartDates.toString(),
+                            end_date = finalEndDates.toString(),
                             workload = workloadProgress,
                             workload_color = colorCode,
                             ability_ids = selectedAbilityIds
@@ -470,6 +581,47 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 val isss = selectedAbilityIds.toString()
 
 
+                val startDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_start_date_liner)
+                val endDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
+
+                val startDateMillis = formatDateToMillistest(start)
+                val endDateMillis = formatDateToMillistest(end)
+
+                val formattedStartDate = formatMillisToDateString(startDateMillis)
+                val formattedEndDate = formatMillisToDateString(endDateMillis)
+
+                val errorStartDateMillis = parseFormattedDateToMillis(formattedStartDate)
+                val errorTestDateMillis = parseFormattedDateToMillis(formattedEndDate)
+
+                val finalStartDates = formatDate(errorStartDateMillis)
+                val finalEndDates = formatDate(errorTestDateMillis)
+
+                val name = nameEditText?.text.toString().trim()
+                val errorTextView: TextView = layout.findViewById(R.id.error_start_date_list)
+                val EndDateErrorTextView: TextView = layout.findViewById(R.id.error_end_date_list)
+
+                if (name.isEmpty()) {
+                    Toast.makeText(this, "Please fill name fields.", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                if (start.isNullOrEmpty()){
+                    errorTextView.visibility = View.VISIBLE
+                    return
+                }else{
+                    errorTextView.visibility = View.GONE
+                }
+
+                if (end.isNullOrEmpty()){
+                    EndDateErrorTextView.visibility = View.VISIBLE
+                    return
+                }else{
+                    EndDateErrorTextView.visibility = View.GONE
+                }
+
+
+
+
                 Log.d("RTTTRTRTRTR", "SaveMicrocycleTransition: $isss")
 
                 if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty() && isss != "[]" ) {
@@ -478,8 +630,8 @@ class AddMicroCycleActivity : AppCompatActivity() {
                             id = 0,
                             pt_mesocycle_id = id,
                             name = nameEditText.text.toString(),
-                            start_date = startdatesent.toString(),
-                            end_date = enddatesent.toString(),
+                            start_date = finalStartDates.toString(),
+                            end_date = finalEndDates.toString(),
                             workload = workloadProgress,
                             workload_color = colorCode,
                             ability_ids = selectedAbilityIds
@@ -534,6 +686,38 @@ class AddMicroCycleActivity : AppCompatActivity() {
         }
     }
 
+    private fun parseFormattedDateToMillis(dateString: String?): Long {
+        return try {
+            val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+            val date = format.parse(dateString)
+            date?.time ?: System.currentTimeMillis()
+        } catch (e: Exception) {
+            Log.e("DateConversion", "Error parsing formatted date: ${e.message}")
+            System.currentTimeMillis()
+        }
+    }
+    private fun formatMillisToDateString(millis: Long): String {
+        val format = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+        return format.format(millis)
+    }
+
+
+
+    private fun formatDateToMillistest(dateString: String?): Long {
+        return try {
+            Log.d("VBBVBBBBB", "formatDateToMillistest: ok")
+            val format = SimpleDateFormat(
+                "dd MMM, yyyy",
+                Locale.getDefault()
+            ) // Updated format to match "02 Jan, 2025"
+            val date = format.parse(dateString)
+            date?.time ?: System.currentTimeMillis() // Fallback to current time if parsing fails
+        } catch (e: Exception) {
+            Log.e("DateConversion009990", "Error converting date: ${e.message}")
+            System.currentTimeMillis() // Fallback to current time
+        }
+    }
+
 
     private fun addTrainingPlan() {
         Log.d("Selected Abilities IDs", "Selected Ability IDs: $selectedAbilityIds")
@@ -551,11 +735,9 @@ class AddMicroCycleActivity : AppCompatActivity() {
             trainingPlanLayouts.size
         }
 
-        val newTrainingPlanLayout = LayoutInflater.from(this)
-            .inflate(R.layout.add_microcycle_layout, trainingPlanContainer, false)
+        val newTrainingPlanLayout = LayoutInflater.from(this).inflate(R.layout.add_microcycle_layout, trainingPlanContainer, false)
 
-        val nameEditText: AppCompatEditText =
-            newTrainingPlanLayout.findViewById(R.id.ent_pre_sea_name)
+        val nameEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_pre_sea_name)
         nameEditText.setText("Microcycle ${indexToAdd + 1}")
 
         val startDateEditText: AppCompatEditText = newTrainingPlanLayout.findViewById(R.id.ent_start_date_liner)
@@ -706,11 +888,11 @@ class AddMicroCycleActivity : AppCompatActivity() {
         val start = startDateEditText.text.toString()
         val end = endDateEditText.text.toString()
 
-        if(startdatesent == enddatesent){
-            addMicroCycleBinding.cardSave.isEnabled = false
-        }else{
-            addMicroCycleBinding.cardSave.isEnabled = true
-        }
+//        if(startdatesent == enddatesent){
+//            addMicroCycleBinding.cardSave.isEnabled = false
+//        }else{
+//            addMicroCycleBinding.cardSave.isEnabled = true
+//        }
 
 
 
@@ -891,10 +1073,25 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
                 if (selectedDateRanges == null) return false
 
-                return selectedDateRanges.withIndex().any { (index, range) ->
-                    val (start, end) = range
-                    index < layoutIndex && dateInMillis in start..end
+                // First decorator logic (Disable dates in selectedDateRanges)
+                if (selectedDateRanges.withIndex().any { (index, range) ->
+                        val (start, end) = range
+                        index < layoutIndex && dateInMillis in start..end
+                    }) {
+                    return true
                 }
+
+                // Second decorator logic (Disable dates before the previous range's start date)
+                if (layoutIndex != null && layoutIndex > 0 && selectedDateRanges.size >= layoutIndex) {
+                    val (prevStart, _) = selectedDateRanges[layoutIndex - 1]
+
+                    // Disable dates before the previous range's start date
+                    if (dateInMillis < prevStart) {
+                        return true
+                    }
+                }
+
+                return false
             }
 
             override fun decorate(view: DayViewFacade?) {
@@ -1241,13 +1438,17 @@ class AddMicroCycleActivity : AppCompatActivity() {
     private fun showAbilityDialog() {
         try {
             Log.d("Dialog", "Preparing to show dialog")
+
             val dialog = Dialog(this)
             val displayMetrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(displayMetrics) // Ensure you get the metrics
-            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            val width = (displayMetrics.widthPixels * 0.9f).toInt()
-            val height = WindowManager.LayoutParams.WRAP_CONTENT
-            dialog.window!!.setLayout(width, height)
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            dialog.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                val width = (displayMetrics.widthPixels * 0.9f).toInt()
+                val height = WindowManager.LayoutParams.WRAP_CONTENT
+                setLayout(width, height)
+            }
+
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setCancelable(true)
             dialog.setContentView(R.layout.dialog_abilitie)
@@ -1258,13 +1459,21 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 saveSelectedAbility()
                 dialog.cancel()
             }
-            val add = dialog.findViewById<LinearLayout>(R.id.add_layout)
-            add.setOnClickListener { showAddAbilitiesDialog() }
 
+            val add = dialog.findViewById<LinearLayout>(R.id.add_layout)
             val recyclerView: RecyclerView = dialog.findViewById(R.id.recyclerView)
             recyclerView.layoutManager = LinearLayoutManager(this)
 
+            // Fetch abilities initially
             fetchAbilities(recyclerView)
+
+            // Add button click to show `AddAbilitiesDialog` and refresh on success
+            add.setOnClickListener {
+                showAddAbilitiesDialog {
+                    // Refresh RecyclerView after a new ability is added
+                    fetchAbilities(recyclerView)
+                }
+            }
 
             Log.d("Dialog", "Dialog displayed successfully")
         } catch (e: Exception) {
@@ -1356,14 +1565,13 @@ class AddMicroCycleActivity : AppCompatActivity() {
         }
     }
 
-    private fun showAddAbilitiesDialog() {
+    private fun showAddAbilitiesDialog(onAbilityAdded: () -> Unit) {
         try {
             Log.d("Dialog", "Preparing to show dialog")
 
             val dialog = Dialog(this)
             val displayMetrics = DisplayMetrics()
             windowManager.defaultDisplay.getMetrics(displayMetrics)
-
 
             dialog.window?.apply {
                 setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -1379,9 +1587,9 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
             val abilityName: EditText = dialog.findViewById(R.id.etAbilities)
             val addButton: TextView = dialog.findViewById(R.id.btnAdd)
-            val canelButtob :TextView = dialog.findViewById(R.id.btnCancel)
+            val cancelButton: TextView = dialog.findViewById(R.id.btnCancel)
 
-            canelButtob.setOnClickListener {
+            cancelButton.setOnClickListener {
                 dialog.cancel()
             }
 
@@ -1398,9 +1606,13 @@ class AddMicroCycleActivity : AppCompatActivity() {
                                 Log.d("APIResponse", "Response: ${response.code()}")
 
                                 if (response.isSuccessful) {
-                                    Toast.makeText(this@AddMicroCycleActivity, "Ability Added", Toast.LENGTH_SHORT).show()                                } else {
-                                    val errorBody =
-                                        response.errorBody()?.string() ?: "Unknown error"
+                                    Toast.makeText(this@AddMicroCycleActivity, "Ability Added", Toast.LENGTH_SHORT).show()
+                                    dialog.dismiss()
+
+                                    // Notify that an ability has been added
+                                    onAbilityAdded()
+                                } else {
+                                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
                                     Log.e("API Error", "Response: ${response.code()} - $errorBody")
                                     Toast.makeText(
                                         this@AddMicroCycleActivity,

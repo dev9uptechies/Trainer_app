@@ -1206,7 +1206,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         return gson.toJson(timingList)
     }
 
-
     private fun toggleDay(
         day: String,
         cardView: View,
