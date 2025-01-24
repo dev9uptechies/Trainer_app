@@ -38,6 +38,7 @@ import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -533,7 +534,49 @@ class AddMesocycleListActivity : AppCompatActivity() {
         }
     }
 
+    fun isConflict(startDate: String, endDate: String, layoutIndex: Int?): Boolean {
+        val startMillis = convertDateToMillis(startDate)
+        val endMillis = convertDateToMillis(endDate)
 
+        for (i in 0 until trainingPlanContainer.childCount) {
+            if (i != layoutIndex) {
+                val layout = trainingPlanContainer.getChildAt(i)
+                val existingStartDate: AppCompatEditText =
+                    layout.findViewById(R.id.ent_start_date_liner)
+                val existingEndDate: AppCompatEditText =
+                    layout.findViewById(R.id.ent_ent_date_liner)
+
+                val existingStartMillis =
+                    convertDateToMillis(existingStartDate.text.toString().trim())
+                val existingEndMillis = convertDateToMillis(existingEndDate.text.toString().trim())
+
+                // Check for overlap using the isOverlapping function
+                if (isOverlapping(startMillis, endMillis, existingStartMillis, existingEndMillis)) {
+                    return true // Conflict found
+                }
+            }
+        }
+        return false // No conflict
+    }
+
+    // Convert date in "yyyy-MM-dd" format to milliseconds
+    fun convertDateToMillis(dateString: String): Long {
+        return try {
+            val sdf = SimpleDateFormat(
+                "dd MMM, yyyy",
+                Locale.getDefault()
+            ) // Adjust format based on your date format
+            val date = sdf.parse(dateString)
+            date?.time ?: 0L
+        } catch (e: Exception) {
+            0L // Return 0 if parsing fails (invalid date)
+        }
+    }
+
+
+    fun isOverlapping(start1: Long, end1: Long, start2: Long, end2: Long): Boolean {
+        return start1 <= end2 && start2 <= end1  // Changed `<` to `<=`
+    }
 
     private fun savePresession() {
         try {
@@ -544,6 +587,7 @@ class AddMesocycleListActivity : AppCompatActivity() {
                 val nameEditText: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
                 val startDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_start_date_liner)
                 val endDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
+                val errorTextView: TextView = layout.findViewById(R.id.error_start_date_list)
 
                 val start = startDateEditText.text.toString().trim()
                 val end = endDateEditText.text.toString().trim()
@@ -570,6 +614,16 @@ class AddMesocycleListActivity : AppCompatActivity() {
                     return
                 }
 
+                if (i != 0) {
+                    if (isConflict(start, end, i)) {
+                        errorTextView.visibility = View.VISIBLE
+                        errorTextView.text = "Date conflict detected for Plan ${i + 1}"
+                        errorTextView.setTextColor(Color.RED)
+                        return
+                    } else {
+                        errorTextView.visibility = View.GONE
+                    }
+                }
 
                 Log.d("LLDLDLDLLD", "savePresession: $finalStartDates   $finalEndDates")
 

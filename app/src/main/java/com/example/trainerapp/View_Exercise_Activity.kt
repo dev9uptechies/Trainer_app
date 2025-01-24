@@ -31,6 +31,7 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
     lateinit var viewExerciseBinding: ActivityViewExerciseBinding
     var position: Int? = null
     var id: Int? = null
+    var EXID: String? = null
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
     lateinit var Progress: ProgressBar
@@ -125,6 +126,10 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
         apiInterface = apiClient.client().create(APIInterface::class.java)
         position = intent.getIntExtra("position", 0)
         id = intent.getIntExtra("id", 0)
+        EXID = intent.getStringExtra("EXID").toString()
+
+
+        Log.d("PSPSPSPSP", "initViews: $EXID")
     }
 
     private fun isYouTubeUrl(url: String): Boolean {
@@ -150,8 +155,12 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
                                 if (response.body()!!.data!!.isNotEmpty()) {
 
+                                    val finalId = if(id == 0 || id == null)  EXID?.toInt() else id
+
+                                    Log.d("FINALIDD", "onResponse: $finalId")
+
                                     val data = response.body()!!.data?.filter {
-                                        it.id == id?.toInt()
+                                        it.id == finalId
                                     }
 
                                     if (data!!.isNotEmpty()) {
@@ -163,12 +172,10 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
                                                 .cornerRadiusDp(10f)
                                                 .oval(false)
                                                 .build()
-                                        imageString =
-                                            "https://trainers.codefriend.in" + data[0].image
+                                        imageString = "https://trainers.codefriend.in" + data[0].image
 
                                         if (data[0].video != null) {
-                                            videoString =
-                                                "https://trainers.codefriend.in" + data[0].video
+                                            videoString = "https://trainers.codefriend.in" + data[0].video
                                             playNormalVideo(videoString)
                                             Log.d(
                                                 "Video Type :-",

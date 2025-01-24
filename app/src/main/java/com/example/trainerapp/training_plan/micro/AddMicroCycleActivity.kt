@@ -164,6 +164,50 @@ class AddMicroCycleActivity : AppCompatActivity() {
         }
     }
 
+    fun isConflict(startDate: String, endDate: String, layoutIndex: Int?): Boolean {
+        val startMillis = convertDateToMillis(startDate)
+        val endMillis = convertDateToMillis(endDate)
+
+        for (i in 0 until trainingPlanContainer.childCount) {
+            if (i != layoutIndex) {
+                val layout = trainingPlanContainer.getChildAt(i)
+                val existingStartDate: AppCompatEditText =
+                    layout.findViewById(R.id.ent_start_date_liner)
+                val existingEndDate: AppCompatEditText =
+                    layout.findViewById(R.id.ent_ent_date_liner)
+
+                val existingStartMillis =
+                    convertDateToMillis(existingStartDate.text.toString().trim())
+                val existingEndMillis = convertDateToMillis(existingEndDate.text.toString().trim())
+
+                // Check for overlap using the isOverlapping function
+                if (isOverlapping(startMillis, endMillis, existingStartMillis, existingEndMillis)) {
+                    return true // Conflict found
+                }
+            }
+        }
+        return false // No conflict
+    }
+
+    // Convert date in "yyyy-MM-dd" format to milliseconds
+    fun convertDateToMillis(dateString: String): Long {
+        return try {
+            val sdf = SimpleDateFormat(
+                "dd MMM, yyyy",
+                Locale.getDefault()
+            ) // Adjust format based on your date format
+            val date = sdf.parse(dateString)
+            date?.time ?: 0L
+        } catch (e: Exception) {
+            0L // Return 0 if parsing fails (invalid date)
+        }
+    }
+
+
+    fun isOverlapping(start1: Long, end1: Long, start2: Long, end2: Long): Boolean {
+        return start1 <= end2 && start2 <= end1  // Changed `<` to `<=`
+    }
+
     private fun SaveMicrocycle() {
         try {
             preSeason.clear()
@@ -224,6 +268,17 @@ class AddMicroCycleActivity : AppCompatActivity() {
                     return
                 }else{
                     EndDateErrorTextView.visibility = View.GONE
+                }
+
+                if (i != 0) {
+                    if (isConflict(start, end, i)) {
+                        errorTextView.visibility = View.VISIBLE
+                        errorTextView.text = "Date conflict detected for Plan ${i + 1}"
+                        errorTextView.setTextColor(Color.RED)
+                        return
+                    } else {
+                        errorTextView.visibility = View.GONE
+                    }
                 }
 
 
@@ -364,6 +419,18 @@ class AddMicroCycleActivity : AppCompatActivity() {
                     EndDateErrorTextView.visibility = View.GONE
                 }
 
+                if (i != 0) {
+                    if (isConflict(start, end, i)) {
+                        errorTextView.visibility = View.VISIBLE
+                        errorTextView.text = "Date conflict detected for Plan ${i + 1}"
+                        errorTextView.setTextColor(Color.RED)
+                        return
+                    } else {
+                        errorTextView.visibility = View.GONE
+                    }
+                }
+
+
 
 
                 Log.d("FFHHFHFHH", "SaveMicrocyclePreCompatitive: $isss")
@@ -493,6 +560,18 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 }
 
 
+                if (i != 0) {
+                    if (isConflict(start, end, i)) {
+                        errorTextView.visibility = View.VISIBLE
+                        errorTextView.text = "Date conflict detected for Plan ${i + 1}"
+                        errorTextView.setTextColor(Color.RED)
+                        return
+                    } else {
+                        errorTextView.visibility = View.GONE
+                    }
+                }
+
+
 
 
                 if (nameEditText.text!!.isNotEmpty() && startDate.text!!.isNotEmpty() && endDate.text!!.isNotEmpty() && isss.isNotEmpty() && isss != "[]") {
@@ -618,6 +697,19 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 }else{
                     EndDateErrorTextView.visibility = View.GONE
                 }
+
+                if (i != 0) {
+                    if (isConflict(start, end, i)) {
+                        errorTextView.visibility = View.VISIBLE
+                        errorTextView.text = "Date conflict detected for Plan ${i + 1}"
+                        errorTextView.setTextColor(Color.RED)
+                        return
+                    } else {
+                        errorTextView.visibility = View.GONE
+                    }
+                }
+
+
 
 
 
@@ -1435,135 +1527,135 @@ class AddMicroCycleActivity : AppCompatActivity() {
         }
     }
 
-    private fun showAbilityDialog() {
-        try {
-            Log.d("Dialog", "Preparing to show dialog")
+        private fun showAbilityDialog() {
+            try {
+                Log.d("Dialog", "Preparing to show dialog")
 
-            val dialog = Dialog(this)
-            val displayMetrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            dialog.window?.apply {
-                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                val width = (displayMetrics.widthPixels * 0.9f).toInt()
-                val height = WindowManager.LayoutParams.WRAP_CONTENT
-                setLayout(width, height)
-            }
-
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setCancelable(true)
-            dialog.setContentView(R.layout.dialog_abilitie)
-            dialog.show()
-
-            val save = dialog.findViewById<Button>(R.id.appCompatButton)
-            save.setOnClickListener {
-                saveSelectedAbility()
-                dialog.cancel()
-            }
-
-            val add = dialog.findViewById<LinearLayout>(R.id.add_layout)
-            val recyclerView: RecyclerView = dialog.findViewById(R.id.recyclerView)
-            recyclerView.layoutManager = LinearLayoutManager(this)
-
-            // Fetch abilities initially
-            fetchAbilities(recyclerView)
-
-            // Add button click to show `AddAbilitiesDialog` and refresh on success
-            add.setOnClickListener {
-                showAddAbilitiesDialog {
-                    // Refresh RecyclerView after a new ability is added
-                    fetchAbilities(recyclerView)
+                val dialog = Dialog(this)
+                val displayMetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+                dialog.window?.apply {
+                    setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    val width = (displayMetrics.widthPixels * 0.9f).toInt()
+                    val height = WindowManager.LayoutParams.WRAP_CONTENT
+                    setLayout(width, height)
                 }
+
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.setCancelable(true)
+                dialog.setContentView(R.layout.dialog_abilitie)
+                dialog.show()
+
+                val save = dialog.findViewById<Button>(R.id.appCompatButton)
+                save.setOnClickListener {
+                    saveSelectedAbility()
+                    dialog.cancel()
+                }
+
+                val add = dialog.findViewById<LinearLayout>(R.id.add_layout)
+                val recyclerView: RecyclerView = dialog.findViewById(R.id.recyclerView)
+                recyclerView.layoutManager = LinearLayoutManager(this)
+
+                // Fetch abilities initially
+                fetchAbilities(recyclerView)
+
+                // Add button click to show `AddAbilitiesDialog` and refresh on success
+                add.setOnClickListener {
+                    showAddAbilitiesDialog {
+                        // Refresh RecyclerView after a new ability is added
+                        fetchAbilities(recyclerView)
+                    }
+                }
+
+                Log.d("Dialog", "Dialog displayed successfully")
+            } catch (e: Exception) {
+                Log.e("Exception", "Error showing dialog: ${e.message}")
             }
-
-            Log.d("Dialog", "Dialog displayed successfully")
-        } catch (e: Exception) {
-            Log.e("Exception", "Error showing dialog: ${e.message}")
         }
-    }
 
-    private fun fetchAbilities(recyclerView: RecyclerView) {
-        apiInterface.Get_Abilitiees()?.enqueue(object : Callback<AddAblilityClass> {
-            override fun onResponse(
-                call: Call<AddAblilityClass>,
-                response: Response<AddAblilityClass>
-            ) {
-                Log.d("TAG", "Response code: ${response.code()}")
+        private fun fetchAbilities(recyclerView: RecyclerView) {
+            apiInterface.Get_Abilitiees()?.enqueue(object : Callback<AddAblilityClass> {
+                override fun onResponse(
+                    call: Call<AddAblilityClass>,
+                    response: Response<AddAblilityClass>
+                ) {
+                    Log.d("TAG", "Response code: ${response.code()}")
 
-                when (response.code()) {
-                    200 -> {
-                        val abilityDataList = response.body()?.data
-                        if (!abilityDataList.isNullOrEmpty()) {
-                            splist.clear() // Clear previous data
-                            splist.addAll(abilityDataList) // Add new data
+                    when (response.code()) {
+                        200 -> {
+                            val abilityDataList = response.body()?.data
+                            if (!abilityDataList.isNullOrEmpty()) {
+                                splist.clear() // Clear previous data
+                                splist.addAll(abilityDataList) // Add new data
 
-                            Log.d("success", "${splist}")
+                                Log.d("success", "${splist}")
 
-                            recyclerView.adapter =
-                                AbilitiesAdapter(splist, this@AddMicroCycleActivity)
-                        } else {
-                            Log.d("DATA_TAG", "Response body is null or empty")
+                                recyclerView.adapter =
+                                    AbilitiesAdapter(splist, this@AddMicroCycleActivity)
+                            } else {
+                                Log.d("DATA_TAG", "Response body is null or empty")
+                            }
+                        }
+
+                        403 -> {
+                            Utils.setUnAuthDialog(this@AddMicroCycleActivity)
+                        }
+
+                        else -> {
+                            Toast.makeText(
+                                this@AddMicroCycleActivity,
+                                response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
-
-                    403 -> {
-                        Utils.setUnAuthDialog(this@AddMicroCycleActivity)
-                    }
-
-                    else -> {
-                        Toast.makeText(
-                            this@AddMicroCycleActivity,
-                            response.message(),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
                 }
-            }
 
-            override fun onFailure(call: Call<AddAblilityClass>, t: Throwable) {
-                Log.d("TAG Category", "Error: ${t.message}")
-            }
-        })
-    }
-
-    private fun saveSelectedAbility() {
-        try {
-            Log.d("splist Contents", splist.toString())
-
-            val selectedAbilities = splist.filter { it.isSelected }
-
-            ablilityContainer.removeAllViews()
-
-            Log.d("Selected Abilities", "Count: ${selectedAbilities.size}")
-
-            selectedAbilityIds.clear()
-            selectedAbilityIds.addAll(selectedAbilities.map { it.id })
-
-            addMicroCycleBinding.card.visibility = if (selectedAbilities.isNotEmpty()) View.VISIBLE else View.GONE
-            val params = addMicroCycleBinding.linearLayout6.layoutParams as? ViewGroup.MarginLayoutParams
-            params?.let {
-                it.bottomMargin = 0
-                addMicroCycleBinding.linearLayout6.layoutParams = it
-            }
-
-            for (ability in selectedAbilities) {
-                val abilityLayout = LayoutInflater.from(this)
-                    .inflate(R.layout.ability_item, ablilityContainer, false)
-
-                val textView: TextView = abilityLayout.findViewById(R.id.ability_txt)
-                textView.text = ability.name
-
-                ablilityContainer.addView(abilityLayout)
-            }
-
-            Log.d("Abilities Added", "Number of abilities added: ${selectedAbilities.size}")
-
-            if (selectedAbilities.isEmpty()) {
-                Log.d("Selection Info", "No abilities were selected.")
-            }
-        } catch (e: Exception) {
-            Log.e("Exception", "Error: ${e.message}")
+                override fun onFailure(call: Call<AddAblilityClass>, t: Throwable) {
+                    Log.d("TAG Category", "Error: ${t.message}")
+                }
+            })
         }
-    }
+
+        private fun saveSelectedAbility() {
+            try {
+                Log.d("splist Contents", splist.toString())
+
+                val selectedAbilities = splist.filter { it.isSelected }
+
+                ablilityContainer.removeAllViews()
+
+                Log.d("Selected Abilities", "Count: ${selectedAbilities.size}")
+
+                selectedAbilityIds.clear()
+                selectedAbilityIds.addAll(selectedAbilities.map { it.id })
+
+                addMicroCycleBinding.card.visibility = if (selectedAbilities.isNotEmpty()) View.VISIBLE else View.GONE
+                val params = addMicroCycleBinding.linearLayout6.layoutParams as? ViewGroup.MarginLayoutParams
+                params?.let {
+                    it.bottomMargin = 0
+                    addMicroCycleBinding.linearLayout6.layoutParams = it
+                }
+
+                for (ability in selectedAbilities) {
+                    val abilityLayout = LayoutInflater.from(this)
+                        .inflate(R.layout.ability_item, ablilityContainer, false)
+
+                    val textView: TextView = abilityLayout.findViewById(R.id.ability_txt)
+                    textView.text = ability.name
+
+                    ablilityContainer.addView(abilityLayout)
+                }
+
+                Log.d("Abilities Added", "Number of abilities added: ${selectedAbilities.size}")
+
+                if (selectedAbilities.isEmpty()) {
+                    Log.d("Selection Info", "No abilities were selected.")
+                }
+            } catch (e: Exception) {
+                Log.e("Exception", "Error: ${e.message}")
+            }
+        }
 
     private fun showAddAbilitiesDialog(onAbilityAdded: () -> Unit) {
         try {

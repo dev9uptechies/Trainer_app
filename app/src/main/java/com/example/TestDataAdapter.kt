@@ -1,17 +1,24 @@
 package com.example
 
 import android.content.Context
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
+import com.example.trainerapp.View_test_Activity
+import com.example.trainerapp.program_section.ViewProgramActivity
 import com.zerobranch.layout.SwipeLayout
+import org.checkerframework.checker.interning.qual.InternMethod
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,6 +66,13 @@ class TestDataAdapter(
             listener.onItemClicked(it, position, movie.id!!.toLong(), "DeleteTest")
         }
 
+
+
+        holder.main.setOnClickListener {
+            holder.swipe.close(true)
+            listener.onItemClicked(it, position, movie.id!!.toLong(), "ViewTest")
+        }
+
 //        holder.img_edit.setOnClickListener(
 //            OnItemClickListener(
 //                position,
@@ -89,6 +103,13 @@ class TestDataAdapter(
                 OnItemClickListener(position, listener, movie.id!!.toLong(), "fav")
             }
         )
+        holder.cardView.setOnClickListener {
+            context.startActivity(Intent(context, View_test_Activity::class.java).apply {
+                putExtra("position", position)
+                putExtra("id", movie.id!!)
+            })
+        }
+
     }
 
     fun convertDate(inputDate: String): String {
@@ -124,5 +145,7 @@ class TestDataAdapter(
         var image: ImageView = view.findViewById<View>(R.id.image) as ImageView
         var swipe: SwipeLayout = view.findViewById(R.id.swipe_layout)
         var time1: TextView = view.findViewById(R.id.tv_time1)
+        var cardView: CardView = view.findViewById(R.id.rela_dragged)
+        var main: RelativeLayout = view.findViewById(R.id.main)
     }
 }

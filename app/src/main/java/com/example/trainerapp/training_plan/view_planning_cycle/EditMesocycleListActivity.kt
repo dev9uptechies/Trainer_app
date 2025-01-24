@@ -1557,7 +1557,7 @@ class EditMesocycleListActivity : AppCompatActivity() {
     }
 
     fun isOverlapping(start1: Long, end1: Long, start2: Long, end2: Long): Boolean {
-        return start1 < end2 && start2 < end1
+        return start1 <= end2 && start2 <= end1  // Changed `<` to `<=`
     }
 
 

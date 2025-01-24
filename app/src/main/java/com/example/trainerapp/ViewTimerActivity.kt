@@ -668,23 +668,43 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
     private fun setupTimerDataBasic(timerData: MutableList<Exercise.Timer>) {
-        viewTimerBinding.tvRound.text = "01 Round"
-        viewTimerBinding.tvCycle.text = "1"
-        viewTimerBinding.tvTimer.text = timerData[0].timer_time
-        viewTimerBinding.time.text = timerData[0].timer_time
-        if (timerData[0].timer_weight == "null" || timerData[0].timer_weight == "" || timerData[0].timer_weight == null) {
-            viewTimerBinding.tvWeight.text = "weight"
-        } else {
-            viewTimerBinding.tvWeight.text = timerData[0].timer_weight
-        }
+        // Check if the list is empty before proceeding
+        if (timerData.isNotEmpty()) {
+            // Proceed with setting up the timer data only if the list has elements
+            viewTimerBinding.tvRound.text = "01 Round"
+            viewTimerBinding.tvCycle.text = "1"
+            viewTimerBinding.tvTimer.text = timerData[0].timer_time
+            viewTimerBinding.time.text = timerData[0].timer_time
 
-        if (timerData[0].timer_distance == "null" || timerData[0].timer_distance == "" || timerData[0].timer_distance == null) {
-            viewTimerBinding.tvDistance.text = "distance"
+            // Check if the weight field is empty or "null"
+            if (timerData[0].timer_weight == "null" || timerData[0].timer_weight == "" || timerData[0].timer_weight == null) {
+                viewTimerBinding.tvWeight.text = "weight"
+            } else {
+                viewTimerBinding.tvWeight.text = timerData[0].timer_weight
+            }
+
+            // Check if the distance field is empty or "null"
+            if (timerData[0].timer_distance == "null" || timerData[0].timer_distance == "" || timerData[0].timer_distance == null) {
+                viewTimerBinding.tvDistance.text = "distance"
+            } else {
+                viewTimerBinding.tvDistance.text = timerData[0].timer_distance
+            }
+
+            viewTimerBinding.tvPause.text = timerData[0].timer_pause
+            viewTimerBinding.tvPauseBetween.text = timerData[0].timer_pause_timer
         } else {
-            viewTimerBinding.tvDistance.text = timerData[0].timer_distance
+            // Handle the case where the timerData list is empty
+            Log.e("Error", "Timer data is empty!")
+            // Optionally, display a message to the user or hide the timer-related views
+            viewTimerBinding.tvRound.text = "00 Round"
+            viewTimerBinding.tvCycle.text = "0"
+            viewTimerBinding.tvTimer.text = "00:00:00"
+            viewTimerBinding.time.text = "00:0000"
+            viewTimerBinding.tvWeight.text = "0"
+            viewTimerBinding.tvDistance.text = "0"
+            viewTimerBinding.tvPause.text = "00 min,00 sec"
+            viewTimerBinding.tvPauseBetween.text = "time"
         }
-        viewTimerBinding.tvPause.text = timerData[0].timer_pause
-        viewTimerBinding.tvPauseBetween.text = timerData[0].timer_pause_timer
     }
 
     fun resetData() {

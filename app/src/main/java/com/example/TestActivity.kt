@@ -44,6 +44,7 @@ import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
 import com.example.trainerapp.Utils
+import com.example.trainerapp.View_test_Activity
 import com.example.trainerapp.databinding.ActivityTestBinding
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -897,6 +898,11 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
                                         Toast.LENGTH_SHORT
                                     )
                                         .show()
+
+                                    TestList.removeAll { it.id == type.toInt() }
+                                    TestList.clear()
+                                    adapter.notifyDataSetChanged()
+
                                     loadData()
                                 } else if (response.code() == 403) {
                                     Utils.setUnAuthDialog(this@TestActivity)
@@ -1060,7 +1066,18 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
                         call.cancel()
                     }
                 })
-        } else {
+        }else if (string == "ViewTest") {
+            testBinding.progressbar.visibility = View.VISIBLE
+
+            Log.d("DJDJDJDJ", "onItemClicked: ")
+
+            val intent = Intent(this,View_test_Activity::class.java)
+            startActivity(intent)
+
+            testBinding.progressbar.visibility = View.GONE
+
+
+        }  else {
             this@TestActivity.type = "EditTest"
             timeId = TestList[position].id.toString()
             testBinding.etTestName.setText(TestList[position].title)

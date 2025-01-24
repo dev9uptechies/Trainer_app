@@ -14,7 +14,7 @@ import com.example.trainerapp.R
 
 class AbilitiesAdapter(
     private var splist: MutableList<AbilityData>?,
-    private val context: Context,
+    private val context: Context
 ) : RecyclerView.Adapter<AbilitiesAdapter.MyViewHolder>() {
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -33,23 +33,28 @@ class AbilitiesAdapter(
         val item = splist?.get(position) ?: return
 
         holder.name.text = item.name
-        holder.checkBox.isChecked = item.isSelected
 
+        // Prevent unwanted `OnCheckedChangeListener` triggers
+        holder.checkBox.setOnCheckedChangeListener(null)
+        holder.checkBox.isChecked = item.isSelected
 
         holder.liner.setOnClickListener {
             item.isSelected = !item.isSelected
             holder.checkBox.isChecked = item.isSelected
             holder.liner.isSelected = item.isSelected
             Log.d("Ability Toggled", "Id: ${item.id}, New isSelected: ${item.isSelected}")
-            notifyItemChanged(position)
-        }
 
+            // Notify data changed to reflect UI properly
+            notifyDataSetChanged()
+        }
 
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
             item.isSelected = isChecked
             holder.liner.isSelected = isChecked
             Log.d("Ability Toggled", "Id: ${item.id}, New isSelected: ${item.isSelected}")
 
+            // Notify data changed to reflect UI properly
+            notifyDataSetChanged()
         }
     }
 

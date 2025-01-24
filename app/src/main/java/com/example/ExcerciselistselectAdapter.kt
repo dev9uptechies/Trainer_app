@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trainerapp.ApiClass.ExcerciseData
@@ -151,6 +152,11 @@ class ExcerciselistselectAdapter(
                         newdata.remove(movie)
                     }
 
+                    // ✅ Check if no items are selected and show toast
+                    if (newdata.isEmpty()) {
+                        return@setOnCheckedChangeListener
+                        Toast.makeText(context, "Please select at least one exercise.", Toast.LENGTH_SHORT).show()
+                    }
                     // Save the updated newdata list to SharedPreferences
                     setExerciseData(context, newdata, "Exercise_list")
                 }
@@ -158,14 +164,17 @@ class ExcerciselistselectAdapter(
                 Log.d("Exception", e.message ?: "Unknown error")
             }
         } else if (type == "create") {
-            holder.checkbox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
-                if (b.equals(true)) {
+            holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
                     setdata(position)
                 } else {
-//                selectId!!.remove(movie.id!!.toInt())
                     OnItemClickListener(position, listener, movie.id!!.toLong(), "remove")
                 }
-            })
+
+                // ✅ Check if no items are selected and show toast
+
+            }
+
         }
     }
 
@@ -184,6 +193,10 @@ class ExcerciselistselectAdapter(
 //        prefsEditor.putString(key, jsonObject)
 //        prefsEditor.commit()
 //    }
+
+    fun getSelectedExercises(): List<ExcerciseData.Exercise> {
+        return newdata
+    }
 
     fun resetExerciseList() {
         newdata.clear()

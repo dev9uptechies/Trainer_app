@@ -1,8 +1,10 @@
 package com.example
 
+import android.Manifest
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -12,6 +14,7 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.media.ThumbnailUtils
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
@@ -38,6 +41,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.GridLayoutManager
@@ -79,6 +83,9 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
     var Goal = ArrayList<String>()
     var category = ArrayList<String>()
     var type = ArrayList<String>()
+    companion object {
+        private const val STORAGE_PERMISSION_CODE = 101
+    }
     var timer = ArrayList<String>()
     lateinit var goalData: MutableList<TestListData.testData>
     lateinit var categoryData: MutableList<TestListData.testData>
@@ -336,30 +343,38 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         }
 
         createExerciseBinding.selectUploadLy.setOnClickListener {
-            val bottomSheetDialog = BottomSheetDialog(this)
-            bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog)
-            val videoLink = bottomSheetDialog.findViewById<LinearLayout>(R.id.gallery)
-            val video = bottomSheetDialog.findViewById<LinearLayout>(R.id.video)
-            bottomSheetDialog.show()
 
-            videoLink!!.setOnClickListener {
-                bottomSheetDialog.dismiss()
-                videoDialog()
+            if (checkStoragePermission()) {
+                showBottomSheetDialog()
+            } else {
+                requestStoragePermission()
             }
-            video!!.setOnClickListener {
-                bottomSheetDialog.dismiss()
-                if (videolink!!.isNotEmpty()) {
-                    videolink = ""
-                }
-                requestCode = 1
-                val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-                startActivityForResult(
-                    Intent.createChooser(
-                        intent,
-                        "Choose Video"
-                    ), 1
-                )
-            }
+
+
+//            val bottomSheetDialog = BottomSheetDialog(this)
+//            bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog)
+//            val videoLink = bottomSheetDialog.findViewById<LinearLayout>(R.id.gallery)
+//            val video = bottomSheetDialog.findViewById<LinearLayout>(R.id.video)
+//            bottomSheetDialog.show()
+//
+//            videoLink!!.setOnClickListener {
+//                bottomSheetDialog.dismiss()
+//                videoDialog()
+//            }
+//            video!!.setOnClickListener {
+//                bottomSheetDialog.dismiss()
+//                if (videolink!!.isNotEmpty()) {
+//                    videolink = ""
+//                }
+//                requestCode = 1
+//                val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+//                startActivityForResult(
+//                    Intent.createChooser(
+//                        intent,
+//                        "Choose Video"
+//                    ), 1
+//                )
+//            }
 
         }
 
@@ -514,6 +529,71 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         )
 
     }
+
+    private fun checkStoragePermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            true
+        } else {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+
+    // Function to request storage permission
+    private fun requestStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return // No need to request storage permission on Android 13+
+        }
+
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+            STORAGE_PERMISSION_CODE
+        )
+    }
+
+    // Handle permission result
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showBottomSheetDialog()
+            } else {
+                Toast.makeText(this, "Storage permission denied!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // Show Bottom Sheet Dialog
+    private fun showBottomSheetDialog() {
+        val bottomSheetDialog = BottomSheetDialog(this)
+        bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog)
+        val videoLink = bottomSheetDialog.findViewById<LinearLayout>(R.id.gallery)
+        val video = bottomSheetDialog.findViewById<LinearLayout>(R.id.video)
+        bottomSheetDialog.show()
+
+        videoLink?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            videoDialog()
+        }
+        video?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            if (videolink!!.isNotEmpty()) {
+                videolink = ""
+            }
+            requestCode = 1
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(Intent.createChooser(intent, "Choose Video"), 1)
+        }
+    }
+
 
     private fun loadData(){
         getGoalData()

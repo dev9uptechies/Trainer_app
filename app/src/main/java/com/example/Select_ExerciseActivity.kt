@@ -139,14 +139,21 @@ class Select_ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemC
 
         selectExerciseBinding.save.setOnClickListener {
             if (::adapter.isInitialized) {
+                if (adapter.getSelectedExercises().isEmpty()) {
+                    Toast.makeText(this, "Please select at least one exercise.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
                 preferenceManager.setexercisedata(true)
                 adapter.resetExerciseList()
                 excIds.clear()
+
                 finish()
             } else {
                 Toast.makeText(this, "Adapter is not initialized.", Toast.LENGTH_SHORT).show()
             }
         }
+
         selectExerciseBinding.back.setOnClickListener {
             finish()
         }

@@ -14,8 +14,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -30,7 +30,9 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan"
         tools:targetApi="m">
-
+        <activity
+            android:name=".View_test_Activity"
+            android:exported="false" />
         <activity
             android:name="com.example.trainerappAthlete.ProfileActivity"
             android:exported="false" />
@@ -138,10 +140,9 @@
             android:exported="false" />
         <activity
             android:name=".competition.CompetitionActivity"
-            android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".competition.MainHomeActivity"-->
-<!--            android:exported="false" />-->
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".competition.MainHomeActivity" -->
+        <!-- android:exported="false" /> -->
         <activity
             android:name=".program_section.ViewProgramActivity"
             android:exported="false" />

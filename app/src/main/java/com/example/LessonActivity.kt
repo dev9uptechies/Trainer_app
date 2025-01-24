@@ -79,6 +79,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
     private lateinit var id: ArrayList<Int>
+    private lateinit var Goalid: ArrayList<String>
     private lateinit var lession_data: ArrayList<LessonData.lessionData>
     private lateinit var lession_data1: ArrayList<Lesson.LessonDatabase>
     lateinit var adapter1: Exercise_select_Adapter
@@ -276,6 +277,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                 val arrayList: ArrayList<Int> = ArrayList(id)
                 val i = Intent(this, LoadProgramActivity::class.java).apply {
                     putExtra("type", "edit")
+                    putExtra("SectionName", sectionName)
                     putIntegerArrayListExtra("lessonId", arrayList)
                 }
                 startActivity(i)
@@ -431,13 +433,13 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
     private fun editData() {
 
         if (isValidate) {
-            id.clear()
+//            id.clear()
 
-            val LidToUse = if (id.isNullOrEmpty()) {
-                Lid
-            } else {
-                id
-            }
+//            val LidToUse = if (goalId.id.isNullOrEmpty()) {
+//                goalId
+//            } else {
+//                goalId
+//            }
 
             for (i in 0 until exercise_list.size) {
                 id.add(exercise_list[i].id!!.toInt())
@@ -448,9 +450,13 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                 array.add(id.get(i))
             }
 
+            Log.d("DKDKDKKKDKDDKD", "editData: $array")
+            Log.d("DKDKDKKKDKDDKD", "editData: $id")
+
             val goalArray = JsonArray()
-            for (i in 0 until LidToUse.size) {
-                goalArray.add(LidToUse[i])
+
+            for (i in 0..0) {
+                goalArray.add(goalId.id)
             }
 
             val idToUse = if (lessonId.isNullOrEmpty()) {
@@ -1377,6 +1383,13 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
             it.program?.id?.let { programId -> id.add(programId) }
         }
 
+//        lessonDatabase.lesson_goal?.forEach {
+//            it.goal_id?.let { GoalId -> Goalid.add(GoalId) }
+//        }
+
+
+
+        Log.d("DLDLDLLDLDLL", "setLessonData: $id")
         lessonBinding.edtLessonName.setText(lessonDatabase.name ?: "")
         lessonBinding.edtTime.setText(lessonDatabase.time ?: "")
         lessonBinding.tvSelectionTime.setText(lessonDatabase.section_time ?: "")
@@ -1497,8 +1510,13 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                 lessonBinding.programRecycler.adapter = adapter1
 
 //                id = arrayListOf(exercise_list.getOrNull(0)?.id ?: 0)  // Only the first id
+                val uniqueIds = HashSet<Int>() // Use a set to track unique IDs
+
+
                 exercise_list.forEach { exercise ->
-                    id.add(exercise.id!!)  // Add each id to the list
+                    if (uniqueIds.add(exercise.id!!)) { // `add()` returns false if already present
+                        id.add(exercise.id!!)
+                    }
                 }
 
                 Log.d("onResumerrrr", "All ids added: $id")  // Log all the ids in the list

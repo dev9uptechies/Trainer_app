@@ -1,6 +1,7 @@
 package com.example.Adapter.program
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trainerapp.ApiClass.ProgramListData
 import com.example.trainerapp.R
+import com.example.trainerapp.View_Exercise_Activity
 import com.makeramen.roundedimageview.RoundedImageView
 import com.makeramen.roundedimageview.RoundedTransformationBuilder
 import com.squareup.picasso.Picasso
@@ -86,6 +88,13 @@ class View_Program_Adapter(
                 holder.tvgoal.text = "$i/00"
             }
         }
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, View_Exercise_Activity::class.java)
+            intent.putExtra("EXID",movie.exercise_id)
+            context.startActivity(intent)
+        }
+
 //        val time = movie.cycles!![0].time
 //        val reps = movie.cycles!![0].reps
 //        val weight = movie.cycles!![0].weight
@@ -127,6 +136,8 @@ class View_Program_Adapter(
             .error(R.drawable.ic_youtube)
             .into(holder.rounded_image)
     }
+
+
 
     override fun getItemCount(): Int {
         return splist.size

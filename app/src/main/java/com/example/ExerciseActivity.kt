@@ -260,6 +260,7 @@ class ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                 } else {
                     exerciseBinding.noData.visibility = View.GONE
                 }
+
             }
         })
     }

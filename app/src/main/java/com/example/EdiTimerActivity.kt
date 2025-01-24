@@ -121,6 +121,7 @@ class EdiTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         getTimerData()
         getSongData()
         checkAudioClick()
+
         editTimerBinding.back.setOnClickListener {
             finish()
         }
@@ -154,8 +155,8 @@ class EdiTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                         time = it.time,
                         reps = it.reps,
                         pause = it.pause,
-                        weight = it.weight ?: "null",
-                        distance = it.distance ?: "null",
+                        weight = it.weight ?: "",
+                        distance = it.distance ?: "",
                         pause_timer = it.pause_timer
                     )
                 }.toMutableList()

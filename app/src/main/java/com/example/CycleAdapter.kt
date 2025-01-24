@@ -1,6 +1,7 @@
 package com.example
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.model.newClass.excercise.Exercise
 import com.example.trainerapp.R
+import com.example.trainerapp.View_Exercise_Activity
 
 class CycleAdapter(
     private var splist: MutableList<Exercise.Cycle>?,
@@ -49,6 +51,9 @@ class CycleAdapter(
         holder.tv_weight.text = movie.cycle_weight
         holder.tv_pause_time.text = movie.cycle_pause
         holder.tv_reps.text = movie.cycle_reps
+
+
+
     }
 
     override fun getItemCount(): Int {

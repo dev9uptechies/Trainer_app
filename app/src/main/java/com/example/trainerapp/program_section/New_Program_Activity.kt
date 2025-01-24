@@ -546,6 +546,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
 //                Log.d("List :- Array :-", "${id[i]} \t ${array[i]}")
 //            }
 
+            Log.d("DKDKKDK", "saveData: $typeData")
             when (typeData) {
                 "create" -> {
                     for (i in 0 until exerciseDataList1.size) {
@@ -659,9 +660,18 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                         array1.add(i, id[i])
                     }
 
-                    Log.d("Tag Id :-", "${exerciseDataList1[0].id}")
+//                    Log.d("Tag Id :-", "${exerciseDataList1[0].id}")
                     val jsonObject = JsonObject()
-                    jsonObject.addProperty("id", exerciseDataList1[0].id.toString())
+                    if (exerciseDataList1.isNotEmpty()) {
+                        Log.d("Tag Id :-", "${exerciseDataList1[0].id}")
+                        val jsonObject = JsonObject()
+                        jsonObject.addProperty("id", exerciseDataList1[0].id.toString())
+                    } else {
+                        Log.e("NewProgramActivity", "exerciseDataList1 is empty, cannot access the first element.")
+                        Toast.makeText(this, "Exercise Filed is Required", Toast.LENGTH_SHORT).show()
+                        return
+                    }
+
                     jsonObject.addProperty("name", newProgramBinding.edtProgramName.text.toString())
                     jsonObject.addProperty("goal_id", goalId.id.toString())
                     jsonObject.addProperty("time", newProgramBinding.edtTime.text.toString())
@@ -846,6 +856,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         newProgramBinding.exerciseSelectRecycler.adapter = adapter1
         preferenceManager.setexercisedata(false)
         refreshData()
+        typeData = "create"
     }
 
     private fun initRecyclerview(user: ArrayList<ProgramListData.testData>) {
@@ -869,6 +880,14 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                 newProgramBinding.errorProgram.visibility = View.GONE
             }
 
+            if (goal == "") {
+                newProgramBinding.errorGoal.visibility = View.VISIBLE
+                return false
+            } else {
+                newProgramBinding.errorGoal.visibility = View.GONE
+            }
+
+
             if (time == "") {
                 newProgramBinding.errorTime.visibility = View.VISIBLE
                 return false
@@ -876,12 +895,6 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                 newProgramBinding.errorTime.visibility = View.GONE
             }
 
-            if (goal == "") {
-                newProgramBinding.errorGoal.visibility = View.VISIBLE
-                return false
-            } else {
-                newProgramBinding.errorGoal.visibility = View.GONE
-            }
 
             if (section == "") {
                 newProgramBinding.errorSection.visibility = View.VISIBLE
@@ -1484,12 +1497,17 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
             exerciseDataList1 =
                 getObject(this, "Exercise_list") as ArrayList<ExcerciseData.Exercise>
             Log.d("Exercise Data:", "${exerciseDataList1.size}")
-            newProgramBinding.edtTime.setText(exerciseDataList1[0].cycles!![0].time)
+            if (exerciseDataList1.isNotEmpty() && exerciseDataList1[0].cycles?.isNotEmpty() == true) {
+                newProgramBinding.edtTime.setText(exerciseDataList1[0].cycles?.get(0)?.time ?: "")
+            } else {
+                // Handle the case where exerciseDataList1 or cycles is empty
+                Log.e("NewProgramActivity", "Cycles list is empty or not initialized.")
+                // Optionally set a default value
+                newProgramBinding.edtTime.setText("Default Time")
+            }
             newProgramBinding.exerciseSelectRecycler.visibility = View.VISIBLE
-            newProgramBinding.exerciseSelectRecycler.layoutManager =
-                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-            adapter1 =
-                Exercise_select_Adapter1(exerciseDataList1, this)
+            newProgramBinding.exerciseSelectRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            adapter1 = Exercise_select_Adapter1(exerciseDataList1, this)
             newProgramBinding.exerciseSelectRecycler.adapter = adapter1
         }
     }
