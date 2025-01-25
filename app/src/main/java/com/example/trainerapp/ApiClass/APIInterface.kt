@@ -29,6 +29,7 @@ import com.example.model.newClass.cycle.AddTimerBody
 import com.example.model.newClass.delete.DeleteBase
 import com.example.model.newClass.excercise.Exercise
 import com.example.model.newClass.lesson.Lesson
+import com.example.model.newClass.test.TestResultRequest
 import com.example.model.newClass.timer.Timer
 import com.example.model.notification.NotificationModel
 import com.example.model.performance_profile.PerformanceProfileData
@@ -775,6 +776,10 @@ interface APIInterface {
 
     @POST("select-day/add")
     fun AddSelectedDayData(@Body addSelectDayModel: AddSelectDayModel): Call<SelectedDaysModel>?
+
+    @POST("test/result")
+    fun TestResults(@Body request: TestResultRequest): Call<Any>
+
 
     //////////////// Athlete ////////////////
 

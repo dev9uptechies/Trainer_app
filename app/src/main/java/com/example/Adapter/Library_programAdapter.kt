@@ -10,6 +10,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trainerapp.ApiClass.ProgramListData
 import com.example.trainerapp.R
+import com.example.trainerapp.program_section.New_Program_Activity
 import com.example.trainerapp.program_section.ViewProgramActivity
 
 
@@ -50,12 +51,14 @@ class Library_programAdapter(
         holder.time.text = movie.time
 
         holder.img_edit.setOnClickListener {
-//            listener.onItemClicked(it, position, movie.id!!.toLong(), "EditProgram")
+            listener.onItemClicked(it, position, movie.id!!.toLong(), "EditProgram")
 //            OnItemClickListener(position, listener, movie.id!!.toLong(), "Edit")
 
-            context.startActivity(Intent(context, ViewProgramActivity::class.java).apply {
+            Log.d("ADAPTERCLICK", "onBindViewHolder: $position     ${movie.id}")
+
+            context.startActivity(Intent(context, New_Program_Activity::class.java).apply {
                 putExtra("position", position)
-                putExtra("id", movie.id!!)
+                putExtra("PID", movie.id!!)
             })
         }
 

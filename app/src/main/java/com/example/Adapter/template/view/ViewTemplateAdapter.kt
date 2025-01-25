@@ -71,8 +71,8 @@ class ViewTemplateAdapter(
 
                 categoryNameTextView.text = category.name ?: ""
                 val performanceList = category.performanceTemplateQuality ?: mutableListOf()
-                val performanceLinearLayout =
-                    categoryView.findViewById<LinearLayout>(R.id.performanceDetailsLinear)
+
+                val performanceLinearLayout = categoryView.findViewById<LinearLayout>(R.id.performanceDetailsLinear)
                 if (performanceList.isNotEmpty()) {
                     for (performance in performanceList) {
                         val performanceView =

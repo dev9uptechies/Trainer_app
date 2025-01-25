@@ -1,7 +1,6 @@
 package com.example
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -37,14 +36,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.model.SelectedValue
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
-import com.example.trainerapp.ApiClass.EventListData
 import com.example.trainerapp.ApiClass.RegisterData
 import com.example.trainerapp.GetAthletesActivity
 import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
 import com.example.trainerapp.Utils
-import com.example.trainerapp.View_test_Activity
+import com.example.trainerapp.viewTestActivity
 import com.example.trainerapp.databinding.ActivityTestBinding
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -60,7 +58,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -1071,7 +1068,10 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
 
             Log.d("DJDJDJDJ", "onItemClicked: ")
 
-            val intent = Intent(this,View_test_Activity::class.java)
+            Log.d("SSKSKSK", "onItemClicked: ${TestList[position].id}")
+
+            val intent = Intent(this,viewTestActivity::class.java)
+            intent.putExtra("TestId",TestList[position].id)
             startActivity(intent)
 
             testBinding.progressbar.visibility = View.GONE

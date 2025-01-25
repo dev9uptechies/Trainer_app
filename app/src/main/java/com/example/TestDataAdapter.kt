@@ -2,7 +2,6 @@ package com.example
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,10 +14,8 @@ import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
-import com.example.trainerapp.View_test_Activity
-import com.example.trainerapp.program_section.ViewProgramActivity
+import com.example.trainerapp.viewTestActivity
 import com.zerobranch.layout.SwipeLayout
-import org.checkerframework.checker.interning.qual.InternMethod
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -104,9 +101,9 @@ class TestDataAdapter(
             }
         )
         holder.cardView.setOnClickListener {
-            context.startActivity(Intent(context, View_test_Activity::class.java).apply {
+            context.startActivity(Intent(context, viewTestActivity::class.java).apply {
                 putExtra("position", position)
-                putExtra("id", movie.id!!)
+                putExtra("TestId", movie.id!!)
             })
         }
 

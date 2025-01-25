@@ -31,7 +31,7 @@
         android:windowSoftInputMode="adjustPan"
         tools:targetApi="m">
         <activity
-            android:name=".View_test_Activity"
+            android:name="com.example.trainerapp.viewTestActivity"
             android:exported="false" />
         <activity
             android:name="com.example.trainerappAthlete.ProfileActivity"

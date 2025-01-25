@@ -92,6 +92,8 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
     private lateinit var id: ArrayList<Int>
     lateinit var etEnterGoal: AppCompatSpinner
     lateinit var spselect_lesson: AppCompatSpinner
+    var lposition:Int ?= null
+    var liberyid:Int ?= null
 
     lateinit var programData: MutableList<ProgramListData.testData>
     lateinit var goalData: MutableList<TestListData.testData>
@@ -929,6 +931,23 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         age = ArrayList()
         excId.clear()
         getExerciseData()
+
+        lposition = intent.getIntExtra("position",0)
+        liberyid = intent.getIntExtra("PID",0)
+        Log.d("SSJSSJJS", "initView: $lposition     $liberyid")
+
+
+        if (lposition != null && liberyid?.toLong() != 0L || liberyid != null) {
+            newProgramBinding.scrollView3.smoothScrollTo(0, 0)
+            typeData = "edit"
+            lposition!!.toLong()
+            liberyid!!.toLong()
+            setProgramData(lposition!!, liberyid!!.toLong())
+        }else{
+            typeData = "create"
+
+        }
+
     }
 
     //    private fun getExerciseData() {
@@ -1153,10 +1172,10 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
         if (string == "Edit") {
-
             newProgramBinding.scrollView3.smoothScrollTo(0, 0)
             typeData = "edit"
             setProgramData(position, type)
+            Log.d("JSJSJSJSJJ", "onItemClicked: $position")
 //            startActivity(Intent(this, EditProgramActivity::class.java))
         } else if (string == "fav") {
             newProgramBinding.progresBar.visibility = View.VISIBLE
@@ -1397,10 +1416,17 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         try {
             setExcersiceData()
 
-            var data = programData.find { it.id == type.toInt() }
-            programId = data!!.id
-            newProgramBinding.edtProgramName.setText(data.name)
-            newProgramBinding.edtGoal.setText(data.goal!!.name)
+            Log.d("SPPSPSPSP", "setProgramData: $position  $type")
+
+            val data = programData.find { it.id == type.toInt() }
+
+            if (data == null) {
+                Log.e("Error", "Program data not found for ID: $type")
+                return
+            }
+            programId = data?.id
+            newProgramBinding.edtProgramName.setText(data?.name)
+            newProgramBinding.edtGoal.setText(data?.goal!!.name)
             goalId = SelectedValue(data.goal_id!!.toInt())
             sectionId = SelectedValue(data.section_id!!.toInt())
             newProgramBinding.edtTime.setText(data.time)

@@ -756,7 +756,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
 
         if (string.toString().contains("EditProgram")) {
 
-            startActivity(Intent(this, ViewProgramActivity::class.java))
+//            startActivity(Intent(this, ViewProgramActivity::class.java))
         }
         if (string.toString().contains("CopyProgram")) {
             Toast.makeText(this@LibraryActivity, "Copy Program!", Toast.LENGTH_SHORT)
