@@ -47,9 +47,9 @@ class SetEditGroupLessonAdapter(
         holder.card.layoutParams = params
 
         // Null-safe access for lesson properties
-        holder.tvFname.text = lesson?.name ?: "N/A"
-        holder.tvTime1.text = lesson?.date ?: "N/A"
-        holder.tv_athlet.text = "Time: ${lesson?.time ?: "N/A"}"
+        holder.tvFname.text = lesson?.name ?: ""
+        holder.tvTime1.text = lesson?.date ?: ""
+        holder.tv_athlet.text = "Time: ${lesson?.time ?: ""}"
 
         holder.checkBox.isChecked = selectedItems.contains(position)
         holder.checkBox.isClickable = false
@@ -70,7 +70,6 @@ class SetEditGroupLessonAdapter(
             // You can now use lessonNames and lessonIdList safely
         }
     }
-
 
     override fun getItemCount(): Int {
         return filterList.size

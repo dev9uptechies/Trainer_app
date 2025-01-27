@@ -32,6 +32,7 @@ class ViewProgramActivity : AppCompatActivity() {
     lateinit var adapter: View_Program_Adapter
     var excList: ArrayList<ProgramListData.Program> = arrayListOf()
     var id: Int? = null
+    var idLibrary: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewProgramBinding = ActivityViewProgramBinding.inflate(layoutInflater)
@@ -113,11 +114,14 @@ class ViewProgramActivity : AppCompatActivity() {
         cancel.setOnClickListener {
             dialog.cancel()
         }
+
+        val finalID = if (id == 0 || id == null) idLibrary else id
+
         apply.setOnClickListener {
             dialog.dismiss()
             viewProgramBinding.progresBar.visibility = View.VISIBLE
             try {
-                apiInterface.DuplicateProgram(id = id).enqueue(object : Callback<CycleData> {
+                apiInterface.DuplicateProgram(id = finalID).enqueue(object : Callback<CycleData> {
                     override fun onResponse(
                         call: Call<CycleData>,
                         response: Response<CycleData>
@@ -261,6 +265,9 @@ class ViewProgramActivity : AppCompatActivity() {
         apiInterface = apiClient.client().create(APIInterface::class.java)
         programData = mutableListOf()
         id = intent.getIntExtra("id", 0)
+        idLibrary = intent.getIntExtra("ProgramId", 0)
+
+        Log.d("JSJSJSJJS", "initViews: $idLibrary")
     }
 
     private fun GetProgramData() {
@@ -285,8 +292,12 @@ class ViewProgramActivity : AppCompatActivity() {
                     Log.d("TAG", resource.data.toString())
                     if (Success) {
                         try {
+
+
+                            val finalID = if (id == 0 || id == null) idLibrary else id
+
                             val data = response.body()!!.data!!.filter {
-                                it.id == id
+                                it.id == finalID
                             }
                             if (data != null) {
                                 programData.addAll(data)

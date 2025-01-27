@@ -117,6 +117,18 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
 
         idd = intent.getStringExtra("ids")
         Log.e("TAGexcId", "onCreate: " + idd)
+
+
+        if (lposition != null && liberyid?.toLong() != 0L || liberyid != null) {
+
+            typeData = "edit"
+            GetProgramDataLibaray()
+            Log.d("okokokok", "onCreate: $programData")
+        }else{
+            typeData = "create"
+        }
+
+
         newProgramBinding.edtSection.setOnClickListener {
             showPopup(it, sectionData, newProgramBinding.edtSection, section, sectionId)
         }
@@ -124,6 +136,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         newProgramBinding.edtGoal.setOnClickListener {
             showPopup(it, goalData, newProgramBinding.edtGoal, Goal, goalId)
         }
+
 
         newProgramBinding.etSelectTestDate.setOnClickListener {
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -782,7 +795,70 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         GetProgramData()
     }
 
+    private fun GetProgramDataLibaray() {
+        Log.d("LLPPLPLPLP", "GetProgramData: 1")
+        newProgramBinding.progresBar.visibility = View.VISIBLE
+        programData.clear()
+        apiInterface.GetProgam()?.enqueue(object : Callback<ProgramListData?> {
+            override fun onResponse(
+                call: Call<ProgramListData?>,
+                response: Response<ProgramListData?>
+            ) {
+                Log.d("LLPPLPLPLP", "GetProgramData: 2")
+
+                Log.d("LLPPLPLPLP", response.code().toString())
+                val code = response.code()
+                if (code == 200) {
+                    val resource: ProgramListData? = response.body()
+                    val Success: Boolean = resource?.status!!
+                    val Message: String = resource.message!!
+                    newProgramBinding.progresBar.visibility = View.GONE
+                    Log.d("LLPPLPLPLP", resource.data.toString())
+
+                    if (Success) {
+                        Log.d("LLPPLPLPLP", "GetProgramData: 3")
+
+                            if (resource.data == null || resource.data!!.isEmpty()) {
+                                // Show "No Data Found" if data is null or empty
+                                Log.d("LLPPLPLPLP", "GetProgramData: 4")
+                                newProgramBinding.tvNodata.visibility = View.VISIBLE
+                            } else {
+                                newProgramBinding.tvNodata.visibility = View.GONE
+                                programData.addAll(resource.data!!)
+                                initRecyclerview(resource.data!!)
+
+                                Log.d("OIOOIOIO++++++", "onResponse: ${programData}")
+                                setProgramData(lposition!!, liberyid!!.toLong())
+
+                            }
+
+                    } else {
+                        Log.d("DLDDLDLDLSUSUUSUSUeeee", "onResponse: $Message")
+                        Toast.makeText(this@New_Program_Activity, Message, Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                } else if (response.code() == 403) {
+                    Utils.setUnAuthDialog(this@New_Program_Activity)
+                } else {
+                    val message = response.message()
+                    Toast.makeText(this@New_Program_Activity, message, Toast.LENGTH_SHORT).show()
+                    call.cancel()
+                }
+            }
+
+
+            override fun onFailure(call: Call<ProgramListData?>, t: Throwable) {
+                newProgramBinding.progresBar.visibility = View.GONE
+                Toast.makeText(this@New_Program_Activity, "" + t.message, Toast.LENGTH_SHORT)
+                    .show()
+                call.cancel()
+            }
+        })
+    }
+
+
     private fun GetProgramData() {
+        Log.d("DLDDLDLDL", "GetProgramData: OKOKOO")
         newProgramBinding.progresBar.visibility = View.VISIBLE
         programData.clear()
         apiInterface.GetProgam()?.enqueue(object : Callback<ProgramListData?> {
@@ -800,21 +876,27 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
                     Log.d("TAG", resource.data.toString())
 
                     if (Success) {
+                        Log.d("DLDDLDLDLSUSUUSUSU", "onResponse: OKOK2")
+
                         try {
                             if (resource.data == null || resource.data!!.isEmpty()) {
                                 // Show "No Data Found" if data is null or empty
+                                Log.d("DLDDLDLDL", "onResponse: OKOK2")
                                 newProgramBinding.tvNodata.visibility = View.VISIBLE
                                 initRecyclerview(arrayListOf())  // You can initialize an empty list or handle it based on your needs
                             } else {
-                                // Hide "No Data Found" and show the data
                                 newProgramBinding.tvNodata.visibility = View.GONE
                                 programData.addAll(resource.data!!)
                                 initRecyclerview(resource.data!!)
+
+                                Log.d("OIOOIOIO", "onResponse: ${programData}")
                             }
                         } catch (e: Exception) {
+                            Log.d("DLDDLDLDL", "onResponse: ${e.message.toString()}")
                             e.printStackTrace()
                         }
                     } else {
+                        Log.d("DLDDLDLDLSUSUUSUSUeeee", "onResponse: $Message")
                         Toast.makeText(this@New_Program_Activity, Message, Toast.LENGTH_SHORT)
                             .show()
                     }
@@ -937,16 +1019,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         Log.d("SSJSSJJS", "initView: $lposition     $liberyid")
 
 
-        if (lposition != null && liberyid?.toLong() != 0L || liberyid != null) {
-            newProgramBinding.scrollView3.smoothScrollTo(0, 0)
-            typeData = "edit"
-            lposition!!.toLong()
-            liberyid!!.toLong()
-            setProgramData(lposition!!, liberyid!!.toLong())
-        }else{
-            typeData = "create"
 
-        }
 
     }
 
@@ -1417,8 +1490,12 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
             setExcersiceData()
 
             Log.d("SPPSPSPSP", "setProgramData: $position  $type")
+            Log.d("SPPSPSPSP", "setProgramData: $programData")
 
             val data = programData.find { it.id == type.toInt() }
+
+            Log.e("ProgramDataOOOOOOO", "Program data not found for ID: $data")
+
 
             if (data == null) {
                 Log.e("Error", "Program data not found for ID: $type")

@@ -16,6 +16,45 @@
         app:cardCornerRadius="@dimen/_10sdp"
         tools:ignore="MissingConstraints">
 
+        <com.zerobranch.layout.SwipeLayout
+            android:id="@+id/swipe_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:draggedItem="@id/rela_dragged"
+            app:rightItem="@id/right_view"
+            app:swipeDirection="left">
+
+            <LinearLayout
+                android:id="@+id/right_view"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="#313131"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/img_edit2"
+                    android:layout_width="@dimen/_17sdp"
+                    android:layout_height="@dimen/_17sdp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_20sdp"
+                    android:layout_marginRight="@dimen/_20sdp"
+                    android:src="@drawable/img_edit"
+                    app:tint="@color/white" />
+
+                <ImageView
+                    android:id="@+id/img_delete"
+                    android:layout_width="@dimen/_17sdp"
+                    android:layout_height="@dimen/_17sdp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginRight="@dimen/_20sdp"
+                    android:src="@drawable/img_delete"
+                    app:tint="@color/white" />
+            </LinearLayout>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/rela_dragged"
                 android:layout_width="match_parent"
@@ -158,6 +197,8 @@
                 </RelativeLayout>
 
             </androidx.cardview.widget.CardView>
+
+        </com.zerobranch.layout.SwipeLayout>
 
     </androidx.cardview.widget.CardView>
 

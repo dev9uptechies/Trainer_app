@@ -46,6 +46,9 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
     var imageString = ""
     var videoString = ""
     var youtube = false
+
+    var ExerciseLberyid:Int ?= null
+
     lateinit var mediaControls: MediaController
 
     private fun checkUser() {
@@ -127,9 +130,10 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
         position = intent.getIntExtra("position", 0)
         id = intent.getIntExtra("id", 0)
         EXID = intent.getStringExtra("EXID").toString()
+        ExerciseLberyid = intent.getIntExtra("ExerciseId",0)
 
 
-        Log.d("PSPSPSPSP", "initViews: $EXID")
+        Log.d("PSPSPSPSP", "initViews: $ExerciseLberyid")
     }
 
     private fun isYouTubeUrl(url: String): Boolean {
@@ -155,12 +159,16 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
                                 if (response.body()!!.data!!.isNotEmpty()) {
 
-                                    val finalId = if(id == 0 || id == null)  EXID?.toInt() else id
+                                    val idTouse = if (id == 0 || id == null) {
+                                        EXID?.toIntOrNull() ?: 0 // Convert EXID to Int if valid, else default to 0
+                                    } else id
 
-                                    Log.d("FINALIDD", "onResponse: $finalId")
+                                    Log.d("FINALIDD", "onResponse: $idTouse")
+
+                                    val finalID = if(idTouse == null || idTouse == 0) ExerciseLberyid else idTouse
 
                                     val data = response.body()!!.data?.filter {
-                                        it.id == finalId
+                                        it.id == finalID
                                     }
 
                                     if (data!!.isNotEmpty()) {

@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
+    android:id="@+id/main"
+    android:orientation="vertical"
     tools:context=".LibraryActivity">
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/create_bg"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -116,8 +123,8 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_20sdp"
                             android:layout_marginEnd="@dimen/_20sdp"
-                            android:text="Program"
                             android:fontFamily="@font/poppins_medium"
+                            android:text="Program"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_13sdp" />
 
@@ -138,9 +145,9 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_20sdp"
                             android:layout_marginEnd="@dimen/_20sdp"
+                            android:fontFamily="@font/poppins_medium"
                             android:text="Lesson"
                             android:textColor="@color/white"
-                            android:fontFamily="@font/poppins_medium"
                             android:textSize="@dimen/_13sdp" />
 
                     </androidx.cardview.widget.CardView>
@@ -159,9 +166,9 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_20sdp"
                             android:layout_marginEnd="@dimen/_20sdp"
+                            android:fontFamily="@font/poppins_medium"
                             android:text="Event"
                             android:textColor="@color/white"
-                            android:fontFamily="@font/poppins_medium"
                             android:textSize="@dimen/_13sdp" />
 
                     </androidx.cardview.widget.CardView>
@@ -180,8 +187,8 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_20sdp"
                             android:layout_marginEnd="@dimen/_20sdp"
-                            android:text="Exercise"
                             android:fontFamily="@font/poppins_medium"
+                            android:text="Exercise"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_13sdp" />
 
@@ -201,9 +208,9 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_20sdp"
                             android:layout_marginEnd="@dimen/_20sdp"
+                            android:fontFamily="@font/poppins_medium"
                             android:text="Test"
                             android:textColor="@color/white"
-                            android:fontFamily="@font/poppins_medium"
                             android:textSize="@dimen/_13sdp" />
 
                     </androidx.cardview.widget.CardView>
@@ -240,10 +247,22 @@
 
                 </androidx.recyclerview.widget.RecyclerView>
 
+
             </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+    <ProgressBar
+        android:id="@+id/progres_bar"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

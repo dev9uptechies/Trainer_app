@@ -35,14 +35,16 @@ class Library_EventAdapter(private var splist: ArrayList<EventListData.testData>
         var tvintrestedathelets:TextView = view.findViewById<View>(R.id.intrested_athelets) as TextView
         var img_edit: ImageView = view.findViewById<View>(R.id.img_edit) as ImageView
         var img_delete: ImageView = view.findViewById<View>(R.id.img_delete) as ImageView
+        var tvDate: TextView = view.findViewById<View>(R.id.tv_date) as TextView
+
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val movie = splist!![position]
         holder.tveventname.text = movie.title
         holder.tvtype.text = movie.type
+        holder.tvDate.text = movie.date?.take(10) ?: "Invalid Date"
 
-        // Check if event_athletes has data and display all athlete names
         if (!movie.event_athletes.isNullOrEmpty()) {
             val athleteNames = StringBuilder()
             for (eventAthlete in movie.event_athletes!!) {
@@ -55,17 +57,28 @@ class Library_EventAdapter(private var splist: ArrayList<EventListData.testData>
                 athleteNames.setLength(athleteNames.length - 2)
             }
 
-            holder.tvintrestedathelets.text = athleteNames.toString()
+            Log.d("AthleteNames", "onBindViewHolder: $athleteNames")
+
+            holder.tvintrestedathelets.text = "Intrested Athelets:" + athleteNames.toString()
         } else {
             holder.tvintrestedathelets.text = "No Athlete Data" // Default text if no athletes
         }
 
-        // Set the favorite icon based on the is_favourite value
-        if (movie.is_favourite == "1") {
+        if (movie.is_favourite.toString() == "1") {
             holder.image.setImageResource(R.drawable.ic_favorite_select)
+
         } else {
             holder.image.setImageResource(R.drawable.ic_favorite_red)
         }
+
+
+        holder.image.setOnClickListener(
+            if (movie.is_favourite.toString() == "1") {
+                OnItemClickListener(position, listener, movie.id!!.toLong(), "UnFavEvent")
+            } else {
+                OnItemClickListener(position, listener, movie.id!!.toLong(), "FavEvent")
+            }
+        )
 
         holder.img_edit.setOnClickListener {
 

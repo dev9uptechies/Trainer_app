@@ -42,7 +42,10 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     lateinit var excAdapter: Excercise_list_Adapter
     var position: Int? = null
     var id: Int? = null
+    var idLibrary: Int? = null
     var idforviewlesson: Int? = null
+
+    var lposition:Int ?= null
 
     var excId = SelectedValue(null)
     var proId = SelectedValue(null)
@@ -95,7 +98,10 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         val totalTime = intent.getStringExtra("total_time")
         val sectionTime = intent.getStringExtra("section_time")
         val name = intent.getStringExtra("name")
+        idLibrary = intent.getIntExtra("LessonLibraryId", 0)
+        lposition = intent.getIntExtra("LessonLibraryPosition", 0)
 
+        Log.d("JSJSJSJJS", "initViews: $idLibrary")
         Log.d("CCVCVCVVCVCV", "initViews: "+ id)
         Log.d("CCVCVCVVCVCV", "initViews: "+ position)
         Log.d("CCVCVCVVCVCV", "initViews: "+ idforviewlesson)
@@ -171,15 +177,17 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
                 if (response.isSuccessful) {
                     response.body()?.data?.let { data ->
 
-                        val idToUse = if ((id as? String)?.isNullOrEmpty() == true || id == 0) {
+                        val idToUse = if ((id as? String)?.isNullOrEmpty() == true || id == 0 ) {
                             idforviewlesson
                         } else {
                             id
                         }
 
+                        val FinalId = if (idToUse == 0 || idToUse == null) idLibrary else idToUse
+
                         Log.d("DJDJDJDJDJDJ", "onResponse: $idToUse")
 
-                        val filteredData = data.filter { it.id == idToUse }
+                        val filteredData = data.filter { it.id == FinalId }
 
                         try {
                             if (position != null && position!! >= 0 && position!! < lessonData.size) {

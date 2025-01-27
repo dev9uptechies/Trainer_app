@@ -87,6 +87,9 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
     var typed: String = ""
     var fromDay: Boolean = false
 
+    var EventLPosition:Int ?= null
+    var EventLberyid:Int ?= null
+
     var type = "create"
     private var types: String? = ""
     private var position1: Int? = 0
@@ -127,6 +130,16 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
 
         initViews()
         loadData()
+
+        if (EventLPosition != null && EventLberyid?.toLong() != 0L || EventLberyid != null) {
+
+            type = "edit"
+            geteventlistLibaray()
+//            Log.d("okokokok", "onCreate: $programData")
+        }else{
+            type = "create"
+        }
+
 
         Log.d("SDSBSBSBS", "onCreate: $eventid")
 
@@ -444,8 +457,13 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
                 eventId.toInt().toString()
             }
 
+            val finalID = if(idToUse == null || idToUse.isNullOrEmpty() || idToUse == "0") EventLberyid else idToUse
+
+            Log.d("KDKKKDK", "editData: $finalID    $idToUse")
+
+
             val jsonObject = JsonObject()
-            jsonObject.addProperty("id", idToUse.toInt())
+            jsonObject.addProperty("id", finalID.toString())
             jsonObject.addProperty("name", createEventBinding.eventName.text.toString())
             jsonObject.addProperty("type", createEventBinding.edtTest.text.toString())
             jsonObject.add("athlete_ids", array)
@@ -615,6 +633,9 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         apiInterface = apiClient.client().create(APIInterface::class.java)
         calendarView = findViewById(R.id.calenderView)
         EventList = ArrayList()
+        EventLPosition = intent.getIntExtra("EventLibraryPosition",0)
+        EventLberyid = intent.getIntExtra("EventLibraryId",0)
+        Log.d("SSJSSJJS", "initView: $EventLPosition     $EventLberyid")
     }
 
     private fun geteventlist() {
@@ -634,6 +655,54 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
                         if (resource.data != null) {
                             EventList = resource.data!!
                             initrecycler(resource.data)
+                        } else {
+                            initrecycler(arrayListOf())
+                        }
+                    } else {
+                        createEventBinding.progressBar.visibility = View.GONE
+                    }
+                } else if (code == 403) {
+                    Utils.setUnAuthDialog(this@Create_Event_Activity)
+                } else {
+                    val Message = response.message()
+                    Toast.makeText(
+                        this@Create_Event_Activity,
+                        "" + Message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    call.cancel()
+                }
+            }
+
+            override fun onFailure(call: Call<EventListData?>, t: Throwable) {
+                createEventBinding.progressBar.visibility = View.GONE
+                Toast.makeText(this@Create_Event_Activity, "" + t.message, Toast.LENGTH_SHORT)
+                    .show()
+                call.cancel()
+            }
+        })
+    }
+
+    private fun geteventlistLibaray() {
+        createEventBinding.progressBar.visibility = View.VISIBLE
+        apiInterface.GetEvent()?.enqueue(object : Callback<EventListData?> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(
+                call: Call<EventListData?>,
+                response: Response<EventListData?>
+            ) {
+                Log.d("TAG", response.code().toString() + "")
+                val code = response.code()
+                if (code == 200) {
+                    val resource: EventListData? = response.body()
+                    val Success: Boolean = resource?.status!!
+                    val Message: String = resource.message!!
+                    if (Success == true) {
+                        if (resource.data != null) {
+                            EventList = resource.data!!
+                            initrecycler(resource.data)
+                            setEventData(EventList[EventLPosition!!.toInt()])
+
                         } else {
                             initrecycler(arrayListOf())
                         }
@@ -912,7 +981,6 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
             eventId = EventList[position].id!!.toString()
             setEventData(EventList[position])
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

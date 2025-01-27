@@ -10,6 +10,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/card"
         android:layout_marginTop="@dimen/_5sdp"
         app:cardBackgroundColor="#1A929492"
         app:cardCornerRadius="@dimen/_10sdp"
@@ -33,6 +34,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:text="date"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:textColor="@color/dark_text"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintBottom_toBottomOf="@+id/image"
+                app:layout_constraintEnd_toStartOf="@+id/image"
+                app:layout_constraintTop_toTopOf="@+id/image" />
+
+
 
             <ImageView
                 android:id="@+id/image"
@@ -47,14 +62,14 @@
                 android:id="@+id/img_edit"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_25sdp"
-                android:tint="@color/red"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/image"
-                app:layout_constraintHorizontal_bias="0.925"
+                app:layout_constraintHorizontal_bias="0.69"
                 app:layout_constraintStart_toEndOf="@+id/tv_goal"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0"
-                app:srcCompat="@drawable/img_edit" />
+                app:srcCompat="@drawable/img_edit"
+                app:tint="@color/red" />
 
             <TextView
                 android:id="@+id/goal"
@@ -105,19 +120,31 @@
                 app:layout_constraintStart_toEndOf="@+id/total_time"
                 app:layout_constraintTop_toTopOf="@+id/total_time" />
 
+
             <ImageView
                 android:id="@+id/img_delete"
-                android:layout_width="27dp"
-                android:layout_height="27dp"
-                android:layout_marginEnd="16dp"
-                android:tint="@color/red"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="20dp"
+                android:layout_height="30dp"
+                app:layout_constraintBottom_toBottomOf="@+id/img_copy"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.72"
+                app:layout_constraintStart_toEndOf="@+id/img_edit"
+                app:layout_constraintTop_toTopOf="@+id/img_copy"
+                app:srcCompat="@drawable/img_delete"
+                app:tint="@color/red" />
+
+            <ImageView
+                android:id="@+id/img_copy"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_25sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/img_delete"
+                app:layout_constraintHorizontal_bias="0.437"
                 app:layout_constraintStart_toEndOf="@+id/img_edit"
                 app:layout_constraintTop_toBottomOf="@+id/image"
-                app:layout_constraintVertical_bias="0.684"
-                app:srcCompat="@drawable/img_delete" />
+                app:layout_constraintVertical_bias="1.0"
+                app:srcCompat="@drawable/img_copy"
+                app:tint="@color/red"/>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

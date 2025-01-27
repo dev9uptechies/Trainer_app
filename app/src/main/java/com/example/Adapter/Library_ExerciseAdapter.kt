@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trainerapp.ApiClass.ExcerciseData
 import com.example.trainerapp.ApiClass.ProgramListData
@@ -36,18 +37,43 @@ class Library_ExerciseAdapter(private var splist: ArrayList<ExcerciseData.Exerci
         var exercise_type:TextView = view.findViewById<View>(R.id.exercise_type) as TextView
         var img_edit: ImageView = view.findViewById<View>(R.id.img_edit) as ImageView
         var img_delete: ImageView = view.findViewById<View>(R.id.img_delete) as ImageView
+        var img_copy: ImageView = view.findViewById<View>(R.id.img_copy) as ImageView
+        var card: CardView = view.findViewById<View>(R.id.card) as CardView
+
+
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int)  {
         val movie = splist!![position]
         holder.tvFname.text = movie.name
         holder.exercise_type.text = movie.type
-        if(movie.is_favourite!! == "1"){
+
+        if (movie.is_favourite.toString() == "1") {
             holder.image.setImageResource(R.drawable.ic_favorite_select)
 
-        }else{
+        } else {
             holder.image.setImageResource(R.drawable.ic_favorite_red)
         }
+
+
+        holder.image.setOnClickListener(
+            if (movie.is_favourite.toString() == "1") {
+                OnItemClickListener(position, listener, movie.id!!.toLong(), "UnFavExercise ")
+            } else {
+                OnItemClickListener(position, listener, movie.id!!.toLong(), "FavExercise")
+            }
+        )
+
+        holder.card.setOnClickListener(
+            OnItemClickListener(
+                position,
+                listener,
+                movie.id!!.toLong(),
+                "ViewExercise"
+            )
+        )
+
+
 
         holder.img_edit.setOnClickListener {
             Log.d("TAG", "onBindViewHolder: " + movie.id)
@@ -60,6 +86,15 @@ class Library_ExerciseAdapter(private var splist: ArrayList<ExcerciseData.Exerci
                 )
             )
         }
+
+        holder.img_copy.setOnClickListener(
+            OnItemClickListener(
+                position,
+                listener,
+                movie.id!!.toLong(),
+                "DuplicateExercise"
+            )
+        )
 
 //        holder.img_edit.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "EditExercise"))
         holder.img_delete.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "DeleteExercise"))

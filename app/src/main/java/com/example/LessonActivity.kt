@@ -97,6 +97,8 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
     var sectionId = SelectedValue(null)
     var lessonType = "create"
     var lessonId = ""
+    var LessonLibraryId:Int? = 0
+    var LessonLibraryPosition:Int? = 0
     var sectionName = "General Warm-up"
 
     private val sectionDataMap: MutableMap<String, ArrayList<ProgramListData.testData>> =
@@ -121,6 +123,17 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         loadData()
         checkButtonTap()
         checkUpdateUI()
+
+        if (LessonLibraryPosition != null && LessonLibraryId?.toLong() != 0L || LessonLibraryId != null) {
+
+            lessonType = "edit"
+            GetLessionListLibaray()
+        }else{
+            lessonType = "create"
+        }
+
+
+        Log.d("lessonDataatatatata", "onCreate: $lession_data1")
 
     }
 
@@ -465,8 +478,12 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                 lessonId.toInt().toString()
             }
 
+            val finalID = if(idToUse == null || idToUse.isNullOrEmpty() || idToUse == "0") LessonLibraryId else idToUse
+
+            Log.d("KDKKKDK", "editData: $finalID    $idToUse")
+
             val jsonObject = JsonObject()
-            jsonObject.addProperty("id", idToUse)
+            jsonObject.addProperty("id", finalID.toString())
             jsonObject.addProperty("name", lessonBinding.edtLessonName.text.toString())
             jsonObject.add("goal_ids", goalArray)
             jsonObject.addProperty("time", lessonBinding.edtTime.text.toString())
@@ -705,6 +722,11 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         id = ArrayList()
         exercise_list = ArrayList()
         lession_data1 = ArrayList()
+
+
+        LessonLibraryId = intent.getIntExtra("LessonLibraryId",0)
+        LessonLibraryPosition = intent.getIntExtra("LessonLibraryPosition",0)
+        Log.d("DDJJJJDJJJ", "initViews: $LessonLibraryId    $LessonLibraryPosition")
     }
 
     private fun showPopup(
@@ -895,6 +917,70 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                                 lession_data1.clear()
                                 lession_data1.addAll(data)
                                 initRecyclerview(lession_data1)
+                            } else {
+                                // Handle empty or null data
+                                Toast.makeText(
+                                    this@LessonActivity,
+                                    "No lessons available",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            // Handle unsuccessful response if needed
+                            Toast.makeText(
+                                this@LessonActivity,
+                                "Error: $message",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        // Handle null response body
+                        Toast.makeText(
+                            this@LessonActivity,
+                            "Empty response body",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else if (code == 403) {
+                    Utils.setUnAuthDialog(this@LessonActivity)
+                } else {
+                    Toast.makeText(this@LessonActivity, response.message(), Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            }
+
+            override fun onFailure(call: Call<Lesson>, t: Throwable) {
+                Toast.makeText(this@LessonActivity, "Error: " + t.message, Toast.LENGTH_SHORT)
+                    .show()
+                call.cancel()
+            }
+        })
+    }
+
+    private fun GetLessionListLibaray() {
+        lessonBinding.lessionProgress.visibility = View.VISIBLE
+        apiInterface.GetLession1().enqueue(object : Callback<Lesson> {
+            override fun onResponse(call: Call<Lesson>, response: Response<Lesson>) {
+                Log.d("TAG Lesson:", response.code().toString() + "")
+                lessonBinding.lessionProgress.visibility = View.GONE
+                val code = response.code()
+                if (code == 200) {
+                    val resource = response.body()
+                    if (resource != null) {
+                        val success: Boolean = resource.status ?: false
+                        val message: String = resource.message ?: "No message"
+                        if (success) {
+                            // Safe null check for 'data'
+                            val data = resource.data
+                            if (!data.isNullOrEmpty()) {
+                                Log.d("Lesson Data :-", "$success $message \t $data")
+
+                                lession_data1.clear()
+                                lession_data1.addAll(data)
+                                initRecyclerview(lession_data1)
+                                setLessonData(lession_data1[LessonLibraryPosition!!])
+
                             } else {
                                 // Handle empty or null data
                                 Toast.makeText(
@@ -1155,6 +1241,8 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
             lessonType = "edit"
             lessonId = lession_data1[position].id.toString()
             setLessonData(lession_data1[position])
+
+            Log.d("HSHSHSHHS", "onItemClicked: $position")
         } else if (string == "fav") {
             lessonBinding.lessionProgress.visibility = View.VISIBLE
             val id: MultipartBody.Part =

@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_5sdp"
+        android:id="@+id/card"
         app:cardBackgroundColor="#1A929492"
         app:cardCornerRadius="@dimen/_10sdp"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,6 +34,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:text="2 Program"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:textColor="@color/dark_text"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintBottom_toBottomOf="@+id/image"
+                app:layout_constraintEnd_toStartOf="@+id/image"
+                app:layout_constraintTop_toTopOf="@+id/image" />
+
+
 
             <ImageView
                 android:id="@+id/image"
@@ -40,7 +55,7 @@
                 android:layout_height="@dimen/_30sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:src="@drawable/ic_favorite_red"
-                android:visibility="invisible"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -110,11 +125,11 @@
                 android:id="@+id/img_delete"
                 android:layout_width="20dp"
                 android:layout_height="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/img_copy"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.72"
                 app:layout_constraintStart_toEndOf="@+id/img_edit"
-                app:layout_constraintTop_toBottomOf="@+id/image"
+                app:layout_constraintTop_toTopOf="@+id/img_copy"
                 app:srcCompat="@drawable/img_delete"
                 app:tint="@color/red" />
 

@@ -241,7 +241,7 @@ interface APIInterface {
         @Part id: MultipartBody.Part
     ): Call<RegisterData>?
 
-    //    @DELETE("favourite/exercise")
+        @DELETE("favourite/exercise")
     fun DeleteFavourite_Exercise(@Query("id") id: Int?): Call<RegisterData>?
 
     @DELETE("favourite/event")
@@ -507,6 +507,12 @@ interface APIInterface {
     fun Duplicate_lession(
         @Part id: MultipartBody.Part
     ): Call<LessonData>?
+
+    @Multipart
+    @POST("exercise/duplicate")
+    fun Duplicate_Exercise(
+        @Part id: MultipartBody.Part
+    ): Call<EventListData>?
 
     @DELETE("lesson")
     fun DeleteLession(@Query("id") id: Int?): Call<RegisterData>?

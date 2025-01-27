@@ -85,6 +85,9 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
     var unit: String = ""
     var fromDay: Boolean = false
 
+    var TestLibraryId:Int? = 0
+    var TestLibraryPosition:Int? = 0
+
     lateinit var AthleteId: ArrayList<Int>
     lateinit var AthleteName: ArrayList<String>
 
@@ -252,11 +255,19 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
 
         initViews()
         loadData()
-
         if (preferenceManager.getselectAthelete()) {
             name = getObject(this, "setAthleteName") as ArrayList<String>
             id = getObjectJson(this, "setAthlete") as ArrayList<Int>
         }
+
+        if (TestLibraryPosition != null && TestLibraryId?.toLong() != 0L || TestLibraryId != null) {
+
+            type = "EditTest"
+            GetTestListLibrary()
+        }else{
+            type = "create"
+        }
+
         checkChangeValue()
 
         fromDay = intent.getBooleanExtra("fromday", false)
@@ -715,6 +726,9 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
         testid = intent.getStringExtra("id") ?: ""
         AthleteId = intent.getIntegerArrayListExtra("athleteid") ?: arrayListOf()
         AthleteName = intent.getStringArrayListExtra("athletename") ?: arrayListOf()
+        TestLibraryId = intent.getIntExtra("TestLibraryId",0)
+        TestLibraryPosition = intent.getIntExtra("TestLibraryPosition",0)
+        Log.d("DDJJJJDJJJ", "initViews: $TestLibraryId    $TestLibraryPosition")
 
         Log.e("KIRTIIIIIIIIII", "initViews: " + intent.getBooleanExtra("fromday", false))
 
@@ -790,6 +804,105 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
             Log.d("ERROR", "GetTestList: ${e.message.toString()}")
         }
 
+    }
+
+    private fun GetTestListLibrary() {
+        try {
+            TestList.clear()
+            testBinding.progressbar.visibility = View.VISIBLE
+            apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
+                override fun onResponse(
+                    call: Call<TestListData?>,
+                    response: Response<TestListData?>
+                ) {
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: TestListData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success == true) {
+                            try {
+                                if (resource.data!! != null) {
+                                    TestList = resource.data!!
+//                                    initrecycler(resource.data)
+                                    SetEditData(TestLibraryPosition!!)
+
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        } else {
+                            testBinding.progressbar.visibility = View.GONE
+                        }
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(this@TestActivity)
+//                    val message = response.message()
+//                    Toast.makeText(
+//                        this@TestActivity,
+//                        "" + message,
+//                        Toast.LENGTH_SHORT
+//                    )
+//                        .show()
+//                    call.cancel()
+//                    startActivity(
+//                        Intent(
+//                            this@TestActivity,
+//                            SignInActivity::class.java
+//                        )
+//                    )
+//                    finish()
+                    } else {
+                        testBinding.progressbar.visibility = View.GONE
+                        val message = response.message()
+                        Toast.makeText(this@TestActivity, "" + message, Toast.LENGTH_SHORT)
+                            .show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<TestListData?>, t: Throwable) {
+                    testBinding.progressbar.visibility = View.GONE
+                    Toast.makeText(this@TestActivity, "" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+        } catch (e: Exception) {
+            testBinding.progressbar.visibility = View.GONE
+            Toast.makeText(this, "ERROR:- " + e.message.toString(), Toast.LENGTH_SHORT).show()
+            Log.d("ERROR", "GetTestList: ${e.message.toString()}")
+        }
+
+    }
+
+    private fun SetEditData(position: Int){
+        timeId = TestList[position].id.toString()
+        testBinding.etTestName.setText(TestList[position].title)
+        testBinding.edtGoal.setText(TestList[position].goal.toString())
+        testBinding.edtUnits.setText(TestList[position].unit.toString())
+        val date = TestList[position].updated_at!!.split("T")[0]
+        id.clear()
+        name.clear()
+
+        Log.d("TestActivityAAAA", "Received Athlete Names: $timeId")
+        Log.d("TestActivityAAAA", "Received Athlete Names: $testid")
+
+        for (i in TestList[position].data!!) {
+            id.add(i.athlete!!.id!!)
+            name.add(i.athlete!!.name!!)
+        }
+        val str = arrayOfNulls<String>(name.size)
+        val array = JsonArray()
+
+        for (i in 0 until name.size) {
+            str[i] = name.get(i)
+            array.add(name.get(i))
+        }
+
+        val str1 = convertStringArrayToString(str, ",")
+        testBinding.etInterestedAtheletes.setText(str1)
+        testBinding.etSelectTestDate.setText(date)
     }
 
     private fun initrecycler(testdatalist: ArrayList<TestListData.testData>?) {

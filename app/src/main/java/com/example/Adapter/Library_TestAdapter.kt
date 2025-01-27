@@ -36,6 +36,8 @@ class Library_TestAdapter(private var splist: ArrayList<TestListData.testData>, 
         var tvFname: TextView = view.findViewById<View>(R.id.tv_test_name) as TextView
         var intrested_athletes:TextView = view.findViewById<View>(R.id.tv_intrest_ath) as TextView
         var tv_unit_id:TextView = view.findViewById<View>(R.id.tv_unit_id) as TextView
+        var tvDate: TextView = view.findViewById<View>(R.id.tv_date) as TextView
+
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int)  {
         val movie = splist[position]
@@ -44,6 +46,7 @@ class Library_TestAdapter(private var splist: ArrayList<TestListData.testData>, 
         holder.tvFname.text = movie.title
         holder.tvgoal.text =movie.goal
         holder.tv_unit_id.text =movie.unit
+        holder.tvDate.text = movie.date?.take(10) ?:"Invalid Date"
 //        holder.intrested_athletes.text = splist[position].data?.get(0)?.athlete?.name
 
 
@@ -52,18 +55,24 @@ class Library_TestAdapter(private var splist: ArrayList<TestListData.testData>, 
         val athleteNames = movie.data?.joinToString(separator = ", ") { it.athlete?.name ?: "" }
 
         // Set the concatenated names to the TextView
-        holder.intrested_athletes.text = athleteNames
-        if(splist[position].is_favourite?.equals(0) == true){
+        holder.intrested_athletes.text = "Intrested Athletes: "+ athleteNames
+
+        if (movie.is_favourite!!.equals(1)) {
             holder.image.setImageResource(R.drawable.ic_favorite_select)
-        }else{
+
+        } else {
             holder.image.setImageResource(R.drawable.ic_favorite_red)
         }
+        holder.image.setOnClickListener(
+            if (movie.is_favourite!!.equals(1)) {
+                OnItemClickListener(position, listener, movie.id!!.toLong(), "UnFavTest")
+            } else {
+                OnItemClickListener(position, listener, movie.id!!.toLong(), "FavTest")
+            }
+        )
 
-        holder.img_edit.setOnClickListener(View.OnClickListener {
-            listener.onItemClicked(it, position, movie.id!!.toLong(), "EditTest")
-        })
 
-//        holder.img_edit.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "Edit"))
+        holder.img_edit.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "EditTest"))
         holder.img_delete.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "DeleteTest"))
     }
 

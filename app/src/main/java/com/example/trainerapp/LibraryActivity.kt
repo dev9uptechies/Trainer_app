@@ -1,14 +1,23 @@
 package com.example.trainerapp
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Create_Event_Activity
 import com.example.EdiExerciseActivity
@@ -26,6 +35,7 @@ import com.example.TestActivity
 import com.example.ViewLessonActivity
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
+import com.example.trainerapp.ApiClass.CycleData
 import com.example.trainerapp.ApiClass.EventListData
 import com.example.trainerapp.ApiClass.ExcerciseData
 import com.example.trainerapp.ApiClass.ProgramListData
@@ -406,7 +416,6 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                                 libraryBinding.rcvLibrarylist.visibility = View.GONE
                             }
                         } else {
-                            // Handle case where response status is not successful or resource is null
                             Log.e("TAG", "No Programs found or invalid response")
                             libraryBinding.tvNodata.visibility = View.VISIBLE
                             libraryBinding.rcvLibrarylist.visibility = View.GONE
@@ -487,6 +496,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
 
     private fun GetExerciseList() {
         try {
+            exerciseListData.clear()
             apiInterface.GetExercise()?.enqueue(object : Callback<ExcerciseData?> {
                 override fun onResponse(
                     call: Call<ExcerciseData?>, response: Response<ExcerciseData?>
@@ -540,34 +550,244 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
     }
 
 
+    private fun showDialogs(id:Int?) {
+        libraryBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
+
+
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.alert_dialog_view)
+        dialog.setCancelable(false)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        val title = dialog.findViewById<AppCompatTextView>(R.id.tvTitle)
+        val subtitle = dialog.findViewById<AppCompatTextView>(R.id.tvSubtitle)
+        val cancel = dialog.findViewById<AppCompatButton>(R.id.btnCancel)
+        val apply = dialog.findViewById<AppCompatButton>(R.id.btnApply)
+
+        title.visibility = View.GONE
+        subtitle.text = "Want You Duplicate the Program? \n\n" +
+                "Are You Sure to duplicate the program?"
+        cancel.setOnClickListener {
+            libraryBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+
+            dialog.cancel()
+        }
+        apply.setOnClickListener {
+            dialog.dismiss()
+            libraryBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            try {
+                apiInterface.DuplicateProgram(id = id).enqueue(object : Callback<CycleData> {
+                    override fun onResponse(
+                        call: Call<CycleData>,
+                        response: Response<CycleData>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource = response.body()
+                            val Success = resource?.status
+                            val Message = resource?.message
+                            libraryBinding.progresBar.visibility = View.GONE
+                            Toast.makeText(
+                                this@LibraryActivity,
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+//                            finish(
+                            GetProgram()
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(this@LibraryActivity)
+                        } else {
+                            Toast.makeText(
+                                this@LibraryActivity,
+                                "" + response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<CycleData>, t: Throwable) {
+                        libraryBinding.progresBar.visibility = View.GONE
+                        Toast.makeText(
+                            this@LibraryActivity,
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                })
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        dialog.show()
+
+    }
+
+    private fun showDuplicateDialogLesson(id: Int?) {
+        libraryBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
+
+        val dialog = Dialog(this, R.style.Theme_Dialog).apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setCancelable(true)
+            setCanceledOnTouchOutside(false)
+            setContentView(R.layout.dialog_number_picker)
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            window?.setLayout((displayMetrics.widthPixels * 0.9f).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
+            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        dialog.show()
+        dialog.findViewById<CardView>(R.id.card_cancel).setOnClickListener {
+            libraryBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+            dialog.dismiss() }
+        dialog.findViewById<CardView>(R.id.card_apply).setOnClickListener {
+            dialog.dismiss()
+            libraryBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+            duplicateLesson(id)
+        }
+    }
+
+    private fun duplicateLesson(id: Int?) {
+        libraryBinding.progresBar.visibility = View.VISIBLE
+
+//        val iddd = intent.getIntExtra("id",0)
+
+        val idPart = MultipartBody.Part.createFormData("id", id.toString())
+        apiInterface.Duplicate_lession(idPart)?.enqueue(object : Callback<LessonData?> {
+            override fun onResponse(call: Call<LessonData?>, response: Response<LessonData?>) {
+                libraryBinding.progresBar.visibility = View.GONE
+                handleDuplicateLessonResponse(response)
+            }
+
+            override fun onFailure(call: Call<LessonData?>, t: Throwable) {
+                showToast(t.message)
+                libraryBinding.progresBar.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun showToast(message: String?) {
+        Toast.makeText(this, message ?: "An error occurred", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun handleDuplicateLessonResponse(response: Response<LessonData?>) {
+        if (response.code() == 200 && response.body()?.status == true) {
+            GetLessionList()
+//            finish()
+        } else {
+            showToast(response.message())
+        }
+    }
+
+    private fun showDuplicateDialogExercise(id:Int?) {
+        libraryBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
+
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.alert_dialog_view)
+        dialog.setCancelable(false)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        val title = dialog.findViewById<AppCompatTextView>(R.id.tvTitle)
+        val subtitle = dialog.findViewById<AppCompatTextView>(R.id.tvSubtitle)
+        val cancel = dialog.findViewById<AppCompatButton>(R.id.btnCancel)
+        val apply = dialog.findViewById<AppCompatButton>(R.id.btnApply)
+
+        title.visibility = View.GONE
+        subtitle.text = "Want You Duplicate the Exercise? \n\n" +
+                "Are You Sure to duplicate the Exercise?"
+        cancel.setOnClickListener {
+            libraryBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+
+            dialog.cancel()
+        }
+        apply.setOnClickListener {
+            dialog.dismiss()
+            libraryBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            try {
+                val idPart = MultipartBody.Part.createFormData("id", id.toString())
+                apiInterface.Duplicate_Exercise(id = idPart)?.enqueue(object : Callback<EventListData> {
+                    override fun onResponse(
+                        call: Call<EventListData>,
+                        response: Response<EventListData>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource = response.body()
+                            val Success = resource?.status
+                            val Message = resource?.message
+                            libraryBinding.progresBar.visibility = View.GONE
+                            Toast.makeText(
+                                this@LibraryActivity,
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+//                            finish(
+                            GetExerciseList()
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(this@LibraryActivity)
+                        } else {
+                            Toast.makeText(
+                                this@LibraryActivity,
+                                "" + response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<EventListData>, t: Throwable) {
+                        libraryBinding.progresBar.visibility = View.GONE
+                        Toast.makeText(
+                            this@LibraryActivity,
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                })
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        dialog.show()
+
+    }
+
+
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
+
         if (string.toString().contains("EditTest")) {
 
-            startActivity(Intent(this, TestActivity::class.java))
-
+            val intent = Intent(this, TestActivity::class.java)
+            intent.putExtra("TestLibraryId", type.toInt())
+            intent.putExtra("TestLibraryPosition", position)
+            startActivity(intent)
 
         }
 
         if (string.toString().contains("DeleteTest")) {
 
-
             val builder: AlertDialog.Builder
             builder = AlertDialog.Builder(this)
             builder.setMessage("Are you sure you want to delete Test?").setTitle("Delete")
                 .setCancelable(false).setPositiveButton("Yes") { dialog, id ->
-//                    libraryBinding.ProgressBar.visibility = View.VISIBLE
+//                    libraryBinding.progresBar.visibility = View.VISIBLE
                     apiInterface.DeleteTest(type.toInt())
                         ?.enqueue(object : Callback<RegisterData?> {
                             override fun onResponse(
                                 call: Call<RegisterData?>, response: Response<RegisterData?>
                             ) {
-//                                exerciseBinding.ProgressBar.visibility = View.GONE
+//                                libraryBinding.progresBar.visibility = View.GONE
                                 Log.d("TAG", response.code().toString() + "")
                                 val code = response.code()
                                 if (code == 200) {
                                     val resource: RegisterData? = response.body()
                                     val Message: String = resource!!.message!!
-//                                    exerciseBinding.ProgressBar.visibility = View.GONE
+//                                    libraryBinding.progresBar.visibility = View.GONE
                                     Toast.makeText(
                                         this@LibraryActivity, "" + Message, Toast.LENGTH_SHORT
                                     ).show()
@@ -592,7 +812,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                             }
 
                             override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-//                                exerciseBinding.ProgressBar.visibility = View.GONE
+//                                libraryBinding.progresBar.visibility = View.GONE
                                 Toast.makeText(
                                     this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT
                                 ).show()
@@ -607,6 +827,128 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
             val alert = builder.create()
             alert.setTitle("Delete")
             alert.show()
+        }
+
+        if (string.toString().contains("FavTest")) {
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            val id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.Favourite_Test(id)?.enqueue(object : Callback<RegisterData?> {
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: RegisterData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success) {
+                            libraryBinding.progresBar.visibility = View.GONE
+                            testData.clear()
+                            adapter_test.notifyDataSetChanged()
+                            GetTestList()
+//                        Toast.makeText(this@TestActivity, "" + Message, Toast.LENGTH_SHORT)
+//                            .show()
+//                        finish()
+//                        startActivity(intent)
+                        } else {
+                            libraryBinding.progresBar.visibility = View.GONE
+//                            Toast.makeText(this@LibraryActivity, "" + Message, Toast.LENGTH_SHORT)
+//                                .show()
+                        }
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(this@LibraryActivity)
+//                        val message = response.message()
+//                        Toast.makeText(
+//                            this@TestActivity,
+//                            "" + message,
+//                            Toast.LENGTH_SHORT
+//                        )
+//                            .show()
+//                        call.cancel()
+//                        startActivity(
+//                            Intent(
+//                                this@TestActivity,
+//                                SignInActivity::class.java
+//                            )
+//                        )
+//                        finish()
+                    } else {
+                        val message = response.message()
+                        Toast.makeText(this@LibraryActivity, "" + message, Toast.LENGTH_SHORT)
+                            .show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    libraryBinding.progresBar.visibility = View.GONE
+                    Toast.makeText(this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+        }
+
+        if (string.toString().contains("UnFavTest")) {
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            apiInterface.DeleteFavourite_Test(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            if (Success) {
+                                testData.clear()
+                                adapter_test.notifyDataSetChanged()
+                                libraryBinding.progresBar.visibility = View.GONE
+                                GetTestList()
+                            } else {
+                                libraryBinding.progresBar.visibility = View.GONE
+//                                Toast.makeText(this@LibraryActivity, "" + Message, Toast.LENGTH_SHORT).show()
+                                Log.d("SLSLSLLSSL", "onResponse: $Message")
+                            }
+                        } else if (response.code() == 403) {
+                            Utils.setUnAuthDialog(this@LibraryActivity)
+//                            val message = response.message()
+//                            Toast.makeText(
+//                                this@TestActivity,
+//                                "" + message,
+//                                Toast.LENGTH_SHORT
+//                            )
+//                                .show()
+//                            call.cancel()
+//                            startActivity(
+//                                Intent(
+//                                    this@TestActivity,
+//                                    SignInActivity::class.java
+//                                )
+//                            )
+//                            finish()
+                        } else {
+                            val message = response.message()
+                            Toast.makeText(this@LibraryActivity, "" + message, Toast.LENGTH_SHORT)
+                                .show()
+                            Log.d("SLSLSLLSSLDDDD", "onResponse: $message")
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        libraryBinding.progresBar.visibility = View.GONE
+                        Toast.makeText(this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT).show()
+                        Log.d("SLSLSLLSSLDDDDDDDDDDDD", "onFailure: ${t.message}")
+                        call.cancel()
+                    }
+                })
         }
 
         if (string.toString().contains("EditExercise")) {
@@ -625,22 +967,23 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
             builder = AlertDialog.Builder(this)
             builder.setMessage("Are you sure you want to delete Exercise?").setTitle("Delete")
                 .setCancelable(false).setPositiveButton("Yes") { dialog, id ->
-//                    libraryBinding.ProgressBar.visibility = View.VISIBLE
+                    libraryBinding.progresBar.visibility = View.VISIBLE
                     apiInterface.Deleteexercise(type.toInt())
                         ?.enqueue(object : Callback<RegisterData?> {
                             override fun onResponse(
                                 call: Call<RegisterData?>, response: Response<RegisterData?>
                             ) {
-//                                exerciseBinding.ProgressBar.visibility = View.GONE
+                                libraryBinding.progresBar.visibility = View.GONE
                                 Log.d("TAG", response.code().toString() + "")
                                 val code = response.code()
                                 if (code == 200) {
                                     val resource: RegisterData? = response.body()
                                     val Message: String = resource!!.message!!
-//                                    exerciseBinding.ProgressBar.visibility = View.GONE
+                                    libraryBinding.progresBar.visibility = View.GONE
                                     Toast.makeText(
                                         this@LibraryActivity, "" + Message, Toast.LENGTH_SHORT
                                     ).show()
+                                    GetExerciseList()
 //                                    initViews()
 //                                    finish()
 //                                    startActivity(
@@ -662,7 +1005,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                             }
 
                             override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-//                                exerciseBinding.ProgressBar.visibility = View.GONE
+                                libraryBinding.progresBar.visibility = View.GONE
                                 Toast.makeText(
                                     this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT
                                 ).show()
@@ -679,87 +1022,137 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
             alert.show()
         }
 
-        if (string.toString().contains("EditEvent")) {
+        if (string.toString().contains("DuplicateExercise")) {
+            Log.d("KDKDKDK", "onItemClicked: $type")
+            val id = type
+            showDuplicateDialogExercise(id.toInt())
+        }
 
-            Log.e(
-                "LALALALALALA",
-                "onItemClicked: " + position + "   " + type + "     " + view.id + "    " + string
-            )
+        if (string.toString().contains("FavExercise")) {
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            val id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.Favourite_Exercise(id)?.enqueue(object : Callback<RegisterData?> {
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+                    Log.d("TAG", response.code().toString() + "")
+                    libraryBinding.progresBar.visibility = View.GONE
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: RegisterData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success) {
+                            exerciseListData.clear()
+                            GetExerciseList()
+                            adapter_exercise.notifyDataSetChanged()
 
-//            startActivity(Intent(this, Create_Event_Activity::class.java))
-            val intent = Intent(this, Create_Event_Activity::class.java)
-            intent.putExtra("position", position)
-            intent.putExtra("type", type)
+                            libraryBinding.progresBar.visibility = View.GONE
+//                            Toast.makeText(this@LibraryActivity, "Added Successfully", Toast.LENGTH_SHORT).show()
+                        } else {
+                            libraryBinding.progresBar.visibility = View.GONE
+                            Toast.makeText(this@LibraryActivity, "" + Message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(this@LibraryActivity)
+                    } else {
+                        Toast.makeText(
+                            this@LibraryActivity,
+                            "" + response.message(),
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    libraryBinding.progresBar.visibility = View.GONE
+                    Toast.makeText(this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+        }
+
+        if (string.toString().contains("UnFavExercise")) {
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            apiInterface.DeleteFavourite_Exercise(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        libraryBinding.progresBar.visibility = View.GONE
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            if (Success) {
+                                exerciseListData.clear()
+                                GetExerciseList()
+                                libraryBinding.progresBar.visibility = View.GONE
+                                adapter_exercise.notifyDataSetChanged()
+
+//                                Toast.makeText(
+//                                    this@LibraryActivity,
+//                                    "Remove Successfully",
+//                                    Toast.LENGTH_SHORT
+//                                )
+//                                    .show()
+                            } else {
+                                libraryBinding.progresBar.visibility = View.GONE
+                                Toast.makeText(
+                                    this@LibraryActivity,
+                                    "" + Message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(this@LibraryActivity)
+                        } else {
+                            Toast.makeText(
+                                this@LibraryActivity,
+                                "" + response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        libraryBinding.progresBar.visibility = View.GONE
+                        Toast.makeText(this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT)
+                            .show()
+                        call.cancel()
+                    }
+                })
+        }
+
+        if (string.toString().contains("ViewProgram")) {
+
+            val intent = Intent(this,ViewProgramActivity::class.java)
+            intent.putExtra("ProgramId",type.toInt())
             startActivity(intent)
-
         }
 
-        if (string.toString().contains("DeleteEvent")) {
+        if (string.toString().contains("ViewExercise")) {
 
-            val builder: AlertDialog.Builder
-            builder = AlertDialog.Builder(this)
-            builder.setMessage("Are you sure you want to delete Event?").setTitle("Delete")
-                .setCancelable(false).setPositiveButton("Yes") { dialog, id ->
-//                    libraryBinding.ProgressBar.visibility = View.VISIBLE
-                    apiInterface.DeleteEvent(type.toInt())
-                        ?.enqueue(object : Callback<RegisterData?> {
-                            override fun onResponse(
-                                call: Call<RegisterData?>, response: Response<RegisterData?>
-                            ) {
-//                                exerciseBinding.ProgressBar.visibility = View.GONE
-                                Log.d("TAG", response.code().toString() + "")
-                                val code = response.code()
-                                if (code == 200) {
-                                    val resource: RegisterData? = response.body()
-                                    val Message: String = resource!!.message!!
-//                                    exerciseBinding.ProgressBar.visibility = View.GONE
-                                    Toast.makeText(
-                                        this@LibraryActivity, "" + Message, Toast.LENGTH_SHORT
-                                    ).show()
-//                                    initViews()
-//                                    finish()
-//                                    startActivity(
-//                                        Intent(
-//                                            this@ExerciseActivity,
-//                                            ExerciseActivity::class.java
-//                                        )
-//                                    )
-                                } else if (code == 403) {
-                                    Utils.setUnAuthDialog(this@LibraryActivity)
-                                } else {
-                                    Toast.makeText(
-                                        this@LibraryActivity,
-                                        "" + response.message(),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    call.cancel()
-                                }
-                            }
-
-                            override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-//                                exerciseBinding.ProgressBar.visibility = View.GONE
-                                Toast.makeText(
-                                    this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT
-                                ).show()
-                                call.cancel()
-                            }
-                        })
-                }.setNegativeButton(
-                    "No"
-                ) { dialog, id ->
-                    dialog.cancel()
-                }
-            val alert = builder.create()
-            alert.setTitle("Delete")
-            alert.show()
+            val intent = Intent(this,View_Exercise_Activity::class.java)
+            intent.putExtra("ExerciseId",type.toInt())
+            startActivity(intent)
         }
 
-        if (string.toString().contains("EditProgram")) {
-
-//            startActivity(Intent(this, ViewProgramActivity::class.java))
-        }
         if (string.toString().contains("CopyProgram")) {
-            Toast.makeText(this@LibraryActivity, "Copy Program!", Toast.LENGTH_SHORT)
+            Log.d("KDKDKDK", "onItemClicked: $type")
+            val id = type
+            showDialogs(id.toInt())
         }
 
         if (string.toString().contains("DeleteProgram")) {
@@ -768,22 +1161,234 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
             builder = AlertDialog.Builder(this)
             builder.setMessage("Are you sure you want to delete Program?").setTitle("Delete")
                 .setCancelable(false).setPositiveButton("Yes") { dialog, id ->
-//                    libraryBinding.ProgressBar.visibility = View.VISIBLE
+                    libraryBinding.progresBar.visibility = View.VISIBLE
                     apiInterface.DeleteProgram(type.toInt())
                         ?.enqueue(object : Callback<RegisterData?> {
                             override fun onResponse(
                                 call: Call<RegisterData?>, response: Response<RegisterData?>
                             ) {
-//                                exerciseBinding.ProgressBar.visibility = View.GONE
+                                libraryBinding.progresBar.visibility = View.GONE
                                 Log.d("TAG", response.code().toString() + "")
                                 val code = response.code()
                                 if (code == 200) {
                                     val resource: RegisterData? = response.body()
                                     val Message: String = resource!!.message!!
-//                                    exerciseBinding.ProgressBar.visibility = View.GONE
+                                    libraryBinding.progresBar.visibility = View.GONE
                                     Toast.makeText(
                                         this@LibraryActivity, "" + Message, Toast.LENGTH_SHORT
                                     ).show()
+//                                    initViews()
+                                    GetProgram()
+//                                    finish()
+//                                    startActivity(
+//                                        Intent(
+//                                            this@ExerciseActivity,
+//                                            ExerciseActivity::class.java
+//                                        )
+//                                    )
+                                } else if (code == 403) {
+                                    Utils.setUnAuthDialog(this@LibraryActivity)
+                                } else {
+                                    Toast.makeText(
+                                        this@LibraryActivity,
+                                        "" + response.message(),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    call.cancel()
+                                }
+                            }
+
+                            override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                                libraryBinding.progresBar.visibility = View.GONE
+                                Toast.makeText(
+                                    this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT
+                                ).show()
+                                call.cancel()
+                            }
+                        })
+                }.setNegativeButton(
+                    "No"
+                ) { dialog, id ->
+                    dialog.cancel()
+                }
+            val alert = builder.create()
+            alert.setTitle("Delete")
+            alert.show()
+        }
+
+        if (string.toString().contains("FavProgram")) {
+            Log.d("FavProgram", "onItemClicked: OKOK")
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            val id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.Favourite_Program(id)?.enqueue(object : Callback<RegisterData?> {
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: RegisterData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success) {
+                            libraryBinding.progresBar.visibility = View.GONE
+                            GetProgram()
+//                        Toast.makeText(this@New_Program_Activity, "" + Message, Toast.LENGTH_SHORT)
+//                            .show()
+//                        finish()
+//                        startActivity(intent)
+                        } else {
+                            libraryBinding.progresBar.visibility = View.GONE
+//                            Toast.makeText(
+//                                this@LibraryActivity,
+//                                "" + Message,
+//                                Toast.LENGTH_SHORT
+//                            )
+//                                .show()
+                        }
+
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(this@LibraryActivity)
+//                        val message = response.message()
+//                        Toast.makeText(
+//                            this@New_Program_Activity,
+//                            "" + message,
+//                            Toast.LENGTH_SHORT
+//                        )
+//                            .show()
+//                        call.cancel()
+//                        startActivity(
+//                            Intent(
+//                                this@New_Program_Activity,
+//                                SignInActivity::class.java
+//                            )
+//                        )
+//                        finish()
+                    } else {
+                        val message = response.message()
+                        Toast.makeText(this@LibraryActivity, "" + message, Toast.LENGTH_SHORT)
+                            .show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    libraryBinding.progresBar.visibility = View.GONE
+                    Toast.makeText(this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+
+        }
+
+        if (string.toString().contains("UnFavProgram")) {
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            val id: MultipartBody.Part = MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.DeleteFavourite_Program(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            if (Success) {
+                                libraryBinding.progresBar.visibility = View.GONE
+                                GetProgram()
+//                            Toast.makeText(
+//                                this@New_Program_Activity,
+//                                "" + Message,
+//                                Toast.LENGTH_SHORT
+//                            )
+//                                .show()
+//                            finish()
+//                            startActivity(intent)
+                            } else {
+                                libraryBinding.progresBar.visibility = View.GONE
+                                Toast.makeText(
+                                    this@LibraryActivity,
+                                    "" + Message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+
+                                Log.d("KDKDKKDKDK", "onResponse: $Message")
+                            }
+                        } else if (response.code() == 403) {
+                            Utils.setUnAuthDialog(this@LibraryActivity)
+//                            val message = response.message()
+//                            Toast.makeText(
+//                                this@New_Program_Activity,
+//                                "" + message,
+//                                Toast.LENGTH_SHORT
+//                            )
+//                                .show()
+//                            call.cancel()
+//                            startActivity(
+//                                Intent(
+//                                    this@New_Program_Activity,
+//                                    SignInActivity::class.java
+//                                )
+//                            )
+//                            finish()
+                        } else {
+                            val message = response.message()
+                            Toast.makeText(
+                                this@LibraryActivity,
+                                "" + message,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            call.cancel()
+                        }
+
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        libraryBinding.progresBar.visibility = View.GONE
+//                        Toast.makeText(
+//                            this@LibraryActivity,
+//                            "" + t.message,
+//                            Toast.LENGTH_SHORT
+//                        )
+//                            .show()
+                        call.cancel()
+                    }
+                })
+
+        }
+
+        if (string.toString().contains("DeleteLession")) {
+
+            val builder: AlertDialog.Builder
+            builder = AlertDialog.Builder(this)
+            builder.setMessage("Are you sure you want to delete Lession?").setTitle("Delete")
+                .setCancelable(false).setPositiveButton("Yes") { dialog, id ->
+                    libraryBinding.progresBar.visibility = View.VISIBLE
+                    apiInterface.DeleteLession(type.toInt())
+                        ?.enqueue(object : Callback<RegisterData?> {
+                            override fun onResponse(
+                                call: Call<RegisterData?>, response: Response<RegisterData?>
+                            ) {
+                                libraryBinding.progresBar.visibility = View.GONE
+                                Log.d("TAG", response.code().toString() + "")
+                                val code = response.code()
+                                if (code == 200) {
+                                    val resource: RegisterData? = response.body()
+                                    val Message: String = resource!!.message!!
+                                    libraryBinding.progresBar.visibility = View.GONE
+                                    Toast.makeText(
+                                        this@LibraryActivity, "" + Message, Toast.LENGTH_SHORT
+                                    ).show()
+                                    GetLessionList()
+
 //                                    initViews()
 //                                    finish()
 //                                    startActivity(
@@ -805,7 +1410,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                             }
 
                             override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-//                                exerciseBinding.ProgressBar.visibility = View.GONE
+                                libraryBinding.progresBar.visibility = View.GONE
                                 Toast.makeText(
                                     this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT
                                 ).show()
@@ -824,35 +1429,281 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
 
         if (string.toString().contains("EditLession")) {
 
-            val intent = Intent(this, ViewLessonActivity::class.java)
-            intent.putExtra("position", position)
+            val intent = Intent(this, LessonActivity::class.java)
+            intent.putExtra("LessonLibraryId", type.toInt())
+            intent.putExtra("LessonLibraryPosition", position)
             startActivity(intent)
-
 
         }
 
-        if (string.toString().contains("DeleteLession")) {
+        if (string.toString().contains("DuplicateLesson")) {
+            Log.d("KDKDKDK", "onItemClicked: $type")
+            val id = type
+            showDuplicateDialogLesson(id.toInt())
+        }
+
+        if (string.toString().contains("ViewLesson")) {
+
+            val intent = Intent(this,ViewLessonActivity::class.java)
+            intent.putExtra("LessonLibraryId",type.toInt())
+            startActivity(intent)
+        }
+
+        if (string.toString().contains("FavLesson")) {
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            val id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.Favourite_lession(id)?.enqueue(object : Callback<RegisterData?> {
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+                    libraryBinding.progresBar.visibility = View.GONE
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: RegisterData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success) {
+                            libraryBinding.progresBar.visibility = View.GONE
+                            lessonData.clear()
+                            adapter_lesson.notifyDataSetChanged()
+                            GetLessionList()
+                        } else {
+                            libraryBinding.progresBar.visibility = View.GONE
+                            Log.d("KDKDKDKK", "onResponse: $Message")
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(this@LibraryActivity)
+                    } else {
+                        libraryBinding.progresBar.visibility = View.GONE
+                        Toast.makeText(
+                            this@LibraryActivity,
+                            "el" + response.message(),
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    libraryBinding.progresBar.visibility = View.GONE
+                    Toast.makeText(this@LibraryActivity, "fa" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+        }
+
+        if (string.toString().contains("UnFavLesson")) {
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            val id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.DeleteFavourite_lession(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        libraryBinding.progresBar.visibility = View.GONE
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            if (Success) {
+                                libraryBinding.progresBar.visibility = View.GONE
+                                lessonData.clear()
+                                adapter_lesson.notifyDataSetChanged()
+                                GetLessionList()
+                            } else {
+                                libraryBinding.progresBar.visibility = View.GONE
+                                Toast.makeText(
+                                    this@LibraryActivity,
+                                    "es" + Message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(this@LibraryActivity)
+                        } else {
+                            Toast.makeText(
+                                this@LibraryActivity,
+                                "d" + response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        libraryBinding.progresBar.visibility = View.GONE
+                        Toast.makeText(this@LibraryActivity, "s" + t.message, Toast.LENGTH_SHORT)
+                            .show()
+                        call.cancel()
+                    }
+                })
+        }
+
+        if (string.toString().contains("EditLesson")) {
+
+            Log.e(
+                "LALALALALALA",
+                "onItemClicked: " + position + "   " + type + "     " + view.id + "    " + string
+            )
+
+            val intent = Intent(this, LessonActivity::class.java)
+            intent.putExtra("LessonLibraryPosition", position)
+            intent.putExtra("LessonLibraryId", type.toInt())
+            startActivity(intent)
+
+        }
+
+        if (string.toString().contains("FavEvent")) {
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            val id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.Favourite_Event(id)?.enqueue(object : Callback<RegisterData?> {
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: RegisterData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success) {
+                            eventListData.clear()
+                            adapter_event.notifyDataSetChanged()
+                            libraryBinding.progresBar.visibility = View.GONE
+                            getEvent()
+
+                        } else {
+                            libraryBinding.progresBar.visibility = View.GONE
+
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(this@LibraryActivity)
+                    } else {
+                        val Message = response.message()
+                        Toast.makeText(
+                            this@LibraryActivity,
+                            "" + Message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    libraryBinding.progresBar.visibility = View.GONE
+                    Toast.makeText(this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+        }
+
+        if (string.toString().contains("UnFavEvent")) {
+            libraryBinding.progresBar.visibility = View.VISIBLE
+            apiInterface.DeleteFavourite_Event(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            if (Success) {
+                                eventListData.clear()
+                                adapter_event.notifyDataSetChanged()
+                                getEvent()
+                                libraryBinding.progresBar.visibility = View.GONE
+
+                            } else {
+                                libraryBinding.progresBar.visibility = View.GONE
+                                Toast.makeText(
+                                    this@LibraryActivity,
+                                    "" + Message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(this@LibraryActivity)
+                        } else {
+                            val Message = response.message()
+                            Toast.makeText(
+                                this@LibraryActivity,
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        libraryBinding.progresBar.visibility = View.GONE
+                        Toast.makeText(
+                            this@LibraryActivity,
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                })
+        }
+
+        if (string.toString().contains("EditEvent")) {
+
+            Log.e(
+                "LALALALALALA",
+                "onItemClicked: " + position + "   " + type + "     " + view.id + "    " + string
+            )
+
+//            startActivity(Intent(this, Create_Event_Activity::class.java))
+            Log.d("+++++", "onItemClicked: $position    ${type.toInt()}")
+            val intent = Intent(this, Create_Event_Activity::class.java)
+            intent.putExtra("EventLibraryPosition", position)
+            intent.putExtra("EventLibraryId", type.toInt())
+            startActivity(intent)
+
+        }
+
+        if (string.toString().contains("DeleteEvent")) {
 
             val builder: AlertDialog.Builder
             builder = AlertDialog.Builder(this)
-            builder.setMessage("Are you sure you want to delete Lession?").setTitle("Delete")
+            builder.setMessage("Are you sure you want to delete Event?").setTitle("Delete")
                 .setCancelable(false).setPositiveButton("Yes") { dialog, id ->
-//                    libraryBinding.ProgressBar.visibility = View.VISIBLE
-                    apiInterface.DeleteLession(type.toInt())
+                    libraryBinding.progresBar.visibility = View.VISIBLE
+                    apiInterface.DeleteEvent(type.toInt())
                         ?.enqueue(object : Callback<RegisterData?> {
                             override fun onResponse(
                                 call: Call<RegisterData?>, response: Response<RegisterData?>
                             ) {
-//                                exerciseBinding.ProgressBar.visibility = View.GONE
+                                libraryBinding.progresBar.visibility = View.GONE
                                 Log.d("TAG", response.code().toString() + "")
                                 val code = response.code()
                                 if (code == 200) {
                                     val resource: RegisterData? = response.body()
                                     val Message: String = resource!!.message!!
-//                                    exerciseBinding.ProgressBar.visibility = View.GONE
+                                    libraryBinding.progresBar.visibility = View.GONE
                                     Toast.makeText(
                                         this@LibraryActivity, "" + Message, Toast.LENGTH_SHORT
                                     ).show()
+                                    getEvent()
 //                                    initViews()
 //                                    finish()
 //                                    startActivity(
@@ -874,7 +1725,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                             }
 
                             override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-//                                exerciseBinding.ProgressBar.visibility = View.GONE
+                                libraryBinding.progresBar.visibility = View.GONE
                                 Toast.makeText(
                                     this@LibraryActivity, "" + t.message, Toast.LENGTH_SHORT
                                 ).show()
@@ -890,7 +1741,6 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
             alert.setTitle("Delete")
             alert.show()
         }
-
 
     }
 }

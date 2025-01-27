@@ -732,7 +732,7 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
     }
 
     private fun areAllFieldsFilled(): Boolean {
-        return !(editExerciseBinding.edtName.text.isNullOrEmpty() || editExerciseBinding.edtNotes.text.isNullOrEmpty() ||
+        return !(editExerciseBinding.edtName.text.isNullOrEmpty() ||
                 editExerciseBinding.edtSection.text.toString() == "Select Section" ||
                 editExerciseBinding.edtGoal.text.toString() == "Select Goal" ||
                 editExerciseBinding.edtType.text.toString() == "Select Type" ||
@@ -1084,23 +1084,23 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
             }
         )
 
-        editExerciseBinding.edtNotes.addTextChangedListener(
-            object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    updateUI(editExerciseBinding.nextCard)
-                }
-
-                override fun afterTextChanged(s: Editable?) {}
-            }
-        )
+//        editExerciseBinding.edtNotes.addTextChangedListener(
+//            object : TextWatcher {
+//                override fun beforeTextChanged(
+//                    s: CharSequence?,
+//                    start: Int,
+//                    count: Int,
+//                    after: Int
+//                ) {
+//                }
+//
+//                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                    updateUI(editExerciseBinding.nextCard)
+//                }
+//
+//                override fun afterTextChanged(s: Editable?) {}
+//            }
+//        )
     }
 
     private fun videoDialog() {
@@ -1611,14 +1611,14 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
             } else {
                 editExerciseBinding.goalError.visibility = View.GONE
             }
-
-            if (notes == "") {
-                editExerciseBinding.notesError.visibility = View.VISIBLE
-                editExerciseBinding.notesError.text = "Please Enter Notes"
-                return false
-            } else {
-                editExerciseBinding.notesError.visibility = View.GONE
-            }
+//
+//            if (notes == "") {
+//                editExerciseBinding.notesError.visibility = View.VISIBLE
+//                editExerciseBinding.notesError.text = "Please Enter Notes"
+//                return false
+//            } else {
+//                editExerciseBinding.notesError.visibility = View.GONE
+//            }
 
             return true
         }

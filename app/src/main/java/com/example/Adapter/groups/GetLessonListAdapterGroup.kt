@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.LessonActivity
 import com.example.model.newClass.lesson.Lesson
 import com.example.trainerapp.R
+import com.example.trainerapp.program_section.ViewProgramActivity
+import com.zerobranch.layout.SwipeLayout
 
 class GetLessonListAdapterGroup(
     private var spList: List<Lesson.LessonDatabase>,
@@ -55,7 +57,18 @@ class GetLessonListAdapterGroup(
             notifyItemChanged(position)
         }
 
+        holder.cardView.setOnClickListener {
+            if (selectedItems.contains(position)) {
+                selectedItems.remove(position)
+            } else {
+                selectedItems.add(position)
+            }
+            notifyItemChanged(position)
+
+        }
+
         holder.editImage.setOnClickListener {
+            holder.swipe.close()
 
             val lessonNames = arrayListOf<String>()
             movie.lesson_goal?.forEach { athlete ->
@@ -111,8 +124,11 @@ class GetLessonListAdapterGroup(
         var click: LinearLayout = view.findViewById(R.id.click)
         var tvTime1: TextView = view.findViewById(R.id.tv_date)
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox)
-        var editImage: ImageView = view.findViewById(R.id.img_edit)
+        var editImage: ImageView = view.findViewById(R.id.img_edit2)
         var favimage: ImageView = view.findViewById(R.id.img_edit)
+        val swipe = view.findViewById<SwipeLayout>(R.id.swipe_layout)
         var card: CardView = view.findViewById(R.id.card)
+        var cardView: CardView = view.findViewById<View>(R.id.rela_dragged) as CardView
+
     }
 }
