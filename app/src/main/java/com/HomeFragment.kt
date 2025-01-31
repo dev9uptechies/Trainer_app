@@ -141,6 +141,10 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         getInstraction()
         GetNews()
         setUpCalendar()
+        val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+        val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
+        Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
+        homeFragmentBinding.tvDate.text = formattedMonthYear
 
         val receivedIdInt = receivedIds.toIntOrNull()
         Log.d("QOQOQOQOQOOQOQO", "onCreateView: $receivedIds")
@@ -207,12 +211,9 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     private fun fetchDayData(selectedDate: LocalDate) {
         try {
             val formattedDate = selectionFormatter.format(selectedDate)
-            Log.d(
-                "CalendarFragment",
-                "Fetching data for date: $formattedDate with ID: $receivedIds"
-            )
+            Log.d("CalendarFragment", "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids")
 
-            apiInterface.GetSelectedDays(formattedDate, receivedGroup_Ids)!!
+            apiInterface.GetSelectedDaysAthlete(formattedDate, receivedGroup_Ids)!!
                 .enqueue(object : Callback<SelectedDaysModel> {
                     override fun onResponse(
                         call: Call<SelectedDaysModel>,
@@ -231,6 +232,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                                 initTestRecyclerView(data.tests)
                                 initLessonRecyclerView(data.lessons)
                                 initEventRecyclerView(data.events)
+
+                                Log.d("MDKMKDMKDKDKK", "onResponse: $data")
 
                                 if (data.tests.isNotEmpty() || data.lessons.isNotEmpty() || data.events.isNotEmpty()) {
 
@@ -447,8 +450,10 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 //                // Set the TextView with the formatted month and year
 //                homeFragmentBinding.tvDate.text = formattedMonth
 
-            val formattedMonth = DateTimeFormatter.ofPattern("MMM yyyy").format(today.yearMonth)
-            homeFragmentBinding.tvDate.text = formattedMonth
+            val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+            val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
+            Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
+            homeFragmentBinding.tvDate.text = formattedMonthYear
 
             // Optionally, apply custom formatting logic
             if (month.year == today.year) {
@@ -711,6 +716,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
         val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
         receivedIds = sharedPreferences.getString("id", "default_value") ?: ""
+
+        receivedGroup_Ids = sharedPreferences.getString("group_id", "default_value") ?: ""
 
         Log.d("CalenderFragment", "Received ID from SharedPreferences: $receivedIds")
     }

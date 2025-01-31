@@ -2,7 +2,7 @@ package com.example.trainerapp
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -21,6 +21,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Adapter.AthleteResultTestAdapter
+import com.example.TestActivity
+import com.example.model.newClass.test.ApiResponse
+import com.example.model.newClass.test.TestRequest
 import com.example.model.newClass.test.TestResultRequest
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
@@ -47,7 +50,7 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
-class viewTestActivity : AppCompatActivity(){
+class viewTestActivity : AppCompatActivity() {
 
     lateinit var viewTestBinding: ActivityViewTestBinding
 
@@ -55,9 +58,8 @@ class viewTestActivity : AppCompatActivity(){
     lateinit var apiClient: APIClient
     lateinit var preferenceManager: PreferencesManager
     lateinit var adapter: AthleteResultTestAdapter
-      var athleteIds: List<String>? = null
-      var athleteResult: List<String>? = null
-
+    var athleteIds: List<String>? = null
+    var athleteResult: List<String>? = null
 
     // calender
     @RequiresApi(Build.VERSION_CODES.O)
@@ -73,9 +75,7 @@ class viewTestActivity : AppCompatActivity(){
     lateinit var TestList: ArrayList<TestListData.testData>
 
     //ID Get
-
-    var testId:Int ?= null
-
+    var testId: Int? = null
 
 
     @SuppressLint("NewApi")
@@ -88,6 +88,9 @@ class viewTestActivity : AppCompatActivity(){
         setUpCalendar()
         ButtonCLick()
         loadData()
+
+
+
     }
 
     private fun initView() {
@@ -97,7 +100,7 @@ class viewTestActivity : AppCompatActivity(){
         TestList = ArrayList()
 
 
-        testId = intent.getIntExtra("TestId",0)
+        testId = intent.getIntExtra("TestId", 0)
 
         Log.d("KSSKKSKSK", "initView: $testId")
 
@@ -108,7 +111,11 @@ class viewTestActivity : AppCompatActivity(){
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun ButtonCLick() {
+
+        viewTestBinding.exSevenCalendar.setOnTouchListener { _, _ -> true } // This disables touch events
+
         viewTestBinding.back.setOnClickListener { finish() }
 
         viewTestBinding.nextCard.setOnClickListener {
@@ -116,194 +123,280 @@ class viewTestActivity : AppCompatActivity(){
         }
 
         viewTestBinding.cbRepeat.setOnClickListener {
-            if (viewTestBinding.cbRepeat.isChecked) {
-                showDateRangePickerDialog { start ->
-                    // After the dialog is opened, check the checkbox
-                    viewTestBinding.cbRepeat.isChecked = true
-                }
+            showDateRangePickerDialog { start ->
+                viewTestBinding.cbRepeat.isChecked = true
             }
+        }
+
+//        viewTestBinding.exSevenCalendar!!.monthScrollListener = {
+//            updateMonthYearText()
+//        }
+
+
+
+        viewTestBinding.right.setOnClickListener {
+            val currentDate = viewTestBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+            val nextWeekDate = currentDate.plusWeeks(1)
+            val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
+            Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
+            viewTestBinding.month.text = formattedMonthYear
+
+            viewTestBinding.exSevenCalendar!!.smoothScrollToDate(nextWeekDate)
+
+        }
+
+        viewTestBinding.left.setOnClickListener {
+            val currentDate = viewTestBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+            val previousWeekDate = currentDate.minusWeeks(1)
+            val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
+            Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
+            viewTestBinding.month.text = formattedMonthYear
+
+            viewTestBinding.exSevenCalendar!!.smoothScrollToDate(previousWeekDate)
         }
 
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun updateMonthYearText() {
+        val firstVisibleMonth = viewTestBinding.exSevenCalendar!!.findFirstVisibleMonth()?.yearMonth ?: YearMonth.now()
+        val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(firstVisibleMonth)
+        viewTestBinding.month.text = formattedMonthYear
+    }
 
-      fun showDateRangePickerDialog(
-          callback: (start: Long) -> Unit
-      ) {
-          val dialog = Dialog(this)
-          dialog.setContentView(R.layout.date_range_picker_dialog)
+    fun showDateRangePickerDialog(
+        callback: (start: Long) -> Unit
+    ) {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.date_range_picker_dialog)
 
-          dialog.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#80000000")))
-          dialog.window?.setLayout(
-              ViewGroup.LayoutParams.MATCH_PARENT,
-              ViewGroup.LayoutParams.WRAP_CONTENT
-          )
-          dialog.window?.setGravity(Gravity.CENTER)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#80000000")))
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        dialog.window?.setGravity(Gravity.CENTER)
 
-          val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
-          val textView = dialog.findViewById<TextView>(R.id.textView)
-          val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
-          val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
+        val calendarView = dialog.findViewById<MaterialCalendarView>(R.id.calendarView)
+        val textView = dialog.findViewById<TextView>(R.id.textView)
+        val confirmButton = dialog.findViewById<Button>(R.id.confirmButton)
+        val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
 
-          calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE)
+        calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE)
 
-          cancelButton.setOnClickListener { dialog.dismiss() }
+        cancelButton.setOnClickListener { dialog.dismiss() }
 
-          calendarView.state().edit()
-              .setCalendarDisplayMode(CalendarMode.MONTHS)
-              .commit()
+        calendarView.state().edit()
+            .setCalendarDisplayMode(CalendarMode.MONTHS)
+            .commit()
 
-          val today = com.prolificinteractive.materialcalendarview.CalendarDay.today()
+        val today = com.prolificinteractive.materialcalendarview.CalendarDay.today()
 
-          // Decorator to disable past dates
-          calendarView.addDecorator(object : DayViewDecorator {
-              override fun shouldDecorate(day: com.prolificinteractive.materialcalendarview.CalendarDay?): Boolean {
-                  return day != null && day.isBefore(today)
-              }
+        // Decorator to disable past dates
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: com.prolificinteractive.materialcalendarview.CalendarDay?): Boolean {
+                return day != null && day.isBefore(today)
+            }
 
-              override fun decorate(view: DayViewFacade?) {
-                  view?.setDaysDisabled(true) // Disable past dates
-              }
-          })
+            override fun decorate(view: DayViewFacade?) {
+                view?.setDaysDisabled(true) // Disable past dates
+            }
+        })
 
-          // Decorator to highlight today's date
-          calendarView.addDecorator(object : DayViewDecorator {
-              override fun shouldDecorate(day: com.prolificinteractive.materialcalendarview.CalendarDay?): Boolean {
-                  return day == today
-              }
+        // Decorator to highlight today's date
+        calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: com.prolificinteractive.materialcalendarview.CalendarDay?): Boolean {
+                return day == today
+            }
 
-              override fun decorate(view: DayViewFacade?) {
-                  view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today
-                  ContextCompat.getDrawable(this@viewTestActivity, R.drawable.todays_date_selecte)?.let {
-                      view?.setBackgroundDrawable(it)
-                  }
-              }
-          })
+            override fun decorate(view: DayViewFacade?) {
+                view?.addSpan(ForegroundColorSpan(Color.WHITE)) // Text color for today
+                ContextCompat.getDrawable(this@viewTestActivity, R.drawable.todays_date_selecte)
+                    ?.let {
+                        view?.setBackgroundDrawable(it)
+                    }
+            }
+        })
 
-          confirmButton.setOnClickListener {
-              val selectedDates = calendarView.selectedDates
+        confirmButton.setOnClickListener {
+            val selectedDates = calendarView.selectedDates
 
-              if (selectedDates.isNotEmpty()) {
-                  val selectedDate = selectedDates.first().calendar
+            if (selectedDates.isNotEmpty()) {
+                val selectedDate = selectedDates.first().calendar
 
-                  selectedDate.set(Calendar.HOUR_OF_DAY, 0)
-                  selectedDate.set(Calendar.MINUTE, 0)
-                  selectedDate.set(Calendar.SECOND, 0)
-                  selectedDate.set(Calendar.MILLISECOND, 0)
+                selectedDate.set(Calendar.HOUR_OF_DAY, 0)
+                selectedDate.set(Calendar.MINUTE, 0)
+                selectedDate.set(Calendar.SECOND, 0)
+                selectedDate.set(Calendar.MILLISECOND, 0)
 
-                  callback(selectedDate.timeInMillis)
+                val selectedDates = selectedDates.first()
+                val formattedDate = String.format(
+                    "%04d-%02d-%02d",
+                    selectedDates.year,
+                    selectedDates.month + 1,
+                    selectedDates.day
+                )
 
-                  dialog.dismiss()
-              } else {
-                  textView.text = "Please select a date"
-                  textView.setTextColor(Color.RED)
-              }
-          }
+                sendTestRequest(formattedDate)  // Call API with formatted date
 
-          dialog.show()
-      }
+                callback(selectedDate.timeInMillis)
 
-      private fun submitTestResults() {
-          // Collect the results from the adapter
-          val results = adapter.getTestResults()
+                dialog.dismiss()
+            } else {
+                textView.text = "Please select a date"
+                textView.setTextColor(Color.RED)
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun submitTestResults() {
+        // Collect the results from the adapter
+        val results = adapter.getTestResults()
 
 
-          Log.d("KDKDKKD", "submitTestResults: $results")
+        Log.d("KDKDKKD", "submitTestResults: $results")
 
-          val AthleteResult = if(results.isNullOrEmpty()) athleteResult else results
+        val AthleteResult = if (results.isNullOrEmpty()) athleteResult else results
 
 
-          Log.d("SLSSLSLLSLSL", "submitTestResults: $AthleteResult")
+        Log.d("SLSSLSLLSLSL", "submitTestResults: $AthleteResult")
 
-          val request = TestResultRequest(
-              testId = testId!!.toInt(),
-              athleteIds = athleteIds!!,
-              results = AthleteResult!! // Send the results from the adapter
-          )
+        val request = TestResultRequest(
+            testId = testId!!.toInt(),
+            athleteIds = athleteIds!!,
+            results = AthleteResult!!
+        )
 
-          apiInterface.TestResults(request).enqueue(object : Callback<Any> {
-              override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                  if (response.isSuccessful) {
-                      // Handle success response
-                      response.body()?.let { data ->
-                          Log.d("API_SUCCESS", "Response: $data")
-                      }
-                  } else {
-                      // Handle error response
-                      Log.e("API_ERROR", "Error: ${response.errorBody()?.string()}")
-                  }
-              }
+        apiInterface.TestResults(request).enqueue(object : Callback<Any> {
+            override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { data ->
+                        Log.d("API_SUCCESS", "Response: $data")
+                        finish()
+                    }
+                } else {
+                    Log.e("API_ERROR", "Error: ${response.errorBody()?.string()}")
+                }
+            }
 
-              override fun onFailure(call: Call<Any>, t: Throwable) {
-                  // Handle failure
-                  Log.e("API_FAILURE", "Error: ${t.message}")
-              }
-          })
-      }
+            override fun onFailure(call: Call<Any>, t: Throwable) {
+                // Handle failure
+                Log.e("API_FAILURE", "Error: ${t.message}")
+            }
+        })
+    }
 
-      private fun GetTestList(filterId: Int?) {
-          try {
-              TestList.clear()
-              viewTestBinding.progressbar.visibility = View.VISIBLE
-              apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
-                  override fun onResponse(call: Call<TestListData?>, response: Response<TestListData?>) {
-                      viewTestBinding.progressbar.visibility = View.GONE
-                      if (response.isSuccessful) {
-                          response.body()?.let { resource ->
-                              if (resource.status == true) {
-                                  resource.data?.let { data ->
-                                      // Filter data based on the provided filterId
-                                      val filteredData = if (filterId != null) {
-                                          data.filter { it.id == filterId }
-                                      } else {
-                                          data
-                                      }
+    fun sendTestRequest(date: String) {
+        val requestBody = TestRequest(test_id = testId.toString(), date = date)
 
-                                      if (filteredData.isNotEmpty()) {
-                                          TestList = ArrayList(filteredData) // Convert to ArrayList
-                                          initrecycler(TestList)
-                                          setData(TestList)
+        Log.d("T%%RR%R%R%R", "sendTestRequest: $requestBody")
 
-                                          athleteIds = TestList.flatMap {
-                                              it.data?.mapNotNull { dataItem -> dataItem.athlete_id } ?: emptyList()
-                                          }
-                                          athleteResult = TestList.flatMap {
-                                              it.data?.mapNotNull { dataItem -> dataItem.result } ?: emptyList()
-                                          }
+        apiInterface.sendTestData(requestBody).enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.isSuccessful) {
+                    Log.d("API_SUCCESS", "Response: ${response.body()?.message}")
 
-                                          Log.d("DDLDLDLD", "All Athlete IDs: $athleteIds")
-                                          Log.d("DDLDLDLD", "All Athlete IDs: $athleteResult")
+                    val data = response.body()?.data
+                    val athleteIDList =
+                        data?.testAthletes?.mapNotNull { it.athleteId?.toIntOrNull() }
+                            ?: emptyList()
 
-                                      } else {
-                                          showToast("No matching data available")
-                                      }
-                                  } ?: showToast("No data available")
-                              } else {
-                                  showToast(resource.message)
-                              }
-                          }
-                      } else {
-                          showToast(response.message())
-                      }
-                  }
+                    if (athleteIDList.isNotEmpty()) {
+                        Log.d("DEBUGDDDD", "Converted Athlete ID List: $athleteIDList")
+                    } else {
+                    }
 
-                  override fun onFailure(call: Call<TestListData?>, t: Throwable) {
-                      viewTestBinding.progressbar.visibility = View.GONE
-                      showToast(t.message)
-                  }
-              })
-          } catch (e: Exception) {
-              Log.d("DODDDK", "GetTestList: ${e.message.toString()}")
-          }
-      }
 
-      private fun setData(testList: ArrayList<TestListData.testData>) {
-          viewTestBinding.goalTxt.text = "Goal: " + testList.getOrNull(0)?.goal ?: ""
-          viewTestBinding.unitTxt.text = "Unit: " + testList.getOrNull(0)?.unit ?: ""
-      }
+                    val intent = Intent(this@viewTestActivity, TestActivity::class.java)
+                    intent.putExtra("RepeatTestId", testId.toString())
+                    intent.putExtra("RepeatTitle", data?.title)
+                    intent.putExtra("RepeatGoal", data?.goal)
+                    intent.putExtra("RepeatUnit", data?.unit)
+                    intent.putExtra("RepeatAthleteId", athleteIDList.toString())
+                    intent.putExtra("RepeatDate", date)
+                    intent.putExtra("RepeatTrue", true)
+                    startActivity(intent)
+                } else {
+                    Log.e("API_ERROR", "Response error: ${response.errorBody()?.string()}")
+                }
+            }
 
-      private fun showToast(message: String?) {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.e("API_FAILURE", "Request failed: ${t.message}")
+            }
+        })
+    }
+
+    private fun GetTestList(filterId: Int?) {
+        try {
+            TestList.clear()
+            viewTestBinding.progressbar.visibility = View.VISIBLE
+            apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
+                override fun onResponse(
+                    call: Call<TestListData?>,
+                    response: Response<TestListData?>
+                ) {
+                    viewTestBinding.progressbar.visibility = View.GONE
+                    if (response.isSuccessful) {
+                        response.body()?.let { resource ->
+                            if (resource.status == true) {
+                                resource.data?.let { data ->
+                                    // Filter data based on the provided filterId
+                                    val filteredData = if (filterId != null) {
+                                        data.filter { it.id == filterId }
+                                    } else {
+                                        data
+                                    }
+
+                                    if (filteredData.isNotEmpty()) {
+                                        TestList = ArrayList(filteredData) // Convert to ArrayList
+                                        initrecycler(TestList)
+                                        setData(TestList)
+
+                                        athleteIds = TestList.flatMap {
+                                            it.data?.mapNotNull { dataItem -> dataItem.athlete_id }
+                                                ?: emptyList()
+                                        }
+                                        athleteResult = TestList.flatMap {
+                                            it.data?.mapNotNull { dataItem -> dataItem.result }
+                                                ?: emptyList()
+                                        }
+
+                                        Log.d("DDLDLDLD", "All Athlete IDs: $athleteIds")
+                                        Log.d("DDLDLDLD", "All Athlete IDs: $athleteResult")
+
+                                    } else {
+                                        showToast("No matching data available")
+                                    }
+                                } ?: showToast("No data available")
+                            } else {
+                                showToast(resource.message)
+                            }
+                        }
+                    } else {
+                        showToast(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<TestListData?>, t: Throwable) {
+                    viewTestBinding.progressbar.visibility = View.GONE
+                    showToast(t.message)
+                }
+            })
+        } catch (e: Exception) {
+            Log.d("DODDDK", "GetTestList: ${e.message.toString()}")
+        }
+    }
+
+    private fun setData(testList: ArrayList<TestListData.testData>) {
+        viewTestBinding.goalTxt.text = "Goal: " + testList.getOrNull(0)?.goal ?: ""
+        viewTestBinding.unitTxt.text = "Unit: " + testList.getOrNull(0)?.unit ?: ""
+    }
+
+    private fun showToast(message: String?) {
         Toast.makeText(this, message ?: "An error occurred", Toast.LENGTH_SHORT).show()
     }
 
@@ -380,11 +473,11 @@ class viewTestActivity : AppCompatActivity(){
                                 }
                             }
 
-                            day.date == selectedDate -> {
-                                with(textView) {
-                                    setTextColor(resources.getColor(R.color.splash_text_color)) // Custom style for selected date
-                                }
-                            }
+//                            day.date == selectedDate -> {
+//                                with(textView) {
+//                                    setTextColor(resources.getColor(R.color.splash_text_color)) // Custom style for selected date
+//                                }
+//                            }
 
                             else -> {
                                 with(textView) {
@@ -425,8 +518,12 @@ class viewTestActivity : AppCompatActivity(){
 //                // Set the TextView with the formatted month and year
 //                viewTestBinding.tvDate.text = formattedMonth
 
-            val formattedMonth = DateTimeFormatter.ofPattern("MMM yyyy").format(today.yearMonth)
-//            viewTestBinding.tvDate.text = formattedMonth
+//            val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(month.yearMonth)
+//            viewTestBinding.month.text = formattedMonthYear
+            val currentDate = viewTestBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+            val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
+            Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
+            viewTestBinding.month.text = formattedMonthYear
 
             // Optionally, apply custom formatting logic
             if (month.year == today.year) {
@@ -490,7 +587,6 @@ class viewTestActivity : AppCompatActivity(){
         return daysOfWeek.slice(firstDayOfWeek.ordinal..daysOfWeek.lastIndex) +
                 daysOfWeek.slice(0 until firstDayOfWeek.ordinal)
     }
-
 
 
 }

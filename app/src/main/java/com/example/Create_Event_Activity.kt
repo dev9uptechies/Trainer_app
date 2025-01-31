@@ -90,6 +90,9 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
     var EventLPosition:Int ?= null
     var EventLberyid:Int ?= null
 
+    var EventPositionGroup:Int ?= null
+    var EventIdGroup:Int ?= null
+
     var type = "create"
     private var types: String? = ""
     private var position1: Int? = 0
@@ -131,7 +134,7 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         initViews()
         loadData()
 
-        if (EventLPosition != null && EventLberyid?.toLong() != 0L || EventLberyid != null) {
+        if (EventLberyid.toString() != "0" || EventLberyid != 0 ){
 
             type = "edit"
             geteventlistLibaray()
@@ -139,6 +142,17 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         }else{
             type = "create"
         }
+
+        if (EventIdGroup.toString() != "0" || EventIdGroup != 0) {
+
+            type = "edit"
+            geteventlistGroup()
+//            Log.d("okokokok", "onCreate: $programData")
+        }else{
+            type = "create"
+        }
+
+
 
 
         Log.d("SDSBSBSBS", "onCreate: $eventid")
@@ -249,8 +263,8 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
 
 
     private fun areAllFieldsFilled(): Boolean {
-        return (createEventBinding.edtTest.text.toString().isNotEmpty() &&
-                createEventBinding.tvAthelate.text.toString().isNotEmpty() &&
+        return (createEventBinding.edtTest.text.isNotEmpty() &&
+                createEventBinding.tvAthelate.text.trim() != "Enter Intrested Atheletes" &&
                 !createEventBinding.eventName.text.isNullOrEmpty())
     }
 
@@ -259,7 +273,7 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
             addButton.isEnabled = true
             addButton.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
         } else {
-            addButton.isEnabled = false
+            addButton.isEnabled = true
             addButton.setCardBackgroundColor(resources.getColor(R.color.grey))
         }
     }
@@ -459,11 +473,13 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
 
             val finalID = if(idToUse == null || idToUse.isNullOrEmpty() || idToUse == "0") EventLberyid else idToUse
 
+            val finalGroupID = if(finalID == null || finalID == 0 || finalID == "0") EventIdGroup else finalID
+
             Log.d("KDKKKDK", "editData: $finalID    $idToUse")
 
 
             val jsonObject = JsonObject()
-            jsonObject.addProperty("id", finalID.toString())
+            jsonObject.addProperty("id", finalGroupID.toString())
             jsonObject.addProperty("name", createEventBinding.eventName.text.toString())
             jsonObject.addProperty("type", createEventBinding.edtTest.text.toString())
             jsonObject.add("athlete_ids", array)
@@ -512,6 +528,12 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
     }
 
     private fun saveData() {
+
+        if (!areAllFieldsFilled()) {
+            Log.d("DDDJ JNJNJ", "saveData: ")
+            return
+        }
+
         createEventBinding.progressBar.visibility = View.VISIBLE
         if (!createEventBinding.eventName.text.isEmpty() && !createEventBinding.tvAthelate.text.isEmpty()) {
             val str = arrayOfNulls<Int>(id.size)
@@ -635,7 +657,9 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         EventList = ArrayList()
         EventLPosition = intent.getIntExtra("EventLibraryPosition",0)
         EventLberyid = intent.getIntExtra("EventLibraryId",0)
-        Log.d("SSJSSJJS", "initView: $EventLPosition     $EventLberyid")
+        EventPositionGroup = intent.getIntExtra("EventPositionGroup",0)
+        EventIdGroup = intent.getIntExtra("EventIdGroup",0)
+        Log.d("SSJSSJJS", "initView: $EventPositionGroup     $EventIdGroup")
     }
 
     private fun geteventlist() {
@@ -702,6 +726,54 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
                             EventList = resource.data!!
                             initrecycler(resource.data)
                             setEventData(EventList[EventLPosition!!.toInt()])
+
+                        } else {
+                            initrecycler(arrayListOf())
+                        }
+                    } else {
+                        createEventBinding.progressBar.visibility = View.GONE
+                    }
+                } else if (code == 403) {
+                    Utils.setUnAuthDialog(this@Create_Event_Activity)
+                } else {
+                    val Message = response.message()
+                    Toast.makeText(
+                        this@Create_Event_Activity,
+                        "" + Message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    call.cancel()
+                }
+            }
+
+            override fun onFailure(call: Call<EventListData?>, t: Throwable) {
+                createEventBinding.progressBar.visibility = View.GONE
+                Toast.makeText(this@Create_Event_Activity, "" + t.message, Toast.LENGTH_SHORT)
+                    .show()
+                call.cancel()
+            }
+        })
+    }
+
+    private fun geteventlistGroup() {
+        createEventBinding.progressBar.visibility = View.VISIBLE
+        apiInterface.GetEvent()?.enqueue(object : Callback<EventListData?> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(
+                call: Call<EventListData?>,
+                response: Response<EventListData?>
+            ) {
+                Log.d("TAG", response.code().toString() + "")
+                val code = response.code()
+                if (code == 200) {
+                    val resource: EventListData? = response.body()
+                    val Success: Boolean = resource?.status!!
+                    val Message: String = resource.message!!
+                    if (Success == true) {
+                        if (resource.data != null) {
+                            EventList = resource.data!!
+                            initrecycler(resource.data)
+                            setEventData(EventList[EventPositionGroup!!.toInt()])
 
                         } else {
                             initrecycler(arrayListOf())
@@ -1076,9 +1148,11 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
                     array.add(name[i])
                 }
 
+
                 // Convert array to a comma-separated string
                 val str1 = convertStringArrayToString(str, ",")
                 createEventBinding.tvAthelate.text = str1
+                updateUI(createEventBinding.saveEvent)
             } else {
                 // Handle the case where name is null or empty
                 Log.d("name", "Name list is empty or null")
@@ -1087,7 +1161,6 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
             }
         }
     }
-
 
     private fun convertStringArrayToString(strArr: Array<String?>, delimiter: String): String? {
         val sb = StringBuilder()

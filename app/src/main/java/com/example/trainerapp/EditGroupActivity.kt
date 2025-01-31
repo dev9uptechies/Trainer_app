@@ -677,6 +677,12 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
             binding.main.setBackgroundColor(resources.getColor(R.color.grey))
 
+            binding.rlyPlanning.visibility = View.GONE
+            binding.rlyLesson.visibility = View.GONE
+            binding.rlyTest.visibility = View.GONE
+            binding.rlyEvent.visibility = View.GONE
+            binding.rlyAthlete.visibility = View.GONE
+
             binding.MonLinearLayout.visibility = View.GONE
             binding.TueLinearLayout.visibility = View.GONE
             binding.WedLinearLayout.visibility = View.GONE
@@ -718,6 +724,15 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 binding.FriLinearLayout.visibility = View.VISIBLE
                 binding.SatLinearLayout.visibility = View.VISIBLE
                 binding.SunLinearLayout.visibility = View.VISIBLE
+
+
+                binding.main.setBackgroundColor(resources.getColor(R.color.black))
+
+                binding.rlyPlanning.visibility = View.VISIBLE
+                binding.rlyLesson.visibility = View.VISIBLE
+                binding.rlyTest.visibility = View.VISIBLE
+                binding.rlyEvent.visibility = View.VISIBLE
+                binding.rlyAthlete.visibility = View.VISIBLE
 
                 dialog.dismiss() }
 

@@ -152,7 +152,6 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                 }
             }
 
-
         } else {
             groupBinding.createGroup.setOnClickListener {
                 startActivity(Intent(requireContext(), CreateGropActivity::class.java))

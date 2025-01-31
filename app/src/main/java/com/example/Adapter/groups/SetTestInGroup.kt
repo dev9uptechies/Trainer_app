@@ -47,6 +47,7 @@ class SetTestInGroup(
 
         holder.editImage.visibility = View.GONE
         holder.checkBox.visibility = View.GONE
+        holder.right_view.visibility = View.GONE
 
         holder.tvFname.text = movie.title
         holder.tv_unit.text = "Unit: " +  movie.unit
@@ -132,6 +133,7 @@ class SetTestInGroup(
         var click: LinearLayout = view.findViewById(R.id.click)
         var tvDate: TextView = view.findViewById(R.id.tv_date)
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox)
+        var right_view: LinearLayout = view.findViewById(R.id.right_view)
         var editImage: ImageView = view.findViewById(R.id.img_edit)
     }
 }

@@ -39,6 +39,8 @@ class SetLessonInGroup(
         holder.tv_athlet.visibility = View.VISIBLE
         holder.editImage.visibility = View.GONE
         holder.checkBox.visibility = View.GONE
+        holder.right_view.visibility = View.GONE
+
 
         val params = holder.card.layoutParams as ViewGroup.MarginLayoutParams
         params.marginStart = 10
@@ -110,5 +112,7 @@ class SetLessonInGroup(
         var editImage: ImageView = view.findViewById(R.id.img_edit)
         var favimage: ImageView = view.findViewById(R.id.img_edit)
         var card: CardView = view.findViewById(R.id.card)
+        var right_view: LinearLayout = view.findViewById(R.id.right_view)
+
     }
 }

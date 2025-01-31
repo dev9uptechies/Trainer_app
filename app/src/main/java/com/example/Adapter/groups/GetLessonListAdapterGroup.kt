@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.marginStart
 import androidx.recyclerview.widget.RecyclerView
 import com.example.LessonActivity
+import com.example.OnItemClickListener
 import com.example.model.newClass.lesson.Lesson
 import com.example.trainerapp.R
 import com.example.trainerapp.program_section.ViewProgramActivity
@@ -21,7 +22,7 @@ import com.zerobranch.layout.SwipeLayout
 class GetLessonListAdapterGroup(
     private var spList: List<Lesson.LessonDatabase>,
     var context: Context,
-    val listener: Any
+    val listener: OnItemClickListener.OnItemClickCallback
 ) : RecyclerView.Adapter<GetLessonListAdapterGroup.MyViewHolder>() {
 
     private var filterList: ArrayList<Lesson.LessonDatabase> = ArrayList(spList)
@@ -82,20 +83,18 @@ class GetLessonListAdapterGroup(
             }
 
             val intent = Intent(context, LessonActivity::class.java).apply {
-                putExtra("id", movie.id)
-                putExtra("name", movie.name)
-                putExtra("goal", lessonNames)
-                putExtra("goalid", arrayOf(lessonIdList))
-                putExtra("date", movie.date)
-                putExtra("AvailableTime", movie.time)
-                putExtra("PortialTime", movie.section_time)
-                putExtra("fromday", true)
-                putExtra("lesson", lessonNames)
-                putExtra("lessonId", lessonIdList)
+                putExtra("LessonIdGroup", movie.id)
+                putExtra("LessonPositionGroup", position)
             }
 
             context.startActivity(intent)
         }
+
+        holder.img_delete.setOnClickListener {
+            holder.swipe.close(true)
+            listener.onItemClicked(it, position, movie.id!!.toLong(), "DeleteLesson")
+        }
+
 
     }
 
@@ -128,6 +127,7 @@ class GetLessonListAdapterGroup(
         var favimage: ImageView = view.findViewById(R.id.img_edit)
         val swipe = view.findViewById<SwipeLayout>(R.id.swipe_layout)
         var card: CardView = view.findViewById(R.id.card)
+        var img_delete: ImageView = view.findViewById(R.id.img_delete)
         var cardView: CardView = view.findViewById<View>(R.id.rela_dragged) as CardView
 
     }

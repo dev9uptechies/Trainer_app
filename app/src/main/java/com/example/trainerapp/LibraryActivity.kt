@@ -334,6 +334,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
 
     private fun GetLessionList() {
         try {
+            lessonData.clear()
             apiInterface.GetLession()?.enqueue(object : Callback<LessonData?> {
                 override fun onResponse(call: Call<LessonData?>, response: Response<LessonData?>) {
                     Log.d("TAG", response.code().toString() + "")
@@ -386,6 +387,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
 
     private fun GetProgram() {
         try {
+            programListData.clear()
             apiInterface.GetProgam()?.enqueue(object : Callback<ProgramListData?> {
                 override fun onResponse(
                     call: Call<ProgramListData?>, response: Response<ProgramListData?>
@@ -443,6 +445,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
 
     private fun getEvent() {
         try {
+            eventListData.clear()
             apiInterface.GetEvent()?.enqueue(object : Callback<EventListData?> {
                 override fun onResponse(call: Call<EventListData?>, response: Response<EventListData?>) {
 
@@ -1235,6 +1238,9 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                         if (Success) {
                             libraryBinding.progresBar.visibility = View.GONE
                             GetProgram()
+//                            finish()
+//                            startActivity(intent)
+
 //                        Toast.makeText(this@New_Program_Activity, "" + Message, Toast.LENGTH_SHORT)
 //                            .show()
 //                        finish()
@@ -1302,6 +1308,8 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
                             if (Success) {
                                 libraryBinding.progresBar.visibility = View.GONE
                                 GetProgram()
+//                                finish()
+//                                startActivity(intent)
 //                            Toast.makeText(
 //                                this@New_Program_Activity,
 //                                "" + Message,
@@ -1446,6 +1454,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
 
             val intent = Intent(this,ViewLessonActivity::class.java)
             intent.putExtra("LessonLibraryId",type.toInt())
+            intent.putExtra("GroupAttends","GroupAttends")
             startActivity(intent)
         }
 

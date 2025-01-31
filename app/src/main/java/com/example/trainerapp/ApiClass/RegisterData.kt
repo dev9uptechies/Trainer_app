@@ -22,7 +22,7 @@ class RegisterData {
         var id: Int? = null
 
         @SerializedName("coach_id")
-        var coachId: String? = null
+        var coachId: Int? = null
 
         @SerializedName("sport_id")
         var sportId: String? = null

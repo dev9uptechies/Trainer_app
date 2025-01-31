@@ -55,7 +55,7 @@ class ViewCompetitionAdapter(
             if (isCoach == true) {
                 Log.d("tetttssttsstst", "onBindViewHolder: Coachhhhhhhhh")
 
-                holder.coachRating.isEnabled = false
+                holder.coachRating.isEnabled = true
                 holder.athleteRating.isEnabled = false
                 holder.athleteRating.isClickable = false
                 holder.athleteRating.isFocusable = false
@@ -80,6 +80,13 @@ class ViewCompetitionAdapter(
                         movie.athleteRating = rating.toInt()
                     }
                 }
+            }else{
+                holder.athleteRating.isEnabled = false
+                holder.athleteRating.isClickable = false
+                holder.athleteRating.isFocusable = false
+                holder.coachRating.isEnabled = false
+                holder.coachRating.isClickable = false
+                holder.coachRating.isFocusable = false
             }
         }
     }

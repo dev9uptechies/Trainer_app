@@ -26,6 +26,7 @@ import android.widget.ListView
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.LongDef
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -34,6 +35,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.model.SelectedValue
+import com.example.model.newClass.athlete.AthleteData
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
@@ -47,6 +49,7 @@ import com.example.trainerapp.databinding.ActivityTestBinding
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -85,8 +88,21 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
     var unit: String = ""
     var fromDay: Boolean = false
 
-    var TestLibraryId:Int? = 0
-    var TestLibraryPosition:Int? = 0
+    var TestLibraryId:Int? = null
+    var TestLibraryPosition:Int? = null
+    var TestIdGroup:Int? = null
+    var TestPositionGroup:Int? = null
+
+    var RepeatTestId:String? = null
+    var RepeatDate:String? = null
+    var RepeatTitle:String? = null
+    var RepeatGoal:String? = null
+    var RepeatUnit:String? = null
+    var RepeatAthleteId:String? = null
+    var RepeatAthleteName:String? = null
+
+
+    var RepeatTrue:Boolean? = false
 
     lateinit var AthleteId: ArrayList<Int>
     lateinit var AthleteName: ArrayList<String>
@@ -252,6 +268,7 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
         super.onCreate(savedInstanceState)
         testBinding = ActivityTestBinding.inflate(layoutInflater)
         setContentView(testBinding.root)
+        type = "create"
 
         initViews()
         loadData()
@@ -260,13 +277,53 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
             id = getObjectJson(this, "setAthlete") as ArrayList<Int>
         }
 
-        if (TestLibraryPosition != null && TestLibraryId?.toLong() != 0L || TestLibraryId != null) {
+        if (TestLibraryId.toString() != "0" || TestLibraryId != 0) {
+            Log.d("SKSKKKKSKKSSK", "onCreate:0000 0, 0")
 
             type = "EditTest"
             GetTestListLibrary()
-        }else{
+        } else {
             type = "create"
+            if (TestIdGroup == null || TestIdGroup == 0 || TestIdGroup.toString() == "0") {
+                Log.d("SKSKKKKSKKSSK", "onCreate: 0, 0")
+            }
         }
+
+        if (TestIdGroup.toString() != "0" || TestIdGroup != 0) {
+            type = "EditTest"
+            Log.d("SKSKKKKSKKSSK", "onCreate:0000 0, 0")
+            GetTestListGroup()
+        } else {
+            type = "create"
+            if (TestLibraryId == null || TestLibraryId == 0 || TestLibraryId.toString() == "0") {
+                Log.d("SKSKKKKSKKSSK", "onCreate: 0, 0")
+            }
+        }
+
+
+        if (RepeatTrue == true){
+
+//            getAthletes()
+            Log.d("}{}}{}{{", "onCreate: $RepeatAthleteName")
+            type = "create"
+            testBinding.etTestName.setText(RepeatTitle)
+            testBinding.edtGoal.setText(RepeatGoal)
+            testBinding.edtUnits.setText(RepeatUnit)
+            testBinding.etSelectTestDate.setText(RepeatDate)
+            testBinding.etInterestedAtheletes.setText(RepeatAthleteName)
+        }
+
+//        if (TestIdGroup.toString() != "0" || TestIdGroup != 0){
+//            Log.d("TEsting", "onCreate: $TestIdGroup")
+//        }else{
+//            Log.d("TEsting", "onCreate: OKOKKOKOKOKOKOKOKOKOK")
+//        }
+//
+//        if (TestIdGroup?.toInt() == 0){
+//            Log.d("TEstingINT", "onCreate: $TestIdGroup")
+//        }
+
+        Log.d("SKSKKKKSKKSSKpopopo", "onCreate: $TestLibraryId,    $TestIdGroup")
 
         checkChangeValue()
 
@@ -476,15 +533,39 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
         if (!testBinding.etTestName.text.toString()
                 .isEmpty() && !testBinding.etSelectTestDate.text.toString().isEmpty()
         ) {
-            val str = arrayOfNulls<Int>(id.size)
+
             val array = JsonArray()
 
-            for (i in 0 until id.size) {
-                str[i] = id.get(i)
-                array.add(id.get(i))
+            Log.d("DKDKKK", "saveData: $id")
+            Log.d("DKDKKK", "saveData: $RepeatAthleteId")
+
+
+            val finalAthleteID = if (id.isNullOrEmpty() || id.toString() == "[]") {
+                RepeatAthleteId?.replace("[", "")?.replace("]", "")?.split(",")?.map { it.trim() } ?: listOf()
+            } else {
+                id.toString().replace("[", "").replace("]", "").split(",").map { it.trim() }
             }
+
+
+            val convertedList = finalAthleteID.mapNotNull { it.trim().toIntOrNull() }  // Convert strings to Ints, ignoring invalid values
+
+            Log.d("5555555", "saveData: $finalAthleteID")
+            Log.d("5555555", "saveData: $convertedList")
+
+            val str = IntArray(convertedList.size)
+
+            for (i in convertedList.indices) {  // Using indices to avoid out-of-bounds errors
+                str[i] = convertedList[i]  // Assign the Int to the correct position in `str`
+                array.add(JsonPrimitive(convertedList[i]))  // Add as JsonPrimitive
+
+                Log.d("Array Content", "Added ${convertedList[i]} to array")  // Log the added value
+            }
+
+
             val goal = testBinding.edtGoal.text.toString()
             val unit = testBinding.edtUnits.text.toString()
+
+            Log.d("DKDKDKDKK", "saveData: $array")
 
             val jsonObject = JsonObject()
             jsonObject.addProperty("name", testBinding.etTestName.text.toString())
@@ -492,6 +573,8 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
             jsonObject.addProperty("unit", unit)
             jsonObject.add("athlete_ids", array)
             jsonObject.addProperty("date", testBinding.etSelectTestDate.text.toString())
+
+            Log.d("FNNFJNJJNNJNGYG", "saveData: $jsonObject")
             testBinding.progressbar.visibility = View.VISIBLE
             apiInterface.CreateTest(
                 jsonObject
@@ -511,6 +594,18 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
                             preferenceManager.setselectAthelete(false)
                             id.clear()
                             name.clear()
+
+                            Log.d("DKDKKDKDKD", "onResponse: $response")
+                            Log.d("DKDKKDKDKD", "onResponse: ${response.body().toString()}")
+                            Log.d("DKDKKDKDKD", "onResponse: ${response.message()}")
+                            Log.d("DKDKKDKDKD", "onResponse: ${resource.message}")
+                            Log.d("DKDKKDKDKD", "onResponse: ${resource.data}")
+
+                            val gson = Gson()
+                            val jsonResponse = gson.toJson(response.body())
+                            Log.d("API_SUCCESS", "Complete Response: $jsonResponse")
+
+
                             loadData()
                             Toast.makeText(this@TestActivity, "" + Message, Toast.LENGTH_SHORT)
                                 .show()
@@ -728,7 +823,18 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
         AthleteName = intent.getStringArrayListExtra("athletename") ?: arrayListOf()
         TestLibraryId = intent.getIntExtra("TestLibraryId",0)
         TestLibraryPosition = intent.getIntExtra("TestLibraryPosition",0)
-        Log.d("DDJJJJDJJJ", "initViews: $TestLibraryId    $TestLibraryPosition")
+        TestIdGroup = intent.getIntExtra("TestIdGroup",0)
+        TestPositionGroup = intent.getIntExtra("TestPositionGroup",0)
+        RepeatDate = intent.getStringExtra("RepeatDate")
+        RepeatTestId = intent.getStringExtra("RepeatTestId")
+        RepeatTitle = intent.getStringExtra("RepeatTitle")
+        RepeatGoal = intent.getStringExtra("RepeatGoal")
+        RepeatUnit = intent.getStringExtra("RepeatUnit")
+        RepeatAthleteId = intent.getStringExtra("RepeatAthleteId")
+        RepeatTrue = intent.getBooleanExtra("RepeatTrue",false)
+
+        Log.d("__+_____+_+__++++__", "initViews: $RepeatTestId   \nDate:- $RepeatDate    \nTitle:- $RepeatTitle    \nGoal:- $RepeatGoal    \nUnit:- $RepeatUnit    \nAthleteId:- $RepeatAthleteId   \n$RepeatTrue")
+        Log.d("DDJJJJDJJJ", "initViews: $TestIdGroup    $TestPositionGroup")
 
         Log.e("KIRTIIIIIIIIII", "initViews: " + intent.getBooleanExtra("fromday", false))
 
@@ -736,7 +842,65 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
         Log.d("TestActivity", "Received Athlete IDs: $AthleteId")
         Log.d("TestActivity", "Received Athlete Names: $AthleteName")
 
+        getAthletes()
+
     }
+
+    private fun getAthletes() {
+        apiInterface.GetAthleteList()!!.enqueue(
+            object : Callback<AthleteData> {
+                override fun onResponse(call: Call<AthleteData>, response: Response<AthleteData>) {
+                    Log.d("Athlete :- Tag ", response.code().toString())
+                    val code = response.code()
+                    if (code == 200) {
+                        val data = response.body()!!
+                        val success: Boolean = data.status!!
+                        if (success && data.data != null) {
+                            Log.d("Athlete :- Data ", "$data")
+
+                            // Convert RepeatAthleteId into a list of integers
+                            val targetIds = RepeatAthleteId?.replace("[", "")?.replace("]", "")
+                                ?.split(",")?.mapNotNull { it.trim().toIntOrNull() } ?: emptyList()
+
+                            Log.d("SSKKKSKS", "onResponse: Athlete Data ${data.data}")
+                            Log.d("SSKKKSKS", "onResponse: Target IDs $targetIds")
+
+                            // Use a Set to store unique names
+                            val matchedAthleteNames = mutableSetOf<String>()
+
+                            for (athlete in data.data) {
+                                if (athlete.id in targetIds) {  // Check if athlete.id exists in targetIds list
+                                    Log.d("MATCH FOUND", "Athlete Name: ${athlete.name}")
+                                    athlete.name?.let { matchedAthleteNames.add(it) }  // Add the name to the set
+                                }
+                            }
+
+                            // Log the unique names
+                            Log.d("DKDJKJKJKNIO", "Matched Athlete Names: $matchedAthleteNames")
+
+                            RepeatAthleteName = matchedAthleteNames.joinToString(", ")
+                            Log.d("Combined Names", "Combined Athlete Names: $RepeatAthleteName")
+
+                            testBinding.etInterestedAtheletes.setText(RepeatAthleteName)
+
+                        }
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(this@TestActivity)
+                    } else {
+                        val message = response.message()
+                        Toast.makeText(this@TestActivity, message, Toast.LENGTH_SHORT).show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<AthleteData>, t: Throwable) {
+                    Toast.makeText(this@TestActivity, t.message, Toast.LENGTH_SHORT).show()
+                    call.cancel()
+                }
+            }
+        )
+    }
+
 
     private fun GetTestList() {
         try {
@@ -758,6 +922,9 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
                                 if (resource.data!! != null) {
                                     TestList = resource.data!!
                                     initrecycler(resource.data)
+
+
+
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -827,6 +994,76 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
                                     TestList = resource.data!!
 //                                    initrecycler(resource.data)
                                     SetEditData(TestLibraryPosition!!)
+
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        } else {
+                            testBinding.progressbar.visibility = View.GONE
+                        }
+                    } else if (response.code() == 403) {
+                        Utils.setUnAuthDialog(this@TestActivity)
+//                    val message = response.message()
+//                    Toast.makeText(
+//                        this@TestActivity,
+//                        "" + message,
+//                        Toast.LENGTH_SHORT
+//                    )
+//                        .show()
+//                    call.cancel()
+//                    startActivity(
+//                        Intent(
+//                            this@TestActivity,
+//                            SignInActivity::class.java
+//                        )
+//                    )
+//                    finish()
+                    } else {
+                        testBinding.progressbar.visibility = View.GONE
+                        val message = response.message()
+                        Toast.makeText(this@TestActivity, "" + message, Toast.LENGTH_SHORT)
+                            .show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<TestListData?>, t: Throwable) {
+                    testBinding.progressbar.visibility = View.GONE
+                    Toast.makeText(this@TestActivity, "" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+        } catch (e: Exception) {
+            testBinding.progressbar.visibility = View.GONE
+            Toast.makeText(this, "ERROR:- " + e.message.toString(), Toast.LENGTH_SHORT).show()
+            Log.d("ERROR", "GetTestList: ${e.message.toString()}")
+        }
+
+    }
+
+    private fun GetTestListGroup() {
+        try {
+            TestList.clear()
+            testBinding.progressbar.visibility = View.VISIBLE
+            apiInterface.GetTest()?.enqueue(object : Callback<TestListData?> {
+                override fun onResponse(
+                    call: Call<TestListData?>,
+                    response: Response<TestListData?>
+                ) {
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: TestListData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success == true) {
+                            try {
+                                if (resource.data!! != null) {
+                                    TestList = resource.data!!
+//                                    initrecycler(resource.data)
+                                    SetEditData(TestPositionGroup!!)
 
                                 }
                             } catch (e: Exception) {
@@ -1306,6 +1543,7 @@ class TestActivity : AppCompatActivity(), View.OnClickListener,
     override fun onResume() {
         super.onResume()
         checkUser()
+//        getAthletes()
         if (preferenceManager.getselectAthelete()) {
             name = getObject(this, "setAthleteName") as ArrayList<String>
             id = getObjectJson(this, "setAthlete") as ArrayList<Int>

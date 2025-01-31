@@ -55,6 +55,7 @@ class ViewAnalysisAdapter(
                 putExtra("eventId", splist[position].id)
                 putExtra("Date", splist[position].date)
                 putExtra("areaId", splist[position].competition_analysis_area_id)
+                putExtra("value","false")
             }
             context.startActivity(intent)
         }

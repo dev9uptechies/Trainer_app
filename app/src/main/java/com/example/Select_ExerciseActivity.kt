@@ -225,6 +225,8 @@ class Select_ExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemC
     }
 
     private fun initRecycler(data: ArrayList<ExcerciseData.Exercise>) {
+
+        Log.d("DKDMKDKMKMKK", "initRecycler: $type")
         Log.d("no of value :-", "${excIds.size}\n$excIds")
         selectExerciseBinding.rlyExerciseList.layoutManager = LinearLayoutManager(this)
 //        adapter =

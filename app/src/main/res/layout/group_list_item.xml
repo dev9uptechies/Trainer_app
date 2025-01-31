@@ -153,6 +153,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:textSize="@dimen/_12sdp"
                 android:layout_marginTop="@dimen/_5sdp"
+                android:visibility="gone"
                 android:fontFamily="@font/poppins_medium"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:textColor="@color/dark_text"/>

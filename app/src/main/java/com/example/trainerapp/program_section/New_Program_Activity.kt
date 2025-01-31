@@ -114,12 +114,15 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
         initView()
         getData()
         setupTextWatcher()
+        typeData = "create"
+
 
         idd = intent.getStringExtra("ids")
         Log.e("TAGexcId", "onCreate: " + idd)
 
 
-        if (lposition != null && liberyid?.toLong() != 0L || liberyid != null) {
+
+        if (liberyid.toString() != "0" || liberyid != 0) {
 
             typeData = "edit"
             GetProgramDataLibaray()
@@ -1597,8 +1600,7 @@ class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClic
 //        }
         if (preferenceManager.getexercisedata()) {
             exerciseDataList1.clear()
-            exerciseDataList1 =
-                getObject(this, "Exercise_list") as ArrayList<ExcerciseData.Exercise>
+            exerciseDataList1 = getObject(this, "Exercise_list") as ArrayList<ExcerciseData.Exercise>
             Log.d("Exercise Data:", "${exerciseDataList1.size}")
             if (exerciseDataList1.isNotEmpty() && exerciseDataList1[0].cycles?.isNotEmpty() == true) {
                 newProgramBinding.edtTime.setText(exerciseDataList1[0].cycles?.get(0)?.time ?: "")

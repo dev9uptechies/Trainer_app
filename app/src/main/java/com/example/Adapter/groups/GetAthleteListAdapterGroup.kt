@@ -3,6 +3,7 @@ package com.example.Adapter.groups
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +28,8 @@ class GetAthleteListAdapterGroup(
     private var splist: MutableList<AthleteData.Athlete>?,
     var context: Context,
     val listener: OnItemClickListener.OnItemClickCallback,
-    val mainId: Int? = null
+    val mainId: Int? = null,
+    private var selectedAthletes: MutableSet<Int> = mutableSetOf()
 ) : RecyclerView.Adapter<GetAthleteListAdapterGroup.MyViewHolder>() {
 
     private val selectedItems: MutableSet<Int> = mutableSetOf()
@@ -39,39 +41,50 @@ class GetAthleteListAdapterGroup(
         return MyViewHolder(itemView)
     }
 
+    init {
+        // If you have the list of selected athlete IDs (from the lesson attendance response)
+        // you can initialize the selectedItems set with those IDs
+        selectedItems.addAll(selectedAthletes)
+    }
+
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var tvFname: TextView = view.findViewById<View>(R.id.tv_program_name) as TextView
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox) }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val movie = splist?.get(position) ?: return
+        val athlete = splist?.get(position) ?: return
 
-        holder.tvFname.text = movie.name
+        holder.tvFname.text = athlete.name
         holder.checkBox.visibility = View.VISIBLE
 
-        holder.checkBox.isChecked = selectedItems.contains(position)
-        holder.checkBox.isClickable = false
+        Log.d("DKDKDKDKDKk", "onBindViewHolder: $selectedAthletes")
+
+        // Set the checkbox based on whether the athlete's ID is in selectedItems
+        holder.checkBox.isChecked = selectedItems.contains(athlete.id)
+
+        holder.checkBox.isClickable = false  // Disabling checkbox click since you aren't handling it here
 
         holder.itemView.setOnClickListener {
-            if (selectedItems.contains(position)) {
-                selectedItems.remove(position)
-            } else {
-                selectedItems.add(position)
+            // Safely handle athlete.id (nullable) and add/remove it from selectedItems
+            athlete.id?.let {
+                if (selectedItems.contains(it)) {
+                    selectedItems.remove(it)  // Remove if it exists
+                } else {
+                    selectedItems.add(it)  // Add if it doesn't exist
+                }
             }
+            // Also update selectedAthletes to keep the set in sync
+            selectedAthletes.clear()
+            selectedAthletes.addAll(selectedItems)
             notifyItemChanged(position)
         }
-
     }
-
 
     fun getSelectedAthleteData(): List<Int> {
-        // Make sure splist is not null before accessing
-        return if (!splist.isNullOrEmpty()) {
-            selectedItems.map { splist!![it].id ?: 0 }
-        } else {
-            emptyList() // Return empty list if splist is null or empty
-        }
+        // Ensure selectedItems has the correct athlete IDs
+        return selectedItems.toList()  // Convert the selectedItems set to a list and return
     }
+
 
 
     override fun getItemCount(): Int {

@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_medium"
-                android:gravity="start"
+                android:gravity="center"
                 android:hint="Result"
                 android:background="@null"
                 android:inputType="number"

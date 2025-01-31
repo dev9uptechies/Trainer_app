@@ -190,6 +190,8 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                     if (Success) {
                         binding.groupProgress.visibility = View.GONE
                         initrecyclerAthlee(resource.data!!)
+
+                        Log.d("DMKMMMDMKDKD", "onResponse: ${resource.data!!.get(0).group_id}")
                     } else {
                         binding.groupProgress.visibility = View.GONE
                         Toast.makeText(this@SelectGroupActivity, "" + Message, Toast.LENGTH_SHORT)

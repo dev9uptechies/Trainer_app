@@ -137,6 +137,8 @@ class ExcerciselistselectAdapter(
 //                OnItemClickListener(position, listener, movie.id!!.toLong(), "remove")
 //            }
 //        })
+
+        Log.d("LDDMKMMDK", "onBindViewHolder: $type")
         if (type == "edit") {
             try {
                 holder.checkbox.setOnCheckedChangeListener(null) // Disable listener to avoid unwanted triggers
@@ -152,28 +154,26 @@ class ExcerciselistselectAdapter(
                         newdata.remove(movie)
                     }
 
-                    // ✅ Check if no items are selected and show toast
+
                     if (newdata.isEmpty()) {
-                        return@setOnCheckedChangeListener
                         Toast.makeText(context, "Please select at least one exercise.", Toast.LENGTH_SHORT).show()
+                        return@setOnCheckedChangeListener
+
                     }
-                    // Save the updated newdata list to SharedPreferences
                     setExerciseData(context, newdata, "Exercise_list")
                 }
             } catch (e: Exception) {
                 Log.d("Exception", e.message ?: "Unknown error")
             }
         } else if (type == "create") {
-            holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
+            holder.checkbox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
+                if (b.equals(true)) {
                     setdata(position)
                 } else {
+//                selectId!!.remove(movie.id!!.toInt())
                     OnItemClickListener(position, listener, movie.id!!.toLong(), "remove")
                 }
-
-                // ✅ Check if no items are selected and show toast
-
-            }
+            })
 
         }
     }

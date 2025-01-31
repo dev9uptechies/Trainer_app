@@ -2,6 +2,7 @@ package com.example.trainerappAthlete.model
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,6 +62,7 @@ class selectGroupAdapterAthlete(
                 selectedGroupId = group.id.toString()
                 selectedGroup_Id = group.group_id.toString()
 
+                Log.d("DDMKDMDM", "onBindViewHolder: $selectedGroup_Id        $selectedGroupId")
                 holder.itemView.post {
                     notifyItemChanged(previousSelectedPosition)
                     notifyItemChanged(selectedPosition)

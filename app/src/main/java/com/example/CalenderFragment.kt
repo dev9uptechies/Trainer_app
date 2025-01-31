@@ -533,6 +533,8 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                                     eventadapter.clearData()
                                 }
 
+                                Log.d("LPL%%%^^FDCDF", "onResponse: ${data.tests}")
+
                                 if (data.lessons.isNotEmpty()) {
                                     if (!datesWithDataLesson.contains(selectedDate)) {
                                         datesWithDataLesson.add(selectedDate)

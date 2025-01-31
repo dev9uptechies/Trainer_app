@@ -1,11 +1,16 @@
 package com.example
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -15,24 +20,28 @@ import com.example.Adapter.groups.GetEventListAdapterGroup
 import com.example.Adapter.groups.GetLessonListAdapterGroup
 import com.example.Adapter.groups.GetPlanningListAdapterGroup
 import com.example.Adapter.groups.GetTestListAdapterGroup
-import com.example.Adapter.selected_day.AddSelectedDayEventApater
-import com.example.Adapter.selected_day.AddSelectedDayTestAdapter
 import com.example.model.newClass.athlete.AthleteData
+import com.example.model.newClass.lesson.GetLessonRequest
 import com.example.model.newClass.lesson.Lesson
+import com.example.model.newClass.lesson.LessonRequest
 import com.example.model.training_plan.TrainingPlanData
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.EventListData
 import com.example.trainerapp.ApiClass.ProgramListData
+import com.example.trainerapp.ApiClass.RegisterData
 import com.example.trainerapp.EditGroupActivity
+import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityLessonListBinding
+import com.example.trainerapp.training_plan.AddTrainingPlanActivity
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCallback {
+class LessonListActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
 
     private lateinit var binding: ActivityLessonListBinding
     lateinit var apiInterface: APIInterface
@@ -41,8 +50,12 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
     lateinit var adapter: GetLessonListAdapterGroup
     lateinit var adapterProgram: GetProgramListAdapterGroup
     var selectedLessonID: String = ""
-    var type : String = ""
-    var typeEdit : String = ""
+    var type: String = ""
+
+    val selectedAthletes = mutableListOf<Int>()
+
+
+    var typeEdit: String = ""
     lateinit var EventList: ArrayList<EventListData.testData>
     lateinit var programData: MutableList<ProgramListData.testData>
     lateinit var plainngData: MutableList<TrainingPlanData.TrainingPlan>
@@ -51,6 +64,10 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
     lateinit var adapterTest: GetTestListAdapterGroup
     lateinit var adapterPlanning: GetPlanningListAdapterGroup
     lateinit var adapterAthlete: GetAthleteListAdapterGroup
+
+    var LessonID: Int? = null
+    var AthleteIDS: String? = null
+
 
     @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,58 +78,85 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
         initView()
         lordData()
         ButtonClick()
+        GetLessonAttendeances()
     }
 
     private fun lordData() {
-        when(type){
+        when (type) {
             "lesson" -> {
                 binding.tvCredit.text = "Lesson List"
                 GetLessonList()
             }
+
             "test" -> {
                 binding.tvCredit.text = "Test List"
                 GetTestList()
             }
+
             "event" -> {
                 binding.tvCredit.text = "Event List"
                 geteventlist()
             }
+
             "planning" -> {
                 binding.tvCredit.text = "planning List"
+                binding.addLayout.visibility = View.VISIBLE
                 getTrainingData()
             }
+
             "athlete" -> {
                 binding.tvCredit.text = "Athlete List"
+                getAthleteData()
+            }
+
+            "ConfirmAttendance" -> {
+                binding.tvCredit.text = "Select Athlete"
                 getAthleteData()
             }
         }
 
-        when(typeEdit){
+        when (typeEdit) {
             "lesson" -> {
                 binding.tvCredit.text = "Lesson List"
                 GetLessonList()
             }
+
             "test" -> {
                 binding.tvCredit.text = "Test List"
                 GetTestList()
             }
+
             "event" -> {
                 binding.tvCredit.text = "Event List"
                 geteventlist()
             }
+
             "planning" -> {
                 binding.tvCredit.text = "planning List"
+                binding.addLayout.visibility = View.VISIBLE
                 getTrainingData()
             }
+
             "athlete" -> {
                 binding.tvCredit.text = "Athlete List"
                 getAthleteData()
             }
+
+            "ConfirmAttendance" -> {
+                binding.tvCredit.text = "Select Athlete"
+                getAthleteData()
+            }
+
         }
     }
 
     private fun ButtonClick() {
         binding.back.setOnClickListener { finish() }
+
+        binding.addLayout.setOnClickListener {
+            val intent = Intent(this, AddTrainingPlanActivity::class.java)
+            startActivity(intent)
+        }
 
         binding.saveBtn.setOnClickListener {
             when (type) {
@@ -215,9 +259,46 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                     startActivity(intent)
                     finish()
                 }
+
+                "ConfirmAttendance" -> {
+                    val selecteTestIds = adapterAthlete.getSelectedAthleteData()
+                    Log.d("SelectedAthleteIds", "Selected IDs: $selecteTestIds")
+
+                    AthleteIDS = adapterAthlete.getSelectedAthleteData().toString()
+
+                    Log.d("DD:D:D::", "ButtonClick: $AthleteIDS")
+
+                    if (selecteTestIds.isNullOrEmpty()) {
+                        Toast.makeText(
+                            this,
+                            "Please select a valid athlete before saving",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    val cleanedAthleteIDS = AthleteIDS?.replace("\\s".toRegex(), "")
+                    Log.d("DEBUG", "Raw AthleteIDS: $AthleteIDS")
+                    Log.d("DEBUG", "Cleaned AthleteIDS: $cleanedAthleteIDS")
+
+                    val cleanedIDsWithoutBrackets = cleanedAthleteIDS?.removePrefix("[")?.removeSuffix("]")
+
+                    val athleteIDList: List<Int>? = cleanedIDsWithoutBrackets
+                        ?.split(",")
+                        ?.mapNotNull { it.trim().toIntOrNull() }  // trim any extra spaces before converting to Int
+
+                    Log.d("DEBUG", "Converted Athlete ID List: $athleteIDList")
+
+                    if (!athleteIDList.isNullOrEmpty()) {
+                        Log.d("DEBUG", "Sending Lesson Data with IDs: $athleteIDList")
+                        sendLessonData(LessonID!!.toInt(), athleteIDList)
+                    } else {
+                        Toast.makeText(this, "Invalid athlete IDs. Please check the input.", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
             }
 
-            // Now handling the case for typeEdit if necessary
             when (typeEdit) {
                 "lesson" -> {
                     val selectedLessonIds = adapter.getSelectedLessonData()
@@ -328,11 +409,105 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
 
         type = intent.getStringExtra("Add").toString()
         typeEdit = intent.getStringExtra("Edit").toString()
+        LessonID = intent.getIntExtra("LessonID", 0)
 
+
+        Log.d("GHGHHG", "initView: $LessonID")
         Log.d("GHGHHG", "initView: $type")
 
-        Log.d("type","IDDD:-    $typeEdit")
+        Log.d("type", "IDDD:-    $typeEdit")
     }
+
+    fun sendLessonData(lessonID: Int?, athleteIDs:  List<Int>) {
+        val request = LessonRequest(
+            lesson_id = lessonID ?: 0,
+            athlete_ids = athleteIDs
+        )
+
+        Log.d("DTRRRTRYY", "sendLessonData: $request")
+
+        apiInterface.sendLessonAttendance(request).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    Log.d("Retrofit", "Success: ${response.body()?.string()}")
+                    finish()
+                } else {
+                    Log.e("Retrofit", "Errordd: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("Retrofit", "Failure: ${t.message}")
+            }
+        })
+    }
+
+    private fun GetLessonAttendeances() {
+        binding.progresBar.visibility = View.VISIBLE
+        apiInterface.GetLessonAttendance(LessonID.toString()).enqueue(object : Callback<GetLessonRequest> {
+            @SuppressLint("NewApi")
+            override fun onResponse(call: Call<GetLessonRequest>, response: Response<GetLessonRequest>) {
+                Log.d("TAG Lesson:", response.code().toString())
+                binding.progresBar.visibility = View.GONE
+                val code = response.code()
+                if (code == 200) {
+                    val resource = response.body()
+                    if (resource != null) {
+                        val success: Boolean = resource.status ?: false
+                        val message: String = resource.message ?: "No message"
+                        if (success) {
+                            val data = resource.data
+                            if (!data.isNullOrEmpty()) {
+                                binding.saveBtn.isEnabled = true
+                                Log.d("KDKDKDK", "onResponse: $data")
+                                Log.d("KDKDKDK", "onResponse: Athlete IDs")
+                                data?.forEach { item ->
+                                    Log.d("KDKDKDK", "onResponse: ${item.athlete_id}")
+                                    item.athlete_id?.let {
+                                        selectedAthletes.add(it.toInt())
+                                    }
+                                }
+
+                            } else {
+                                binding.saveBtn.isEnabled = false
+                                Toast.makeText(
+                                    this@LessonListActivity,
+                                    "No lessons available",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+//                            Toast.makeText(
+//                                this@LessonListActivity,
+//                                "Error: $message",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+
+                            Log.d("ERRRORRR:", "onResponse: $message")
+                        }
+                    } else {
+                        Toast.makeText(
+                            this@LessonListActivity,
+                            "Empty response body",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else if (code == 403) {
+                    Utils.setUnAuthDialog(this@LessonListActivity)
+                } else {
+                    Toast.makeText(this@LessonListActivity, response.message(), Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            }
+
+            override fun onFailure(call: Call<GetLessonRequest>, t: Throwable) {
+                Log.d("LDLDLLDLDL", "onFailure: ${t.message}")
+                call.cancel()
+            }
+        })
+    }
+
 
     private fun getTrainingData() {
         try {
@@ -357,7 +532,7 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
 //                                setAdapter(trainingData)
                                 initrecyclerplanning(plainngData)
 
-                            } else{
+                            } else {
 
                             }
                         } else {
@@ -465,24 +640,38 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                                 initRecyclerview(data)
                             } else {
                                 binding.saveBtn.isEnabled = false
-                                Toast.makeText(this@LessonListActivity, "No lessons available", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@LessonListActivity,
+                                    "No lessons available",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         } else {
-                            Toast.makeText(this@LessonListActivity, "Error: $message", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@LessonListActivity,
+                                "Error: $message",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     } else {
-                        Toast.makeText(this@LessonListActivity, "Empty response body", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LessonListActivity,
+                            "Empty response body",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else if (code == 403) {
                     Utils.setUnAuthDialog(this@LessonListActivity)
                 } else {
-                    Toast.makeText(this@LessonListActivity, response.message(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LessonListActivity, response.message(), Toast.LENGTH_SHORT)
+                        .show()
                     call.cancel()
                 }
             }
 
             override fun onFailure(call: Call<Lesson>, t: Throwable) {
-                Toast.makeText(this@LessonListActivity, "Error: " + t.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LessonListActivity, "Error: " + t.message, Toast.LENGTH_SHORT)
+                    .show()
                 call.cancel()
             }
         })
@@ -505,11 +694,15 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
                                 binding.saveBtn.isEnabled = true
 
                                 initrecyclerTest(resource.data)
-                            }else{
+                            } else {
                                 binding.saveBtn.isEnabled = false
                                 binding.saveBtn.isClickable = false
 
-                                Toast.makeText(this@LessonListActivity, "No Test available", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@LessonListActivity,
+                                    "No Test available",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         } catch (e: Exception) {
                             binding.progresBar.visibility = View.GONE
@@ -613,20 +806,30 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
 
                             if (data != null) {
                                 athleteData.addAll(data)
-                                initrecyclerAthlete(athleteData)
+
+                                Log.d("KFOKKOKOJUGYTFTF", "onResponse: $selectedAthletes")
+                                initrecyclerAthlete(athleteData, selectedAthletes.toMutableSet())
                             }
-                        }else{
+                        } else {
                             binding.saveBtn.isEnabled = false
-                            Toast.makeText(this@LessonListActivity, "No Athlete available", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@LessonListActivity,
+                                "No Athlete available",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
 
-                        for (datas in athleteData){
-                            Log.d("sujals","ID:- " + datas.id)
+                        for (datas in athleteData) {
+                            Log.d("sujals", "ID:- " + datas.id)
                         }
                     } else if (response.code() == 403) {
                         Utils.setUnAuthDialog(this@LessonListActivity)
                     } else {
-                        Toast.makeText(this@LessonListActivity, response.message(), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LessonListActivity,
+                            response.message(),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -637,11 +840,15 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
             }
         })
     }
-
-    private fun initrecyclerAthlete(testdatalist: MutableList<AthleteData.Athlete>) {
+    private fun initrecyclerAthlete(testdatalist: MutableList<AthleteData.Athlete>, selectedAthletes: MutableSet<Int>) {
         binding.progresBar.visibility = View.GONE
         binding.recycler.layoutManager = LinearLayoutManager(this)
-        adapterAthlete = GetAthleteListAdapterGroup(testdatalist, this, this)
+
+        Log.d("OOOUHYGF", "initrecyclerAthlete: $selectedAthletes")
+
+        // Pass selectedAthletes to the adapter so the checkboxes can be pre-selected
+        adapterAthlete = GetAthleteListAdapterGroup(testdatalist, this, this,null ,selectedAthletes)
+
         binding.recycler.adapter = adapterAthlete
     }
 
@@ -674,18 +881,388 @@ class LessonListActivity : AppCompatActivity(),OnItemClickListener.OnItemClickCa
         binding.recycler.adapter = adapterTest
     }
 
-
     private fun initrecycler(testdatalist: ArrayList<EventListData.testData>?) {
         binding.progresBar.visibility = View.GONE
-            adapterEvent = GetEventListAdapterGroup(testdatalist, this, this)
-            binding.recycler.layoutManager = LinearLayoutManager(this)
-            binding.recycler.adapter = adapterEvent
+        adapterEvent = GetEventListAdapterGroup(testdatalist, this, this)
+        binding.recycler.layoutManager = LinearLayoutManager(this)
+        binding.recycler.adapter = adapterEvent
 
         adapterEvent?.notifyDataSetChanged()
     }
 
+    override fun onResume() {
+        super.onResume()
+        lordData()
+    }
+
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
 
+        if (string == "DeletePlanning") {
+            val dialog = Dialog(this)
+            val view = LayoutInflater.from(this).inflate(R.layout.delete_layout, null)
+            dialog.setContentView(view)
+            dialog.setCancelable(false)
+            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val title = view.findViewById<TextView>(R.id.dialogTitle)
+            val editTitle = view.findViewById<TextView>(R.id.editTextTitle)
+            val addButton = view.findViewById<TextView>(R.id.okButton)
+            val cancelButton = view.findViewById<TextView>(R.id.cancelButton)
+
+            title.text = "Alert"
+            editTitle.text = "Are You Sure you want to Delete ?"
+            addButton.text = "Ok"
+            cancelButton.text = "Cancel"
+
+            addButton.setOnClickListener {
+                binding.main.setBackgroundColor(resources.getColor(R.color.black))
+                deleteData(type)
+                dialog.dismiss()
+            }
+
+            cancelButton.setOnClickListener {
+                binding.main.setBackgroundColor(resources.getColor(R.color.black))
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
+
+        if (string == "DeleteLesson") {
+            val dialog = Dialog(this)
+            val view = LayoutInflater.from(this).inflate(R.layout.delete_layout, null)
+            dialog.setContentView(view)
+            dialog.setCancelable(false)
+            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val title = view.findViewById<TextView>(R.id.dialogTitle)
+            val editTitle = view.findViewById<TextView>(R.id.editTextTitle)
+            val addButton = view.findViewById<TextView>(R.id.okButton)
+            val cancelButton = view.findViewById<TextView>(R.id.cancelButton)
+
+            title.text = "Alert"
+            editTitle.text = "Are You Sure you want to Delete ?"
+            addButton.text = "Ok"
+            cancelButton.text = "Cancel"
+
+            addButton.setOnClickListener {
+                binding.main.setBackgroundColor(resources.getColor(R.color.black))
+                deleteLessonData(type)
+                dialog.dismiss()
+            }
+
+            cancelButton.setOnClickListener {
+                binding.main.setBackgroundColor(resources.getColor(R.color.black))
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
+
+        if (string == "DeleteTest") {
+            val dialog = Dialog(this)
+            val view = LayoutInflater.from(this).inflate(R.layout.delete_layout, null)
+            dialog.setContentView(view)
+            dialog.setCancelable(false)
+            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val title = view.findViewById<TextView>(R.id.dialogTitle)
+            val editTitle = view.findViewById<TextView>(R.id.editTextTitle)
+            val addButton = view.findViewById<TextView>(R.id.okButton)
+            val cancelButton = view.findViewById<TextView>(R.id.cancelButton)
+
+            title.text = "Alert"
+            editTitle.text = "Are You Sure you want to Delete ?"
+            addButton.text = "Ok"
+            cancelButton.text = "Cancel"
+
+            addButton.setOnClickListener {
+                binding.main.setBackgroundColor(resources.getColor(R.color.black))
+                deleteTestData(type)
+                dialog.dismiss()
+            }
+
+            cancelButton.setOnClickListener {
+                binding.main.setBackgroundColor(resources.getColor(R.color.black))
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
+
+        if (string == "DeleteEvent") {
+            val dialog = Dialog(this)
+            val view = LayoutInflater.from(this).inflate(R.layout.delete_layout, null)
+            dialog.setContentView(view)
+            dialog.setCancelable(false)
+            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val title = view.findViewById<TextView>(R.id.dialogTitle)
+            val editTitle = view.findViewById<TextView>(R.id.editTextTitle)
+            val addButton = view.findViewById<TextView>(R.id.okButton)
+            val cancelButton = view.findViewById<TextView>(R.id.cancelButton)
+
+            title.text = "Alert"
+            editTitle.text = "Are You Sure you want to Delete ?"
+            addButton.text = "Ok"
+            cancelButton.text = "Cancel"
+
+            addButton.setOnClickListener {
+                binding.main.setBackgroundColor(resources.getColor(R.color.black))
+                deleteEventData(type)
+                dialog.dismiss()
+            }
+
+            cancelButton.setOnClickListener {
+                binding.main.setBackgroundColor(resources.getColor(R.color.black))
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
     }
+
+    private fun deleteData(type: Long) {
+        val id = type.toInt()
+        if (id == null) {
+            Toast.makeText(this, "Invalid ID", Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            binding.progresBar.visibility = View.VISIBLE
+            apiInterface.DeletePlanning(id).enqueue(object : Callback<TrainingPlanData> {
+                override fun onResponse(
+                    call: Call<TrainingPlanData>,
+                    response: Response<TrainingPlanData>
+                ) {
+                    binding.progresBar.visibility = View.GONE
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        if (response.isSuccessful && response.body() != null) {
+                            val message = response.body()?.message ?: "Item deleted"
+                            Toast.makeText(this@LessonListActivity, message, Toast.LENGTH_SHORT)
+                                .show()
+                            lordData()
+                        } else {
+                            val message = response.body()?.message ?: "Failed to delete"
+                            Log.d("delete_tag", "Failed to delete: ${response.code()}")
+                            Toast.makeText(
+                                this@LessonListActivity,
+                                "" + message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(this@LessonListActivity)
+                    } else {
+                        Toast.makeText(
+                            this@LessonListActivity,
+                            "" + response.message(),
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<TrainingPlanData>, t: Throwable) {
+                    binding.progresBar.visibility = View.GONE
+                    Log.d("delete_tag", "Error: ${t.message}")
+                    Toast.makeText(this@LessonListActivity, t.message, Toast.LENGTH_SHORT).show()
+                    call.cancel()
+                }
+            })
+        } catch (e: Exception) {
+            binding.progresBar.visibility = View.GONE
+            Log.d("Exception", "${e.message}")
+        }
+    }
+
+    private fun deleteLessonData(type: Long) {
+        val id = type.toInt()
+        if (id == null) {
+            Toast.makeText(this, "Invalid ID", Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            binding.progresBar.visibility = View.VISIBLE
+            apiInterface.DeleteLession(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        binding.progresBar.visibility = View.GONE
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            binding.progresBar.visibility = View.GONE
+                            Toast.makeText(
+                                this@LessonListActivity,
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+
+                            lordData()
+
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(this@LessonListActivity)
+                        } else {
+                            binding.progresBar.visibility = View.GONE
+                            Toast.makeText(
+                                this@LessonListActivity,
+                                "" + response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        binding.progresBar.visibility = View.GONE
+                        Toast.makeText(
+                            this@LessonListActivity,
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                })
+        } catch (e: Exception) {
+            binding.progresBar.visibility = View.GONE
+            Log.d("Exception", "${e.message}")
+        }
+    }
+
+    private fun deleteTestData(type: Long) {
+        val id = type.toInt()
+        if (id == null) {
+            Toast.makeText(this, "Invalid ID", Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            binding.progresBar.visibility = View.VISIBLE
+            apiInterface.DeleteTest(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            binding.progresBar.visibility = View.GONE
+                            Toast.makeText(
+                                this@LessonListActivity,
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+
+
+                            lordData()
+                        } else if (response.code() == 403) {
+                            Utils.setUnAuthDialog(this@LessonListActivity)
+//                                    val message = response.message()
+//                                    Toast.makeText(
+//                                        this@TestActivity,
+//                                        "" + message,
+//                                        Toast.LENGTH_SHORT
+//                                    )
+//                                        .show()
+//                                    call.cancel()
+//                                    startActivity(
+//                                        Intent(
+//                                            this@TestActivity,
+//                                            SignInActivity::class.java
+//                                        )
+//                                    )
+//                                    finish()
+                        } else {
+                            val message = response.message()
+                            Toast.makeText(
+                                this@LessonListActivity,
+                                "" + message,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        Toast.makeText(
+                            this@LessonListActivity,
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                })
+        } catch (e: Exception) {
+            binding.progresBar.visibility = View.GONE
+            Log.d("Exception", "${e.message}")
+        }
+    }
+
+    private fun deleteEventData(type: Long) {
+        val id = type.toInt()
+        if (id == null) {
+            Toast.makeText(this, "Invalid ID", Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            binding.progresBar.visibility = View.VISIBLE
+            apiInterface.DeleteEvent(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            binding.progresBar.visibility = View.GONE
+                            Toast.makeText(
+                                this@LessonListActivity,
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            lordData()
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(this@LessonListActivity)
+                        } else {
+                            val Message = response.message()
+                            Toast.makeText(
+                                this@LessonListActivity,
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        Toast.makeText(
+                            this@LessonListActivity,
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                })
+        } catch (e: Exception) {
+            binding.progresBar.visibility = View.GONE
+            Log.d("Exception", "${e.message}")
+        }
+    }
+
 
 }

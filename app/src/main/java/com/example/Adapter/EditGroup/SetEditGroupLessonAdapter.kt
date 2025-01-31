@@ -87,5 +87,6 @@ class SetEditGroupLessonAdapter(
         var editImage: ImageView = view.findViewById(R.id.img_edit)
         var favimage: ImageView = view.findViewById(R.id.img_edit)
         var card: CardView = view.findViewById(R.id.card)
+        var right_view: LinearLayout = view.findViewById(R.id.right_view)
     }
 }

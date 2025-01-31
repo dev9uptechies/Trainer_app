@@ -102,7 +102,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="2024-06-21"
+                                    android:text="0000-00-00"
                                     android:textSize="@dimen/_12sdp"
                                     android:fontFamily="@font/poppins_medium"
                                     android:textColor="@android:color/white" />

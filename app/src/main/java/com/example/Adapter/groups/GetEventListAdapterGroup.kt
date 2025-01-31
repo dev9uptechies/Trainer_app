@@ -9,6 +9,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.Create_Event_Activity
 import com.example.OnItemClickListener
@@ -17,6 +18,7 @@ import com.example.model.SelectedDaysModel
 import com.example.trainerapp.ApiClass.EventListData
 import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
+import com.zerobranch.layout.SwipeLayout
 import retrofit2.http.GET
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -54,6 +56,9 @@ class GetEventListAdapterGroup(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val movie = filterList[position] // Use filterList instead of splist
 
+        holder.editImage.visibility = View.GONE
+
+
         val athletesNames = StringBuilder()
 
         for (eventAthlete in movie.event_athletes!!) {
@@ -87,10 +92,25 @@ class GetEventListAdapterGroup(
             notifyItemChanged(position)
         }
 
+        holder.cardView.setOnClickListener {
+            if (selectedItems.contains(position)) {
+                selectedItems.remove(position)
+            } else {
+                selectedItems.add(position)
+            }
+            notifyItemChanged(position)
+
+        }
+
+        holder.img_delete.setOnClickListener {
+            holder.swipe.close(true)
+            listener.onItemClicked(it, position, movie.id!!.toLong(), "DeleteEvent")
+        }
+
 
         Log.d("DHDHDHDH", "onBindViewHolder: $movie.event_athletes!!.get(0).athlete!!.name")
 
-        holder.editImage.setOnClickListener {
+        holder.editImage2.setOnClickListener {
 
             val athleteNames = arrayListOf<String>()
             movie.event_athletes?.forEach { athlete ->
@@ -105,13 +125,8 @@ class GetEventListAdapterGroup(
             }
 
             val intent = Intent(context, Create_Event_Activity::class.java)
-            intent.putExtra("id", movie.id)
-            intent.putExtra("name", movie.title)
-            intent.putExtra("typed", movie.type)
-            intent.putExtra("date", movie.date)
-            intent.putExtra("fromday", true)
-            intent.putExtra("athlete", athleteNames)
-            intent.putExtra("athleteId", athleteIdList)
+            intent.putExtra("EventIdGroup", movie.id!!.toInt())
+            intent.putExtra("EventPositionGroup", position)
             context.startActivity(intent)
         }
 
@@ -152,5 +167,9 @@ class GetEventListAdapterGroup(
         var tvDate: TextView = view.findViewById(R.id.tv_date)
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox)
         var editImage: ImageView = view.findViewById(R.id.img_edit)
+        var editImage2: ImageView = view.findViewById(R.id.img_edit2)
+        val swipe = view.findViewById<SwipeLayout>(R.id.swipe_layout)
+        var cardView: CardView = view.findViewById<View>(R.id.rela_dragged) as CardView
+        var img_delete: ImageView = view.findViewById(R.id.img_delete)
     }
 }

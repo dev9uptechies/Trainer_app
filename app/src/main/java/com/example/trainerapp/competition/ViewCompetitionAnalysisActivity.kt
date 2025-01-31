@@ -702,7 +702,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
 
     private fun setRecyclerView() {
         viewCompetitionAnalysisBinding.performanceRly.layoutManager = LinearLayoutManager(this)
-        compAdapter = ViewCompetitionAdapter(analysisData, this, coach,false)
+        compAdapter = ViewCompetitionAdapter(analysisData, this, true,false)
         viewCompetitionAnalysisBinding.performanceRly.adapter = compAdapter
     }
 

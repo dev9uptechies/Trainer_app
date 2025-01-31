@@ -66,6 +66,7 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
     var userType: String? = null
     var catName = "fggcg"
     var compDate: String? = null
+    var value: String? = null
 
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
@@ -210,7 +211,8 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         eventId = intent.getIntExtra("eventId", 0).toString()
         eventIdss = intent.getStringExtra("eventIdss") ?: "DefaultEventId"
         compDate = intent.getStringExtra("Date") ?: "DefaultDate"
-        Log.d("ReceivedDate", "compDate: $compDate")
+        value= intent.getStringExtra("value") ?: "false"
+        Log.d("ReceivedDate", "compDate: $value")
         Log.d("ReceivedIDDDDDDD", "compDate: $eventIdss")
 
 
@@ -585,9 +587,17 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
             compAdapter = ViewCompetitionAdapter(analysisData, this, false, true)
             viewAnalysisBinding.performanceRly.adapter = compAdapter
         } else {
-            viewAnalysisBinding.performanceRly.visibility = View.VISIBLE
-            compAdapter = ViewCompetitionAdapter(analysisData, this, true, false)
-            viewAnalysisBinding.performanceRly.adapter = compAdapter
+            Log.d("JDJDJDJD", "setRatingData: $value")
+            if (value == "false"){
+                viewAnalysisBinding.performanceRly.visibility = View.VISIBLE
+                compAdapter = ViewCompetitionAdapter(analysisData, this, false, false)
+                viewAnalysisBinding.performanceRly.adapter = compAdapter
+            }else{
+                viewAnalysisBinding.performanceRly.visibility = View.VISIBLE
+                compAdapter = ViewCompetitionAdapter(analysisData, this, true, false)
+                viewAnalysisBinding.performanceRly.adapter = compAdapter
+            }
+
         }
 
     }

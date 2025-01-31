@@ -71,7 +71,6 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     private var groupListCall: Call<GroupListData>? = null
     private var groupListCallAthlete: Call<GroupListAthlete>? = null
 
-
     override fun onResume() {
         checkUser()
         super.onResume()
@@ -500,7 +499,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                                     }
                                 }
 
-                                Log.d("FVVFVFV", "Planning IDs: ${planningIdList.joinToString()}")
+                                Log.d("FVVFVFV", "Planning IDs: ${group_id}")
                                 val transformation: Transformation = RoundedTransformationBuilder()
                                     .borderColor(Color.WHITE)
                                     .borderWidthDp(1f)

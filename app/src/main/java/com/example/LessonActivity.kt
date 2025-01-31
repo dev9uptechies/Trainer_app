@@ -99,6 +99,8 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
     var lessonId = ""
     var LessonLibraryId:Int? = 0
     var LessonLibraryPosition:Int? = 0
+    var LessonIdGroup:Int? = 0
+    var LessonPositionGroup:Int? = 0
     var sectionName = "General Warm-up"
 
     private val sectionDataMap: MutableMap<String, ArrayList<ProgramListData.testData>> =
@@ -124,7 +126,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
         checkButtonTap()
         checkUpdateUI()
 
-        if (LessonLibraryPosition != null && LessonLibraryId?.toLong() != 0L || LessonLibraryId != null) {
+        if (LessonLibraryId.toString() != "0" && LessonLibraryId!!.toInt() != 0 ) {
 
             lessonType = "edit"
             GetLessionListLibaray()
@@ -132,6 +134,15 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
             lessonType = "create"
         }
 
+        Log.d("SLLSLSLLSLSLSLSL", "onCreate: $LessonLibraryPosition     $LessonLibraryId")
+
+        if (LessonIdGroup.toString() != "0" || LessonIdGroup != 0) {
+
+            lessonType = "edit"
+            GetLessionListGroup(LessonIdGroup!!.toInt())
+        }else{
+            lessonType = "create"
+        }
 
         Log.d("lessonDataatatatata", "onCreate: $lession_data1")
 
@@ -480,10 +491,12 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
             val finalID = if(idToUse == null || idToUse.isNullOrEmpty() || idToUse == "0") LessonLibraryId else idToUse
 
-            Log.d("KDKKKDK", "editData: $finalID    $idToUse")
+            val finalIDGroup = if(finalID == null || finalID == "" || finalID == 0) LessonIdGroup else finalID
+
+            Log.d("KDKKKDK", "editData: $finalID    $idToUse     $finalIDGroup")
 
             val jsonObject = JsonObject()
-            jsonObject.addProperty("id", finalID.toString())
+            jsonObject.addProperty("id", finalIDGroup.toString())
             jsonObject.addProperty("name", lessonBinding.edtLessonName.text.toString())
             jsonObject.add("goal_ids", goalArray)
             jsonObject.addProperty("time", lessonBinding.edtTime.text.toString())
@@ -726,7 +739,11 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
         LessonLibraryId = intent.getIntExtra("LessonLibraryId",0)
         LessonLibraryPosition = intent.getIntExtra("LessonLibraryPosition",0)
-        Log.d("DDJJJJDJJJ", "initViews: $LessonLibraryId    $LessonLibraryPosition")
+        LessonIdGroup = intent.getIntExtra("LessonIdGroup",0)
+        LessonPositionGroup = intent.getIntExtra("LessonPositionGroup",0)
+        Log.d("DDJJJJDJJJ", "initViews: $LessonIdGroup    $LessonPositionGroup")
+
+
     }
 
     private fun showPopup(
@@ -889,7 +906,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 //                    "" + t.message,
 //                    Toast.LENGTH_SHORT
 //                ).show()
-//                call.cancel()
+//                call.cancel)
 //            }
 //
 //        })
@@ -979,6 +996,7 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                                 lession_data1.clear()
                                 lession_data1.addAll(data)
                                 initRecyclerview(lession_data1)
+
                                 setLessonData(lession_data1[LessonLibraryPosition!!])
 
                             } else {
@@ -1021,6 +1039,85 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
             }
         })
     }
+
+    private fun GetLessionListGroup(targetId: Int) {
+        Log.d("KDKDKDKDK", "GetLessionListGroup: OKOOOK")
+        lessonBinding.lessionProgress.visibility = View.VISIBLE
+        apiInterface.GetLession1().enqueue(object : Callback<Lesson> {
+            override fun onResponse(call: Call<Lesson>, response: Response<Lesson>) {
+                Log.d("TAG Lesson:", response.code().toString() + "")
+                lessonBinding.lessionProgress.visibility = View.GONE
+                val code = response.code()
+                if (code == 200) {
+                    val resource = response.body()
+                    if (resource != null) {
+                        val success: Boolean = resource.status ?: false
+                        val message: String = resource.message ?: "No message"
+                        if (success) {
+                            val data = resource.data
+                            if (!data.isNullOrEmpty()) {
+                                Log.d("Lesson Data :-", "$success $message \t $data")
+
+                                // Filter the lesson data to find a matching ID
+                                val matchedLesson = data.find { it.id == targetId }
+
+                                if (matchedLesson != null) {
+                                    // Set the matched data
+                                    Log.d("Matched Lesson", "$matchedLesson")
+                                    setLessonDataGroup(matchedLesson)
+
+                                    // Update RecyclerView if necessary
+                                    lession_data1.clear()
+                                    lession_data1.addAll(data)
+                                    initRecyclerview(lession_data1)
+                                } else {
+                                    Toast.makeText(
+                                        this@LessonActivity,
+                                        "No lesson found with ID: $targetId",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } else {
+                                // Handle empty or null data
+                                Toast.makeText(
+                                    this@LessonActivity,
+                                    "No lessons available",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            // Handle unsuccessful response if needed
+                            Toast.makeText(
+                                this@LessonActivity,
+                                "Error: $message",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        // Handle null response body
+                        Toast.makeText(
+                            this@LessonActivity,
+                            "Empty response body",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else if (code == 403) {
+                    Utils.setUnAuthDialog(this@LessonActivity)
+                } else {
+                    Toast.makeText(this@LessonActivity, response.message(), Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            }
+
+            override fun onFailure(call: Call<Lesson>, t: Throwable) {
+                Toast.makeText(this@LessonActivity, "Error: " + t.message, Toast.LENGTH_SHORT)
+                    .show()
+                call.cancel()
+            }
+        })
+    }
+
 
 
     private fun initRecyclerview(data: ArrayList<Lesson.LessonDatabase>) {
@@ -1461,6 +1558,41 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
     }
 
     private fun setLessonData(lessonDatabase: Lesson.LessonDatabase) {
+        Log.d("DATA BASE :-", "${lessonDatabase.lesson_programs?.size ?: 0}")
+        lessonDatabase.lesson_programs?.forEach {
+            Log.d("Lesson Database :-", "${it.program?.name} \t ${it.program?.id}")
+        }
+
+        id.clear()
+        lessonDatabase.lesson_programs?.forEach {
+            it.program?.id?.let { programId -> id.add(programId) }
+        }
+
+//        lessonDatabase.lesson_goal?.forEach {
+//            it.goal_id?.let { GoalId -> Goalid.add(GoalId) }
+//        }
+
+
+
+        Log.d("DLDLDLLDLDLL", "setLessonData: $id")
+        lessonBinding.edtLessonName.setText(lessonDatabase.name ?: "")
+        lessonBinding.edtTime.setText(lessonDatabase.time ?: "")
+        lessonBinding.tvSelectionTime.setText(lessonDatabase.section_time ?: "")
+
+        try {
+            val lessonGoal = lessonDatabase.lesson_goal?.getOrNull(0)
+            lessonBinding.edtGoal.setText(lessonGoal?.goal?.name ?: "")
+            goalId.id = lessonGoal?.goal_id?.toInt() ?: 0
+            sectionId.id = lessonDatabase.section_id?.toInt() ?: 0
+            sectionAdapter.updateSelectedId(sectionId.id!!)
+        } catch (e: Exception) {
+            Log.d("Exception :-", "$e 	 ${e.message}")
+        }
+
+        lessonBinding.etSelectTestDate.setText(lessonDatabase.date ?: "")
+    }
+
+    private fun setLessonDataGroup(lessonDatabase: Lesson.LessonDatabase) {
         Log.d("DATA BASE :-", "${lessonDatabase.lesson_programs?.size ?: 0}")
         lessonDatabase.lesson_programs?.forEach {
             Log.d("Lesson Database :-", "${it.program?.name} \t ${it.program?.id}")

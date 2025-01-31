@@ -9,11 +9,13 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.OnItemClickListener
 import com.example.TestActivity
 import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
+import com.zerobranch.layout.SwipeLayout
 import retrofit2.http.GET
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -44,6 +46,7 @@ class GetTestListAdapterGroup(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val movie = filterList[position]
+        holder.editImage.visibility = View.GONE
 
         holder.tvFname.text = movie.title
         holder.tv_unit.text = "Unit: " +  movie.unit
@@ -64,7 +67,17 @@ class GetTestListAdapterGroup(
             notifyItemChanged(position)
         }
 
-        holder.editImage.setOnClickListener {
+
+        holder.cardView.setOnClickListener {
+            if (selectedItems.contains(position)) {
+                selectedItems.remove(position)
+            } else {
+                selectedItems.add(position)
+            }
+            notifyItemChanged(position)
+
+        }
+        holder.editImage2.setOnClickListener {
             val testId = movie.data?.getOrNull(0)?.test_id ?: ""
             val athleteIds = movie.data?.map { it.athlete!!.id } ?: emptyList()
             val athleteNames = movie.data?.map { it.athlete!!.name } ?: emptyList()
@@ -72,17 +85,18 @@ class GetTestListAdapterGroup(
             Log.d("SDSDSDSDDS", "onBindViewHolder: "+movie.data!!.get(0).athlete!!.id)
 
             val intent = Intent(context, TestActivity::class.java)
-            intent.putExtra("id", testId)
-            intent.putExtra("fromday", true)
-            intent.putExtra("name",movie.title)
-            intent.putExtra("date",movie.date)
-            intent.putExtra("goal",movie.goal)
-            intent.putExtra("unit",movie.unit)
-            intent.putExtra("athletename1",movie.data!!.get(0).athlete!!.name)
-            intent.putIntegerArrayListExtra("athleteid", ArrayList(athleteIds))
-            intent.putStringArrayListExtra("athletename", ArrayList(athleteNames))
+            intent.putExtra("TestIdGroup", testId.toInt())
+            intent.putExtra("TestPositionGroup", position)
             context.startActivity(intent)
         }
+
+
+        holder.img_delete.setOnClickListener {
+            holder.swipe.close(true)
+            listener.onItemClicked(it, position, movie.id!!.toLong(), "DeleteTest")
+        }
+
+
 
 
     }
@@ -130,5 +144,10 @@ class GetTestListAdapterGroup(
         var tvDate: TextView = view.findViewById(R.id.tv_date)
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox)
         var editImage: ImageView = view.findViewById(R.id.img_edit)
+        var editImage2: ImageView = view.findViewById(R.id.img_edit2)
+        val swipe = view.findViewById<SwipeLayout>(R.id.swipe_layout)
+        var img_delete: ImageView = view.findViewById(R.id.img_delete)
+        var cardView: CardView = view.findViewById<View>(R.id.rela_dragged) as CardView
+
     }
 }

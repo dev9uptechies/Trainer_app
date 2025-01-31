@@ -107,13 +107,6 @@ class Library_LessonAdapter(
             )
         )
 
-        if (movie.is_favourite.toString() == "1") {
-            holder.image.setImageResource(R.drawable.ic_favorite_select)
-
-        } else {
-            holder.image.setImageResource(R.drawable.ic_favorite_red)
-        }
-
 
         holder.image.setOnClickListener(
             if (movie.is_favourite.toString() == "1") {

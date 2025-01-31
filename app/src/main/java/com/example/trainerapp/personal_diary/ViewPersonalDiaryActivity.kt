@@ -234,6 +234,7 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
         if (userType == "Athlete") {
             binding.shareCard.visibility = View.VISIBLE
             val savedStatus = getShareStatus()
+            getpersonaldiary()
             binding.switchShare.isChecked = savedStatus == 1
         } else {
             binding.shareCard.visibility = View.GONE

@@ -28,7 +28,11 @@ import com.example.model.newClass.competition.GetCompetition
 import com.example.model.newClass.cycle.AddTimerBody
 import com.example.model.newClass.delete.DeleteBase
 import com.example.model.newClass.excercise.Exercise
+import com.example.model.newClass.lesson.GetLessonRequest
 import com.example.model.newClass.lesson.Lesson
+import com.example.model.newClass.lesson.LessonRequest
+import com.example.model.newClass.test.ApiResponse
+import com.example.model.newClass.test.TestRequest
 import com.example.model.newClass.test.TestResultRequest
 import com.example.model.newClass.timer.Timer
 import com.example.model.notification.NotificationModel
@@ -786,6 +790,17 @@ interface APIInterface {
     @POST("test/result")
     fun TestResults(@Body request: TestResultRequest): Call<Any>
 
+
+    @POST("lesson_attendance/add")
+    fun sendLessonAttendance(
+        @Body requestBody: LessonRequest
+    ): Call<ResponseBody>
+
+    @POST("lesson_attendance")
+    fun GetLessonAttendance(@Query("lesson_id") lesson_id: String): Call<GetLessonRequest>
+
+    @POST("test/repeat")  // Replace with actual endpoint
+    fun sendTestData(@Body request: TestRequest): Call<ApiResponse>
 
     //////////////// Athlete ////////////////
 

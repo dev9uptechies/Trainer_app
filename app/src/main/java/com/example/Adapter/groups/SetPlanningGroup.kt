@@ -47,6 +47,7 @@ class SetPlanningGroup(
         var tvDate: TextView = view.findViewById(R.id.tv_date)
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox)
         var editImage: ImageView = view.findViewById(R.id.img_edit)
+        var right_view: LinearLayout = view.findViewById(R.id.right_view)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -54,6 +55,7 @@ class SetPlanningGroup(
 
         holder.editImage.visibility = View.GONE
         holder.checkBox.visibility = View.GONE
+        holder.right_view.visibility = View.GONE
 
         holder.tvFname.text = movie.name
         holder.tvgoal.text = "Start: ${formatDate(movie.start_date)}"

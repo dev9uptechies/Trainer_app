@@ -44,6 +44,7 @@ class LessonAdapter(
             val intent = Intent(context, ViewLessonActivity::class.java).apply {
                 putExtra("lessonId", lessonId)
                 putExtra("position",position)
+                putExtra("GroupAttends","GroupAttends")
             }
             context.startActivity(intent)
         }

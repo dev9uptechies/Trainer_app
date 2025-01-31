@@ -125,16 +125,32 @@ class LoadProgramActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                 loadProgramBinding.programProgress.visibility = View.GONE
                 Log.d("TAG", response.code().toString() + "")
                 val code = response.code()
+
                 if (code == 200) {
                     val resource: ProgramListData? = response.body()
-                    val Success: Boolean = resource?.status!!
-                    val Message: String = resource.message!!
-                    if (Success) {
-                        if (resource.data!! != null) {
-                            initrecycler(resource.data)
+
+                    if (resource != null) {
+                        val success = resource.status
+                        val message = resource.message
+
+                        if (success == true) {
+                            resource.data?.let {
+                                initrecycler(it)
+                            } ?: run {
+                                // Handle case where data is null
+                                Toast.makeText(
+                                    this@LoadProgramActivity,
+                                    "No data available",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            Toast.makeText(this@LoadProgramActivity, message ?: "Unknown error", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     } else {
-                        Toast.makeText(this@LoadProgramActivity, "" + Message, Toast.LENGTH_SHORT)
+                        // Handle case where resource is null
+                        Toast.makeText(this@LoadProgramActivity, "Response body is null", Toast.LENGTH_SHORT)
                             .show()
                     }
                 } else if (code == 403) {
@@ -143,21 +159,18 @@ class LoadProgramActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                     call.cancel()
                     Toast.makeText(
                         this@LoadProgramActivity,
-                        "" + response.message(),
+                        response.message(),
                         Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    ).show()
                 }
             }
 
             override fun onFailure(call: Call<ProgramListData?>, t: Throwable) {
                 loadProgramBinding.programProgress.visibility = View.GONE
-                Toast.makeText(this@LoadProgramActivity, "" + t.message, Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(this@LoadProgramActivity, t.message, Toast.LENGTH_SHORT).show()
                 call.cancel()
             }
         })
-
     }
 
     private fun initrecycler(data: ArrayList<ProgramListData.testData>?) {

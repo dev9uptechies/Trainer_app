@@ -180,7 +180,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         id = intent.getStringExtra("idddd") ?: ""
         group_id = intent.getStringExtra("group_idddd") ?: ""
         Log.d("ID", "Received ID: $id")
-        Log.d("ID", "Received ID: $group_id")
+        Log.d("IDDDDDDDDDD", "Received ID: $group_id")
 
 
         if (preferenceManager.GetFlage() == "Athlete") {

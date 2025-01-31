@@ -680,6 +680,11 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         createGroupBinding.scanQr.setOnClickListener {
 
             createGroupBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
+            createGroupBinding.rlyPlanning.visibility = View.GONE
+            createGroupBinding.rlyLesson.visibility = View.GONE
+            createGroupBinding.rlyTest.visibility = View.GONE
+            createGroupBinding.rlyEvent.visibility = View.GONE
+            createGroupBinding.rlyAthlete.visibility = View.GONE
 
             createGroupBinding.MonLinearLayout.visibility = View.GONE
             createGroupBinding.TueLinearLayout.visibility = View.GONE
@@ -721,6 +726,12 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
                 createGroupBinding.FriLinearLayout.visibility = View.VISIBLE
                 createGroupBinding.SatLinearLayout.visibility = View.VISIBLE
                 createGroupBinding.SunLinearLayout.visibility = View.VISIBLE
+
+                createGroupBinding.rlyPlanning.visibility = View.VISIBLE
+                createGroupBinding.rlyLesson.visibility = View.VISIBLE
+                createGroupBinding.rlyTest.visibility = View.VISIBLE
+                createGroupBinding.rlyEvent.visibility = View.VISIBLE
+                createGroupBinding.rlyAthlete.visibility = View.VISIBLE
 
                 dialog.dismiss()
             }

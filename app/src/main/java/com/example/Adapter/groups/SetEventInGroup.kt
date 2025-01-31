@@ -12,18 +12,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.Create_Event_Activity
 import com.example.OnItemClickListener
-import com.example.TestActivity
-import com.example.model.SelectedDaysModel
 import com.example.trainerapp.ApiClass.EventListData
 import com.example.trainerapp.R
-import com.example.trainerapp.TestListData
-import retrofit2.http.GET
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
-
 
 class SetEventInGroup(
     private var splist: ArrayList<EventListData.testData>?,
@@ -36,7 +28,6 @@ class SetEventInGroup(
     private var filterList: ArrayList<EventListData.testData> = ArrayList()
     private var selectedDate: String? = null
     private val selectedItems: MutableSet<Int> = mutableSetOf() // Store selected item positions
-
 
     init {
         filterList = ArrayList(splist ?: emptyList())
@@ -56,6 +47,7 @@ class SetEventInGroup(
 
         holder.editImage.visibility = View.GONE
         holder.checkBox.visibility = View.GONE
+        holder.right_view.visibility = View.GONE
 
         val athletesNames = StringBuilder()
 
@@ -154,6 +146,7 @@ class SetEventInGroup(
         var click: LinearLayout = view.findViewById<View>(R.id.click) as LinearLayout
         var tvDate: TextView = view.findViewById(R.id.tv_date)
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox)
+        var right_view: LinearLayout = view.findViewById(R.id.right_view)
         var editImage: ImageView = view.findViewById(R.id.img_edit)
     }
 }

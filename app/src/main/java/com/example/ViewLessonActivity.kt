@@ -1,5 +1,3 @@
-
-
 package com.example
 
 import android.app.Dialog
@@ -46,6 +44,7 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     var idforviewlesson: Int? = null
 
     var lposition:Int ?= null
+    var GroupAttends:String ?= null
 
     var excId = SelectedValue(null)
     var proId = SelectedValue(null)
@@ -100,11 +99,19 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         val name = intent.getStringExtra("name")
         idLibrary = intent.getIntExtra("LessonLibraryId", 0)
         lposition = intent.getIntExtra("LessonLibraryPosition", 0)
+        GroupAttends = intent.getStringExtra("GroupAttends")
 
+        Log.d("JSJSJSJJS", "initViews: $GroupAttends")
         Log.d("JSJSJSJJS", "initViews: $idLibrary")
         Log.d("CCVCVCVVCVCV", "initViews: "+ id)
         Log.d("CCVCVCVVCVCV", "initViews: "+ position)
         Log.d("CCVCVCVVCVCV", "initViews: "+ idforviewlesson)
+
+        if (GroupAttends == "" || GroupAttends == "null" || GroupAttends == null){
+            viewLessonBinding.cardAttendenecs.isClickable = false
+            viewLessonBinding.cardAttendenecs.isActivated = false
+            viewLessonBinding.cardAttendenecs.isEnabled = false
+        }
 
         lessonData = ArrayList()
 
@@ -113,16 +120,37 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         viewLessonBinding.lessonSTime.text = "Section Time : $sectionTime"
 
         viewLessonBinding.back.setOnClickListener { finish() }
+
+        viewLessonBinding.cardOnline.visibility = View.GONE
         viewLessonBinding.cardOnline.setOnClickListener {
             startActivity(Intent(this@ViewLessonActivity, LessonOnlineActivity::class.java).apply {
                 putExtra("total_time", totalTime)
             })
         }
 
+        Log.d("DKKDKDKD", "initViews: $idforviewlesson")
+
+        val finalId = if (idforviewlesson == null || idforviewlesson == 0|| idforviewlesson.toString() == "0") idLibrary else idforviewlesson
+
+
+        val fi = if (finalId == 0|| finalId == null || finalId.toString() == "0") id else finalId
+
+        Log.d("DKKDKDKDDDDDDDDD", "initViews: $fi")
+
+
+        viewLessonBinding.cardAttendenecs.setOnClickListener {
+            val intent = Intent(this, LessonListActivity::class.java)
+            intent.putExtra("Add", "ConfirmAttendance")
+            intent.putExtra("LessonID", fi!!.toInt())
+            startActivity(intent)
+        }
+
         viewLessonBinding.cardDuplicate.setOnClickListener { showDuplicateDialog() }
     }
 
     private fun showDuplicateDialog() {
+        viewLessonBinding.main.setBackgroundColor(resources.getColor(R.color.grey))
+
         val dialog = Dialog(this, R.style.Theme_Dialog).apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setCancelable(true)
@@ -135,8 +163,12 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         }
 
         dialog.show()
-        dialog.findViewById<CardView>(R.id.card_cancel).setOnClickListener { dialog.dismiss() }
+        dialog.findViewById<CardView>(R.id.card_cancel).setOnClickListener {
+            viewLessonBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+            dialog.dismiss() }
         dialog.findViewById<CardView>(R.id.card_apply).setOnClickListener {
+            viewLessonBinding.main.setBackgroundColor(resources.getColor(R.color.black))
+
             dialog.dismiss()
             duplicateLesson()
         }
