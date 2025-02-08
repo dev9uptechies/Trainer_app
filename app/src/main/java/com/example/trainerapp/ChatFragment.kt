@@ -41,7 +41,15 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         apiClient = APIClient(requireContext())
         preferenceManager = PreferencesManager(requireContext())
         apiInterface = apiClient.client().create(APIInterface::class.java)
-        callGroupChatApi()
+
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete") {
+            callGroupChatApiAthlete()
+        }else{
+            callGroupChatApi()
+        }
+
         return chatBinding.root
     }
 
@@ -70,10 +78,65 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                     val message = response.message()
                     Toast.makeText(
                         requireContext(),
-                        "" + message,
+                        "Too Many Request",
                         Toast.LENGTH_SHORT
                     )
                         .show()
+                    call.cancel()
+                    preferenceManager.setUserLogIn(false)
+                    startActivity(
+                        Intent(
+                            requireContext(),
+                            SignInActivity::class.java
+                        )
+                    )
+                    requireActivity().finish()
+                } else {
+                    chatBinding.groupChatProgress.visibility = View.GONE
+                    val message = response.message()
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            }
+
+            override fun onFailure(call: Call<GroupChateListData?>, t: Throwable) {
+                Toast.makeText(requireContext(),t.message, Toast.LENGTH_SHORT)
+                    .show()
+                call.cancel()
+                chatBinding.groupChatProgress.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun callGroupChatApiAthlete() {
+        chatBinding.groupChatProgress.visibility = View.VISIBLE
+        apiInterface.GropChateListAthlete()?.enqueue(object : Callback<GroupChateListData?> {
+            override fun onResponse(
+                call: Call<GroupChateListData?>,
+                response: Response<GroupChateListData?>
+            ) {
+                Log.d("TAG", response.code().toString() + "")
+                val code = response.code()
+                if (code == 200) {
+                    val resource: GroupChateListData? = response.body()
+                    val Success: Boolean = resource?.status!!
+                    val Message: String = resource.message!!
+                    if (Success) {
+                        chatBinding.groupChatProgress.visibility = View.GONE
+                        initRecycler(resource.data!!)
+                    } else {
+                        chatBinding.groupChatProgress.visibility = View.GONE
+                        Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
+                    }
+                } else if (response.code() == 403) {
+                    chatBinding.groupChatProgress.visibility = View.GONE
+                    val message = response.message()
+                    Toast.makeText(
+                        requireContext(),
+                        "Too Many Request",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     call.cancel()
                     preferenceManager.setUserLogIn(false)
                     startActivity(

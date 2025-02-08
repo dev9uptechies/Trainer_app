@@ -866,4 +866,8 @@ interface APIInterface {
     ): Call<Competition>?
 
 
+    @GET("Athlete/chat/group_chat")
+    fun GropChateListAthlete(
+    ): Call<GroupChateListData>?
+
 }

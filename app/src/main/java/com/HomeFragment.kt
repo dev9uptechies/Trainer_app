@@ -135,7 +135,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         homeFragmentBinding.viewRecycler
         homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
 
-
         initViews()
         setDrawerToggle()
         getInstraction()
@@ -152,6 +151,9 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         val userType = preferenceManager.GetFlage()
 
         if (userType == "Athlete") {
+
+            homeFragmentBinding.startTv.text = "START YOUR"
+            homeFragmentBinding.mainTv.text = "NEXT WORKOUT"
             homeFragmentBinding.linerAthlete.visibility =View.VISIBLE
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_library).isVisible = false
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = false
@@ -512,7 +514,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun daysOfWeekFromLocale(): List<DayOfWeek> {
-        val firstDayOfWeek = DayOfWeek.MONDAY
+        val firstDayOfWeek = DayOfWeek.SUNDAY
         val daysOfWeek = DayOfWeek.values()
         return daysOfWeek.slice(firstDayOfWeek.ordinal..daysOfWeek.lastIndex) +
                 daysOfWeek.slice(0 until firstDayOfWeek.ordinal)

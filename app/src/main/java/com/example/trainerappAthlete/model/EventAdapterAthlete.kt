@@ -18,6 +18,11 @@ class EventAdapterAthlete(
     val listener: OnItemClickListener.OnItemClickCallback
 ) : RecyclerView.Adapter<EventAdapterAthlete.MyViewHolder>() {
 
+    init {
+        // ✅ Filter out items with missing fields
+        data = data?.filter { isValidItem(it) } as? ArrayList<GroupListAthlete.GroupEvents>
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.lession_list_item, parent, false)
@@ -58,6 +63,15 @@ class EventAdapterAthlete(
 
     }
     override fun getItemCount(): Int = data!!.size
+
+    private fun isValidItem(item: GroupListAthlete.GroupEvents): Boolean {
+        return item.event?.let { test ->
+            !test.title.isNullOrEmpty() &&
+                    !test.date.isNullOrEmpty() &&
+                    !test.type.isNullOrEmpty() &&
+                    !test.event_athletes.isNullOrEmpty()
+        } ?: false
+    }
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var name: TextView = view.findViewById(R.id.tv_program_name)

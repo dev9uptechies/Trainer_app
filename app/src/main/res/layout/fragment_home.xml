@@ -60,6 +60,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/main_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_10sdp"
@@ -571,6 +572,7 @@
                                         android:layout_height="@dimen/_25sdp"
                                         android:layout_marginTop="@dimen/_20sdp"
                                         android:layout_marginEnd="@dimen/_10sdp"
+                                        android:visibility="gone"
                                         android:src="@drawable/ic_plus" />
 
                                 </LinearLayout>
@@ -615,6 +617,7 @@
                                         android:layout_height="@dimen/_25sdp"
                                         android:layout_marginTop="@dimen/_20sdp"
                                         android:layout_marginEnd="@dimen/_10sdp"
+                                        android:visibility="gone"
                                         android:src="@drawable/ic_plus" />
 
                                 </LinearLayout>
@@ -658,6 +661,7 @@
                                         android:layout_height="@dimen/_25sdp"
                                         android:layout_marginTop="@dimen/_20sdp"
                                         android:layout_marginEnd="@dimen/_10sdp"
+                                        android:visibility="gone"
                                         android:src="@drawable/ic_plus" />
 
                                 </LinearLayout>
@@ -703,6 +707,7 @@
                                         android:layout_height="@dimen/_25sdp"
                                         android:layout_marginTop="@dimen/_20sdp"
                                         android:layout_marginEnd="@dimen/_10sdp"
+                                        android:visibility="gone"
                                         android:src="@drawable/ic_plus" />
 
                                 </LinearLayout>

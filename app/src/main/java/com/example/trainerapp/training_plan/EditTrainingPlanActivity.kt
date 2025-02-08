@@ -82,12 +82,10 @@ class EditTrainingPlanActivity : AppCompatActivity() {
     private val selectedDateRanges = mutableListOf<Pair<Long, Long>>()
     private var activeLayoutIndex: Int? = null
 
-
     private var competitive: Competitive = Competitive("", "", "", "")
     private var preSeason = PreSeason("", "", "", "")
     private var transition = Transition("", "", "", "")
     private var preCompetitive: PreCompetitive = PreCompetitive("", "", "", "")
-
 
     var errorstartdate: String? = null
     var errorenddate: String? = null
@@ -154,34 +152,32 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             }
         })
     }
+
     private fun findMissingIndex(indexList: MutableList<String>): Int? {
         val existingIndexes = indexList.mapNotNull { it.toIntOrNull() }.toSet()
         return (0..3).firstOrNull { it !in existingIndexes } // Find the first missing index
     }
 
-
     private fun checkButtonClick() {
 
         editTrainingPlanBinding.add.setOnClickListener {
-            if (trainingPlanCount < 4) {
+            if (indexxx.size < 4) {
                 val missingIndex = findMissingIndex(indexxx)
-                val name = ""
-                val startDate = ""
-                val endDate = ""
-                val mesocycle = ""
-                val phaseType = ""
-
                 if (missingIndex != null) {
-                    indexxx.add(missingIndex.toString())
-                    Log.d("DDKKDKDKDK", "checkButtonClick: $indexxx")
+                    Log.d("DDKKDKDKDK", "Before Add: $indexxx")
+
+                    indexxx.add(missingIndex.toString()) // ✅ Always append to avoid shifting indexes
+
+                    Log.d("DDKKDKDKDK", "After Add: $indexxx")
+
+                    addTrainingPlanView("", "", "", "", "") // ✅ Add empty plan
+                    updateTrainingPlanIndices() // ✅ Maintain UI stability
                 } else {
                     Log.d("DDKKDKDKDK", "No missing index found. Cannot add more.")
-                    return@setOnClickListener
                 }
-
-                addTrainingPlanView(name, startDate, endDate, mesocycle, phaseType)
             }
         }
+
 
 
         editTrainingPlanBinding.cardSave.setOnClickListener { EditeProgramData() }
@@ -491,7 +487,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             if (index >= 0) {
                 val startDate = dateFormatter.format(Date(pair.first))
                 val endDate = dateFormatter.format(Date(pair.second))
-                    Log.d("SDSDSDSDSDSD", "Date Range $index: ($startDate - $endDate)")
+                Log.d("SDSDSDSDSDSD", "Date Range $index: ($startDate - $endDate)")
             }
         }
 
@@ -1564,51 +1560,30 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             }
         }
 
-
     }
-
 
     private fun updateTrainingPlanIndices() {
         val defaultNames = listOf("Enter Pre Season", "Enter Pre Competitive", "Enter Competitive", "Enter Transition")
 
         Log.d("DPPDPSPPSPAA", "updateTrainingPlanIndices: $indexxx")
 
-        // Loop through indexxx and assign names based on the actual index
-        indexxx.forEachIndexed { listIndex, actualIndexString ->
-            val actualIndex = actualIndexString.toIntOrNull() ?: return@forEachIndexed
 
-            Log.d("PLLLLPPLLPLLPLPLPLPLP", "updateTrainingPlanIndices: $actualIndex")
+        indexxx.forEachIndexed { listIndex, actualIndexStr ->
+            val actualIndex = actualIndexStr.toIntOrNull() ?: return@forEachIndexed
 
-            // Ensure actualIndex is within bounds and the indexxx is in the fixed range (0, 1, 2, 3)
-            if (actualIndex in 0..3 && actualIndex < trainingPlanLayouts.size) {
-                val layout = trainingPlanLayouts[actualIndex]
+            if (listIndex < trainingPlanLayouts.size) {
+                val layout = trainingPlanLayouts[listIndex]
                 val nameEditText: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
 
-                val currentName = nameEditText.text?.toString()?.trim()
+                Log.d(")(((((((", "updateTrainingPlanIndices: $actualIndex")
 
-                if (currentName.isNullOrEmpty()) {
-                    for (i in indexxx){
-                        val nameToSet = when (i) {
-                            "0" -> "Enter Pre Season"
-                            "1" -> "Enter Pre Competitive"
-                            "2" -> "Enter Competitive"
-                            "3" -> "Enter Transition"
-                            else -> ""
-                        }
-                        nameEditText.setHint(nameToSet)
-
-                    }
-
-                }
-
+                val nameToSet = defaultNames.getOrNull(actualIndex) ?: nameEditText.hint
+                nameEditText.setHint(nameToSet)
 
                 Log.d("UpdateTrainingPlan", "Index: $actualIndex, Name: ${nameEditText.hint}")
             }
         }
-
-        Log.d("UpdateTrainingPlan", "Updated indices for ${indexxx.size} training plans.")
     }
-
 
     private fun getTrainingPlanDetails(planNumber: Int): String {
         return when (planNumber) {
@@ -1944,4 +1919,3 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         }
     }
 }
-
