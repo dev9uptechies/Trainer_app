@@ -638,7 +638,6 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         try {
 
             val data = testData ?: ArrayList<GroupListData.GroupTest>()
-
             groupDetailBinding.testRly.layoutManager = LinearLayoutManager(this)
             testAdapter = TestAdapter(data, this, this) // No need to pass null values
             groupDetailBinding.testRly.adapter = testAdapter
@@ -660,7 +659,6 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
     //////////////   Athlete    ////////////
 
-
     private fun initAthleteDataAthlete(athleteData: ArrayList<GroupListAthlete.Athlete>?) {
 
         try {
@@ -674,14 +672,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         }
     }
 
-
     private fun initTestDataAthlete(testData: ArrayList<GroupListAthlete.GroupTest>?) {
         try {
-
             val data = testData ?: ArrayList<GroupListAthlete.GroupTest>()
-
             groupDetailBinding.testRly.layoutManager = LinearLayoutManager(this)
-            testAdapterAthlete = TestAdapterAthlete(data, this, this) // No need to pass null values
+            testAdapterAthlete = TestAdapterAthlete(data, this, this)
             groupDetailBinding.testRly.adapter = testAdapterAthlete
         } catch (e: Exception) {
             Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
@@ -691,7 +686,6 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     private fun initEventDataAthlete(eventData: ArrayList<GroupListAthlete.GroupEvents>?) {
         try {
             val data = eventData ?: ArrayList<GroupListAthlete.GroupEvents>()
-
             groupDetailBinding.eventRly.layoutManager = LinearLayoutManager(this)
             eventAdapterAthlete = EventAdapterAthlete(data, this, this)
             groupDetailBinding.eventRly.adapter = eventAdapterAthlete
@@ -702,7 +696,6 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
     private fun initPlanningDataAthlete(data: ArrayList<GroupListAthlete.GroupPlanning>?) {
         try {
-
             groupDetailBinding.planningRly.layoutManager = LinearLayoutManager(this)
             adapterAthelete = PlanningAdapterAthlete(data, this, this)
             groupDetailBinding.planningRly.adapter = adapterAthelete
@@ -716,14 +709,12 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
             val data = lessonData ?: ArrayList<GroupListAthlete.GroupLesson>()
 
             groupDetailBinding.lessionRly.layoutManager = LinearLayoutManager(this)
-            lessonAdapterAthlete = LessonAdapterAthlete(data, this, this) // No need to pass null values
+            lessonAdapterAthlete = LessonAdapterAthlete(data, this, this)
             groupDetailBinding.lessionRly.adapter = lessonAdapterAthlete
         } catch (e: Exception) {
             Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
         }
     }
-
-
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
         when (string) {
@@ -733,9 +724,9 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 //                startActivity(intent)
 //            }
             "lesson" -> {
-                val intent = Intent(this, ViewLessonActivity::class.java)
-                intent.putExtra("Id", 214) // Example ID
-                startActivity(intent)
+//                val intent = Intent(this, ViewLessonActivity::class.java)
+//                intent.putExtra("Id", 214) // Example ID
+//                startActivity(intent)
             }
 
             "event" -> {
@@ -765,12 +756,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                             loadData()
                         } else {
                             groupDetailBinding.progressDetail.visibility = View.GONE
-                            Toast.makeText(
-                                this@GroupDetailActivity,
-                                "" + Message,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+                            Toast.makeText(this@GroupDetailActivity, "" + Message, Toast.LENGTH_SHORT).show()
                         }
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@GroupDetailActivity)
@@ -799,8 +785,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         } else if (string == "unfav") {
             try{
             groupDetailBinding.progressDetail.visibility = View.VISIBLE
-            val id: MultipartBody.Part =
-                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            val id: MultipartBody.Part = MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.DeleteFavourite_lession(type.toInt())
                 ?.enqueue(object : Callback<RegisterData?> {
                     override fun onResponse(

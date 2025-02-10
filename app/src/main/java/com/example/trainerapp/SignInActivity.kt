@@ -80,7 +80,6 @@ class SignInActivity : AppCompatActivity() {
         signInBinding.edtPassword.addTextChangedListener(object : TextWatcher {
 
             override fun afterTextChanged(s: Editable) {
-
             }
 
             override fun beforeTextChanged(

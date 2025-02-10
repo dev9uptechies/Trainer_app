@@ -10,9 +10,12 @@ import android.os.Bundle
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -27,6 +30,7 @@ import com.example.model.newClass.test.TestRequest
 import com.example.model.newClass.test.TestResultRequest
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
+import com.example.trainerapp.ApiClass.EventListData
 import com.example.trainerapp.databinding.ActivityViewTestBinding
 import com.example.trainerapp.databinding.Example3CalendarDayBinding
 import com.example.trainerapp.databinding.Example3CalendarHeaderBinding
@@ -41,6 +45,7 @@ import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import org.checkerframework.checker.units.qual.A
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -61,6 +66,12 @@ class viewTestActivity : AppCompatActivity() {
     var athleteIds: List<String>? = null
     var athleteResult: List<String>? = null
 
+
+    private lateinit var AthleteTestAthleteName: ArrayList<String>
+    private lateinit var AthleteTestAthleteResult: ArrayList<String>
+
+
+
     // calender
     @RequiresApi(Build.VERSION_CODES.O)
     private var selectedDate: LocalDate? = null
@@ -77,6 +88,12 @@ class viewTestActivity : AppCompatActivity() {
     //ID Get
     var testId: Int? = null
 
+    // Get Data for Athlete
+    var AthleteTestGoal: String? = null
+    var AthleteTestUnit: String? = null
+    var AthleteTestName: String? = null
+
+
 
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,8 +104,46 @@ class viewTestActivity : AppCompatActivity() {
         initView()
         setUpCalendar()
         ButtonCLick()
-        loadData()
 
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete") {
+            viewTestBinding.nestedScrollView2.visibility = View.GONE
+            viewTestBinding.cbRepeat.isEnabled = false
+            viewTestBinding.cbRepeat.isChecked = false
+            viewTestBinding.goalTxt.text = "Goal: $AthleteTestGoal"
+            viewTestBinding.unitTxt.text = "Unit: $AthleteTestUnit"
+            viewTestBinding.test.text = AthleteTestName
+
+            val parentLayout = viewTestBinding.linerAdd // Access the LinearLayout
+
+            parentLayout.removeAllViews() // Clear previous views
+
+            for (i in AthleteTestAthleteName.indices) {
+                val athleteView = LayoutInflater.from(this).inflate(R.layout.athlete_result_data, null)
+
+                val athleteNameTextView = athleteView.findViewById<TextView>(R.id.athelete_name)
+                val resultEditText = athleteView.findViewById<EditText>(R.id.Result_edt)
+
+                // Set athlete name and result dynamically
+                athleteNameTextView.text = AthleteTestAthleteName[i]
+                resultEditText.setText(AthleteTestAthleteResult.getOrNull(i) ?: "")
+
+                val layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    resources.getDimensionPixelSize(R.dimen._30sdp)
+                ).apply {
+                    setMargins(0, 10, 0, 0)
+                }
+
+                athleteView.layoutParams = layoutParams
+
+                parentLayout.addView(athleteView)
+            }
+
+        } else {
+            loadData()
+        }
 
 
     }
@@ -104,6 +159,22 @@ class viewTestActivity : AppCompatActivity() {
 
         Log.d("KSSKKSKSK", "initView: $testId")
 
+
+        //GET DATA FOR ATHLETE
+
+        AthleteTestGoal = intent.getStringExtra("AthleteTestGoal")
+        AthleteTestName = intent.getStringExtra("AthleteTestName")
+        AthleteTestUnit = intent.getStringExtra("AthleteTestUnit")
+        AthleteTestAthleteName = intent.getStringArrayListExtra("AthleteTestAthleteNames") ?: arrayListOf()
+        AthleteTestAthleteResult = intent.getStringArrayListExtra("AthleteTestAthleteResults") ?: arrayListOf()
+
+
+
+
+        Log.d("DATATATATATATA", "GOAL: $AthleteTestGoal \n $AthleteTestUnit \n $AthleteTestAthleteName \n $AthleteTestAthleteResult")
+
+
+
     }
 
     private fun loadData() {
@@ -114,12 +185,20 @@ class viewTestActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun ButtonCLick() {
 
-        viewTestBinding.exSevenCalendar.setOnTouchListener { _, _ -> true } // This disables touch events
+        viewTestBinding.exSevenCalendar.setOnTouchListener { _, _ -> true }
 
         viewTestBinding.back.setOnClickListener { finish() }
 
-        viewTestBinding.nextCard.setOnClickListener {
-            submitTestResults()
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete"){
+            viewTestBinding.nextCard.setOnClickListener {
+//                submitTestResults()
+            }
+        }else{
+            viewTestBinding.nextCard.setOnClickListener {
+                submitTestResults()
+            }
         }
 
         viewTestBinding.cbRepeat.setOnClickListener {
@@ -344,7 +423,6 @@ class viewTestActivity : AppCompatActivity() {
                         response.body()?.let { resource ->
                             if (resource.status == true) {
                                 resource.data?.let { data ->
-                                    // Filter data based on the provided filterId
                                     val filteredData = if (filterId != null) {
                                         data.filter { it.id == filterId }
                                     } else {
@@ -403,7 +481,7 @@ class viewTestActivity : AppCompatActivity() {
     private fun initrecycler(testdatalist: ArrayList<TestListData.testData>?) {
         viewTestBinding.progressbar.visibility = View.GONE
         viewTestBinding.resultRly.layoutManager = LinearLayoutManager(this)
-        adapter = AthleteResultTestAdapter(testdatalist, this)
+        adapter = AthleteResultTestAdapter(testdatalist, this,null,null)
         viewTestBinding.resultRly.adapter = adapter
     }
 

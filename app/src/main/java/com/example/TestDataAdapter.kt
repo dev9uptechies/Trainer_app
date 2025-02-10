@@ -63,8 +63,6 @@ class TestDataAdapter(
             listener.onItemClicked(it, position, movie.id!!.toLong(), "DeleteTest")
         }
 
-
-
         holder.main.setOnClickListener {
             holder.swipe.close(true)
             listener.onItemClicked(it, position, movie.id!!.toLong(), "ViewTest")

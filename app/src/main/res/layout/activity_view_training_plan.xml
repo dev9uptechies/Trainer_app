@@ -240,6 +240,16 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         tools:listitem="@layout/training_plan_list" />
 
+    <LinearLayout
+        android:id="@+id/liner_for_athlete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_5sdp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/recycler_view" />
+
 
     <ProgressBar
         android:id="@+id/progres_bar"

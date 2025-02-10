@@ -141,119 +141,127 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
     }
 
     private fun GetExercise() {
-
         Progress.visibility = View.VISIBLE
         try {
             apiInterface.GetExerciseData().enqueue(
                 object : Callback<Exercise> {
                     override fun onResponse(call: Call<Exercise>, response: Response<Exercise>) {
                         Progress.visibility = View.GONE
+                        try {
+                            Log.d("Response :- ", "${response.body()}")
+                            Log.d("Response :- ", "${response.code()}")
+                            Log.d("Response :- ", "${response.isSuccessful}")
 
-                        Log.d("Response :- ", "${response.body()}")
-                        Log.d("Response :- ", "${response.code()}")
-                        Log.d("Response :- ", "${response.body()!!.data!!.size}")
-                        Log.d("Response :- ", "${response.isSuccessful}")
-                        val code = response.code()
-                        if (code == 200) {
-                            if (response.isSuccessful) {
+                            val code = response.code()
+                            if (code == 200 && response.isSuccessful) {
+                                val body = response.body()
+                                if (body?.data.isNullOrEmpty()) {
+                                    Log.d("Response", "No data available.")
+                                    Toast.makeText(this@View_Exercise_Activity, "No data found.", Toast.LENGTH_SHORT).show()
+                                    return
+                                }
 
-                                if (response.body()!!.data!!.isNotEmpty()) {
+                                val idToUse = if (id == 0 || id == null) {
+                                    EXID?.toIntOrNull() ?: 0 // Convert EXID to Int if valid, else default to 0
+                                } else id
 
-                                    val idTouse = if (id == 0 || id == null) {
-                                        EXID?.toIntOrNull() ?: 0 // Convert EXID to Int if valid, else default to 0
-                                    } else id
+                                Log.d("FINALIDD", "onResponse: $idToUse")
 
-                                    Log.d("FINALIDD", "onResponse: $idTouse")
+                                val finalID = if (idToUse == 0) ExerciseLberyid else idToUse
+                                val data = body?.data?.filter { it.id == finalID }
 
-                                    val finalID = if(idTouse == null || idTouse == 0) ExerciseLberyid else idTouse
+                                if (data!!.isNotEmpty()) {
+                                    val selectedExercise = data[0]
 
-                                    val data = response.body()!!.data?.filter {
-                                        it.id == finalID
-                                    }
-
-                                    if (data!!.isNotEmpty()) {
-
-                                        val transformation: Transformation =
-                                            RoundedTransformationBuilder()
-                                                .borderColor(resources.getColor(R.color.splash_text_color))
-                                                .borderWidthDp(1f)
-                                                .cornerRadiusDp(10f)
-                                                .oval(false)
-                                                .build()
-                                        imageString = "https://trainers.codefriend.in" + data[0].image
-
-                                        if (data[0].video != null) {
-                                            videoString = "https://trainers.codefriend.in" + data[0].video
-                                            playNormalVideo(videoString)
-                                            Log.d(
-                                                "Video Type :-",
-                                                "https://trainers.codefriend.in" + data[0].video!!
-                                            )
-                                        } else if (data[0].video_link != null) {
-                                            videoString = data[0].video_link!!
-                                            if (isYouTubeUrl(videoString)) {
-                                                playYouTubeVideo(videoString)
-                                            } else {
-                                                playNormalVideo(videoString)
-                                            }
-                                        }
-
+                                    // Load image
+                                    selectedExercise.image?.let {
+                                        imageString = "https://trainers.codefriend.in$it"
                                         Picasso.get()
                                             .load(imageString)
                                             .placeholder(R.drawable.video_background)
                                             .fit()
-                                            .transform(transformation)
-                                            .into(viewExerciseBinding.exerciseImage)
-
-                                        viewExerciseBinding.exerciseName.text = data[0].name
-                                        viewExerciseBinding.exerciseNotes.text = data[0].notes
-                                        viewExerciseBinding.tvSection.text =
-                                            data[0].section!!.section_name
-                                        viewExerciseBinding.tvGoal.text =
-                                            data[0].goal!!.goal_name
-                                        val namesString = data[0].exercise_equipments!!.map {
-                                            it.exercise_equipment!!.equipment_name
-                                        }.joinToString(separator = ", ")
-                                        viewExerciseBinding.tvEqupment.text = namesString
-                                        if (data[0].cycles!!.isNotEmpty()) {
-                                            initRecycler(data[0].cycles!!.toMutableList())
-                                        }
-                                        viewExerciseBinding.cardEditExercise.setOnClickListener {
-                                            startActivity(
-                                                Intent(
-                                                    this@View_Exercise_Activity,
-                                                    EdiExerciseActivity::class.java
-                                                ).putExtra("position", position)
+                                            .transform(
+                                                RoundedTransformationBuilder()
+                                                    .borderColor(resources.getColor(R.color.splash_text_color))
+                                                    .borderWidthDp(1f)
+                                                    .cornerRadiusDp(10f)
+                                                    .oval(false)
+                                                    .build()
                                             )
+                                            .into(viewExerciseBinding.exerciseImage)
+                                    }
+
+                                    // Handle video
+                                    selectedExercise.video?.let {
+                                        videoString = "https://trainers.codefriend.in$it"
+                                        playNormalVideo(videoString)
+                                        Log.d("Video Type :-", videoString)
+                                    } ?: selectedExercise.video_link?.let {
+                                        videoString = it
+                                        if (isYouTubeUrl(videoString)) {
+                                            playYouTubeVideo(videoString)
+                                        } else {
+                                            playNormalVideo(videoString)
                                         }
                                     }
-                                }
 
+                                    // Set exercise details
+                                    viewExerciseBinding.exerciseName.text = selectedExercise.name ?: "N/A"
+                                    viewExerciseBinding.exerciseNotes.text = selectedExercise.notes ?: "N/A"
+                                    viewExerciseBinding.tvSection.text = selectedExercise.section?.section_name ?: "N/A"
+                                    viewExerciseBinding.tvGoal.text = selectedExercise.goal?.goal_name ?: "N/A"
+
+                                    val equipmentNames = selectedExercise.exercise_equipments?.mapNotNull {
+                                        it.exercise_equipment?.equipment_name
+                                    }?.joinToString(separator = ", ") ?: "No Equipment"
+                                    viewExerciseBinding.tvEqupment.text = equipmentNames
+
+                                    // Initialize RecyclerView for cycles
+                                    selectedExercise.cycles?.takeIf { it.isNotEmpty() }?.let {
+                                        initRecycler(it.toMutableList())
+                                    }
+
+                                    // Edit button click listener
+                                    viewExerciseBinding.cardEditExercise.setOnClickListener {
+                                        startActivity(
+                                            Intent(
+                                                this@View_Exercise_Activity,
+                                                EdiExerciseActivity::class.java
+                                            ).putExtra("position", position)
+                                        )
+                                    }
+                                } else {
+                                    Log.d("Response", "No exercise matches the given ID.")
+                                    Toast.makeText(this@View_Exercise_Activity, "No exercise found.", Toast.LENGTH_SHORT).show()
+                                }
+                            } else if (code == 403) {
+                                Utils.setUnAuthDialog(this@View_Exercise_Activity)
+                            } else {
+                                Toast.makeText(
+                                    this@View_Exercise_Activity,
+                                    response.message(),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                call.cancel()
                             }
-                        } else if (code == 403) {
-                            Utils.setUnAuthDialog(this@View_Exercise_Activity)
-                        } else {
-                            Toast.makeText(
-                                this@View_Exercise_Activity,
-                                "" + response.message(),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            call.cancel()
+                        } catch (e: Exception) {
+                            Log.e("Response Error", "Error processing response: ${e.message}", e)
+                            Toast.makeText(this@View_Exercise_Activity, "Error processing data.", Toast.LENGTH_SHORT).show()
                         }
                     }
 
-
                     override fun onFailure(call: Call<Exercise>, t: Throwable) {
-                        Log.d("Response :- ", "${t.message}")
+                        Progress.visibility = View.GONE
+                        Log.e("Response Failure", "Failed to fetch data: ${t.message}", t)
+                        Toast.makeText(this@View_Exercise_Activity, "Failed to fetch data.", Toast.LENGTH_SHORT).show()
                     }
-
                 }
             )
         } catch (e: Exception) {
             Progress.visibility = View.GONE
-            Log.d("Response :- ", "${e.message}")
+            Log.e("Exception", "Unexpected error: ${e.message}", e)
+            Toast.makeText(this@View_Exercise_Activity, "Unexpected error occurred.", Toast.LENGTH_SHORT).show()
         }
-
     }
 
     private fun playYouTubeVideo(videoString: String) {

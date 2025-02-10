@@ -94,15 +94,13 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                 } else {
                     chatBinding.groupChatProgress.visibility = View.GONE
                     val message = response.message()
-                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                     call.cancel()
                 }
             }
 
             override fun onFailure(call: Call<GroupChateListData?>, t: Throwable) {
-                Toast.makeText(requireContext(),t.message, Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(),t.message, Toast.LENGTH_SHORT).show()
                 call.cancel()
                 chatBinding.groupChatProgress.visibility = View.GONE
             }

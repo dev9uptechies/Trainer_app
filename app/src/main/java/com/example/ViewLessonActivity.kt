@@ -21,6 +21,7 @@ import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.ProgramListData
 import com.example.trainerapp.ApiClass.RegisterData
+import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.View_Exercise_Activity
@@ -34,6 +35,8 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     Excercise_list_Adapter.OnItemClickListener {
     lateinit var viewLessonBinding: ActivityViewLessonBinding
     lateinit var apiInterface: APIInterface
+    lateinit var preferenceManager: PreferencesManager
+
     private lateinit var lessonData: ArrayList<LessonData.lessionData>
     lateinit var apiClient: APIClient
     lateinit var lessAdapter: ViewLessionAdapter
@@ -84,12 +87,22 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         viewLessonBinding = ActivityViewLessonBinding.inflate(layoutInflater)
         setContentView(viewLessonBinding.root)
         initViews()
-        getLessonList()
+
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete"){
+            getLessonListAthlete()
+        }else{
+            getLessonList()
+        }
+
+//        getLessonList()
     }
 
     private fun initViews() {
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
+        preferenceManager = PreferencesManager(this)
 
         id = intent.getIntExtra("lessonId", 0)
         idforviewlesson = intent.getIntExtra("id", 0)
@@ -206,6 +219,67 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         apiInterface.GetLession()?.enqueue(object : Callback<LessonData?> {
             override fun onResponse(call: Call<LessonData?>, response: Response<LessonData?>) {
                 viewLessonBinding.viewLessonProgress.visibility = View.GONE
+                if (response.isSuccessful) {
+                    response.body()?.data?.let { data ->
+
+                        val idToUse = if ((id as? String)?.isNullOrEmpty() == true || id == 0 ) {
+                            idforviewlesson
+                        } else {
+                            id
+                        }
+
+                        val FinalId = if (idToUse == 0 || idToUse == null) idLibrary else idToUse
+
+                        Log.d("DJDJDJDJDJDJ", "onResponse: $idToUse")
+
+                        val filteredData = data.filter { it.id == FinalId }
+
+                        try {
+                            if (position != null && position!! >= 0 && position!! < lessonData.size) {
+                                val program = lessonData[position!!].lesson_programs
+                                if (program != null && program.isNotEmpty()) {
+                                    proId = SelectedValue(program.firstOrNull()?.id)
+                                    Log.d("FFFFFFFFF", "onResponse: ${proId.id}")
+                                    initRecyclerview(program, proId.id)
+                                }
+                            } else {
+                                Log.d("LessonData", "Position: $position, LessonData size: ${lessonData.size}")
+                            }
+                        } catch (e: Exception) {
+                            Log.d("cat", "onResponse: ERROR:___" + e.message.toString())
+                        }
+
+                        if (filteredData.isNotEmpty()) {
+                            setProgramDataset(filteredData)
+                        } else {
+                            showToast("No lesson data found for this lesson ID.")
+                        }
+                    } ?: showToast("Lesson data is empty.")
+                } else {
+                    showToast("Failed to fetch lesson data: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<LessonData?>, t: Throwable) {
+                showToast(t.message)
+                viewLessonBinding.viewLessonProgress.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun getLessonListAthlete() {
+        viewLessonBinding.viewLessonProgress.visibility = View.VISIBLE
+        Log.d(":DJDJDDJJDJ", "getLessonListAthlete: $id")
+        apiInterface.GetLessonAthlete(id)?.enqueue(object : Callback<LessonData?> {
+            override fun onResponse(call: Call<LessonData?>, response: Response<LessonData?>) {
+                viewLessonBinding.viewLessonProgress.visibility = View.GONE
+
+                Log.d("APPPPPPPP", "onResponse: ${response.message().toString()}")
+                Log.d("APPPPPPPP", "onResponse: ${response.body()}")
+                Log.d("APPPPPPPP", "onResponse: ${response.errorBody().toString()}")
+                Log.d("APPPPPPPP", "onResponse: ${response.code().toString()}")
+                Log.d("APPPPPPPP", "onResponse: ${response}")
+
                 if (response.isSuccessful) {
                     response.body()?.data?.let { data ->
 

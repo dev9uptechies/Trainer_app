@@ -2,6 +2,7 @@ package com.example.trainerappAthlete.model
 
 import com.example.model.newClass.lesson.LessonGoal
 import com.example.model.newClass.lesson.LessonProgram
+import com.example.model.trainer_plan.Transition
 import com.example.trainerapp.ApiClass.ProgramListData
 import com.google.gson.annotations.SerializedName
 
@@ -437,6 +438,9 @@ class GroupListAthlete {
         @SerializedName("athlete_id")
         var athlete_id: String? = null
 
+        @SerializedName("result")
+        var result: String? = null
+
         @SerializedName("created_at")
         var created_at: String? = null
 
@@ -501,6 +505,9 @@ class GroupListAthlete {
         @SerializedName("competitive")
         var competitive: Competitive? = null
 
+        @SerializedName("transition")
+        var transition: Transition? = null
+
     }
 
     class Pre_Season {
@@ -516,12 +523,39 @@ class GroupListAthlete {
         @SerializedName("start_date")
         var start_date: String? = null
 
+        @SerializedName("name")
+        var name: String? = null
+
         @SerializedName("end_date")
         var end_date: String? = null
 
         @SerializedName("mesocycles")
         var mesocycles: ArrayList<Mesocycles>? = null
     }
+
+    class Transition {
+        @SerializedName("id")
+        var id: Int? = null
+
+        @SerializedName("planning_id")
+        var planning_id: String? = null
+
+        @SerializedName("mesocycle")
+        var mesocycle: String? = null
+
+        @SerializedName("start_date")
+        var start_date: String? = null
+
+        @SerializedName("name")
+        var name: String? = null
+
+        @SerializedName("end_date")
+        var end_date: String? = null
+
+        @SerializedName("mesocycles")
+        var mesocycles: ArrayList<Mesocycles>? = null
+    }
+
 
     class Mesocycles {
         @SerializedName("id")
@@ -552,6 +586,9 @@ class GroupListAthlete {
 
         @SerializedName("mesocycle")
         var mesocycle: String? = null
+
+        @SerializedName("name")
+        var name: String? = null
 
         @SerializedName("start_date")
         var start_date: String? = null
@@ -592,6 +629,9 @@ class GroupListAthlete {
 
         @SerializedName("mesocycle")
         var mesocycle: String? = null
+
+        @SerializedName("name")
+        var name: String? = null
 
         @SerializedName("start_date")
         var start_date: String? = null

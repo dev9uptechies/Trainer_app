@@ -170,7 +170,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
 
                     Log.d("DDKKDKDKDK", "After Add: $indexxx")
 
-                    addTrainingPlanView("", "", "", "", "") // ✅ Add empty plan
+                    addTrainingPlanView("", "", "", "", "")
                     updateTrainingPlanIndices() // ✅ Maintain UI stability
                 } else {
                     Log.d("DDKKDKDKDK", "No missing index found. Cannot add more.")

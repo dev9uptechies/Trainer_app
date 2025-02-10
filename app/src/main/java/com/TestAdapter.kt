@@ -1,6 +1,7 @@
 package com.example
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import android.widget.TextView
 import androidx.core.view.marginEnd
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trainerapp.R
+import com.example.trainerapp.viewTestActivity
 
 class TestAdapter(
     private var data: ArrayList<GroupListData.GroupTest>?,
@@ -44,6 +46,11 @@ class TestAdapter(
 
         holder.itemView.setOnClickListener(OnItemClickListener(position, listener, movie.id?.toLong() ?: 0L, "test"))
 
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, viewTestActivity::class.java)
+            intent.putExtra("TestId",movie.test_id?.toInt())
+            context.startActivity(intent)
+        }
 
         if (movie2.is_favourite!! == 1) {
             holder.image.setImageResource(R.drawable.ic_favorite_select)

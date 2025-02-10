@@ -870,4 +870,8 @@ interface APIInterface {
     fun GropChateListAthlete(
     ): Call<GroupChateListData>?
 
+
+    @POST("Athlete/lesson/program")
+    fun GetLessonAthlete(@Query("lesson_id") id: Int?): Call<LessonData>?
+
 }

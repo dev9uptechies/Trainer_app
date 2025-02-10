@@ -17,9 +17,10 @@ import com.example.trainerapp.TestListData
 
 class AthleteResultTestAdapter(
     private var splist: MutableList<TestListData.testData>?,
-    var context: Context
+    var context: Context,
+    private val athleteName: String?,
+    private val athleteResult: String?
 ) : RecyclerView.Adapter<AthleteResultTestAdapter.MyViewHolder>() {
-
 
     private val resultsList: MutableList<String?> = mutableListOf()
 
@@ -29,7 +30,13 @@ class AthleteResultTestAdapter(
     ): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.performance_item, parent, false)
+
+        Log.d("onCreateViewHolder:", "onCreateViewHolder: ")
         return MyViewHolder(itemView)
+    }
+
+    init {
+        Log.d("AdapterInit", "Adapter initialized with Athlete: $athleteName, Result: $athleteResult")
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, @SuppressLint("RecyclerView") position: Int) {
@@ -39,9 +46,33 @@ class AthleteResultTestAdapter(
 
         val athleteDataList = testItem.data ?: arrayListOf()
 
+        Log.d("DLDLDLDLDL", "onBindViewHolder: $athleteName   $athleteResult")
+
         Log.d("Adapter", "Test ID: ${testItem.id}, Athlete Count: ${athleteDataList.size}")
 
-        // Ensure resultsList has enough elements, initialize with existing results
+        if (athleteName != null || athleteResult != null) {
+            Log.d("AdapterInit", "Setting TextView - Athlete: $athleteName, Result: $athleteResult")
+
+            val athleteView = LayoutInflater.from(context).inflate(R.layout.athlete_result_data, null)
+
+            val athleteNameTextView = athleteView.findViewById<TextView>(R.id.athelete_name)
+            val resultEditText = athleteView.findViewById<EditText>(R.id.Result_edt)
+
+            athleteNameTextView.text = athleteName ?: ""
+            resultEditText.setText(athleteResult ?: "")
+
+            val margin = context.resources.getDimensionPixelSize(R.dimen._3sdp)
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, margin, 0, 0)
+            }
+            athleteView.layoutParams = layoutParams
+
+            holder.mainContainer.addView(athleteView)
+        }
+
         while (resultsList.size < athleteDataList.size) {
             resultsList.add(null)
         }
@@ -55,7 +86,6 @@ class AthleteResultTestAdapter(
 
             athleteNameTextView.text = athleteData.athlete?.name ?: "Unknown Athlete"
 
-            // Use the existing value if it's already set; otherwise, use the athlete's result
             if (resultsList[athleteIndex] == null) {
                 resultsList[athleteIndex] = athleteData.result
             }
@@ -104,7 +134,8 @@ class AthleteResultTestAdapter(
     }
 
     override fun getItemCount(): Int {
-        return splist!!.size
+        Log.d("Adapter", "getItemCount: ${splist?.size ?: 0}")
+        return splist?.size ?: 1
     }
 
     fun getTestResults(): List<String?> {

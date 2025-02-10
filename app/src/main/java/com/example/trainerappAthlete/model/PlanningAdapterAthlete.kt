@@ -2,6 +2,7 @@ package com.example.trainerappAthlete.model
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,6 @@ class PlanningAdapterAthlete(
     private var filteredData: ArrayList<GroupListAthlete.GroupPlanning> = ArrayList()
 
     init {
-        // ✅ Filter out items with missing fields
         data?.let { list ->
             filteredData = list.filter { isValidItem(it) } as ArrayList<GroupListAthlete.GroupPlanning>
         }
@@ -41,12 +41,50 @@ class PlanningAdapterAthlete(
         holder.tv_start_date.text = planning.start_date
         holder.tv_edt_time.text = planning.competition_date
 
+        Log.d("DLDLDLDLDL", "onBindViewHolder: ${movie.planning?.pre_season}")
+
+
+
+
         holder.itemView.setOnClickListener {
-            val planningId = planning.id?.toInt() ?: 0
-            val intent = Intent(context, ViewTrainingPlanActivity::class.java).apply {
-                putExtra("Id", planningId)
+            val intent = Intent(context, ViewTrainingPlanActivity::class.java)
+            intent.putExtra("Id", planning?.id)
+            if (movie.planning?.pre_season != null) {
+                intent.putExtra("AthleteGroupPreSeason", "Pre Season")
+                intent.putExtra("AthleteGroupName", movie.planning?.pre_season?.name)
+                intent.putExtra("AthleteGroupStartDate", movie.planning?.pre_season?.start_date)
+                intent.putExtra("AthleteGroupEndDate", movie.planning?.pre_season?.end_date)
+                intent.putExtra("AthleteGroupMesocycle", movie.planning?.pre_season?.mesocycle)
             }
-            context.startActivity(intent)
+
+            if (movie.planning?.pre_competitive != null) {
+                //pre competitive
+                intent.putExtra("AthleteGroupPreCompetitive", "Pre Competitive")
+                intent.putExtra("AthletePreComGroupName", movie.planning?.pre_competitive?.name)
+                intent.putExtra("AthletePreComGroupStartDate", movie.planning?.pre_competitive?.start_date)
+                intent.putExtra("AthletePreComGroupEndDate", movie.planning?.pre_competitive?.end_date)
+                intent.putExtra("AthletePreComGroupMesocycle", movie.planning?.pre_competitive?.mesocycle)
+            }
+
+            if (movie.planning?.competitive != null) {
+                //competitive
+                intent.putExtra("AthleteGroupCompetitive", "Competitive")
+                intent.putExtra("AthleteComGroupName", movie.planning?.competitive?.name)
+                intent.putExtra("AthleteComGroupStartDate", movie.planning?.competitive?.start_date)
+                intent.putExtra("AthleteComGroupEndDate", movie.planning?.competitive?.end_date)
+                intent.putExtra("AthleteComGroupMesocycle", movie.planning?.competitive?.mesocycle)
+                context.startActivity(intent)
+            }
+
+            if (movie.planning?.transition != null) {
+                //transition
+                intent.putExtra("AthleteGroupTransition", "Transition")
+                intent.putExtra("AthleteTranGroupName", movie.planning?.transition?.name)
+                intent.putExtra("AthleteTranGroupStartDate", movie.planning?.transition?.start_date)
+                intent.putExtra("AthleteTranGroupEndDate", movie.planning?.transition?.end_date)
+                intent.putExtra("AthleteTranGroupMesocycle", movie.planning?.transition?.mesocycle)
+                context.startActivity(intent)
+            }
         }
     }
 

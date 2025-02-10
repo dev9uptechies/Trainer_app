@@ -9,25 +9,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.GroupListData
 import com.example.OnItemClickListener
 import com.example.ViewLessonActivity
 import com.example.trainerapp.R
 
 class LessonAdapterAthlete(
-    data: ArrayList<GroupListAthlete.GroupLesson>?,
+    private var data: ArrayList<GroupListAthlete.GroupLesson>?,
     private val context: Context,
     private val listener: OnItemClickListener.OnItemClickCallback
 ) : RecyclerView.Adapter<LessonAdapterAthlete.MyViewHolder>() {
-
-    private var filteredData: ArrayList<GroupListAthlete.GroupLesson> = ArrayList()
-
-    init {
-        // ✅ Filter out items with missing fields
-        data?.let { list ->
-            filteredData = list.filter { isValidItem(it) } as ArrayList<GroupListAthlete.GroupLesson>
-        }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -36,47 +26,50 @@ class LessonAdapterAthlete(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val lesson = filteredData[position]
-        val lessonData = lesson.lession ?: return
+        val lesson = data?.get(position) ?: return // Safely handle null data
+        val lesson2 = data!![position].lession
 
-        holder.name.text = lessonData.name
-        holder.totaltime.text = lessonData.time
-        holder.date.text = lessonData.date
-        holder.goal.text = lessonData.lesson_programs?.getOrNull(0)?.program?.goal?.name ?: ""
+
+        holder.name.text = lesson.lession?.name ?: ""
+        holder.totaltime.text = lesson.lession?.time ?: ""
+        holder.date.text = lesson.lession?.date ?: ""
+        holder.goal.text = lesson.lession?.lesson_programs?.getOrNull(0)?.program?.goal?.name ?: ""
 
         holder.itemView.setOnClickListener {
-            val lessonId = lessonData.id?.toInt() ?: 0
+            val lessonId = lesson.lession?.id?.toInt() ?: 0
+            val lessonName = lesson.lession?.name ?: ""
+            val totalTime = lesson.lession?.time ?: ""
+            val sectionTime = lesson.lession?.section_time ?: ""
+
+            Log.d("AdapterId", "onBindViewHolder: "+ lessonId)
             val intent = Intent(context, ViewLessonActivity::class.java).apply {
                 putExtra("lessonId", lessonId)
-                putExtra("position", position)
+                putExtra("position",position)
             }
             context.startActivity(intent)
         }
 
-        if (lessonData.is_favourite == 1) {
-            holder.image.setImageResource(R.drawable.ic_favorite_select)
-        } else {
-            holder.image.setImageResource(R.drawable.ic_favorite_red)
+        if (lesson2 != null) {
+            if (lesson2.is_favourite!! == 1) {
+                holder.image.setImageResource(R.drawable.ic_favorite_select)
+            } else {
+                holder.image.setImageResource(R.drawable.ic_favorite_red)
+            }
         }
 
-        holder.image.setOnClickListener(
-            if (lessonData.is_favourite == 1) {
-                OnItemClickListener(position, listener, lessonData.id!!.toLong(), "unfav")
-            } else {
-                OnItemClickListener(position, listener, lessonData.id!!.toLong(), "fav")
-            }
-        )
+        if (lesson2 != null) {
+            holder.image.setOnClickListener(
+                if (lesson2.is_favourite == 1) {
+                    OnItemClickListener(position, listener, lesson2.id!!.toLong(), "unfav")
+                } else {
+                    OnItemClickListener(position, listener, lesson2.id!!.toLong(), "fav")
+                }
+            )
+        }
+
     }
 
-    override fun getItemCount(): Int = filteredData.size
-
-    private fun isValidItem(item: GroupListAthlete.GroupLesson): Boolean {
-        return item.lession?.let {
-            !it.name.isNullOrEmpty() &&
-                    !it.time.isNullOrEmpty() &&
-                    !it.date.isNullOrEmpty()
-        } ?: false
-    }
+    override fun getItemCount(): Int = data?.size ?: 0
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.tv_program_name)
@@ -84,5 +77,6 @@ class LessonAdapterAthlete(
         var image: ImageView = view.findViewById(R.id.image)
         var date: TextView = view.findViewById(R.id.edt_date)
         var goal: TextView = view.findViewById(R.id.tv_edt_goal)
+
     }
 }

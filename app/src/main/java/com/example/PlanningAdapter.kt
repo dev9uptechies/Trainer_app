@@ -44,12 +44,14 @@ class PlanningAdapter(
             holder.tv_edt_time.text = "No competition date"
         }
 
+
         holder.itemView.setOnClickListener {
-            val planningId = planning?.id?.toInt() ?: 0 // Safely handle the ID
-            val intent = Intent(context, ViewTrainingPlanActivity::class.java).apply {
-                putExtra("Id", planningId) // Pass the planning ID to the next activity
-            }
-            context.startActivity(intent) // Start the activity
+            val intent = Intent(context, ViewTrainingPlanActivity::class.java)
+            intent.putExtra("Id", planning?.id)
+            intent.putExtra("AthleteGroupName",planning?.name)
+            intent.putExtra("AthleteGroupStartDate",planning?.start_date)
+            intent.putExtra("AthleteGroupEndDate",planning?.competition_date)
+            context.startActivity(intent)
         }
     }
 

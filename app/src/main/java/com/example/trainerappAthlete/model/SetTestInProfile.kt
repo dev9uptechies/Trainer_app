@@ -24,6 +24,10 @@ class SetTestInProfile(
     init {
         filterList = ArrayList(splist ?: emptyList())
     }
+    init {
+        filterList = ArrayList(splist?.filter { it.test != null } ?: emptyList())
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -65,7 +69,6 @@ class SetTestInProfile(
     override fun getItemCount(): Int {
         return filterList.size
     }
-
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var tvFname: TextView = view.findViewById(R.id.tvFname)
