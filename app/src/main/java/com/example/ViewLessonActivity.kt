@@ -91,12 +91,11 @@ class ViewLessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         val userType = preferenceManager.GetFlage()
 
         if (userType == "Athlete"){
+            viewLessonBinding.cardDuplicate.visibility = View.GONE
             getLessonListAthlete()
         }else{
             getLessonList()
         }
-
-//        getLessonList()
     }
 
     private fun initViews() {

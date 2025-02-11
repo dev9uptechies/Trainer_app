@@ -1460,8 +1460,7 @@ class LibraryActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCall
 
         if (string.toString().contains("FavLesson")) {
             libraryBinding.progresBar.visibility = View.VISIBLE
-            val id: MultipartBody.Part =
-                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            val id: MultipartBody.Part = MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.Favourite_lession(id)?.enqueue(object : Callback<RegisterData?> {
                 override fun onResponse(
                     call: Call<RegisterData?>,

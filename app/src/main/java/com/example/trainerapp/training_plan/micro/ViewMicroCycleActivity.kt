@@ -3,7 +3,11 @@ package com.example.trainerapp.training_plan.micro
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.SeekBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,8 +18,11 @@ import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
 import com.example.trainerapp.PreferencesManager
+import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityViewMicroCycleBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -85,7 +92,158 @@ class ViewMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
         Log.d("viewmicro", "$mainId     $seasonId    $cardType")
 
+
+
+        val jsonMesocycles = intent.getStringExtra("PreSeasonJson")
+        val jsonPreCompetitiveMesocycles = intent.getStringExtra("PreCompetitiveJson")
+        val jsonCompetitiveMesocycles = intent.getStringExtra("CompetitiveJson")
+        val jsonTransitionMesocycles = intent.getStringExtra("TransitionJson")
+
+        Log.d("DDKKDKDK", "initViews: $jsonPreCompetitiveMesocycles")
+
+
+        // pre competitive
+        if (jsonPreCompetitiveMesocycles != null) {
+            val type = object : TypeToken<List<Map<String, Any>>>() {}.type
+            val mesocyclesList: List<Map<String, Any>> = Gson().fromJson(jsonPreCompetitiveMesocycles, type)
+            viewMicroCycleBinding.subTitle.text = "Pre Season"
+
+            SetAthleteData(mesocyclesList)
+
+        } else {
+            Log.d("ReceivedMesocycles", "No data received")
+        }
+
+
     }
+
+    private fun SetAthleteData(mesocyclesList: List<Map<String, Any>>) {
+        val parentLayout = findViewById<LinearLayout>(R.id.liner_for_athlete)
+        viewMicroCycleBinding.subTitle.text = "Periods"
+
+        fun addAthleteView(
+            phase: String,
+            name: String?,
+            startDate: String?,
+            endDate: String?,
+            workload: String?,
+            onClick: () -> Unit
+        ) {
+            val athleteView = LayoutInflater.from(this).inflate(R.layout.view_microcycle_list, parentLayout, false)
+
+            val AthletePlanName = athleteView.findViewById<TextView>(R.id.training_name_one)
+            val AthletePlanStartDate = athleteView.findViewById<TextView>(R.id.start_date_one)
+            val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_one)
+            val seekbar_workload = athleteView.findViewById<SeekBar>(R.id.seekbar_workload)
+
+            seekbar_workload.isEnabled = false
+            seekbar_workload.isClickable = false
+            seekbar_workload.isActivated = false
+
+            AthletePlanName.text = name ?: phase
+            AthletePlanStartDate.text = startDate ?: "Invalid Date"
+            AthletePlanEndDate.text = endDate ?: "Invalid Date"
+            workload?.toIntOrNull()?.let {
+                seekbar_workload.progress = it
+            } ?: run {
+                Log.e("ERROR", "Workload is null or not a valid number")
+                seekbar_workload.progress = 0
+            }
+
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 10, 0, 10)
+            }
+            athleteView.layoutParams = layoutParams
+
+            athleteView.setOnClickListener {
+                onClick()
+            }
+
+            parentLayout.addView(athleteView)
+        }
+
+        val preSeason = intent.getStringExtra("PreSeason")
+        if (preSeason == "PreSeason") {
+            for (microCycle in mesocyclesList) {
+                val id = microCycle["id"]?.toString()
+                val name = microCycle["name"]?.toString()
+                val startDate = microCycle["start_date"]?.toString()
+                val endDate = microCycle["end_date"]?.toString()
+                val workload = microCycle["workload"]?.toString()
+
+                viewMicroCycleBinding.textViewList.text = "Pre Season"
+
+
+                addAthleteView("microcycles", name, startDate, endDate, "1 Cycle") {
+                    Log.d("CLICK_EVENT", "Mesocycle $name clicked!")
+
+                }
+            }
+        }
+
+        val PreCompetitive = intent.getStringExtra("PreCompetitive")
+
+        if (PreCompetitive == "PreCompetitive") {
+            for (mesocycle in mesocyclesList) {
+                val id = mesocycle["id"]?.toString()
+                val name = mesocycle["name"]?.toString()
+                val startDate = mesocycle["start_date"]?.toString()
+                val endDate = mesocycle["end_date"]?.toString()
+                val workload = mesocycle["workload"]?.toString()
+
+                Log.d("SPPSPSPSPSPPSP", "SetAthleteData: $mesocyclesList")
+                Log.d("SPPSPSPSPSPPSP", "SetAthleteData: $workload")
+
+                viewMicroCycleBinding.textViewList.text = "Pre Competitive"
+
+                addAthleteView("Mesocycle", name, startDate, endDate, workload ?: "") {
+                    Log.d("CLICK_EVENT", "Mesocycle $name clicked!")
+                }
+            }
+        }
+
+        Log.d("()()()()()", "SetAthleteData: $preSeason    $PreCompetitive")
+
+        val Competitive = intent.getStringExtra("Competitive")
+        if (Competitive == "Competitive") {
+            for (mesocycle in mesocyclesList) {
+                val id = mesocycle["id"]?.toString()
+                val name = mesocycle["name"]?.toString()
+                val startDate = mesocycle["start_date"]?.toString()
+                val endDate = mesocycle["end_date"]?.toString()
+
+                viewMicroCycleBinding.textViewList.text = "Competitive"
+
+                addAthleteView("Mesocycle", name, startDate, endDate, "1 Cycle") {
+                    Log.d("CLICK_EVENT", "Mesocycle $name clicked!")
+
+                }
+            }
+        }
+
+        val Transition = intent.getStringExtra("Transition")
+        if (Transition == "Transition") {
+            for (mesocycle in mesocyclesList) {
+                val id = mesocycle["id"]?.toString()
+                val name = mesocycle["name"]?.toString()
+                val startDate = mesocycle["start_date"]?.toString()
+                val endDate = mesocycle["end_date"]?.toString()
+
+                viewMicroCycleBinding.textViewList.text = "Transition"
+
+                addAthleteView("Mesocycle", name, startDate, endDate, "1 Cycle") {
+                    Log.d("CLICK_EVENT", "Mesocycle $name clicked!")
+
+                }
+            }
+        }
+
+
+    }
+
 
     private fun setupListeners() {
         viewMicroCycleBinding.addLayout.setOnClickListener {

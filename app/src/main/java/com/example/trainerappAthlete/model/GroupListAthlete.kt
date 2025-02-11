@@ -530,7 +530,7 @@ class GroupListAthlete {
         var end_date: String? = null
 
         @SerializedName("mesocycles")
-        var mesocycles: ArrayList<Mesocycles>? = null
+        var mesocycles: ArrayList<PreSMesocycles>? = null
     }
 
     class Transition {
@@ -553,9 +553,33 @@ class GroupListAthlete {
         var end_date: String? = null
 
         @SerializedName("mesocycles")
-        var mesocycles: ArrayList<Mesocycles>? = null
+        var mesocycles: ArrayList<PreSMesocycles>? = null
     }
 
+
+    class PreSMesocycles {
+        @SerializedName("id")
+        var id: Int? = null
+
+        @SerializedName("planning_ps_id")
+        var planning_ps_id: String? = null
+
+        @SerializedName("name")
+        var name: String? = null
+
+        @SerializedName("start_date")
+        var start_date: String? = null
+
+        @SerializedName("end_date")
+        var end_date: String? = null
+
+        @SerializedName("periods")
+        var periods: String? = null
+
+        @SerializedName("microcycles")
+        var microcycles: ArrayList<microcycles>? = null
+
+    }
 
     class Mesocycles {
         @SerializedName("id")
@@ -575,7 +599,78 @@ class GroupListAthlete {
 
         @SerializedName("periods")
         var periods: String? = null
+
+        @SerializedName("microcycles")
+        var microcycles: ArrayList<microcycles>? = null
+
     }
+
+
+
+    class microcycles {
+        @SerializedName("id")
+        var id: Int? = null
+
+        @SerializedName("pc_mesocycle_id")
+        var pc_mesocycle_id: String? = null
+
+        @SerializedName("name")
+        var name: String? = null
+
+        @SerializedName("start_date")
+        var startDate: String? = null
+
+        @SerializedName("end_date")
+        var endDate: String? = null
+
+        @SerializedName("workload")
+        var workload: String? = null
+
+        @SerializedName("workload_color")
+        var workloadColor: String? = null
+
+        @SerializedName("pc_microcycle_ability")
+        var pcMicrocycleAbility: List<PcMicrocycleAbility>? = null
+    }
+
+    class PcMicrocycleAbility {
+        @SerializedName("id")
+        var id: Int? = null
+
+        @SerializedName("pc_microcycle_id")
+        var pcMicrocycleId: String? = null
+
+        @SerializedName("ability_id")
+        var abilityId: String? = null
+
+        @SerializedName("created_at")
+        var createdAt: String? = null
+
+        @SerializedName("updated_at")
+        var updatedAt: String? = null
+
+        @SerializedName("ability")
+        var ability: Ability? = null
+    }
+
+    // Class for "ability"
+    class Ability {
+        @SerializedName("id")
+        var id: Int? = null
+
+        @SerializedName("name")
+        var name: String? = null
+
+        @SerializedName("created_at")
+        var createdAt: String? = null
+
+        @SerializedName("updated_at")
+        var updatedAt: String? = null
+
+        @SerializedName("deleted_at")
+        var deletedAt: String? = null
+    }
+
 
     class Pre_Competitive {
         @SerializedName("id")
@@ -618,6 +713,9 @@ class GroupListAthlete {
 
         @SerializedName("periods")
         var periods: String? = null
+
+        @SerializedName("microcycles")
+        var microcycles: ArrayList<microcycles>? = null
     }
 
     class Competitive {

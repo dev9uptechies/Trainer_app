@@ -52,7 +52,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     val planningIdList = mutableListOf<String>()
     private var selectedImageUri: String? = null
 
-    var planningId: IntArray = intArrayOf()  // Initialize as an empty array or a default value
+    var planningId: IntArray = intArrayOf()
     private lateinit var apiInterface: APIInterface
     private lateinit var apiClient: APIClient
     private lateinit var adapter: PlanningAdapter

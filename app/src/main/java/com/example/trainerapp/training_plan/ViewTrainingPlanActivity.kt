@@ -23,6 +23,8 @@ import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityViewTrainingPlanBinding
 import com.example.trainerapp.training_plan.view_planning_cycle.ViewTrainingPlanListActivity
 import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,12 +41,19 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
     lateinit var programData: MutableList<TrainingPlanData.TrainingPlan>
     lateinit var viewTraining: ViewTrainingAdapter
 
+    private var globalMesocycles: List<Map<String, Any>> = emptyList()
+    private var globalPreCompetitiveMesocycles: List<Map<String, Any>> = emptyList()
+    private var globalCompetitiveMesocycles: List<Map<String, Any>> = emptyList()
+    private var globalTransitionMesocycles: List<Map<String, Any>> = emptyList()
+
+
     // Pre Season
     var AthleteGroupPreSeason: String ?= null
     var AthleteGroupName: String ?= null
     var AthleteGroupStartDate: String ?= null
     var AthleteGroupEndDate: String ?= null
     var AthleteGroupMesocycle: String ?= null
+    var AthleteGroupMesocycles: String ?= null
 
     // Pre Competitive
     var AthleteGroupPreCompetitive: String ?= null
@@ -241,9 +250,100 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
         AthleteGroupStartDate = intent.getStringExtra("AthleteGroupStartDate")
         AthleteGroupEndDate = intent.getStringExtra("AthleteGroupEndDate")
         AthleteGroupMesocycle = intent.getStringExtra("AthleteGroupMesocycle")
+        val preSeasonJson = intent.getStringExtra("AthleteGroupMesocycles")
+        val preCompetitiveJson = intent.getStringExtra("AthleteGroupPreCompetitiveMesocycles")
+        val CompetitiveJson = intent.getStringExtra("AthleteGroupCompetitiveMesocycles")
+        val TransitionJson = intent.getStringExtra("AthleteGroupTransitionMesocycles")
 
-        Log.d("SSKKSKSKSKKS", "initViews: $AthleteGroupName \n $AthleteGroupStartDate \n $AthleteGroupEndDate")
+        Log.d("DKDKDKDKDKD", "initViews: $preSeasonJson   \n  $preCompetitiveJson   \n $preCompetitiveJson  \n  $TransitionJson")
 
+        val gson = Gson()
+        val type = object : TypeToken<Map<String, Any>>() {}.type
+
+        fun safeParseJson(json: String?): Map<String, Any>? {
+            return try {
+                if (!json.isNullOrEmpty()) gson.fromJson<Map<String, Any>>(json, type) else null
+            } catch (e: Exception) {
+                Log.e("JSON_ERROR", "Failed to parse JSON: $json", e)
+                null
+            }
+        }
+
+        // Function to safely extract "mesocycles" as a List<Map<String, Any>>
+        fun extractMesocycles(map: Map<String, Any>?): List<Map<String, Any>> {
+            return (map?.get("mesocycles") as? List<*>)?.mapNotNull { it as? Map<String, Any> } ?: emptyList()
+        }
+
+        val preSeasonMap = safeParseJson(preSeasonJson) ?: emptyMap()
+        val preCompetitiveMap = safeParseJson(preCompetitiveJson) ?: emptyMap()
+        val competitiveMap = safeParseJson(CompetitiveJson) ?: emptyMap()
+        val transitionMap = safeParseJson(TransitionJson) ?: emptyMap()
+
+        val PreSeasonMesocycles = extractMesocycles(preSeasonMap)
+        val PreCompetitiveMesocycles = extractMesocycles(preCompetitiveMap)
+        val CompetitiveMesocycles = extractMesocycles(competitiveMap)
+        val TransitionMesocycles = extractMesocycles(transitionMap)
+
+        Log.d("DEBUG", "PreSeasonMesocycles: ${PreSeasonMesocycles.size}")
+        Log.d("DEBUG", "PreCompetitiveMesocycles: ${PreCompetitiveMesocycles.size}")
+        Log.d("DEBUG", "CompetitiveMesocycles: ${CompetitiveMesocycles.size}")
+        Log.d("DEBUG", "TransitionMesocycles: ${TransitionMesocycles.size}")
+
+        if (!PreSeasonMesocycles.isNullOrEmpty()) {
+            globalMesocycles = PreSeasonMesocycles
+
+            Log.d("777778888888888888", "initViews: $PreSeasonMesocycles")
+            for (mesocycle in globalMesocycles) {
+                val id = mesocycle["id"]
+                val name = mesocycle["name"]
+                val startDate = mesocycle["start_date"]
+                val endDate = mesocycle["end_date"]
+                Log.d("SSKKSKSKSKKS", "Mesocycle -> ID: $id, Name: $name, Start: $startDate, End: $endDate")
+            }
+        } else {
+            Log.d("SSKKSKSKSKKS", "Mesocycles: NULL or EMPTY")
+        }
+
+        if (!PreCompetitiveMesocycles.isNullOrEmpty()) {
+            globalPreCompetitiveMesocycles = PreCompetitiveMesocycles // Store globally
+
+            for (mesocycle in globalPreCompetitiveMesocycles) {
+                val id = mesocycle["id"]
+                val name = mesocycle["name"]
+                val startDate = mesocycle["start_date"]
+                val endDate = mesocycle["end_date"]
+                Log.d("SSKKSKSKSKKS", "Mesocycle -> ID: $id, Name: $name, Start: $startDate, End: $endDate")
+            }
+        } else {
+            Log.d("SSKKSKSKSKKS", "Mesocycles: NULL or EMPTY")
+        }
+
+        if (!CompetitiveMesocycles.isNullOrEmpty()) {
+            globalCompetitiveMesocycles = CompetitiveMesocycles // Store globally
+
+            for (mesocycle in globalPreCompetitiveMesocycles) {
+                val id = mesocycle["id"]
+                val name = mesocycle["name"]
+                val startDate = mesocycle["start_date"]
+                val endDate = mesocycle["end_date"]
+                Log.d("SSKKSKSKSKKS", "Mesocycle -> ID: $id, Name: $name, Start: $startDate, End: $endDate")
+            }
+        } else {
+            Log.d("SSKKSKSKSKKS", "Mesocycles: NULL or EMPTY")
+        }
+        if (!TransitionMesocycles.isNullOrEmpty()) {
+            globalTransitionMesocycles = TransitionMesocycles // Store globally
+
+            for (mesocycle in globalPreCompetitiveMesocycles) {
+                val id = mesocycle["id"]
+                val name = mesocycle["name"]
+                val startDate = mesocycle["start_date"]
+                val endDate = mesocycle["end_date"]
+                Log.d("SSKKSKSKSKKS", "Mesocycle -> ID: $id, Name: $name, Start: $startDate, End: $endDate")
+            }
+        } else {
+            Log.d("SSKKSKSKSKKS", "Mesocycles: NULL or EMPTY")
+        }
 
         // Pre Competitive
         AthleteGroupPreCompetitive = intent.getStringExtra("AthleteGroupPreCompetitive")
@@ -266,117 +366,109 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
         AthleteTranGroupEndDate = intent.getStringExtra("AthleteTranGroupEndDate")
         AthleteTranGroupMesocycle = intent.getStringExtra("AthleteTranGroupMesocycle")
 
+
+        Log.d("TAGGGGGGGG", "initViews: $AthleteGroupTransition")
+
     }
 
     private fun SetAthleteData() {
         val parentLayout = findViewById<LinearLayout>(R.id.liner_for_athlete)
 
+        // Function to create and add views with click handling
+        fun addAthleteView(
+            phase: String,
+            name: String?,
+            startDate: String?,
+            endDate: String?,
+            mesocycle: String?,
+            onClick: () -> Unit
+        ) {
+            val athleteView = LayoutInflater.from(this).inflate(R.layout.viewtrainingplanlist, parentLayout, false)
+
+            val AthletePlanName = athleteView.findViewById<TextView>(R.id.training_name_one)
+            val AthletePlanStartDate = athleteView.findViewById<TextView>(R.id.start_date_one)
+            val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_one)
+            val AthletePlanMesocycle = athleteView.findViewById<TextView>(R.id.mesocycle_one)
+
+            AthletePlanName.text = name ?: phase
+            AthletePlanStartDate.text = startDate ?: "Invalid Date"
+            AthletePlanEndDate.text = endDate ?: "Invalid Date"
+            AthletePlanMesocycle.text = (mesocycle ?: "0") + " Cycle"
+
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                resources.getDimensionPixelSize(R.dimen._80sdp)
+            ).apply {
+                setMargins(0, 10, 0, 10)
+            }
+            athleteView.layoutParams = layoutParams
+
+            athleteView.setOnClickListener {
+                onClick()
+            }
+
+            parentLayout.addView(athleteView)
+        }
+
+        // Pre Season
         if (AthleteGroupPreSeason == "Pre Season") {
-            val athleteView = LayoutInflater.from(this).inflate(R.layout.viewtrainingplanlist, parentLayout, false)
+            addAthleteView("Pre Season", AthleteGroupName, AthleteGroupStartDate, AthleteGroupEndDate, AthleteGroupMesocycle) {
+                Log.d("CLICK_EVENT", "Pre Season clicked!")
 
-            val AthletePlanName = athleteView.findViewById<TextView>(R.id.training_name_one)
-            val AthletePlanStartDate = athleteView.findViewById<TextView>(R.id.start_date_one)
-            val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_one)
-            val AthletePlanMesocycle = athleteView.findViewById<TextView>(R.id.mesocycle_one)
+                val gson = Gson()
+                val jsonMesocycles = gson.toJson(globalMesocycles) // Convert list to JSON
 
-            AthletePlanName.text = AthleteGroupName ?: "Pre Season"
-            AthletePlanStartDate.text = AthleteGroupStartDate ?: ""
-            AthletePlanEndDate.text = AthleteGroupEndDate ?: ""
-            AthletePlanMesocycle.text = AthleteGroupMesocycle ?: "0 Cycle"
+                Log.d("SLLSLSLSL", "SetAthleteData: $jsonMesocycles")
 
-            val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                resources.getDimensionPixelSize(R.dimen._80sdp)
-            ).apply {
-                setMargins(0, 10, 0, 10)
+                val intent = Intent(this, ViewTrainingPlanListActivity::class.java)
+                intent.putExtra("PreSeasonJson", jsonMesocycles) // Send JSON string
+                intent.putExtra("PreSeason", "PreSeason") // Send JSON string
+                startActivity(intent)
+
             }
-
-            athleteView.layoutParams = layoutParams
-
-            parentLayout.addView(athleteView) // ✅ Add to parent layout
-        } else {
-            Log.d("PreSeasonCheck", "Pre-season data is null, not adding layout")
         }
 
+        // Pre Competitive
         if (AthleteGroupPreCompetitive == "Pre Competitive") {
-            val athleteView = LayoutInflater.from(this).inflate(R.layout.viewtrainingplanlist, parentLayout, false)
+            addAthleteView("Pre Competitive", AthletePreComGroupName, AthletePreComGroupStartDate, AthletePreComGroupEndDate, AthletePreComGroupMesocycle) {
+                Log.d("CLICK_EVENT", "Pre Competitive clicked!")
+                val gson = Gson()
+                val jsonMesocycles = gson.toJson(globalPreCompetitiveMesocycles)
 
-            val AthletePlanName = athleteView.findViewById<TextView>(R.id.training_name_one)
-            val AthletePlanStartDate = athleteView.findViewById<TextView>(R.id.start_date_one)
-            val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_one)
-            val AthletePlanMesocycle = athleteView.findViewById<TextView>(R.id.mesocycle_one)
-
-            AthletePlanName.text = AthletePreComGroupName ?: "Pre Competitive"
-            AthletePlanStartDate.text = AthletePreComGroupStartDate ?: "Invalid Date"
-            AthletePlanEndDate.text = AthletePreComGroupEndDate ?: "Invalid Date"
-            AthletePlanMesocycle.text = AthletePreComGroupMesocycle ?: "0 Cycle"
-
-            val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                resources.getDimensionPixelSize(R.dimen._80sdp)
-            ).apply {
-                setMargins(0, 10, 0, 10)
+                val intent = Intent(this, ViewTrainingPlanListActivity::class.java)
+                intent.putExtra("PreCompetitiveJson", jsonMesocycles)
+                intent.putExtra("PreCompetitive", "PreCompetitive")
+                startActivity(intent)
             }
-
-            athleteView.layoutParams = layoutParams
-
-            parentLayout.addView(athleteView) // ✅ Add to parent layout
-        } else {
-            Log.d("PreCompetitiveCheck", "Pre-season data is null, not adding layout")
         }
 
+        // Competitive
         if (AthleteGroupCompetitive == "Competitive") {
-            val athleteView = LayoutInflater.from(this).inflate(R.layout.viewtrainingplanlist, parentLayout, false)
+            addAthleteView("Competitive", AthleteComGroupName, AthleteComGroupStartDate, AthleteComGroupEndDate, AthleteComGroupMesocycle) {
+                Log.d("CLICK_EVENT", "Competitive clicked!")
+                val gson = Gson()
+                val jsonMesocycles = gson.toJson(globalCompetitiveMesocycles)
 
-            val AthletePlanName = athleteView.findViewById<TextView>(R.id.training_name_one)
-            val AthletePlanStartDate = athleteView.findViewById<TextView>(R.id.start_date_one)
-            val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_one)
-            val AthletePlanMesocycle = athleteView.findViewById<TextView>(R.id.mesocycle_one)
-
-            AthletePlanName.text = AthleteComGroupName ?: "Competitive"
-            AthletePlanStartDate.text = AthleteComGroupStartDate ?: "Invalid Date"
-            AthletePlanEndDate.text = AthleteComGroupEndDate ?: "Invalid Date"
-            AthletePlanMesocycle.text = AthleteComGroupMesocycle ?: "0 Cycle"
-
-            val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                resources.getDimensionPixelSize(R.dimen._80sdp)
-            ).apply {
-                setMargins(0, 10, 0, 10)
+                val intent = Intent(this, ViewTrainingPlanListActivity::class.java)
+                intent.putExtra("CompetitiveJson", jsonMesocycles)
+                intent.putExtra("Competitive", "Competitive")
+                startActivity(intent)
             }
-
-            athleteView.layoutParams = layoutParams
-
-            parentLayout.addView(athleteView)
-        } else {
-            Log.d("PreCompetitiveCheck", "Pre-competitive data is null, not adding layout")
         }
 
+        // Transition
         if (AthleteGroupTransition == "Transition") {
-            val athleteView = LayoutInflater.from(this).inflate(R.layout.viewtrainingplanlist, parentLayout, false)
+            addAthleteView("Transition", AthleteTranGroupName, AthleteTranGroupStartDate, AthleteTranGroupEndDate, AthleteTranGroupMesocycle) {
+                Log.d("CLICK_EVENT", "Transition clicked!")
+                val gson = Gson()
+                val jsonMesocycles = gson.toJson(globalTransitionMesocycles)
 
-            val AthletePlanName = athleteView.findViewById<TextView>(R.id.training_name_one)
-            val AthletePlanStartDate = athleteView.findViewById<TextView>(R.id.start_date_one)
-            val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_one)
-            val AthletePlanMesocycle = athleteView.findViewById<TextView>(R.id.mesocycle_one)
+                val intent = Intent(this, ViewTrainingPlanListActivity::class.java)
+                intent.putExtra("TransitionJson", jsonMesocycles)
+                intent.putExtra("Transition", "Transition")
+                startActivity(intent)
 
-            AthletePlanName.text = AthleteTranGroupName ?: "Competitive"
-            AthletePlanStartDate.text = AthleteTranGroupStartDate ?: ""
-            AthletePlanEndDate.text = AthleteTranGroupEndDate ?: ""
-            AthletePlanMesocycle.text = AthleteTranGroupMesocycle ?: "0 Cycle"
-
-            val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                resources.getDimensionPixelSize(R.dimen._80sdp)
-            ).apply {
-                setMargins(0, 10, 0, 10)
             }
-
-            athleteView.layoutParams = layoutParams
-
-            parentLayout.addView(athleteView)
-        } else {
-            Log.d("PreCompetitiveCheck", "Pre-competitive data is null, not adding layout")
         }
     }
 

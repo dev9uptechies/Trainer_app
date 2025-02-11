@@ -12,6 +12,7 @@ import com.example.GroupListData
 import com.example.OnItemClickListener
 import com.example.trainerapp.R
 import com.example.trainerapp.training_plan.ViewTrainingPlanActivity
+import com.google.gson.Gson
 
 class PlanningAdapterAthlete(
     data: ArrayList<GroupListAthlete.GroupPlanning>?,
@@ -41,10 +42,21 @@ class PlanningAdapterAthlete(
         holder.tv_start_date.text = planning.start_date
         holder.tv_edt_time.text = planning.competition_date
 
-        Log.d("DLDLDLDLDL", "onBindViewHolder: ${movie.planning?.pre_season}")
+        val mesocycles = movie.planning?.pre_competitive?.mesocycles
+        val firstMesocycle = mesocycles?.getOrNull(0)
 
+        if (firstMesocycle?.microcycles.isNullOrEmpty()) {
+            Log.d("DEBUGDDDDDD", "Microcycles list is empty")
+        } else {
+            Log.d("DEBUGDDDDPPPPDD", "Microcycle Name: ${firstMesocycle?.microcycles?.getOrNull(0)?.startDate}")
+        }
 
-
+        val gson = Gson()
+        val preSeasonJson = gson.toJson(movie.planning?.pre_season)
+        val preCompetitiveJson = gson.toJson(movie.planning?.pre_competitive)
+        val CompetitiveJson = gson.toJson(movie.planning?.competitive)
+        val TransitionJson = gson.toJson(movie.planning?.transition)
+        Log.d("2322232223232322", "onBindViewHolder: ${movie.planning?.pre_season?.mesocycles?.getOrNull(0)?.periods}")
 
         holder.itemView.setOnClickListener {
             val intent = Intent(context, ViewTrainingPlanActivity::class.java)
@@ -55,6 +67,8 @@ class PlanningAdapterAthlete(
                 intent.putExtra("AthleteGroupStartDate", movie.planning?.pre_season?.start_date)
                 intent.putExtra("AthleteGroupEndDate", movie.planning?.pre_season?.end_date)
                 intent.putExtra("AthleteGroupMesocycle", movie.planning?.pre_season?.mesocycle)
+                intent.putExtra("AthleteGroupMesocycles", preSeasonJson)
+//                intent.putExtra("AthleteGroupMesocycles", movie.planning?.pre_season)
             }
 
             if (movie.planning?.pre_competitive != null) {
@@ -64,6 +78,8 @@ class PlanningAdapterAthlete(
                 intent.putExtra("AthletePreComGroupStartDate", movie.planning?.pre_competitive?.start_date)
                 intent.putExtra("AthletePreComGroupEndDate", movie.planning?.pre_competitive?.end_date)
                 intent.putExtra("AthletePreComGroupMesocycle", movie.planning?.pre_competitive?.mesocycle)
+                intent.putExtra("AthleteGroupPreCompetitiveMesocycles", preCompetitiveJson)
+
             }
 
             if (movie.planning?.competitive != null) {
@@ -73,8 +89,11 @@ class PlanningAdapterAthlete(
                 intent.putExtra("AthleteComGroupStartDate", movie.planning?.competitive?.start_date)
                 intent.putExtra("AthleteComGroupEndDate", movie.planning?.competitive?.end_date)
                 intent.putExtra("AthleteComGroupMesocycle", movie.planning?.competitive?.mesocycle)
-                context.startActivity(intent)
+                intent.putExtra("AthleteGroupCompetitiveMesocycles", CompetitiveJson)
+
             }
+
+            Log.d("ODODODOODO", "onBindViewHolder: ${movie.planning?.transition}")
 
             if (movie.planning?.transition != null) {
                 //transition
@@ -83,8 +102,11 @@ class PlanningAdapterAthlete(
                 intent.putExtra("AthleteTranGroupStartDate", movie.planning?.transition?.start_date)
                 intent.putExtra("AthleteTranGroupEndDate", movie.planning?.transition?.end_date)
                 intent.putExtra("AthleteTranGroupMesocycle", movie.planning?.transition?.mesocycle)
-                context.startActivity(intent)
+                intent.putExtra("AthleteGroupTransitionMesocycles", TransitionJson)
+
             }
+            context.startActivity(intent)
+
         }
     }
 

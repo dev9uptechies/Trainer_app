@@ -413,7 +413,6 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         Log.d("ProcessImage", "Fallback: Image URL from SharedPreferences -> $imageUrl")
 
         if (!imageUrl.isNullOrEmpty()) {
-            // If image URL starts with "http" or "https", treat it as remote and download
             if (imageUrl.startsWith("http") || imageUrl.startsWith("https")) {
                 val imageFileFromUrl = runBlocking { convertUrlToFile(context, imageUrl) }
                 if (imageFileFromUrl != null && imageFileFromUrl.exists()) {
