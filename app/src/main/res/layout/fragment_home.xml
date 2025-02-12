@@ -1009,6 +1009,7 @@
                                     android:background="@drawable/round_item_per_second"
                                     android:baselineAligned="false"
                                     android:gravity="center"
+                                    android:visibility="gone"
                                     android:orientation="horizontal">
 
                                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -1660,6 +1661,7 @@
                                     android:background="@drawable/round_item_per_second"
                                     android:baselineAligned="false"
                                     android:gravity="center"
+                                    android:visibility="gone"
                                     android:orientation="horizontal">
 
                                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -1803,7 +1805,7 @@
                                             android:layout_gravity="center"
                                             android:fontFamily="@font/poppins_medium"
                                             android:gravity="center"
-                                            android:text="Nutrition And Hydration"
+                                            android:text="TIredness"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp"
                                             app:layout_constraintBottom_toBottomOf="parent"
@@ -1836,7 +1838,7 @@
                                             app:layout_constraintStart_toStartOf="parent" />
 
                                         <EditText
-                                            android:id="@+id/Nutrition_And_Hydration"
+                                            android:id="@+id/Tiredness"
                                             android:layout_width="match_parent"
                                             android:layout_height="match_parent"
                                             android:layout_gravity="center"
@@ -1876,7 +1878,7 @@
                                             android:layout_gravity="center"
                                             android:fontFamily="@font/poppins_medium"
                                             android:gravity="center"
-                                            android:text="Notes"
+                                            android:text="Nutrition And Hydration"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp"
                                             app:layout_constraintBottom_toBottomOf="parent"
@@ -1909,7 +1911,7 @@
                                             app:layout_constraintStart_toStartOf="parent" />
 
                                         <EditText
-                                            android:id="@+id/Notes"
+                                            android:id="@+id/Nutrition_And_Hydration"
                                             android:layout_width="match_parent"
                                             android:layout_height="match_parent"
                                             android:layout_gravity="center"

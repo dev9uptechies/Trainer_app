@@ -46,7 +46,7 @@ class EquipmentAdapter(
                 movie.name!!
             )
         )
-        val image = "https://trainers.codefriend.in" + movie.image
+        val image = "https://4trainersapp.com" + movie.image
         val thread = Thread {
             try {
                 val urlConnection = URL(image)

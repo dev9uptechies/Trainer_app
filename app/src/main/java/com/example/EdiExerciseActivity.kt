@@ -242,7 +242,7 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
 
                                 when {
                                     !exercise.video.isNullOrEmpty() -> {
-                                        playNormalVideo("https://trainers.codefriend.in${exercise.video}")
+                                        playNormalVideo("https://4trainersapp.com${exercise.video}")
                                     }
                                     !exercise.video_link.isNullOrEmpty() -> {
                                         if (isYouTubeUrl(exercise.video_link)) {

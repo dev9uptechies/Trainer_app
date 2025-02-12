@@ -14,6 +14,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.marginBottom
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Adapter.groups.GetAthleteListAdapterGroup
 import com.example.Adapter.groups.GetEventListAdapterGroup

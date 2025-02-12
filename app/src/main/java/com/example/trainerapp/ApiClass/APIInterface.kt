@@ -112,7 +112,9 @@ interface APIInterface {
     fun Logoin(
         @Field("email") email: String?,
         @Field("password") password: String?,
-        @Field("role") role: String?
+        @Field("role") role: String?,
+        @Field("device_token") device_token: String?,
+        @Field("device_type") device_type: String?
     ): Call<RegisterData>?
 
     @POST("sport/select")

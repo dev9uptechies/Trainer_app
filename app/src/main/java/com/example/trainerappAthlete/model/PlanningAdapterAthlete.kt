@@ -56,7 +56,10 @@ class PlanningAdapterAthlete(
         val preCompetitiveJson = gson.toJson(movie.planning?.pre_competitive)
         val CompetitiveJson = gson.toJson(movie.planning?.competitive)
         val TransitionJson = gson.toJson(movie.planning?.transition)
-        Log.d("2322232223232322", "onBindViewHolder: ${movie.planning?.pre_season?.mesocycles?.getOrNull(0)?.periods}")
+        Log.d("2322232223232322", "onBindViewHolder: ${movie.planning?.pre_season?.start_date} END ${movie.planning?.pre_season?.end_date}")
+        Log.d("2322232223232322", "onBindViewHolder: ${movie.planning?.pre_competitive?.start_date} END ${movie.planning?.pre_competitive?.end_date}")
+        Log.d("2322232223232322", "onBindViewHolder: ${movie.planning?.competitive?.start_date} END ${movie.planning?.competitive?.end_date}")
+        Log.d("2322232223232322", "onBindViewHolder: ${movie.planning?.transition?.start_date} END ${movie.planning?.pre_season?.end_date}")
 
         holder.itemView.setOnClickListener {
             val intent = Intent(context, ViewTrainingPlanActivity::class.java)

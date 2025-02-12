@@ -1,11 +1,15 @@
 package com.example.trainerapp
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
@@ -13,6 +17,8 @@ import com.example.trainerapp.databinding.ActivitySplashBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.Manifest
+
 
 class SplashActivity : AppCompatActivity() {
     lateinit var apiInterface: APIInterface
@@ -39,10 +45,30 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            startActivity(Intent(this, MainActivity::class.java))
+
+            Log.d("FCM", "Notification permission granted")
+        } else {
+            Log.d("FCM", "Notification permission denied")
+        }
+    }
 
     private fun checkLogin() {
         if (preferenceManager.UserLogIn()) {
             splashBinding.btnGetStart.visibility = View.GONE
+            requestNotificationPermission()
             apiCall()
         } else {
             splashBinding.btnGetStart.visibility = View.VISIBLE
@@ -50,7 +76,7 @@ class SplashActivity : AppCompatActivity() {
 
         splashBinding.btnGetStart.setOnClickListener {
             Log.d("TAG", "onCreate: Btn Start Click")
-            startActivity(Intent(this, MainActivity::class.java))
+            requestNotificationPermission()
         }
     }
 

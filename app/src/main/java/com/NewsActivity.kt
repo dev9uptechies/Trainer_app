@@ -43,7 +43,7 @@ class NewsActivity : AppCompatActivity() {
         binding.newsDescripiton.text = "Description: "+dec
 
         Glide.with(binding.newsImage.context)
-            .load("https://trainers.codefriend.in" + image)
+            .load("https://4trainersapp.com" + image)
             .into(binding.newsImage)
 
     }

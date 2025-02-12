@@ -43,7 +43,7 @@ class selectGroupAdapter(
             .build()
 
         Picasso.get()
-            .load("https://trainers.codefriend.in" + group.image)
+            .load("https://4trainersapp.com" + group.image)
             .fit()
             .transform(transformation)
             .into(holder.rounded_image)

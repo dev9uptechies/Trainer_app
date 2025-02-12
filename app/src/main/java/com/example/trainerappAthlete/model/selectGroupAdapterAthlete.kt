@@ -1,6 +1,7 @@
 package com.example.trainerappAthlete.model
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -46,13 +47,22 @@ class selectGroupAdapterAthlete(
             .build()
 
         Picasso.get()
-            .load("https://trainers.codefriend.in" + group.group!!.image)
+            .load("https://4trainersapp.com" + group.group!!.image)
             .fit()
             .transform(transformation)
             .into(holder.rounded_image)
 
         holder.checkBox.isChecked = position == selectedPosition
         holder.checkBox.isClickable = false
+
+        val colorStateList = if (position == selectedPosition) {
+            ColorStateList.valueOf(Color.RED)  // Selected item → Red tint
+        } else {
+            ColorStateList.valueOf(Color.WHITE)  // Default → White tint
+        }
+        holder.checkBox.buttonTintList = colorStateList
+
+
 
         holder.itemView.setOnClickListener {
             val currentPosition = holder.adapterPosition
@@ -69,6 +79,8 @@ class selectGroupAdapterAthlete(
                 }
             }
         }
+
+
 
     }
 

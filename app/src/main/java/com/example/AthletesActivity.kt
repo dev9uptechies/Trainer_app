@@ -161,7 +161,7 @@ class AthletesActivity : AppCompatActivity() {
                 Log.d("AthletesActivity", "Attempting to load image: $imageUrl")
 
                 Picasso.get()
-                    .load("https://trainers.codefriend.in$imageUrl")
+                    .load("https://4trainersapp.com$imageUrl")
                     .fit()
                     .placeholder(R.drawable.app_icon)
                     .error(R.drawable.background_splash_image)

@@ -56,7 +56,7 @@ class GroupAdapterAthlete(
             holder.progressBar.visibility = View.VISIBLE
 
             Picasso.get()
-                .load("https://trainers.codefriend.in${it.group?.image}")
+                .load("https://4trainersapp.com${it.group?.image}")
                 .fit()
                 .transform(transformation)
                 .error(R.drawable.group_chate_boarder)
@@ -73,6 +73,7 @@ class GroupAdapterAthlete(
                 })
 
             holder.card.setOnClickListener {
+                Log.d("S::S::S:S", "onBindViewHolder: ${movie.group_id}")
                 val intent = Intent(context, GroupDetailActivity::class.java).apply {
                     putExtra("id", movie.id)
                     putExtra("group_id", movie.group_id?.toInt() ?: -1)

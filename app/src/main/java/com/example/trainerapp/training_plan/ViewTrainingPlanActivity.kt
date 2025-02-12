@@ -131,7 +131,16 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
 
         val userType = preferenceManager.GetFlage()
         if (userType == "Athlete"){
+            viewTrainingPlanBinding.textView3.text = "Training Plan"
+            viewTrainingPlanBinding.edtLy.visibility = View.GONE
+            viewTrainingPlanBinding.cardDate.visibility = View.GONE
+            viewTrainingPlanBinding.cardEndDate.visibility = View.GONE
+            viewTrainingPlanBinding.linerDays.visibility = View.GONE
+            viewTrainingPlanBinding.imageView.visibility = View.GONE
             SetAthleteData()
+        }else{
+            viewTrainingPlanBinding.linerForAthlete.visibility = View.GONE
+            viewTrainingPlanBinding.recyclerView.visibility = View.VISIBLE
         }
 
     }
@@ -257,6 +266,14 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
 
         Log.d("DKDKDKDKDKD", "initViews: $preSeasonJson   \n  $preCompetitiveJson   \n $preCompetitiveJson  \n  $TransitionJson")
 
+
+        Log.d("DATES", "PRE START:$AthleteGroupStartDate ")
+
+
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete"){
+
         val gson = Gson()
         val type = object : TypeToken<Map<String, Any>>() {}.type
 
@@ -369,12 +386,35 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
 
         Log.d("TAGGGGGGGG", "initViews: $AthleteGroupTransition")
 
+        }
+
     }
+
+
+        fun formatDate(dateString: String?): String {
+            Log.d("SKKSKKSKS", "formatDate: $dateString")
+
+            if (dateString.isNullOrEmpty()) {
+                return "Invalid Date"
+            }
+
+            return try {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val outputFormat = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+
+                val date = inputFormat.parse(dateString)
+                date?.let { outputFormat.format(it) } ?: "Invalid Date"
+
+            } catch (e: Exception) {
+                Log.e("SKKSKKSKS", "Date parsing failed: ${e.message}")
+                "Invalid Date"
+            }
+        }
+
 
     private fun SetAthleteData() {
         val parentLayout = findViewById<LinearLayout>(R.id.liner_for_athlete)
 
-        // Function to create and add views with click handling
         fun addAthleteView(
             phase: String,
             name: String?,
@@ -390,10 +430,18 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
             val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_one)
             val AthletePlanMesocycle = athleteView.findViewById<TextView>(R.id.mesocycle_one)
 
+            Log.d("DLDLDLDLDL", "addAthleteView: $startDate   $endDate")
+
             AthletePlanName.text = name ?: phase
-            AthletePlanStartDate.text = startDate ?: "Invalid Date"
-            AthletePlanEndDate.text = endDate ?: "Invalid Date"
-            AthletePlanMesocycle.text = (mesocycle ?: "0") + " Cycle"
+            val start = formatDate(startDate)
+            val end = formatDate(endDate)
+            AthletePlanStartDate.text = ("Start: "+start)
+            AthletePlanEndDate.text = ("End: " + end)
+            AthletePlanMesocycle.text = if (mesocycle?.contains("MesoCycle") == true) {
+                "Mesocycle: "+mesocycle
+            } else {
+                "${"Mesocycle: "+ mesocycle ?: "0"} MesoCycle"
+            }
 
             val layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -412,6 +460,7 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
 
         // Pre Season
         if (AthleteGroupPreSeason == "Pre Season") {
+            Log.d(":5555555", "SetAthleteData: $AthleteGroupStartDate")
             addAthleteView("Pre Season", AthleteGroupName, AthleteGroupStartDate, AthleteGroupEndDate, AthleteGroupMesocycle) {
                 Log.d("CLICK_EVENT", "Pre Season clicked!")
 

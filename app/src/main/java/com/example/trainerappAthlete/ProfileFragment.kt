@@ -79,9 +79,9 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         buttonClick()
 //        GetTestList()
 
-        val pass = preferenceManager.GetPassword()
+        val pass = preferenceManager.GetPasswordProfile()
         binding.edtPassword.setText(pass)
-        Log.d("FHFHFFGGFG", "onCreate: ${preferenceManager.GetPassword()}")
+        Log.d("FHFHFFGGFG", "onCreate: ${pass}")
 
         return binding.root
     }
@@ -192,14 +192,14 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             .build()
 
         Picasso.get()
-            .load("https://trainers.codefriend.in" + data?.image)
+            .load("https://4trainersapp.com" + data?.image)
             .fit()
             .transform(transformation)
             .error(R.drawable.app_icon)
             .into(binding.roundImage)
 
         val imageUrl =
-            "https://trainers.codefriend.in" + (data?.image ?: "")
+            "https://4trainersapp.com" + (data?.image ?: "")
         Log.d("ImageURL", "URL: $imageUrl")
 
         val sharedPreferences = context?.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
@@ -332,6 +332,8 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         val sportidReuestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Sportsids)
         //        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), imageFile)
         //        val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
+
+        Log.d("SLSLSLSLLS", "UpdateProfile: $imageParttest")
 
         apiInterface.EditProfileAthlete(
             nameRequestBody,

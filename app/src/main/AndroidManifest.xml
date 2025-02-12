@@ -17,6 +17,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
+
+
     <application
         android:allowBackup="true"
         android:enableOnBackInvokedCallback="true"
@@ -30,6 +32,14 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan"
         tools:targetApi="m">
+
+        <service android:name="com.example.model.FirebaseMessageReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name="com.example.trainerapp.viewTestActivity"
             android:exported="false" />

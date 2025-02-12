@@ -17,6 +17,7 @@ import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
 import com.example.trainerapp.databinding.ActivitySignInBinding
+import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +31,9 @@ class SignInActivity : AppCompatActivity() {
     lateinit var password_error: TextView
     lateinit var progress_bar: ProgressBar
     lateinit var signInBinding: ActivitySignInBinding
+
+    var FCMToken:String ?= null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         signInBinding = ActivitySignInBinding.inflate(layoutInflater)
@@ -42,11 +46,13 @@ class SignInActivity : AppCompatActivity() {
         signInBinding.edtPassword.setText("Testing@112")
 //        signInBinding.edtEmail.setText("4trainersapp@gmail.com")
 //        signInBinding.edtPassword.setText("4Trainersapp!")
+//        signInBinding.edtEmail.setText("sujaldevani05@gmail.com")
+//        signInBinding.edtPassword.setText("Sujal@_07")
 
         checkFieldValue()
         checkButtonClick()
         checkChangeListner()
-
+        getFCMToken()
     }
 
     private fun checkChangeListner() {
@@ -135,13 +141,18 @@ class SignInActivity : AppCompatActivity() {
         signInBinding.btnSignIn.setOnClickListener {
 
             if (isValidate) {
+
+                Log.d("FCMToken", "FCM Token: $FCMToken")
+
                 progress_bar.visibility = View.VISIBLE
                 email_error.visibility = View.GONE
                 password_error.visibility = View.GONE
                 apiInterface.Logoin(
                     signInBinding.edtEmail.text.toString(),
                     signInBinding.edtPassword.text.toString(),
-                    preferenceManager.GetFlage()
+                    preferenceManager.GetFlage(),
+                    FCMToken,
+                    "Android"
                 )?.enqueue(object : Callback<RegisterData?> {
                     override fun onResponse(
                         call: Call<RegisterData?>,
@@ -149,6 +160,10 @@ class SignInActivity : AppCompatActivity() {
                     ) {
 //                        Log.d("GHGHGHGHGHGH", response.code().toString() + "")
 
+                        Log.d("AAPPAPAAP", "onResponse: ${signInBinding.edtPassword.text.toString()}")
+                        preferenceManager.setpasswordProfile(signInBinding.edtPassword.text.toString())
+
+                        Log.d("DKLDDLDLL", "onResponse: ${preferenceManager.GetPasswordProfile()}")
                         val code = response.code()
                         if (code == 200) {
                             val resource: RegisterData? = response.body()
@@ -162,6 +177,7 @@ class SignInActivity : AppCompatActivity() {
                                 if (Success.equals(true)) {
                                     progress_bar.visibility = View.GONE
                                     if (resource.data!!.userSports!!.size == 0) {
+
 
                                         startActivity(
                                             Intent(
@@ -243,6 +259,22 @@ class SignInActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun getFCMToken() {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("FCM", "Fetching FCM registration token failed", task.exception)
+                    return@addOnCompleteListener
+                }
+                // Get the FCM token
+                val token = task.result
+                Log.d("FCM", "FCM Token: $token")
+                FCMToken = token
+                // You can save this token to your server if needed
+            }
+    }
+
 
     private fun initViews() {
         apiClient = APIClient(this)

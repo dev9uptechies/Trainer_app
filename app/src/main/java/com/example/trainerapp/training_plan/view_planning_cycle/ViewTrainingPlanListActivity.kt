@@ -26,6 +26,8 @@ import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
     lateinit var viewTrainingPlanBinding: ActivityViewTrainingPlanListBinding
@@ -185,6 +187,9 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
         val userType = preferenceManager.GetFlage()
         if (userType == "Athlete") {
 
+            viewTrainingPlanBinding.add.visibility = View.GONE
+            viewTrainingPlanBinding.swipeReferesh.visibility = View.GONE
+
             val jsonMesocycles = intent.getStringExtra("PreSeasonJson")
             val jsonPreCompetitiveMesocycles = intent.getStringExtra("PreCompetitiveJson")
             val jsonCompetitiveMesocycles = intent.getStringExtra("CompetitiveJson")
@@ -200,10 +205,7 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
 
                 SetAthleteData(mesocyclesList)
                 for (mesocycle in mesocyclesList) {
-                    Log.d(
-                        "ReceivedMesocycles",
-                        "ID: ${mesocycle["id"]}, Name: ${mesocycle["name"]}"
-                    )
+                    Log.d("ReceivedMesocycles", "ID: ${mesocycle["id"]}, Name: ${mesocycle["name"]}")
                 }
             } else {
                 Log.d("ReceivedMesocycles", "No data received")
@@ -267,6 +269,17 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
         }
     }
 
+    fun formatDate(dateString: String?): String {
+        return try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Adjust input format if needed
+            val outputFormat = SimpleDateFormat("dd, MMM yyyy", Locale.getDefault())
+            val date = inputFormat.parse(dateString ?: "")
+            date?.let { outputFormat.format(it) } ?: "Invalid Date"
+        } catch (e: Exception) {
+            "Invalid Date"
+        }
+    }
+
     private fun SetAthleteData(mesocyclesList: List<Map<String, Any>>) {
         val parentLayout = findViewById<LinearLayout>(R.id.liner_for_athlete)
         viewTrainingPlanBinding.textView3.text = "Periods"
@@ -286,10 +299,12 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
             val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_one)
             val AthletePlanMesocycle = athleteView.findViewById<TextView>(R.id.mesocycle_one)
 
+            val start = formatDate(startDate)
+            val end = formatDate(endDate)
             AthletePlanName.text = name ?: phase
-            AthletePlanStartDate.text = startDate ?: "Invalid Date"
-            AthletePlanEndDate.text = endDate ?: "Invalid Date"
-            AthletePlanMesocycle.text = mesocycle ?: "0 Cycle"
+            AthletePlanStartDate.text = "Start Date: $start"
+            AthletePlanEndDate.text = "End Date: $end"
+            AthletePlanMesocycle.text = "Micro No: " + (mesocycle ?: "0") + " Cycle"
 
             val layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -299,9 +314,7 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
             }
             athleteView.layoutParams = layoutParams
 
-            athleteView.setOnClickListener {
-                onClick()
-            }
+            athleteView.setOnClickListener { onClick() }
 
             parentLayout.addView(athleteView)
         }
@@ -315,26 +328,24 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
                     val name = mesocycle["name"]?.toString()
                     val startDate = mesocycle["start_date"]?.toString()
                     val endDate = mesocycle["end_date"]?.toString()
-                    val mesoCyele = mesocycle["periods"]?.toString()
 
-                    Log.d("7777888", "SetAthleteData: $mesocyclesList")
+                    val microcycleList = mesocycle["microcycles"] as? List<Map<String, Any>> ?: emptyList()
+                    val jsonMicrocycle = gson.toJson(microcycleList)
 
                     addAthleteView("Mesocycle", name, startDate, endDate, "1 Cycle") {
                         Log.d("CLICK_EVENT", "Mesocycle $name clicked!")
 
-                        val microcycleList = mesocycle["microcycles"] as? List<Map<String, Any>> ?: emptyList()
-                        val jsonMicrocycle = gson.toJson(microcycleList)
-
                         val intent = Intent(this, ViewMicroCycleActivity::class.java)
                         intent.putExtra("PreSeasonJson", jsonMicrocycle)
                         intent.putExtra("PreSeason", "PreSeason")
+                        intent.putExtra("MesocycleName", name) // **Sending Mesocycle Name**
                         startActivity(intent)
                     }
                 }
             }
         }
 
-        // **PreCompetitive** - Click opens microcycles list
+        // **PreCompetitive**
         intent.getStringExtra("PreCompetitive")?.let { preCompetitive ->
             if (preCompetitive == "PreCompetitive") {
                 for (mesocycle in mesocyclesList) {
@@ -342,17 +353,16 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
                     val startDate = mesocycle["start_date"]?.toString()
                     val endDate = mesocycle["end_date"]?.toString()
 
-                    // Extract only microcycles inside this mesocycle
                     val microcycleList = mesocycle["microcycles"] as? List<Map<String, Any>> ?: emptyList()
                     val jsonMicrocycle = gson.toJson(microcycleList)
 
                     addAthleteView("Mesocycle", name, startDate, endDate, "1 Cycle") {
                         Log.d("CLICK_EVENT", "Mesocycle $name clicked!")
-                        Log.d("MICROCYCLES_ONLY", "SetAthleteData: $jsonMicrocycle")
 
                         val intent = Intent(this, ViewMicroCycleActivity::class.java)
                         intent.putExtra("PreCompetitiveJson", jsonMicrocycle)
                         intent.putExtra("PreCompetitive", "PreCompetitive")
+                        intent.putExtra("MesocycleName", name) // **Sending Mesocycle Name**
                         startActivity(intent)
                     }
                 }
@@ -367,14 +377,16 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
                     val startDate = mesocycle["start_date"]?.toString()
                     val endDate = mesocycle["end_date"]?.toString()
 
+                    val microcycleList = mesocycle["microcycles"] as? List<Map<String, Any>> ?: emptyList()
+                    val jsonMicrocycle = gson.toJson(microcycleList)
+
                     addAthleteView("Mesocycle", name, startDate, endDate, "1 Cycle") {
                         Log.d("CLICK_EVENT", "Mesocycle $name clicked!")
-                        val microcycleList = mesocycle["microcycles"] as? List<Map<String, Any>> ?: emptyList()
-                        val jsonMicrocycle = gson.toJson(microcycleList)
 
                         val intent = Intent(this, ViewMicroCycleActivity::class.java)
                         intent.putExtra("CompetitiveJson", jsonMicrocycle)
                         intent.putExtra("Competitive", "Competitive")
+                        intent.putExtra("MesocycleName", name) // **Sending Mesocycle Name**
                         startActivity(intent)
                     }
                 }
@@ -389,15 +401,16 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
                     val startDate = mesocycle["start_date"]?.toString()
                     val endDate = mesocycle["end_date"]?.toString()
 
+                    val microcycleList = mesocycle["microcycles"] as? List<Map<String, Any>> ?: emptyList()
+                    val jsonMicrocycle = gson.toJson(microcycleList)
+
                     addAthleteView("Mesocycle", name, startDate, endDate, "1 Cycle") {
                         Log.d("CLICK_EVENT", "Mesocycle $name clicked!")
-
-                        val microcycleList = mesocycle["microcycles"] as? List<Map<String, Any>> ?: emptyList()
-                        val jsonMicrocycle = gson.toJson(microcycleList)
 
                         val intent = Intent(this, ViewMicroCycleActivity::class.java)
                         intent.putExtra("TransitionJson", jsonMicrocycle)
                         intent.putExtra("Transition", "Transition")
+                        intent.putExtra("MesocycleName", name) // **Sending Mesocycle Name**
                         startActivity(intent)
                     }
                 }

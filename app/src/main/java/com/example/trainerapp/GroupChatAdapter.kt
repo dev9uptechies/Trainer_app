@@ -56,7 +56,7 @@ class GroupChatAdapter (private var splist: ArrayList<GroupChateListData.groupDa
             .build()
 
         Picasso.get()
-            .load("https://trainers.codefriend.in"+movie.image)
+            .load("https://4trainersapp.com"+movie.image)
             .fit()
             .transform(transformation)
             .into(holder.rounded_image)

@@ -111,6 +111,11 @@ class PreferencesManager(context: Context) {
         spEditor.apply()
     }
 
+    fun setpasswordProfile(password: String?) {
+        spEditor.putString(PASSWORDPROFILE, password)
+        spEditor.apply()
+    }
+
     fun setreffrel(reffral: String?) {
         spEditor.putString(REFFREL, reffral)
         spEditor.apply()
@@ -133,6 +138,12 @@ class PreferencesManager(context: Context) {
     fun GetPassword(): String? {
         return sharedPreferences.getString(
             PASSWORD,
+            ""
+        )
+    }
+    fun GetPasswordProfile(): String? {
+        return sharedPreferences.getString(
+            PASSWORDPROFILE,
             ""
         )
     }
@@ -171,6 +182,7 @@ class PreferencesManager(context: Context) {
         private const val USER_NAME = "username"
         private const val EMAIL = "email"
         private const val PASSWORD = "password"
+        private const val PASSWORDPROFILE = "passwordprofile"
         private const val REFFREL = "reffral"
 
     }

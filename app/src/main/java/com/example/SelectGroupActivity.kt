@@ -1,9 +1,12 @@
 package com.example
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.CheckBox
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -45,6 +48,7 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         BUttonClick()
 
         val userType = preferenceManager.GetFlage()
+
 
         if (userType == "Athlete"){
             callGroupApiAthlete()

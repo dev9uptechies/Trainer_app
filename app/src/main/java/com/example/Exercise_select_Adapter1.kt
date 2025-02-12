@@ -120,7 +120,7 @@ class Exercise_select_Adapter1(
             .build()
 
         Picasso.get()
-            .load("https://trainers.codefriend.in" + movie.image)
+            .load("https://4trainersapp.com" + movie.image)
             .fit()
             .transform(transformation)
             .placeholder(R.drawable.ic_youtube)

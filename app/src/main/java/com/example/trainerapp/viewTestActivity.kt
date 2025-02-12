@@ -142,6 +142,9 @@ class viewTestActivity : AppCompatActivity() {
             }
 
         } else {
+            viewTestBinding.nestedScrollView2.visibility = View.VISIBLE
+            viewTestBinding.nestedScrollView3.visibility = View.VISIBLE
+            viewTestBinding.linerAdd.visibility= View.GONE
             loadData()
         }
 

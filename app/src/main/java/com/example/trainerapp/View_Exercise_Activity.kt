@@ -175,7 +175,7 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
                                     // Load image
                                     selectedExercise.image?.let {
-                                        imageString = "https://trainers.codefriend.in$it"
+                                        imageString = "https://4trainersapp.com$it"
                                         Picasso.get()
                                             .load(imageString)
                                             .placeholder(R.drawable.video_background)
@@ -193,7 +193,7 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
                                     // Handle video
                                     selectedExercise.video?.let {
-                                        videoString = "https://trainers.codefriend.in$it"
+                                        videoString = "https://4trainersapp.com$it"
                                         playNormalVideo(videoString)
                                         Log.d("Video Type :-", videoString)
                                     } ?: selectedExercise.video_link?.let {

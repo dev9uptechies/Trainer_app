@@ -215,7 +215,7 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 )
             )
 
-            playMusic("https://trainers.codefriend.in" + audioData!!.audio)
+            playMusic("https://4trainersapp.com" + audioData!!.audio)
 
             countDownTimer = object : CountDownTimer(timeInMillis, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
@@ -267,7 +267,7 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 )
             )
             //viewTimerDetailsBinding.time.setTextColor(Color.RED)
-            playMusic("https://trainers.codefriend.in" + pauseAudioData!!.pause_time_audio)
+            playMusic("https://4trainersapp.com" + pauseAudioData!!.pause_time_audio)
             // Start the pause countdown
             countDownTimer = object : CountDownTimer(pauseInMillis, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
@@ -368,7 +368,7 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                     )
                 )
             )
-            playMusic("https://trainers.codefriend.in" + pauseBetweenAudioData!!.pause_between_audio)
+            playMusic("https://4trainersapp.com" + pauseBetweenAudioData!!.pause_between_audio)
 
             countDownTimer = object : CountDownTimer(pauseBetweenInMillis, 1000) {
                 override fun onTick(millisUntilFinished: Long) {

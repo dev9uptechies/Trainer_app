@@ -201,7 +201,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                 scanQrprogress.visibility = View.VISIBLE
 
                 Picasso.get()
-                    .load("https://trainers.codefriend.in" +selectedImageUri)
+                    .load("https://4trainersapp.com" +selectedImageUri)
                     .fit()
                     .error(R.drawable.group_chate_boarder)
                     .into(scanQr, object : com.squareup.picasso.Callback {
@@ -256,7 +256,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                 groupDetailBinding.progressBarImage.visibility = View.VISIBLE
 
                 Picasso.get()
-                    .load("https://trainers.codefriend.in" + selectedImageUri)
+                    .load("https://4trainersapp.com" + selectedImageUri)
                     .fit()
                     .into(scanQr, object : com.squareup.picasso.Callback {
                         override fun onSuccess() {
@@ -385,7 +385,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                                 groupDetailBinding.progressBarImage.visibility = View.GONE
 
                                 Picasso.get()
-                                    .load("https://trainers.codefriend.in${data.image}")
+                                    .load("https://4trainersapp.com${data.image}")
                                     .fit()
                                     .transform(transformation)
                                     .into(groupDetailBinding.roundedImg, object : com.squareup.picasso.Callback {
@@ -510,9 +510,10 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                                 groupDetailBinding.progressBarImage.visibility = View.VISIBLE
 
                                 Picasso.get()
-                                    .load("https://trainers.codefriend.in${data.group!!.image}")
+                                    .load("https://4trainersapp.com/api${data.group!!.image}")
                                     .fit()
                                     .transform(transformation)
+                                    .error(R.drawable.group_chate_boarder)
                                     .into(groupDetailBinding.roundedImg, object : com.squareup.picasso.Callback {
                                         override fun onSuccess() {
                                             groupDetailBinding.progressBarImage.visibility = View.GONE

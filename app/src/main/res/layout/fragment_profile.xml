@@ -169,6 +169,8 @@
                             android:background="@null"
                             android:textSize="@dimen/_14sdp"
                             android:hint="@string/enter_password"
+                            android:clickable="false"
+                            android:focusable="false"
                             android:fontFamily="@font/poppins_medium"
                             android:imeOptions="actionNext"
                             android:inputType="textPassword"
@@ -435,6 +437,7 @@
                     android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     app:cardBackgroundColor="#1A929492"
+
                     app:cardCornerRadius="@dimen/_9sdp"
                     app:layout_constraintTop_toBottomOf="@+id/card_weight"
                     tools:layout_editor_absoluteX="25dp">
@@ -449,6 +452,8 @@
                         android:fontFamily="@font/poppins_medium"
                         android:singleLine="true"
                         android:imeOptions="actionNext"
+                        android:clickable="false"
+                        android:focusable="false"
                         android:hint="Below -"
                         android:textColorHint="@color/white"
                         android:textColor="@color/white"
@@ -477,6 +482,8 @@
                         android:fontFamily="@font/poppins_medium"
                         android:hint="Athletes -"
                         android:background="@null"
+                        android:clickable="false"
+                        android:focusable="false"
                         android:singleLine="true"
                         android:imeOptions="actionNext"
                         android:textColor="@color/white"
@@ -507,6 +514,8 @@
                         android:hint="Baseline -"
                         android:textColorHint="@color/white"
                         android:background="@null"
+                        android:clickable="false"
+                        android:focusable="false"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_13sdp" />
 
@@ -532,6 +541,8 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:fontFamily="@font/poppins_medium"
                         android:hint="Fat mass -"
+                        android:clickable="false"
+                        android:focusable="false"
                         android:singleLine="true"
                         android:textColorHint="@color/white"
                         android:imeOptions="actionNext"

@@ -129,7 +129,7 @@ class View_Program_Adapter(
             .build()
 
         Picasso.get()
-            .load("https://trainers.codefriend.in" + movie.exercise!!.image)
+            .load("https://4trainersapp.com" + movie.exercise!!.image)
             .fit()
             .transform(transformation)
             .placeholder(R.drawable.ic_youtube)

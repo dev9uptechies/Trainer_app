@@ -66,6 +66,7 @@ import com.example.trainerapp.privacy_policy.PrivacyPolicyActivity
 import com.example.trainerapp.view_analysis.ViewAnalysisActivity
 import com.example.trainerappAthlete.model.GroupListAthlete
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.messaging.FirebaseMessaging
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
@@ -91,6 +92,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     lateinit var preferenceManager: PreferencesManager
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
+    var calendarView: CalendarView? = null
     var actionBarDrawerToggle: ActionBarDrawerToggle? = null
     lateinit var adapter: HomeAdapter
     lateinit var newsadapter: NewsAdapter
@@ -100,6 +102,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     private var receivedIds: String = ""
     private var receivedGroup_Ids: String = ""
     var formattedDate: String? = null
+    private val datesWithDataTest = mutableSetOf<LocalDate>() // Set to track dates with data
+
 
     lateinit var lessonadapter: LessonAdapter
     lateinit var eventadapter: eventAdapter
@@ -134,6 +138,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         homeFragmentBinding.nextTv
         homeFragmentBinding.viewRecycler
         homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+        calendarView = homeFragmentBinding.exSevenCalendar
+
 
         initViews()
         setDrawerToggle()
@@ -157,6 +163,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             homeFragmentBinding.linerAthlete.visibility =View.VISIBLE
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_library).isVisible = false
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = false
+            homeFragmentBinding.navigationView.menu.findItem(R.id.tv_remind).isVisible = false
             if (receivedIdInt != null) {
                 callGroupApiAthlete(receivedIdInt)
             } else {
@@ -209,6 +216,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         return homeFragmentBinding.root
     }
 
+
     @SuppressLint("NewApi")
     private fun fetchDayData(selectedDate: LocalDate) {
         try {
@@ -229,6 +237,74 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                             if (data != null) {
                                 if (::eventadapter.isInitialized) {
                                     eventadapter.clearData()
+                                }
+
+                                if (data != null) {
+                                    if (::eventadapter.isInitialized) {
+                                        eventadapter.clearData()
+                                    }
+
+                                    if (data.lessons.isNotEmpty()) {
+                                        if (!datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.add(selectedDate)
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    } else {
+                                        if (datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.remove(selectedDate)
+                                            // Notify the calendar view to remove the dot
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    }
+
+                                    if (data.events.isNotEmpty()) {
+                                        if (!datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.add(selectedDate)
+                                            // Notify the calendar view to update this date
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    } else {
+                                        if (datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.remove(selectedDate)
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    }
+
+                                    if (data.tests.isNotEmpty()) {
+                                        if (!datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.add(selectedDate)
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    } else {
+                                        if (datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.remove(selectedDate)
+                                            // Notify the calendar view to remove the dot
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    }
+
+                                    if (data.tests.isNotEmpty()) {
+                                        if (!datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.add(selectedDate)
+                                            // Notify the calendar view to update this date
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    } else {
+                                        if (datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.remove(selectedDate)
+                                            // Notify the calendar view to remove the dot
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    }
+
+
+                                    initTestRecyclerView(data.tests)
+                                    initLessonRecyclerView(data.lessons)
+                                    initEventRecyclerView(data.events)
+
+                                } else {
+                                    Log.e("API Response", "Data is null. No dot added.")
+                                    // Remove any dots for this date if data is null
                                 }
 
                                 initTestRecyclerView(data.tests)
@@ -393,6 +469,25 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     }
                 }
 
+
+                Log.d("DOTTTTT", "bind: $datesWithDataTest")
+
+                if (datesWithDataTest.contains(day.date)) {
+                    container.binding.dotLesson.visibility = View.VISIBLE
+                } else {
+                    container.binding.dotLesson.visibility = View.GONE
+                }
+                if (datesWithDataTest.contains(day.date)) {
+                    container.binding.dotTest.visibility = View.VISIBLE
+                } else {
+                    container.binding.dotTest.visibility = View.GONE
+                }
+                if (datesWithDataTest.contains(day.date)) {
+                    container.binding.dotEvent.visibility = View.VISIBLE
+                } else {
+                    container.binding.dotEvent.visibility = View.GONE
+                }
+
                 container.view.setOnClickListener {
                     if (day.owner == DayOwner.THIS_MONTH) {
                         selectDate(day.date)
@@ -505,6 +600,14 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 "select date :-$selectedDate \n date :- $date \n old date :-$oldDate"
             )
 
+            val data = SelectedDaysModel.Data(
+                lessons = listOf(), // Provide a valid list of lessons
+                events = listOf(),  // Provide a valid list of events
+                tests = listOf(),    // Provide a valid list of tests
+                programs = listOf(),    // Provide a valid list of tests
+            )
+            checkDatesForMonth(LocalDate.now(), data)
+
             oldDate?.let { homeFragmentBinding.exSevenCalendar.notifyDateChanged(it) }
             homeFragmentBinding.exSevenCalendar.notifyDateChanged(date)
 //                homeFragmentBinding.exSevenCalendar.scrollToMonth(YearMonth.from(date))
@@ -519,6 +622,52 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         return daysOfWeek.slice(firstDayOfWeek.ordinal..daysOfWeek.lastIndex) +
                 daysOfWeek.slice(0 until firstDayOfWeek.ordinal)
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkDatesForMonth(selectedDate: LocalDate, data: SelectedDaysModel.Data) {
+        val currentMonth = YearMonth.from(selectedDate)
+        val daysInMonth = currentMonth.lengthOfMonth()
+
+        for (day in 1..31) {
+            // Skip invalid days for the current month
+            if (day > daysInMonth) break
+
+            val date = currentMonth.atDay(day)
+
+            // Check and update lessons
+            updateDatesList(date, data.lessons.map { it.date }, datesWithDataTest, "Lesson")
+
+            // Check and update events
+            updateDatesList(date, data.events.map { it.date }, datesWithDataTest, "Event")
+
+            // Check and update tests
+            updateDatesList(date, data.tests.map { it.date }, datesWithDataTest, "Test")
+        }
+    }
+
+    private fun updateDatesList(
+        date: LocalDate,
+        dataDates: List<String>,
+        dateSet: MutableSet<LocalDate>,
+        type: String
+    ) {
+        val dateStr = date.toString()
+
+        if (dataDates.contains(dateStr)) {
+            if (!dateSet.contains(date)) {
+                dateSet.add(date)
+                calendarView?.notifyDateChanged(date)
+                Log.d("CheckedDates", "$type date added: $date")
+            }
+        } else {
+            if (dateSet.contains(date)) {
+                dateSet.remove(date)
+                calendarView?.notifyDateChanged(date)
+                Log.d("CheckedDates", "$type date removed: $date")
+            }
+        }
+    }
+
 
     private fun callGroupApi(receivedId: Int) {
         homeFragmentBinding.homeProgress.visibility = View.VISIBLE
@@ -971,9 +1120,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 //        binding.dateTextView.text = data.date ?: ""
 //        binding.sleepHoursTextView.text = data.sleepHours ?: ""
         homeFragmentBinding.NutritionAndHydration.setText(data.nutritionAndHydration ?: "")
-        homeFragmentBinding.Notes.setText(data.notes ?: "")
+        homeFragmentBinding.Tiredness.setText(data.notes ?: "")
 
-        // Check if personalDiaryDetails is empty or null
         if (data.personalDiaryDetails.isNullOrEmpty() || data.personalDiaryDetails.equals("0")) {
             // Set all values to empty string if no details available
             homeFragmentBinding.EnergyBT.setText("")
@@ -1231,57 +1379,63 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
         val userType = preferenceManager.GetFlage()
 
-        if (userType == "Athlete") {
-            homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+        Log.d("SSKKSKS", "onItemClicked: ${string}")
 
-            when (position) {
-                0 -> {
-                    homeFragmentBinding.informationLinear.visibility = View.GONE
-                    homeFragmentBinding.InstructionLinera.visibility = View.GONE
-                    homeFragmentBinding.NewsLinera.visibility = View.VISIBLE
-                    homeFragmentBinding.linerAthlete.visibility = View.GONE
+        if (string == "click") {
+
+            if (userType == "Athlete" && string == "click") {
+                homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+
+                Log.d("SSKKSKS", "onItemClicked: $position")
+
+                when (position) {
+                    0 -> {
+                        homeFragmentBinding.informationLinear.visibility = View.GONE
+                        homeFragmentBinding.InstructionLinera.visibility = View.GONE
+                        homeFragmentBinding.NewsLinera.visibility = View.VISIBLE
+                        homeFragmentBinding.linerAthlete.visibility = View.GONE
+                    }
+
+                    1 -> {
+                        homeFragmentBinding.informationLinear.visibility = View.GONE
+                        homeFragmentBinding.InstructionLinera.visibility = View.VISIBLE
+                        homeFragmentBinding.NewsLinera.visibility = View.GONE
+                        homeFragmentBinding.linerAthlete.visibility = View.GONE
+                    }
+
+                    2 -> {
+                        homeFragmentBinding.informationLinear.visibility = View.VISIBLE
+                        homeFragmentBinding.InstructionLinera.visibility = View.GONE
+                        homeFragmentBinding.NewsLinera.visibility = View.GONE
+                        homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+                    }
                 }
+            } else {
+                homeFragmentBinding.linerAthlete.visibility = View.GONE
 
-                1 -> {
-                    homeFragmentBinding.informationLinear.visibility = View.GONE
-                    homeFragmentBinding.InstructionLinera.visibility = View.VISIBLE
-                    homeFragmentBinding.NewsLinera.visibility = View.GONE
-                    homeFragmentBinding.linerAthlete.visibility = View.GONE
-                }
+                when (position) {
+                    0 -> {
+                        homeFragmentBinding.informationLinear.visibility = View.GONE
+                        homeFragmentBinding.InstructionLinera.visibility = View.GONE
+                        homeFragmentBinding.NewsLinera.visibility = View.VISIBLE
+                        homeFragmentBinding.linerAthlete.visibility = View.GONE
+                    }
 
-                2 -> {
-                    homeFragmentBinding.informationLinear.visibility = View.VISIBLE
-                    homeFragmentBinding.InstructionLinera.visibility = View.GONE
-                    homeFragmentBinding.NewsLinera.visibility = View.GONE
-                    homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+                    1 -> {
+                        homeFragmentBinding.informationLinear.visibility = View.GONE
+                        homeFragmentBinding.InstructionLinera.visibility = View.VISIBLE
+                        homeFragmentBinding.NewsLinera.visibility = View.GONE
+                        homeFragmentBinding.linerAthlete.visibility = View.GONE
+                    }
+
+                    2 -> {
+                        homeFragmentBinding.informationLinear.visibility = View.VISIBLE
+                        homeFragmentBinding.InstructionLinera.visibility = View.GONE
+                        homeFragmentBinding.NewsLinera.visibility = View.GONE
+                        homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+                    }
                 }
             }
-        }else{
-            homeFragmentBinding.linerAthlete.visibility = View.GONE
-
-            when (position) {
-                0 -> {
-                    homeFragmentBinding.informationLinear.visibility = View.GONE
-                    homeFragmentBinding.InstructionLinera.visibility = View.GONE
-                    homeFragmentBinding.NewsLinera.visibility = View.VISIBLE
-                    homeFragmentBinding.linerAthlete.visibility = View.GONE
-                }
-
-                1 -> {
-                    homeFragmentBinding.informationLinear.visibility = View.GONE
-                    homeFragmentBinding.InstructionLinera.visibility = View.VISIBLE
-                    homeFragmentBinding.NewsLinera.visibility = View.GONE
-                    homeFragmentBinding.linerAthlete.visibility = View.GONE
-                }
-
-                2 -> {
-                    homeFragmentBinding.informationLinear.visibility = View.VISIBLE
-                    homeFragmentBinding.InstructionLinera.visibility = View.GONE
-                    homeFragmentBinding.NewsLinera.visibility = View.GONE
-                    homeFragmentBinding.linerAthlete.visibility = View.GONE
-                }
-            }
-
         }
     }
 }
