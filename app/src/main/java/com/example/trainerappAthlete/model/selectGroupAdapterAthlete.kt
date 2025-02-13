@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.GroupListData
 import com.example.OnItemClickListener
+import com.example.trainerapp.ApiClass.MesoCycleData
 import com.example.trainerapp.R
 import com.makeramen.roundedimageview.RoundedImageView
 import com.makeramen.roundedimageview.RoundedTransformationBuilder
@@ -28,6 +29,8 @@ class selectGroupAdapterAthlete(
     private var selectedPosition = -1
     private var selectedGroupId: String? = null
     private var selectedGroup_Id: String? = null
+    private lateinit var PreSeason: GroupListAthlete.Data
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -38,6 +41,8 @@ class selectGroupAdapterAthlete(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val group = splist!![position]
         holder.group_name.text = group.group!!.name
+
+            PreSeason = group
 
         val transformation: Transformation = RoundedTransformationBuilder()
             .borderColor(Color.BLACK)
@@ -56,15 +61,15 @@ class selectGroupAdapterAthlete(
         holder.checkBox.isClickable = false
 
         val colorStateList = if (position == selectedPosition) {
-            ColorStateList.valueOf(Color.RED)  // Selected item → Red tint
+            ColorStateList.valueOf(Color.RED)
         } else {
-            ColorStateList.valueOf(Color.WHITE)  // Default → White tint
+            ColorStateList.valueOf(Color.WHITE)
         }
         holder.checkBox.buttonTintList = colorStateList
 
-
-
         holder.itemView.setOnClickListener {
+            Log.d("AMAMMAMAMA", "onBindViewHolder: ${group.group?.group_plannings?.getOrNull(0)?.planning?.pre_season}")
+
             val currentPosition = holder.adapterPosition
             if (selectedPosition != currentPosition) {
                 val previousSelectedPosition = selectedPosition
@@ -80,12 +85,19 @@ class selectGroupAdapterAthlete(
             }
         }
 
-
-
     }
 
     fun getSelectedGroupId(): Pair<String?, String?> {
         return Pair(selectedGroupId, selectedGroup_Id)
+    }
+
+    fun getSelectedGroupData(): Map<String, String?> {
+        return mapOf(
+            "name" to PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.pre_season?.name,
+            "start_date" to PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.pre_season?.start_date,
+            "end_date" to PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.pre_season?.end_date,
+            "mesocycle" to PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.pre_season?.mesocycle
+        )
     }
 
     override fun getItemCount(): Int {

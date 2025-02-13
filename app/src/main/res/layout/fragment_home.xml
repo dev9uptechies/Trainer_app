@@ -337,7 +337,6 @@
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="match_parent"
-
                                     android:layout_height="match_parent"
                                     android:layout_marginBottom="@dimen/_10sdp">
 
@@ -441,6 +440,7 @@
                                         android:layout_marginStart="@dimen/_10sdp"
                                         android:fontFamily="@font/poppins_medium"
                                         android:text="Mesocycle:"
+                                        android:visibility="gone"
                                         android:textColor="#BBBBBB"
                                         android:textSize="@dimen/_13sdp"
                                         app:layout_constraintStart_toStartOf="parent"
@@ -453,6 +453,7 @@
                                         android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Strength, Speed"
                                         android:textColor="#BBBBBB"
+                                        android:visibility="gone"
                                         android:textSize="@dimen/_12sdp"
                                         app:layout_constraintStart_toEndOf="@+id/tv_abilities_technique"
                                         app:layout_constraintTop_toTopOf="@+id/tv_abilities_technique" />

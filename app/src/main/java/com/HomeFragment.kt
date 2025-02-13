@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -76,6 +78,7 @@ import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.kizitonwose.calendarview.utils.yearMonth
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -83,6 +86,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 
 class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener,
     OnItemClickListener.OnItemClickCallback {
@@ -102,6 +106,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     private var receivedIds: String = ""
     private var receivedGroup_Ids: String = ""
     var formattedDate: String? = null
+    var LessonData: MutableList<SelectedDaysModel.Lesson> = mutableListOf()
     private val datesWithDataTest = mutableSetOf<LocalDate>() // Set to track dates with data
 
 
@@ -146,7 +151,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         getInstraction()
         GetNews()
         setUpCalendar()
-        val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+        val currentDate =
+            homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
         val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
         Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
         homeFragmentBinding.tvDate.text = formattedMonthYear
@@ -160,10 +166,13 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
             homeFragmentBinding.startTv.text = "START YOUR"
             homeFragmentBinding.mainTv.text = "NEXT WORKOUT"
-            homeFragmentBinding.linerAthlete.visibility =View.VISIBLE
+            homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_library).isVisible = false
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = false
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_remind).isVisible = false
+
+            homeFragmentBinding.seasonLy.visibility = View.VISIBLE
+
             if (receivedIdInt != null) {
                 callGroupApiAthlete(receivedIdInt)
             } else {
@@ -172,7 +181,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             }
 
         } else {
-            homeFragmentBinding.linerAthlete.visibility =View.GONE
+            homeFragmentBinding.linerAthlete.visibility = View.GONE
             if (receivedIdInt != null) {
                 callGroupApi(receivedIdInt)
             } else {
@@ -221,7 +230,10 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     private fun fetchDayData(selectedDate: LocalDate) {
         try {
             val formattedDate = selectionFormatter.format(selectedDate)
-            Log.d("CalendarFragment", "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids")
+            Log.d(
+                "CalendarFragment",
+                "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids"
+            )
 
             apiInterface.GetSelectedDaysAthlete(formattedDate, receivedGroup_Ids)!!
                 .enqueue(object : Callback<SelectedDaysModel> {
@@ -239,89 +251,128 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                                     eventadapter.clearData()
                                 }
 
-                                if (data != null) {
-                                    if (::eventadapter.isInitialized) {
-                                        eventadapter.clearData()
+
+                                if (data.lessons.isNotEmpty()) {
+                                    if (!datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.add(selectedDate)
+                                        calendarView!!.notifyDateChanged(selectedDate)
                                     }
-
-                                    if (data.lessons.isNotEmpty()) {
-                                        if (!datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.add(selectedDate)
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    } else {
-                                        if (datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.remove(selectedDate)
-                                            // Notify the calendar view to remove the dot
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    }
-
-                                    if (data.events.isNotEmpty()) {
-                                        if (!datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.add(selectedDate)
-                                            // Notify the calendar view to update this date
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    } else {
-                                        if (datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.remove(selectedDate)
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    }
-
-                                    if (data.tests.isNotEmpty()) {
-                                        if (!datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.add(selectedDate)
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    } else {
-                                        if (datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.remove(selectedDate)
-                                            // Notify the calendar view to remove the dot
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    }
-
-                                    if (data.tests.isNotEmpty()) {
-                                        if (!datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.add(selectedDate)
-                                            // Notify the calendar view to update this date
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    } else {
-                                        if (datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.remove(selectedDate)
-                                            // Notify the calendar view to remove the dot
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    }
-
-
-                                    initTestRecyclerView(data.tests)
-                                    initLessonRecyclerView(data.lessons)
-                                    initEventRecyclerView(data.events)
-
-                                } else {
-                                    Log.e("API Response", "Data is null. No dot added.")
-                                    // Remove any dots for this date if data is null
-                                }
-
-                                initTestRecyclerView(data.tests)
-                                initLessonRecyclerView(data.lessons)
-                                initEventRecyclerView(data.events)
-
-                                Log.d("MDKMKDMKDKDKK", "onResponse: $data")
-
-                                if (data.tests.isNotEmpty() || data.lessons.isNotEmpty() || data.events.isNotEmpty()) {
-
                                 } else {
 
                                 }
+
+                                if (data.events.isNotEmpty()) {
+                                    if (!datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.add(selectedDate)
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                } else {
+
+                                }
+
+                                if (data.tests.isNotEmpty()) {
+                                    if (!datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.add(selectedDate)
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                } else {
+
+                                }
+
+                                Log.d("SKSKKSKSKSK", "onResponse: $datesWithDataTest")
+
                             } else {
                                 Log.e("API Response", "Data is null. No dot added.")
-                                // Remove any dots for this date if data is null
                             }
+
+
+
+                            Log.d("MDKMKDMKDKDKK", "onResponse: $data")
+                        } else if (response.code() == 429) {
+                            Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            Log.e("API Response", "Failed to fetch data: ${response.message()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
+                        Log.e("API Response", "Error: ${t.message}")
+                    }
+                })
+        } catch (e: Exception) {
+            Log.e("Catch", "CatchError :- ${e.message}")
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private fun fetchDayDataRecycler(selectedDate: LocalDate) {
+        try {
+            val formattedDate = selectionFormatter.format(selectedDate)
+            Log.d(
+                "CalendarFragment",
+                "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids"
+            )
+
+            apiInterface.GetSelectedDaysAthlete(formattedDate, receivedGroup_Ids)!!
+                .enqueue(object : Callback<SelectedDaysModel> {
+                    override fun onResponse(
+                        call: Call<SelectedDaysModel>,
+                        response: Response<SelectedDaysModel>
+                    ) {
+                        if (response.isSuccessful && response.body() != null) {
+                            val selectedDaysModel = response.body()
+                            Log.d("API Response", "Response: $selectedDaysModel")
+
+                            val data = selectedDaysModel?.data
+                            if (data != null) {
+                                if (::eventadapter.isInitialized) {
+                                    eventadapter.clearData()
+                                }
+
+
+                                if (data.lessons.isNotEmpty()) {
+                                    LessonData.addAll(data.lessons)
+                                    if (!datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.add(selectedDate)
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                } else {
+
+                                }
+
+                                if (data.events.isNotEmpty()) {
+                                    if (!datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.add(selectedDate)
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                } else {
+
+                                }
+
+                                if (data.tests.isNotEmpty()) {
+                                    if (!datesWithDataTest.contains(selectedDate)) {
+                                        datesWithDataTest.add(selectedDate)
+                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    }
+                                } else {
+
+                                }
+
+                                Log.d("SKSKKSKSKSK", "onResponse: $datesWithDataTest")
+
+
+                                initTestRecyclerView(data.tests)
+                                initLessonRecyclerView(LessonData)
+                                initEventRecyclerView(data.events)
+
+                            } else {
+                                Log.e("API Response", "Data is null. No dot added.")
+                            }
+
+
+
+                            Log.d("MDKMKDMKDKDKK", "onResponse: $data")
                         } else if (response.code() == 429) {
                             Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT)
                                 .show()
@@ -396,6 +447,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
         homeFragmentBinding.exSevenCalendar!!.post {
             homeFragmentBinding.exSevenCalendar!!.scrollToDate(today)
+            fetchCurrentWeekDates()
         }
 
         class DayViewContainer(view: View) : ViewContainer(view) {
@@ -438,7 +490,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     setBackgroundColor(0x1A000000)
                 }
 
-                // Apply custom styling based on date comparison
                 when {
                     day.owner == DayOwner.THIS_MONTH -> {
                         when {
@@ -473,19 +524,10 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 Log.d("DOTTTTT", "bind: $datesWithDataTest")
 
                 if (datesWithDataTest.contains(day.date)) {
+                    container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(Color.RED)
                     container.binding.dotLesson.visibility = View.VISIBLE
                 } else {
                     container.binding.dotLesson.visibility = View.GONE
-                }
-                if (datesWithDataTest.contains(day.date)) {
-                    container.binding.dotTest.visibility = View.VISIBLE
-                } else {
-                    container.binding.dotTest.visibility = View.GONE
-                }
-                if (datesWithDataTest.contains(day.date)) {
-                    container.binding.dotEvent.visibility = View.VISIBLE
-                } else {
-                    container.binding.dotEvent.visibility = View.GONE
                 }
 
                 container.view.setOnClickListener {
@@ -508,7 +550,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
                                 getPersonalDiaryData(formattedDate.toString())
 
-                                fetchDayData(day.date)
+                                fetchDayDataRecycler(day.date)
 
                             } else {
                                 Toast.makeText(
@@ -547,7 +589,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 //                // Set the TextView with the formatted month and year
 //                homeFragmentBinding.tvDate.text = formattedMonth
 
-            val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+            val currentDate =
+                homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
             val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
             Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
             homeFragmentBinding.tvDate.text = formattedMonthYear
@@ -589,6 +632,27 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             }
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun fetchCurrentWeekDates() {
+        val today = LocalDate.now()
+        val firstDayOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val lastDayOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val weekDates = mutableListOf<String>()
+
+        var date = firstDayOfWeek
+        while (!date.isAfter(lastDayOfWeek)) {
+            weekDates.add(date.format(formatter))
+            fetchDayData(date) // Fetch data for each day
+            date = date.plusDays(1)
+        }
+
+        Log.d("WEEK_DATES", "Current week dates: $weekDates")
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun selectDate(date: LocalDate) {
         if (selectedDate != date) {
@@ -628,43 +692,42 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         val currentMonth = YearMonth.from(selectedDate)
         val daysInMonth = currentMonth.lengthOfMonth()
 
+        Log.d("SSKSKSKKS", "checkDatesForMonth: $datesWithDataTest")
         for (day in 1..31) {
-            // Skip invalid days for the current month
             if (day > daysInMonth) break
 
             val date = currentMonth.atDay(day)
 
-            // Check and update lessons
-            updateDatesList(date, data.lessons.map { it.date }, datesWithDataTest, "Lesson")
+            // Combine all date lists into one
+            val allDates = mutableSetOf<String>().apply {
+                addAll(data.lessons.map { it.date })
+                addAll(data.events.map { it.date })
+                addAll(data.tests.map { it.date })
+            }
 
-            // Check and update events
-            updateDatesList(date, data.events.map { it.date }, datesWithDataTest, "Event")
-
-            // Check and update tests
-            updateDatesList(date, data.tests.map { it.date }, datesWithDataTest, "Test")
+            // Update dateSet for the calendar
+            updateDatesList(date, allDates, datesWithDataTest)
         }
     }
 
     private fun updateDatesList(
         date: LocalDate,
-        dataDates: List<String>,
-        dateSet: MutableSet<LocalDate>,
-        type: String
+        dataDates: Set<String>,
+        dateSet: MutableSet<LocalDate>
     ) {
         val dateStr = date.toString()
+
+        Log.d("SSKSKSKKS", "checkDatesForMonth: $datesWithDataTest")
+
 
         if (dataDates.contains(dateStr)) {
             if (!dateSet.contains(date)) {
                 dateSet.add(date)
                 calendarView?.notifyDateChanged(date)
-                Log.d("CheckedDates", "$type date added: $date")
+                Log.d("CheckedDates", "Date added: $date")
             }
         } else {
-            if (dateSet.contains(date)) {
-                dateSet.remove(date)
-                calendarView?.notifyDateChanged(date)
-                Log.d("CheckedDates", "$type date removed: $date")
-            }
+
         }
     }
 
@@ -863,9 +926,10 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         apiInterface = apiClient.client().create(APIInterface::class.java)
         Sportlist = ArrayList()
         WorkOutlist = ArrayList()
+        LessonData = ArrayList()
 
-
-        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
         receivedIds = sharedPreferences.getString("id", "default_value") ?: ""
 
         receivedGroup_Ids = sharedPreferences.getString("group_id", "default_value") ?: ""
@@ -1437,5 +1501,112 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 }
             }
         }
+
+
+        if (string == "fav") {
+            try {
+                homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+                val id: MultipartBody.Part =
+                    MultipartBody.Part.createFormData("id", type.toInt().toString())
+                apiInterface.Favourite_lession(id)?.enqueue(object : Callback<RegisterData?> {
+                    @RequiresApi(Build.VERSION_CODES.O)
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Log.d("TAG", response.code().toString() + "")
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            if (Success) {
+                                homeFragmentBinding.homeProgress.visibility = View.GONE
+                            } else {
+                                homeFragmentBinding.homeProgress.visibility = View.GONE
+                                Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
+                            }
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(requireContext())
+                        } else {
+                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            Toast.makeText(
+                                requireContext(),
+                                "" + response.message(),
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
+                            .show()
+                        call.cancel()
+                    }
+                })
+            }catch (e:Exception){
+                Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+            }
+        } else if (string == "unfav") {
+            try{
+                homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+                val id: MultipartBody.Part = MultipartBody.Part.createFormData("id", type.toInt().toString())
+                apiInterface.DeleteFavourite_lession(type.toInt())
+                    ?.enqueue(object : Callback<RegisterData?> {
+                        @RequiresApi(Build.VERSION_CODES.O)
+                        override fun onResponse(
+                            call: Call<RegisterData?>,
+                            response: Response<RegisterData?>
+                        ) {
+                            Log.d("TAG", response.code().toString() + "")
+                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            val code = response.code()
+                            if (code == 200) {
+                                val resource: RegisterData? = response.body()
+                                val Success: Boolean = resource?.status!!
+                                val Message: String = resource.message!!
+                                if (Success) {
+                                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                                } else {
+                                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "" + Message,
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            } else if (code == 403) {
+                                Utils.setUnAuthDialog(requireContext())
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "" + response.message(),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                call.cancel()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            Toast.makeText(
+                                requireContext(),
+                                "" + t.message,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            call.cancel()
+                        }
+                    })
+            }catch (e:Exception){
+                Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
+            }
+        }
+
     }
 }

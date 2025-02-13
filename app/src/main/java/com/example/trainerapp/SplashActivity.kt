@@ -68,7 +68,6 @@ class SplashActivity : AppCompatActivity() {
     private fun checkLogin() {
         if (preferenceManager.UserLogIn()) {
             splashBinding.btnGetStart.visibility = View.GONE
-            requestNotificationPermission()
             apiCall()
         } else {
             splashBinding.btnGetStart.visibility = View.VISIBLE
@@ -76,9 +75,21 @@ class SplashActivity : AppCompatActivity() {
 
         splashBinding.btnGetStart.setOnClickListener {
             Log.d("TAG", "onCreate: Btn Start Click")
-            requestNotificationPermission()
+            checkNotificationPermission() // Check permission when button is clicked
         }
     }
+
+    private fun checkNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            startActivity(Intent(this, MainActivity::class.java))
+        } else {
+            requestNotificationPermission() // If not granted, request permission
+        }
+    }
+
 
     private fun initViews() {
         apiClient = APIClient(this)

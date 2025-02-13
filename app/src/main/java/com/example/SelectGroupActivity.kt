@@ -73,6 +73,9 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                 try {
                     val selectedGroupId = groupadapterAthlete.getSelectedGroupId().first
                     val selectedGroup_Id = groupadapterAthlete.getSelectedGroupId().second
+                    val selectedGroupData = groupadapterAthlete.getSelectedGroupData()
+
+                    Log.d("99999999", "BUttonClick: ${selectedGroupData?.javaClass?.name} -> ${selectedGroupData.toString()}")
 
                     if (selectedGroupId == null) {
                         Toast.makeText(this, "Please select a group", Toast.LENGTH_SHORT).show()
@@ -253,6 +256,9 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
 
+        if (string == "Data"){
+            Log.d("SLSSLSLLSLS", "onItemClicked: $type")
+        }
     }
 
 }
