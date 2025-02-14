@@ -423,6 +423,7 @@
                                         app:layout_constraintTop_toBottomOf="@+id/tv_start" />
 
                                     <TextView
+                                        android:id="@+id/edt_mesocycle"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_5sdp"

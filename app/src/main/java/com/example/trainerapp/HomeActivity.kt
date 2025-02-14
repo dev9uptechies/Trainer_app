@@ -35,6 +35,7 @@ import com.example.trainerapp.personal_diary.ViewPersonalDiaryActivity
 import com.example.trainerapp.privacy_policy.PrivacyPolicyActivity
 import com.example.trainerapp.view_analysis.ViewAnalysisActivity
 import com.example.trainerappAthlete.ProfileFragment
+import com.example.trainerappAthlete.model.GroupListAthlete
 import com.google.android.material.navigation.NavigationView
 import retrofit2.Call
 import retrofit2.Callback
@@ -57,6 +58,34 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var id: String = ""
     var group_id: String = ""
 
+    private var name: String? = null
+    private var startDate: String? = null
+    private var endDate: String? = null
+    private var mesocycle: String? = null
+    private var workloadColor: String? = null
+
+
+        private var preCompetitiveName: String? = null
+        private var preCompetitiveStartDate: String? = null
+        private var preCompetitiveEndDate: String? = null
+        private var preCompetitiveMesocycle: String? = null
+        private var preCompetitiveWorkloadColor: String? = null
+
+        // competitive
+        private var CompetitiveName: String? = null
+        private var CompetitiveStartDate: String? = null
+        private var CompetitiveEndDate: String? = null
+        private var CompetitiveMesocycle: String? = null
+        private var CompetitiveWorkloadColor: String? = null
+
+        // Transition
+        private var TransitionName: String? = null
+        private var TransitionStartDate: String? = null
+        private var TransitionEndDate: String? = null
+        private var TransitionMesocycle: String? = null
+        private var TransitionWorkloadColor: String? = null
+
+
     private val sharedPreferences by lazy {
         this.getSharedPreferences("RemindMePrefs", MODE_PRIVATE)
     }
@@ -73,7 +102,35 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val editor = sharedPreferences.edit()
         editor.putString("id", id)
         editor.putString("group_id", group_id)
+        editor.putString("name", name)
+        editor.putString("start_date", startDate)
+        editor.putString("end_date", endDate)
+        editor.putString("mesocycle", mesocycle)
+        editor.putString("workload_color", workloadColor)
+
+        //pre competitive
+        editor.putString("preCompetitiveName", preCompetitiveName)
+        editor.putString("preCompetitiveStartDate", preCompetitiveStartDate)
+        editor.putString("preCompetitiveEndDate", preCompetitiveEndDate)
+        editor.putString("preCompetitiveMesocycle", preCompetitiveMesocycle)
+        editor.putString("preCompetitiveWorkloadColor", preCompetitiveWorkloadColor)
+
+        //competitive
+        editor.putString("CompetitiveName", CompetitiveName)
+        editor.putString("CompetitiveStartDate", CompetitiveStartDate)
+        editor.putString("CompetitiveEndDate", CompetitiveEndDate)
+        editor.putString("CompetitiveMesocycle", CompetitiveMesocycle)
+        editor.putString("CompetitiveWorkloadColor", CompetitiveWorkloadColor)
         editor.apply()
+
+        //Transition
+        editor.putString("TransitionName", TransitionName)
+        editor.putString("TransitionStartDate", TransitionStartDate)
+        editor.putString("TransitionEndDate", TransitionEndDate)
+        editor.putString("TransitionMesocycle", TransitionMesocycle)
+        editor.putString("TransitionWorkloadColor", TransitionWorkloadColor)
+        editor.apply()
+
 
     }
 
@@ -82,9 +139,37 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.remove("id")
+        editor.putString("id", id)
         editor.putString("group_id", group_id)
+        editor.putString("name", name)
+        editor.putString("start_date", startDate)
+        editor.putString("end_date", endDate)
+        editor.putString("mesocycle", mesocycle)
+        editor.putString("workload_color", workloadColor)
+
+        //pre competitive
+        editor.putString("preCompetitiveName", preCompetitiveName)
+        editor.putString("preCompetitiveStartDate", preCompetitiveStartDate)
+        editor.putString("preCompetitiveEndDate", preCompetitiveEndDate)
+        editor.putString("preCompetitiveMesocycle", preCompetitiveMesocycle)
+        editor.putString("preCompetitiveWorkloadColor", preCompetitiveWorkloadColor)
+
+        //competitive
+        editor.putString("CompetitiveName", CompetitiveName)
+        editor.putString("CompetitiveStartDate", CompetitiveStartDate)
+        editor.putString("CompetitiveEndDate", CompetitiveEndDate)
+        editor.putString("CompetitiveMesocycle", CompetitiveMesocycle)
+        editor.putString("CompetitiveWorkloadColor", CompetitiveWorkloadColor)
+
+        //Transition
+        editor.putString("TransitionName", TransitionName)
+        editor.putString("TransitionStartDate", TransitionStartDate)
+        editor.putString("TransitionEndDate", TransitionEndDate)
+        editor.putString("TransitionMesocycle", TransitionMesocycle)
+        editor.putString("TransitionWorkloadColor", TransitionWorkloadColor)
+
         editor.apply()
+
 
         Log.d("desss", "onDestroy: App destroyed, ID removed")
     }
@@ -102,6 +187,32 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val editor = sharedPreferences.edit()
         editor.putString("id", id)
         editor.putString("group_id", group_id)
+        editor.putString("name", name)
+        editor.putString("start_date", startDate)
+        editor.putString("end_date", endDate)
+        editor.putString("mesocycle", mesocycle)
+        editor.putString("workload_color", workloadColor)
+
+        //pre competitive
+        editor.putString("preCompetitiveName", preCompetitiveName)
+        editor.putString("preCompetitiveStartDate", preCompetitiveStartDate)
+        editor.putString("preCompetitiveEndDate", preCompetitiveEndDate)
+        editor.putString("preCompetitiveMesocycle", preCompetitiveMesocycle)
+        editor.putString("preCompetitiveWorkloadColor", preCompetitiveWorkloadColor)
+
+        //competitive
+        editor.putString("CompetitiveName", CompetitiveName)
+        editor.putString("CompetitiveStartDate", CompetitiveStartDate)
+        editor.putString("CompetitiveEndDate", CompetitiveEndDate)
+        editor.putString("CompetitiveMesocycle", CompetitiveMesocycle)
+        editor.putString("CompetitiveWorkloadColor", CompetitiveWorkloadColor)
+
+        //Transition
+        editor.putString("TransitionName", TransitionName)
+        editor.putString("TransitionStartDate", TransitionStartDate)
+        editor.putString("TransitionEndDate", TransitionEndDate)
+        editor.putString("TransitionMesocycle", TransitionMesocycle)
+        editor.putString("TransitionWorkloadColor", TransitionWorkloadColor)
         editor.apply()
 
         Log.d("desss", "onResume: App resumed, ID saved")
@@ -183,6 +294,38 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Log.d("IDDDDDDDDDD", "Received ID: $group_id")
 
 
+        val bundle = intent.extras
+        name = bundle?.getString("name")
+        startDate = bundle?.getString("start_date")
+        endDate = bundle?.getString("end_date")
+        mesocycle = bundle?.getString("mesocycle")
+        workloadColor = bundle?.getString("workload_color")
+
+        val bundlePreCompetitive= intent.extras
+        preCompetitiveName = bundlePreCompetitive?.getString("PreCompetitivename")
+        preCompetitiveStartDate = bundlePreCompetitive?.getString("PreCompetitivestart_date")
+        preCompetitiveEndDate = bundlePreCompetitive?.getString("PreCompetitiveend_date")
+        preCompetitiveMesocycle = bundlePreCompetitive?.getString("PreCompetitivemesocycle")
+        preCompetitiveWorkloadColor = bundlePreCompetitive?.getString("PreCompetitiveworkload_color")
+
+        val bundleCompetitive= intent.extras
+        CompetitiveName = bundleCompetitive?.getString("Competitivename")
+        CompetitiveStartDate = bundleCompetitive?.getString("Competitivestart_date")
+        CompetitiveEndDate = bundleCompetitive?.getString("Competitiveend_date")
+        CompetitiveMesocycle = bundleCompetitive?.getString("Competitivemesocycle")
+        CompetitiveWorkloadColor = bundleCompetitive?.getString("Competitiveworkload_color")
+
+        val bundleTransition= intent.extras
+        TransitionName = bundleTransition?.getString("Transitionname")
+        TransitionStartDate = bundleTransition?.getString("Transitionstart_date")
+        TransitionEndDate = bundleTransition?.getString("Transitionend_date")
+        TransitionMesocycle = bundleTransition?.getString("Transitionmesocycle")
+        TransitionWorkloadColor = bundleTransition?.getString("Transitionworkload_color")
+
+
+        Log.d("SLSLSLSLLSLSL", "initViews: $name   $TransitionStartDate")
+
+
         if (preferenceManager.GetFlage() == "Athlete") {
             homeBinding.LinerAthlete.visibility = View.VISIBLE
             homeBinding.LinerCoach.visibility = View.GONE
@@ -208,8 +351,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
     }
-
-
 
     private fun setDrawerToggle() {
         actionBarDrawerToggle = ActionBarDrawerToggle(

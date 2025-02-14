@@ -71,26 +71,60 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         if (userType == "Athlete"){
             binding.cardSave.setOnClickListener {
                 try {
-                    val selectedGroupId = groupadapterAthlete.getSelectedGroupId().first
-                    val selectedGroup_Id = groupadapterAthlete.getSelectedGroupId().second
-                    val selectedGroupData = groupadapterAthlete.getSelectedGroupData()
+                    val selectedGroupIds = groupadapterAthlete.getSelectedGroupId()
 
-                    Log.d("99999999", "BUttonClick: ${selectedGroupData?.javaClass?.name} -> ${selectedGroupData.toString()}")
-
-                    if (selectedGroupId == null) {
-                        Toast.makeText(this, "Please select a group", Toast.LENGTH_SHORT).show()
+                    if (selectedGroupIds == null || selectedGroupIds.first == null || selectedGroupIds.second == null) {
+                        Toast.makeText(this, "Please select a valid group", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
+                    }
+
+                    val selectedGroupId = selectedGroupIds.first
+                    val selectedGroup_Id = selectedGroupIds.second
+                    val selectedGroupData = groupadapterAthlete.getSelectedGroupData()
+                    val selectedPreCompetitiveGroupData = groupadapterAthlete.getSelectedPreCompetitiveGroupData()
+                    val selectedCompetitiveGroupData = groupadapterAthlete.getSelectedCompetitiveGroupData()
+                    val selectedTransitionGroupData = groupadapterAthlete.getSelectedTransitionGroupData()
+
+                    val bundle = Bundle().apply {
+                        selectedGroupData.forEach { (key, value) ->
+                            putString(key, value)
+                        }
+                    }
+
+                    val bundlePreCompetitive = Bundle().apply {
+                        selectedPreCompetitiveGroupData.forEach { (key, value) ->
+                            putString(key, value)
+                        }
+                    }
+
+                    val bundleCompetitive = Bundle().apply {
+                        selectedCompetitiveGroupData.forEach { (key, value) ->
+                            putString(key, value)
+                        }
+                    }
+
+                    val bundleTransition = Bundle().apply {
+                        selectedTransitionGroupData.forEach { (key, value) ->
+                            putString(key, value)
+                        }
                     }
 
                     Log.d("SelectedGroupAthlete", "Selected Group ID: $selectedGroupId")
                     Log.d("SelectedGroupAthlete", "Selected Group ID: $selectedGroup_Id")
-                    val intent = Intent(this, HomeActivity::class.java)
-                    intent.putExtra("idddd", selectedGroupId.toString())
-                    intent.putExtra("group_idddd", selectedGroup_Id.toString())
+
+                    val intent = Intent(this, HomeActivity::class.java).apply {
+                        putExtra("idddd", selectedGroupId.toString())
+                        putExtra("group_idddd", selectedGroup_Id.toString())
+                        putExtras(bundle)
+                        putExtras(bundlePreCompetitive)
+                        putExtras(bundleCompetitive)
+                        putExtras(bundleTransition)
+                    }
+
                     startActivity(intent)
                     finish()
                 } catch (e: Exception) {
-                    Log.d("GHHGHGH", "BUttonClick: ${e.message.toString()}")
+                    Log.e("GHHGHGH", "ButtonClick Error: ${e.message}", e)
                 }
             }
 

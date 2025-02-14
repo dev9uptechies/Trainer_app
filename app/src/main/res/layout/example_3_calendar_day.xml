@@ -52,6 +52,14 @@
             android:visibility="gone"
             android:background="@drawable/bg_red_round_corner_10"
             android:backgroundTint="#20E328"/>
+        <View
+            android:id="@+id/dot_program"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_marginStart="@dimen/_1sdp"
+            android:visibility="gone"
+            android:background="@drawable/bg_red_round_corner_10"
+            android:backgroundTint="#20E328"/>
 
     </LinearLayout>
 

@@ -759,6 +759,9 @@ class GroupListAthlete {
 
         @SerializedName("periods")
         var periods: String? = null
+
+        @SerializedName("microcycles")
+        var microcycles: ArrayList<microcycles>? = null
     }
 
     class GroupProgram {

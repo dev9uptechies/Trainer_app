@@ -1,7 +1,6 @@
 package com
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -9,21 +8,16 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.text.HtmlCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.children
@@ -58,7 +52,6 @@ import com.example.trainerapp.Sport_list
 import com.example.trainerapp.Utils
 import com.example.trainerapp.Work_Out
 import com.example.trainerapp.competition.CompetitionActivity
-import com.example.trainerapp.databinding.AddSlotCalendarDayBinding
 import com.example.trainerapp.databinding.Example3CalendarDayBinding
 import com.example.trainerapp.databinding.Example3CalendarHeaderBinding
 import com.example.trainerapp.databinding.FragmentHomeBinding
@@ -68,12 +61,10 @@ import com.example.trainerapp.privacy_policy.PrivacyPolicyActivity
 import com.example.trainerapp.view_analysis.ViewAnalysisActivity
 import com.example.trainerappAthlete.model.GroupListAthlete
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.messaging.FirebaseMessaging
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.model.DayOwner
-import com.kizitonwose.calendarview.model.ScrollMode
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
@@ -103,8 +94,37 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     lateinit var workoutadapter: WorkOutAdapter
     private var instractionData: privacypolicy.Data? = null
     private var newsData: MutableList<NewsModel.Data> = mutableListOf()
+
+    // Received Data
     private var receivedIds: String = ""
     private var receivedGroup_Ids: String = ""
+    private var receivedname: String? = null
+    private var receivedstartDate: String? = null
+    private var receivedendDate: String? = null
+    private var receivedmesocycle: String? = null
+    private var receivedworkloadColor: String? = null
+
+    private var receivedPreCompetitiveName: String? = null
+    private var receivedPreCompetitiveStartDate: String? = null
+    private var receivedPreCompetitiveEndDate: String? = null
+    private var receivedPreCompetitiveMesocycle: String? = null
+    private var receivedPreCompetitiveWorkloadColor: String? = null
+
+    private var receivedCommpetitiveName: String? = null
+    private var receivedCompetitiveStartDate: String? = null
+    private var receivedCompetitiveEndDate: String? = null
+    private var receivedCompetitiveMesocycle: String? = null
+    private var receivedCompetitiveWorkloadColor: String? = null
+
+    private var receivedTransitionName: String? = null
+    private var receivedTransitionStartDate: String? = null
+    private var receivedTransitionEndDate: String? = null
+    private var receivedTransitionMesocycle: String? = null
+    private var receivedTransitionWorkloadColor: String? = null
+
+
+
+
     var formattedDate: String? = null
     var LessonData: MutableList<SelectedDaysModel.Lesson> = mutableListOf()
     private val datesWithDataTest = mutableSetOf<LocalDate>() // Set to track dates with data
@@ -171,7 +191,15 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = false
             homeFragmentBinding.navigationView.menu.findItem(R.id.tv_remind).isVisible = false
 
-            homeFragmentBinding.seasonLy.visibility = View.VISIBLE
+            Log.d("SSLLSLSLSL", "onCreateView: $receivedGroup_Ids")
+
+            if (!receivedGroup_Ids.isNullOrEmpty()) {
+                homeFragmentBinding.seasonLy.visibility = View.VISIBLE
+                homeFragmentBinding.titleTv.text = receivedname
+                homeFragmentBinding.edtStartDate.text = receivedstartDate
+                homeFragmentBinding.edtEndDate.text = receivedendDate
+                homeFragmentBinding.edtMesocycle.text = receivedmesocycle
+            }
 
             if (receivedIdInt != null) {
                 callGroupApiAthlete(receivedIdInt)
@@ -305,90 +333,90 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
-    @SuppressLint("NewApi")
-    private fun fetchDayDataRecycler(selectedDate: LocalDate) {
-        try {
-            val formattedDate = selectionFormatter.format(selectedDate)
-            Log.d(
-                "CalendarFragment",
-                "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids"
-            )
+        @SuppressLint("NewApi")
+        private fun fetchDayDataRecycler(selectedDate: LocalDate) {
+            try {
+                val formattedDate = selectionFormatter.format(selectedDate)
+                Log.d(
+                    "CalendarFragment",
+                    "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids"
+                )
 
-            apiInterface.GetSelectedDaysAthlete(formattedDate, receivedGroup_Ids)!!
-                .enqueue(object : Callback<SelectedDaysModel> {
-                    override fun onResponse(
-                        call: Call<SelectedDaysModel>,
-                        response: Response<SelectedDaysModel>
-                    ) {
-                        if (response.isSuccessful && response.body() != null) {
-                            val selectedDaysModel = response.body()
-                            Log.d("API Response", "Response: $selectedDaysModel")
+                apiInterface.GetSelectedDaysAthlete(formattedDate, receivedGroup_Ids)!!
+                    .enqueue(object : Callback<SelectedDaysModel> {
+                        override fun onResponse(
+                            call: Call<SelectedDaysModel>,
+                            response: Response<SelectedDaysModel>
+                        ) {
+                            if (response.isSuccessful && response.body() != null) {
+                                val selectedDaysModel = response.body()
+                                Log.d("API Response", "Response: $selectedDaysModel")
 
-                            val data = selectedDaysModel?.data
-                            if (data != null) {
-                                if (::eventadapter.isInitialized) {
-                                    eventadapter.clearData()
-                                }
-
-
-                                if (data.lessons.isNotEmpty()) {
-                                    LessonData.addAll(data.lessons)
-                                    if (!datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.add(selectedDate)
-                                        calendarView!!.notifyDateChanged(selectedDate)
+                                val data = selectedDaysModel?.data
+                                if (data != null) {
+                                    if (::eventadapter.isInitialized) {
+                                        eventadapter.clearData()
                                     }
-                                } else {
 
-                                }
+                                    if (data.lessons.isNotEmpty()) {
+                                        LessonData.clear()
+                                        LessonData.addAll(data.lessons)
+                                        if (!datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.add(selectedDate)
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    } else {
 
-                                if (data.events.isNotEmpty()) {
-                                    if (!datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.add(selectedDate)
-                                        calendarView!!.notifyDateChanged(selectedDate)
                                     }
-                                } else {
 
-                                }
+                                    if (data.events.isNotEmpty()) {
+                                        if (!datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.add(selectedDate)
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    } else {
 
-                                if (data.tests.isNotEmpty()) {
-                                    if (!datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.add(selectedDate)
-                                        calendarView!!.notifyDateChanged(selectedDate)
                                     }
-                                } else {
 
+                                    if (data.tests.isNotEmpty()) {
+                                        if (!datesWithDataTest.contains(selectedDate)) {
+                                            datesWithDataTest.add(selectedDate)
+                                            calendarView!!.notifyDateChanged(selectedDate)
+                                        }
+                                    } else {
+
+                                    }
+
+                                    Log.d("SKSKKSKSKSK", "onResponse: $datesWithDataTest")
+
+
+                                    initTestRecyclerView(data.tests)
+                                    initLessonRecyclerView(LessonData)
+                                    initEventRecyclerView(data.events)
+
+                                } else {
+                                    Log.e("API Response", "Data is null. No dot added.")
                                 }
 
-                                Log.d("SKSKKSKSKSK", "onResponse: $datesWithDataTest")
 
 
-                                initTestRecyclerView(data.tests)
-                                initLessonRecyclerView(LessonData)
-                                initEventRecyclerView(data.events)
-
+                                Log.d("MDKMKDMKDKDKK", "onResponse: $data")
+                            } else if (response.code() == 429) {
+                                Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT)
+                                    .show()
                             } else {
-                                Log.e("API Response", "Data is null. No dot added.")
+                                Log.e("API Response", "Failed to fetch data: ${response.message()}")
                             }
-
-
-
-                            Log.d("MDKMKDMKDKDKK", "onResponse: $data")
-                        } else if (response.code() == 429) {
-                            Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT)
-                                .show()
-                        } else {
-                            Log.e("API Response", "Failed to fetch data: ${response.message()}")
                         }
-                    }
 
-                    override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
-                        Log.e("API Response", "Error: ${t.message}")
-                    }
-                })
-        } catch (e: Exception) {
-            Log.e("Catch", "CatchError :- ${e.message}")
+                        override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
+                            Log.e("API Response", "Error: ${t.message}")
+                        }
+                    })
+            } catch (e: Exception) {
+                Log.e("Catch", "CatchError :- ${e.message}")
+            }
         }
-    }
 
     private fun initLessonRecyclerView(programs: List<SelectedDaysModel.Lesson>) {
         homeFragmentBinding.favLessonRly.layoutManager = LinearLayoutManager(requireContext())
@@ -477,7 +505,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             val legendLayout = Example3CalendarHeaderBinding.bind(view).legendLayout.root
         }
 
-        homeFragmentBinding.exSevenCalendar!!.dayBinder = object : DayBinder<DayViewContainer> {
+        homeFragmentBinding.exSevenCalendar.dayBinder = object : DayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
 
             override fun bind(container: DayViewContainer, day: CalendarDay) {
@@ -502,7 +530,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
                             day.date == selectedDate -> {
                                 with(textView) {
-                                    setTextColor(resources.getColor(R.color.splash_text_color)) // Custom style for selected date
+                                    setTextColor(resources.getColor(R.color.splash_text_color))
                                 }
                             }
 
@@ -516,18 +544,104 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     }
 
                     else -> {
-                        textView.setTextColor(resources.getColor(R.color.grey)) // For days outside this month
+                        textView.setTextColor(resources.getColor(R.color.grey))
                     }
                 }
 
 
-                Log.d("DOTTTTT", "bind: $datesWithDataTest")
+//                Log.d("DOTTTTT", "bind: $datesWithDataTest")
+//
+//                if (datesWithDataTest.contains(day.date)) {
+//                    container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(Color.RED)
+//                    container.binding.dotLesson.visibility = View.VISIBLE
+//                } else {
+//                    container.binding.dotLesson.visibility = View.GONE
+//                }
 
-                if (datesWithDataTest.contains(day.date)) {
-                    container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(Color.RED)
-                    container.binding.dotLesson.visibility = View.VISIBLE
-                } else {
-                    container.binding.dotLesson.visibility = View.GONE
+                Log.d("SLLSLSLSLS", "bind: $receivedworkloadColor     $receivedPreCompetitiveWorkloadColor   $receivedPreCompetitiveWorkloadColor")
+
+                if (!receivedstartDate.isNullOrEmpty() && !receivedendDate.isNullOrEmpty()) {
+                    try {
+                        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val startDate = LocalDate.parse(receivedstartDate, dateFormatter)
+                        val endDate = LocalDate.parse(receivedendDate, dateFormatter)
+
+                        if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
+                            val color = try {
+                                if (!receivedworkloadColor.isNullOrEmpty()) Color.parseColor(receivedworkloadColor) else Color.RED
+                            } catch (e: IllegalArgumentException) {
+                                Log.e("ColorError", "Invalid color value: $receivedworkloadColor", e)
+                                Color.RED
+                            }
+                            container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(color)
+                            container.binding.dotLesson.visibility = View.VISIBLE
+                        }
+                    } catch (e: Exception) {
+                        Log.e("DateParsingError", "Error parsing dates: $receivedstartDate - $receivedendDate", e)
+                    }
+                }
+
+                if (!receivedPreCompetitiveStartDate.isNullOrEmpty() && !receivedPreCompetitiveEndDate.isNullOrEmpty()) {
+                    try {
+                        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val startDate = LocalDate.parse(receivedPreCompetitiveStartDate, dateFormatter)
+                        val endDate = LocalDate.parse(receivedPreCompetitiveEndDate, dateFormatter)
+
+                        if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
+                            val color = try {
+                                if (!receivedPreCompetitiveWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedPreCompetitiveWorkloadColor) else Color.RED
+                            } catch (e: IllegalArgumentException) {
+                                Log.e("ColorError", "Invalid color value: $receivedPreCompetitiveWorkloadColor", e)
+                                Color.RED
+                            }
+                            container.binding.dotTest.backgroundTintList = ColorStateList.valueOf(color)
+                            container.binding.dotTest.visibility = View.VISIBLE
+                        }
+                    } catch (e: Exception) {
+                        Log.e("DateParsingError", "Error parsing dates: $receivedPreCompetitiveStartDate - $receivedPreCompetitiveEndDate", e)
+                    }
+                }
+
+                if (!receivedCompetitiveStartDate.isNullOrEmpty() && !receivedCompetitiveEndDate.isNullOrEmpty()) {
+                    try {
+                        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val startDate = LocalDate.parse(receivedCompetitiveStartDate, dateFormatter)
+                        val endDate = LocalDate.parse(receivedCompetitiveEndDate, dateFormatter)
+
+                        if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
+                            val color = try {
+                                if (!receivedCompetitiveWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedCompetitiveWorkloadColor) else Color.GRAY
+                            } catch (e: IllegalArgumentException) {
+                                Log.e("ColorError", "Invalid color value: $receivedCompetitiveWorkloadColor", e)
+                                Color.GRAY
+                            }
+                            container.binding.dotEvent.backgroundTintList = ColorStateList.valueOf(color)
+                            container.binding.dotEvent.visibility = View.VISIBLE
+                        }
+                    } catch (e: Exception) {
+                        Log.e("DateParsingError", "Error parsing dates: $receivedCompetitiveStartDate - $receivedCompetitiveEndDate", e)
+                    }
+                }
+
+                if (!receivedTransitionStartDate.isNullOrEmpty() && !receivedTransitionEndDate.isNullOrEmpty()) {
+                    try {
+                        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val startDate = LocalDate.parse(receivedTransitionStartDate, dateFormatter)
+                        val endDate = LocalDate.parse(receivedTransitionEndDate, dateFormatter)
+
+                        if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
+                            val color = try {
+                                if (!receivedTransitionWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedTransitionWorkloadColor) else Color.YELLOW
+                            } catch (e: IllegalArgumentException) {
+                                Log.e("ColorError", "Invalid color value: $receivedTransitionWorkloadColor", e)
+                                Color.YELLOW
+                            }
+                            container.binding.dotProgram.backgroundTintList = ColorStateList.valueOf(color)
+                            container.binding.dotProgram.visibility = View.VISIBLE
+                        }
+                    } catch (e: Exception) {
+                        Log.e("DateParsingError", "Error parsing dates: $receivedTransitionStartDate - $receivedTransitionEndDate", e)
+                    }
                 }
 
                 container.view.setOnClickListener {
@@ -589,8 +703,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 //                // Set the TextView with the formatted month and year
 //                homeFragmentBinding.tvDate.text = formattedMonth
 
-            val currentDate =
-                homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+            val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
             val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
             Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
             homeFragmentBinding.tvDate.text = formattedMonthYear
@@ -645,7 +758,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         var date = firstDayOfWeek
         while (!date.isAfter(lastDayOfWeek)) {
             weekDates.add(date.format(formatter))
-            fetchDayData(date) // Fetch data for each day
+            fetchDayDataRecycler(date)
             date = date.plusDays(1)
         }
 
@@ -825,8 +938,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                             )
                             saveSelectedGroupData(
                                 group.group!!.name.toString(),
-                                group.group!!.group_plannings?.firstOrNull()?.planning?.start_date
-                                    ?: "",
+                                group.group!!.group_plannings?.firstOrNull()?.planning?.start_date ?: "",
                                 group.id.toString()
                             )
 
@@ -834,8 +946,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
                             val planning = group.group!!.group_plannings?.firstOrNull()
                             if (planning != null && planning.planning != null) {
-                                homeFragmentBinding.edtStartDate.text =
-                                    planning.planning?.start_date
+
                             } else {
                                 homeFragmentBinding.edtStartDate.text = ""
                             }
@@ -934,6 +1045,31 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
         receivedGroup_Ids = sharedPreferences.getString("group_id", "default_value") ?: ""
 
+        receivedname = sharedPreferences.getString("name", null)
+        receivedstartDate = sharedPreferences.getString("start_date", null)
+        receivedendDate = sharedPreferences.getString("end_date", null)
+        receivedmesocycle = sharedPreferences.getString("mesocycle", null)
+        receivedworkloadColor = sharedPreferences.getString("workload_color", null)
+
+        receivedPreCompetitiveName = sharedPreferences.getString("preCompetitiveName", null)
+        receivedPreCompetitiveStartDate = sharedPreferences.getString("preCompetitiveStartDate", null)
+        receivedPreCompetitiveEndDate = sharedPreferences.getString("preCompetitiveEndDate", null)
+        receivedPreCompetitiveMesocycle = sharedPreferences.getString("preCompetitiveMesocycle", null)
+        receivedPreCompetitiveWorkloadColor = sharedPreferences.getString("preCompetitiveWorkloadColor", null)
+
+
+        receivedCommpetitiveName = sharedPreferences.getString("CompetitiveName", null)
+        receivedCompetitiveStartDate = sharedPreferences.getString("CompetitiveStartDate", null)
+        receivedCompetitiveEndDate = sharedPreferences.getString("CompetitiveEndDate", null)
+        receivedCompetitiveMesocycle = sharedPreferences.getString("CompetitiveMesocycle", null)
+        receivedCompetitiveWorkloadColor = sharedPreferences.getString("CompetitiveWorkloadColor", null)
+
+        receivedTransitionName = sharedPreferences.getString("TransitionName", null)
+        receivedTransitionStartDate = sharedPreferences.getString("TransitionStartDate", null)
+        receivedTransitionEndDate = sharedPreferences.getString("TransitionEndDate", null)
+        receivedTransitionMesocycle = sharedPreferences.getString("TransitionMesocycle", null)
+        receivedTransitionWorkloadColor = sharedPreferences.getString("TransitionWorkloadColor", null)
+
         Log.d("CalenderFragment", "Received ID from SharedPreferences: $receivedIds")
     }
 
@@ -982,11 +1118,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                                 Log.d("APIResponse", "Data added: $it")
                             } ?: run {
                                 Log.d("APIResponse", "Response data is null")
-                                Toast.makeText(
-                                    requireContext(),
-                                    "No data found",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(requireContext(), "No data found", Toast.LENGTH_SHORT).show()
                             }
 
                             if (newsData.isNotEmpty()) {
