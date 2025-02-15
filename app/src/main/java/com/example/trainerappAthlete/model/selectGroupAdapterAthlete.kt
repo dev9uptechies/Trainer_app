@@ -84,7 +84,6 @@ class selectGroupAdapterAthlete(
                 }
             }
         }
-
     }
 
     fun getSelectedGroupId(): Pair<String?, String?> {
@@ -101,7 +100,7 @@ class selectGroupAdapterAthlete(
             "start_date" to groupPlanning?.start_date,
             "end_date" to groupPlanning?.end_date,
             "mesocycle" to groupPlanning?.mesocycle,
-            "workload_color" to microcycles?.getOrNull(0)?.workloadColor // Safe access
+            "workload_color" to microcycles?.getOrNull(0)?.workloadColor
         )
     }
 

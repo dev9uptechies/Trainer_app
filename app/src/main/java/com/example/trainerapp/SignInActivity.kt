@@ -31,7 +31,6 @@ class SignInActivity : AppCompatActivity() {
     lateinit var password_error: TextView
     lateinit var progress_bar: ProgressBar
     lateinit var signInBinding: ActivitySignInBinding
-
     var FCMToken:String ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +52,7 @@ class SignInActivity : AppCompatActivity() {
         checkButtonClick()
         checkChangeListner()
         getFCMToken()
+
     }
 
     private fun checkChangeListner() {
@@ -141,7 +141,6 @@ class SignInActivity : AppCompatActivity() {
         signInBinding.btnSignIn.setOnClickListener {
 
             if (isValidate) {
-
                 Log.d("FCMToken", "FCM Token: $FCMToken")
 
                 progress_bar.visibility = View.VISIBLE

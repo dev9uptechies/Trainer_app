@@ -462,6 +462,284 @@
                                 </androidx.constraintlayout.widget.ConstraintLayout>
                             </androidx.cardview.widget.CardView>
 
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/PreCompetitive_ly"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_10sdp"
+                                android:layout_marginTop="@dimen/_10sdp"
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                android:visibility="gone"
+                                app:cardBackgroundColor="#1A929492"
+                                app:cardCornerRadius="@dimen/_10sdp"
+                                app:layout_constraintTop_toBottomOf="@+id/season_ly">
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginBottom="@dimen/_10sdp">
+
+                                    <TextView
+                                        android:id="@+id/title_tvPreCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_10sdp"
+                                        android:layout_marginTop="@dimen/_10sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="Pre Season"
+                                        android:textColor="#F3F3F3"
+                                        android:textSize="@dimen/_15sdp"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent" />
+
+                                    <TextView
+                                        android:id="@+id/tv_startPreCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_10sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="Start:"
+                                        android:textColor="#BBBBBB"
+                                        android:textSize="@dimen/_12sdp"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/title_tvPreCompetitive" />
+
+                                    <TextView
+                                        android:id="@+id/edt_start_datePreCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_5sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="25 March, 2021"
+                                        android:textColor="#BBBBBB"
+                                        android:textSize="@dimen/_12sdp"
+                                        app:layout_constraintStart_toEndOf="@+id/tv_startPreCompetitive"
+                                        app:layout_constraintTop_toTopOf="@+id/tv_startPreCompetitive" />
+
+                                    <androidx.constraintlayout.widget.ConstraintLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="@dimen/_5sdp"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintTop_toTopOf="@+id/tv_startPreCompetitive">
+
+                                        <TextView
+                                            android:id="@+id/tv_endPreCompetitive"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="@dimen/_10sdp"
+                                            android:fontFamily="@font/poppins_medium"
+                                            android:text="End:"
+                                            android:textColor="#BBBBBB"
+                                            android:textSize="@dimen/_12sdp"
+                                            app:layout_constraintStart_toStartOf="parent"
+                                            app:layout_constraintTop_toTopOf="parent" />
+
+                                        <TextView
+                                            android:id="@+id/edt_end_datePreCompetitive"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="@dimen/_5sdp"
+                                            android:fontFamily="@font/poppins_medium"
+                                            android:text="27 March, 2021"
+                                            android:textColor="#BBBBBB"
+                                            android:textSize="@dimen/_12sdp"
+                                            app:layout_constraintStart_toEndOf="@+id/tv_endPreCompetitive"
+                                            app:layout_constraintTop_toTopOf="@+id/tv_endPreCompetitive" />
+
+                                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                    <TextView
+                                        android:id="@+id/tv_mesocyclePreCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_10sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="Mesocycle:"
+                                        android:textColor="#BBBBBB"
+                                        android:textSize="@dimen/_12sdp"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/tv_startPreCompetitive" />
+
+                                    <TextView
+                                        android:id="@+id/edt_mesocyclePreCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_5sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="02 Cycle"
+                                        android:textColor="#BBBBBB"
+                                        android:textSize="@dimen/_12sdp"
+                                        app:layout_constraintStart_toEndOf="@+id/tv_mesocyclePreCompetitive"
+                                        app:layout_constraintTop_toTopOf="@+id/tv_mesocyclePreCompetitive" />
+
+                                    <TextView
+                                        android:id="@+id/tv_abilities_techniquePreCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_10sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="Mesocycle:"
+                                        android:visibility="gone"
+                                        android:textColor="#BBBBBB"
+                                        android:textSize="@dimen/_13sdp"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/tv_mesocyclePreCompetitive" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_5sdp"
+                                        android:fontFamily="@font/poppins_semi_bold"
+                                        android:text="Strength, Speed"
+                                        android:textColor="#BBBBBB"
+                                        android:visibility="gone"
+                                        android:textSize="@dimen/_12sdp"
+                                        app:layout_constraintStart_toEndOf="@+id/tv_abilities_techniquePreCompetitive"
+                                        app:layout_constraintTop_toTopOf="@+id/tv_abilities_techniquePreCompetitive" />
+
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/Competitive_ly"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_10sdp"
+                                android:layout_marginTop="@dimen/_10sdp"
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                android:visibility="gone"
+                                app:cardBackgroundColor="#1A929492"
+                                app:cardCornerRadius="@dimen/_10sdp"
+                                app:layout_constraintTop_toBottomOf="@+id/PreCompetitive_ly">
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginBottom="@dimen/_10sdp">
+
+                                    <TextView
+                                        android:id="@+id/title_tvCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_10sdp"
+                                        android:layout_marginTop="@dimen/_10sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="Pre Season"
+                                        android:textColor="#F3F3F3"
+                                        android:textSize="@dimen/_15sdp"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent" />
+
+                                    <TextView
+                                        android:id="@+id/tv_startCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_10sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="Start:"
+                                        android:textColor="#BBBBBB"
+                                        android:textSize="@dimen/_12sdp"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/title_tvCompetitive" />
+
+                                    <TextView
+                                        android:id="@+id/edt_start_dateCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_5sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="25 March, 2021"
+                                        android:textColor="#BBBBBB"
+                                        android:textSize="@dimen/_12sdp"
+                                        app:layout_constraintStart_toEndOf="@+id/tv_startCompetitive"
+                                        app:layout_constraintTop_toTopOf="@+id/tv_startCompetitive" />
+
+                                    <androidx.constraintlayout.widget.ConstraintLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="@dimen/_5sdp"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintTop_toTopOf="@+id/tv_startCompetitive">
+
+                                        <TextView
+                                            android:id="@+id/tv_endCompetitive"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="@dimen/_10sdp"
+                                            android:fontFamily="@font/poppins_medium"
+                                            android:text="End:"
+                                            android:textColor="#BBBBBB"
+                                            android:textSize="@dimen/_12sdp"
+                                            app:layout_constraintStart_toStartOf="parent"
+                                            app:layout_constraintTop_toTopOf="parent" />
+
+                                        <TextView
+                                            android:id="@+id/edt_end_dateCompetitive"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="@dimen/_5sdp"
+                                            android:fontFamily="@font/poppins_medium"
+                                            android:text="27 March, 2021"
+                                            android:textColor="#BBBBBB"
+                                            android:textSize="@dimen/_12sdp"
+                                            app:layout_constraintStart_toEndOf="@+id/tv_endCompetitive"
+                                            app:layout_constraintTop_toTopOf="@+id/tv_endCompetitive" />
+
+                                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                    <TextView
+                                        android:id="@+id/tv_mesocycleCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_10sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="Mesocycle:"
+                                        android:textColor="#BBBBBB"
+                                        android:textSize="@dimen/_12sdp"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/tv_startCompetitive" />
+
+                                    <TextView
+                                        android:id="@+id/edt_mesocycleCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_5sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="02 Cycle"
+                                        android:textColor="#BBBBBB"
+                                        android:textSize="@dimen/_12sdp"
+                                        app:layout_constraintStart_toEndOf="@+id/tv_mesocycleCompetitive"
+                                        app:layout_constraintTop_toTopOf="@+id/tv_mesocycleCompetitive" />
+
+                                    <TextView
+                                        android:id="@+id/tv_abilities_techniqueCompetitive"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_10sdp"
+                                        android:fontFamily="@font/poppins_medium"
+                                        android:text="Mesocycle:"
+                                        android:visibility="gone"
+                                        android:textColor="#BBBBBB"
+                                        android:textSize="@dimen/_13sdp"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/tv_mesocycleCompetitive" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/_5sdp"
+                                        android:fontFamily="@font/poppins_semi_bold"
+                                        android:text="Strength, Speed"
+                                        android:textColor="#BBBBBB"
+                                        android:visibility="gone"
+                                        android:textSize="@dimen/_12sdp"
+                                        app:layout_constraintStart_toEndOf="@+id/tv_abilities_techniqueCompetitive"
+                                        app:layout_constraintTop_toTopOf="@+id/tv_abilities_techniqueCompetitive" />
+
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+                            </androidx.cardview.widget.CardView>
+
                             <TextView
                                 android:id="@+id/next_tv"
                                 android:layout_width="wrap_content"
@@ -1961,7 +2239,7 @@
         android:layout_gravity="start"
         android:background="#141414"
         android:fitsSystemWindows="true"
-        android:visibility="visible"
+        android:visibility="gone"
         app:headerLayout="@layout/header_layout"
         app:itemIconTint="@color/white"
         app:itemTextAppearance="@style/DrawerMenuTextAppearance"

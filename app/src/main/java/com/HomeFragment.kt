@@ -127,6 +127,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     var formattedDate: String? = null
     var LessonData: MutableList<SelectedDaysModel.Lesson> = mutableListOf()
+    var TestData: MutableList<SelectedDaysModel.Test> = mutableListOf()
+    var EventData: MutableList<SelectedDaysModel.Event> = mutableListOf()
     private val datesWithDataTest = mutableSetOf<LocalDate>() // Set to track dates with data
 
 
@@ -159,20 +161,17 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         homeFragmentBinding = FragmentHomeBinding.inflate(inflater, container, false)
         homeFragmentBinding.exSevenCalendar.setBackgroundResource(0)
 
-        homeFragmentBinding.seasonLy
         homeFragmentBinding.nextTv
         homeFragmentBinding.viewRecycler
         homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
         calendarView = homeFragmentBinding.exSevenCalendar
-
 
         initViews()
         setDrawerToggle()
         getInstraction()
         GetNews()
         setUpCalendar()
-        val currentDate =
-            homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+        val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
         val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
         Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
         homeFragmentBinding.tvDate.text = formattedMonthYear
@@ -194,11 +193,34 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             Log.d("SSLLSLSLSL", "onCreateView: $receivedGroup_Ids")
 
             if (!receivedGroup_Ids.isNullOrEmpty()) {
-                homeFragmentBinding.seasonLy.visibility = View.VISIBLE
-                homeFragmentBinding.titleTv.text = receivedname
-                homeFragmentBinding.edtStartDate.text = receivedstartDate
-                homeFragmentBinding.edtEndDate.text = receivedendDate
-                homeFragmentBinding.edtMesocycle.text = receivedmesocycle
+
+                Log.d("SSSJSJSJSJSJJr", "onCreateView: $receivedstartDate   $receivedendDate ")
+
+                if (receivedname != "" || receivedname != null) {
+                    homeFragmentBinding.seasonLy.visibility = View.VISIBLE
+                    homeFragmentBinding.titleTv.text = receivedname
+                    homeFragmentBinding.edtStartDate.text = receivedstartDate
+                    homeFragmentBinding.edtEndDate.text = receivedendDate
+                    homeFragmentBinding.edtMesocycle.text = receivedmesocycle
+                }
+
+                Log.d("AQQAAQQAQA", "onCreateView: $receivedPreCompetitiveName")
+
+                if(receivedPreCompetitiveName != "" || receivedPreCompetitiveName != null){
+                    homeFragmentBinding.PreCompetitiveLy.visibility = View.VISIBLE
+                    homeFragmentBinding.titleTvPreCompetitive.text = receivedPreCompetitiveName
+                    homeFragmentBinding.edtStartDatePreCompetitive.text = receivedPreCompetitiveStartDate
+                    homeFragmentBinding.edtEndDatePreCompetitive.text = receivedPreCompetitiveEndDate
+                    homeFragmentBinding.edtMesocyclePreCompetitive.text = receivedPreCompetitiveMesocycle
+                }
+
+                if(receivedCommpetitiveName != "" || receivedCommpetitiveName != null){
+                    homeFragmentBinding.CompetitiveLy.visibility = View.VISIBLE
+                    homeFragmentBinding.titleTvCompetitive.text = receivedCommpetitiveName
+                    homeFragmentBinding.edtStartDateCompetitive.text = receivedCompetitiveStartDate
+                    homeFragmentBinding.edtEndDateCompetitive.text = receivedCompetitiveEndDate
+                    homeFragmentBinding.edtMesocycleCompetitive.text = receivedCompetitiveMesocycle
+                }
             }
 
             if (receivedIdInt != null) {
@@ -253,94 +275,11 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         return homeFragmentBinding.root
     }
 
-
-    @SuppressLint("NewApi")
-    private fun fetchDayData(selectedDate: LocalDate) {
-        try {
-            val formattedDate = selectionFormatter.format(selectedDate)
-            Log.d(
-                "CalendarFragment",
-                "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids"
-            )
-
-            apiInterface.GetSelectedDaysAthlete(formattedDate, receivedGroup_Ids)!!
-                .enqueue(object : Callback<SelectedDaysModel> {
-                    override fun onResponse(
-                        call: Call<SelectedDaysModel>,
-                        response: Response<SelectedDaysModel>
-                    ) {
-                        if (response.isSuccessful && response.body() != null) {
-                            val selectedDaysModel = response.body()
-                            Log.d("API Response", "Response: $selectedDaysModel")
-
-                            val data = selectedDaysModel?.data
-                            if (data != null) {
-                                if (::eventadapter.isInitialized) {
-                                    eventadapter.clearData()
-                                }
-
-
-                                if (data.lessons.isNotEmpty()) {
-                                    if (!datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.add(selectedDate)
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                } else {
-
-                                }
-
-                                if (data.events.isNotEmpty()) {
-                                    if (!datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.add(selectedDate)
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                } else {
-
-                                }
-
-                                if (data.tests.isNotEmpty()) {
-                                    if (!datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.add(selectedDate)
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                } else {
-
-                                }
-
-                                Log.d("SKSKKSKSKSK", "onResponse: $datesWithDataTest")
-
-                            } else {
-                                Log.e("API Response", "Data is null. No dot added.")
-                            }
-
-
-
-                            Log.d("MDKMKDMKDKDKK", "onResponse: $data")
-                        } else if (response.code() == 429) {
-                            Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT)
-                                .show()
-                        } else {
-                            Log.e("API Response", "Failed to fetch data: ${response.message()}")
-                        }
-                    }
-
-                    override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
-                        Log.e("API Response", "Error: ${t.message}")
-                    }
-                })
-        } catch (e: Exception) {
-            Log.e("Catch", "CatchError :- ${e.message}")
-        }
-    }
-
         @SuppressLint("NewApi")
         private fun fetchDayDataRecycler(selectedDate: LocalDate) {
             try {
                 val formattedDate = selectionFormatter.format(selectedDate)
-                Log.d(
-                    "CalendarFragment",
-                    "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids"
-                )
+                Log.d("CalendarFragment", "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids")
 
                 apiInterface.GetSelectedDaysAthlete(formattedDate, receivedGroup_Ids)!!
                     .enqueue(object : Callback<SelectedDaysModel> {
@@ -370,6 +309,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                                     }
 
                                     if (data.events.isNotEmpty()) {
+                                        EventData.clear()
+                                        EventData.addAll(data.events)
                                         if (!datesWithDataTest.contains(selectedDate)) {
                                             datesWithDataTest.add(selectedDate)
                                             calendarView!!.notifyDateChanged(selectedDate)
@@ -379,6 +320,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                                     }
 
                                     if (data.tests.isNotEmpty()) {
+                                        TestData.clear()
+                                        TestData.addAll(data.tests)
                                         if (!datesWithDataTest.contains(selectedDate)) {
                                             datesWithDataTest.add(selectedDate)
                                             calendarView!!.notifyDateChanged(selectedDate)
@@ -390,9 +333,9 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                                     Log.d("SKSKKSKSKSK", "onResponse: $datesWithDataTest")
 
 
-                                    initTestRecyclerView(data.tests)
+                                    initTestRecyclerView(TestData)
                                     initLessonRecyclerView(LessonData)
-                                    initEventRecyclerView(data.events)
+                                    initEventRecyclerView(EventData)
 
                                 } else {
                                     Log.e("API Response", "Data is null. No dot added.")
@@ -430,7 +373,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         homeFragmentBinding.favTestRly.adapter = testadapter
     }
 
-
     private fun initEventRecyclerView(events: List<SelectedDaysModel.Event>) {
         if (events.isNotEmpty()) {
             Log.d("Event RecyclerView", "Setting up RecyclerView with events.")
@@ -442,7 +384,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
-
     private fun setContent() {
         val workout = arrayOf("Instruction", "Information", "News")
 
@@ -453,7 +394,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         val language = arrayOf("LUN", "USR", "UFN", "LUN", "USR", "UFN")
 
         for (item in language.indices) {
-
             Sportlist.add(Sport_list(language[item]))
         }
 
@@ -464,287 +404,333 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpCalendar() {
-        val daysOfWeek = daysOfWeekFromLocale()
-        val currentMonth = YearMonth.now()
-        val today = LocalDate.now()
+            val daysOfWeek = daysOfWeekFromLocale()
+            val currentMonth = YearMonth.now()
+            val today = LocalDate.now()
 
-        homeFragmentBinding.exSevenCalendar!!.apply {
-            setup(currentMonth.minusMonths(100), currentMonth.plusMonths(100), daysOfWeek.first())
-            scrollToMonth(currentMonth)
-        }
+            homeFragmentBinding.exSevenCalendar!!.apply {
+                setup(currentMonth.minusMonths(100), currentMonth.plusMonths(100), daysOfWeek.first())
+                scrollToMonth(currentMonth)
+            }
 
-        homeFragmentBinding.exSevenCalendar!!.post {
-            homeFragmentBinding.exSevenCalendar!!.scrollToDate(today)
-            fetchCurrentWeekDates()
-        }
+            homeFragmentBinding.exSevenCalendar!!.post {
+                homeFragmentBinding.exSevenCalendar!!.scrollToDate(today)
+                fetchCurrentWeekDates()
+            }
 
-        class DayViewContainer(view: View) : ViewContainer(view) {
-            lateinit var day: CalendarDay
-            lateinit var month: YearMonth
-            val binding = Example3CalendarDayBinding.bind(view)
+            class DayViewContainer(view: View) : ViewContainer(view) {
+                lateinit var day: CalendarDay
+                lateinit var month: YearMonth
+                val binding = Example3CalendarDayBinding.bind(view)
 
-            init {
+                init {
 
-                val formattedMonth = DateTimeFormatter.ofPattern("MMM,yyyy").format(currentMonth)
-                homeFragmentBinding.tvDate.text = formattedMonth
+                    val formattedMonth = DateTimeFormatter.ofPattern("MMM,yyyy").format(currentMonth)
+                    homeFragmentBinding.tvDate.text = formattedMonth
 
-                view.setOnClickListener {
+                    view.setOnClickListener {
 
-                    Log.d("HFGFGFFGGFFG", "setUpCalendar: $month")
+                        Log.d("HFGFGFFGGFFG", "setUpCalendar: $month")
 
-                    if (day.owner == DayOwner.THIS_MONTH) {
-                        selectDate(day.date)
-                        formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                        if (day.owner == DayOwner.THIS_MONTH) {
+                            selectDate(day.date)
+                            formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
+                        }
                     }
                 }
             }
-        }
 
-        class MonthViewContainer(view: View) : ViewContainer(view) {
-            val legendLayout = Example3CalendarHeaderBinding.bind(view).legendLayout.root
-        }
+            class MonthViewContainer(view: View) : ViewContainer(view) {
+                val legendLayout = Example3CalendarHeaderBinding.bind(view).legendLayout.root
+            }
 
-        homeFragmentBinding.exSevenCalendar.dayBinder = object : DayBinder<DayViewContainer> {
-            override fun create(view: View) = DayViewContainer(view)
+            homeFragmentBinding.exSevenCalendar.dayBinder = object : DayBinder<DayViewContainer> {
+                override fun create(view: View) = DayViewContainer(view)
 
-            override fun bind(container: DayViewContainer, day: CalendarDay) {
-                container.day = day
-                val textView = container.binding.exThreeDayText
-                textView.text = day.date.dayOfMonth.toString()
+                override fun bind(container: DayViewContainer, day: CalendarDay) {
+                    container.day = day
+                    val textView = container.binding.exThreeDayText
+                    textView.text = day.date.dayOfMonth.toString()
 
-                with(textView) {
-                    setTextColor(resources.getColor(R.color.white))
-                    setBackgroundColor(0x1A000000)
-                }
-
-                when {
-                    day.owner == DayOwner.THIS_MONTH -> {
-                        when {
-                            day.date == today -> {
-                                with(textView) {
-                                    setTextColor(resources.getColor(R.color.white))
-                                    setBackgroundResource(R.drawable.bg_red_round_corner_10)
-                                }
-                            }
-
-                            day.date == selectedDate -> {
-                                with(textView) {
-                                    setTextColor(resources.getColor(R.color.splash_text_color))
-                                }
-                            }
-
-                            else -> {
-                                with(textView) {
-                                    setTextColor(resources.getColor(R.color.white))
-                                    setBackgroundColor(0x1A000000)
-                                }
-                            }
-                        }
+                    with(textView) {
+                        setTextColor(resources.getColor(R.color.white))
+                        setBackgroundColor(0x1A000000)
                     }
 
-                    else -> {
-                        textView.setTextColor(resources.getColor(R.color.grey))
-                    }
-                }
-
-
-//                Log.d("DOTTTTT", "bind: $datesWithDataTest")
-//
-//                if (datesWithDataTest.contains(day.date)) {
-//                    container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(Color.RED)
-//                    container.binding.dotLesson.visibility = View.VISIBLE
-//                } else {
-//                    container.binding.dotLesson.visibility = View.GONE
-//                }
-
-                Log.d("SLLSLSLSLS", "bind: $receivedworkloadColor     $receivedPreCompetitiveWorkloadColor   $receivedPreCompetitiveWorkloadColor")
-
-                if (!receivedstartDate.isNullOrEmpty() && !receivedendDate.isNullOrEmpty()) {
-                    try {
-                        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                        val startDate = LocalDate.parse(receivedstartDate, dateFormatter)
-                        val endDate = LocalDate.parse(receivedendDate, dateFormatter)
-
-                        if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
-                            val color = try {
-                                if (!receivedworkloadColor.isNullOrEmpty()) Color.parseColor(receivedworkloadColor) else Color.RED
-                            } catch (e: IllegalArgumentException) {
-                                Log.e("ColorError", "Invalid color value: $receivedworkloadColor", e)
-                                Color.RED
-                            }
-                            container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(color)
-                            container.binding.dotLesson.visibility = View.VISIBLE
-                        }
-                    } catch (e: Exception) {
-                        Log.e("DateParsingError", "Error parsing dates: $receivedstartDate - $receivedendDate", e)
-                    }
-                }
-
-                if (!receivedPreCompetitiveStartDate.isNullOrEmpty() && !receivedPreCompetitiveEndDate.isNullOrEmpty()) {
-                    try {
-                        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                        val startDate = LocalDate.parse(receivedPreCompetitiveStartDate, dateFormatter)
-                        val endDate = LocalDate.parse(receivedPreCompetitiveEndDate, dateFormatter)
-
-                        if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
-                            val color = try {
-                                if (!receivedPreCompetitiveWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedPreCompetitiveWorkloadColor) else Color.RED
-                            } catch (e: IllegalArgumentException) {
-                                Log.e("ColorError", "Invalid color value: $receivedPreCompetitiveWorkloadColor", e)
-                                Color.RED
-                            }
-                            container.binding.dotTest.backgroundTintList = ColorStateList.valueOf(color)
-                            container.binding.dotTest.visibility = View.VISIBLE
-                        }
-                    } catch (e: Exception) {
-                        Log.e("DateParsingError", "Error parsing dates: $receivedPreCompetitiveStartDate - $receivedPreCompetitiveEndDate", e)
-                    }
-                }
-
-                if (!receivedCompetitiveStartDate.isNullOrEmpty() && !receivedCompetitiveEndDate.isNullOrEmpty()) {
-                    try {
-                        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                        val startDate = LocalDate.parse(receivedCompetitiveStartDate, dateFormatter)
-                        val endDate = LocalDate.parse(receivedCompetitiveEndDate, dateFormatter)
-
-                        if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
-                            val color = try {
-                                if (!receivedCompetitiveWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedCompetitiveWorkloadColor) else Color.GRAY
-                            } catch (e: IllegalArgumentException) {
-                                Log.e("ColorError", "Invalid color value: $receivedCompetitiveWorkloadColor", e)
-                                Color.GRAY
-                            }
-                            container.binding.dotEvent.backgroundTintList = ColorStateList.valueOf(color)
-                            container.binding.dotEvent.visibility = View.VISIBLE
-                        }
-                    } catch (e: Exception) {
-                        Log.e("DateParsingError", "Error parsing dates: $receivedCompetitiveStartDate - $receivedCompetitiveEndDate", e)
-                    }
-                }
-
-                if (!receivedTransitionStartDate.isNullOrEmpty() && !receivedTransitionEndDate.isNullOrEmpty()) {
-                    try {
-                        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                        val startDate = LocalDate.parse(receivedTransitionStartDate, dateFormatter)
-                        val endDate = LocalDate.parse(receivedTransitionEndDate, dateFormatter)
-
-                        if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
-                            val color = try {
-                                if (!receivedTransitionWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedTransitionWorkloadColor) else Color.YELLOW
-                            } catch (e: IllegalArgumentException) {
-                                Log.e("ColorError", "Invalid color value: $receivedTransitionWorkloadColor", e)
-                                Color.YELLOW
-                            }
-                            container.binding.dotProgram.backgroundTintList = ColorStateList.valueOf(color)
-                            container.binding.dotProgram.visibility = View.VISIBLE
-                        }
-                    } catch (e: Exception) {
-                        Log.e("DateParsingError", "Error parsing dates: $receivedTransitionStartDate - $receivedTransitionEndDate", e)
-                    }
-                }
-
-                container.view.setOnClickListener {
-                    if (day.owner == DayOwner.THIS_MONTH) {
-                        selectDate(day.date)
-
-                        formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-
-                        val receivedIdInt = receivedIds.toIntOrNull()
-
-                        Log.e("DJDJDJDJDJJDJDJDJ", "bind: $receivedIdInt")
-
-                        val userType = preferenceManager.GetFlage()
-
-                        if (userType == "Athlete") {
-                            if (receivedIdInt != null && receivedIdInt != 0) {
-                                homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
-
-                                Log.d("FORMATTEDDATE", "bind: ${formattedDate.toString()}")
-
-                                getPersonalDiaryData(formattedDate.toString())
-
-                                fetchDayDataRecycler(day.date)
-
-                            } else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Please Select Group First",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-
-                        } else {
-                            if (receivedIdInt != null && receivedIdInt != 0) {
-                                val intent =
-                                    Intent(requireContext(), SelectDayActivity::class.java).apply {
-                                        putExtra("id", receivedIdInt)
-                                        putExtra("date", formattedDate)
+                    when {
+                        day.owner == DayOwner.THIS_MONTH -> {
+                            when {
+                                day.date == today -> {
+                                    with(textView) {
+                                        setTextColor(resources.getColor(R.color.white))
+                                        setBackgroundResource(R.drawable.bg_red_round_corner_10)
                                     }
-                                context!!.startActivity(intent)
-                            } else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Please Select Group First",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                }
+
+                                day.date == selectedDate -> {
+                                    with(textView) {
+                                        setTextColor(resources.getColor(R.color.splash_text_color))
+                                    }
+                                }
+
+                                else -> {
+                                    with(textView) {
+                                        setTextColor(resources.getColor(R.color.white))
+                                        setBackgroundColor(0x1A000000)
+                                    }
+                                }
                             }
                         }
 
+                        else -> {
+                            textView.setTextColor(resources.getColor(R.color.grey))
+                        }
                     }
-                }
-            }
-        }
-
-        homeFragmentBinding.exSevenCalendar!!.monthScrollListener = { month ->
-            // Format the month as "Month Year" (e.g., "January 2025")
-//                val formattedMonth = DateTimeFormatter.ofPattern("MMMM yyyy").format(month.yearMonth)
-//
-//                // Set the TextView with the formatted month and year
-//                homeFragmentBinding.tvDate.text = formattedMonth
-
-            val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
-            val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
-            Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
-            homeFragmentBinding.tvDate.text = formattedMonthYear
-
-            // Optionally, apply custom formatting logic
-            if (month.year == today.year) {
-                titleSameYearFormatter.format(month.yearMonth)
-            } else {
-                titleFormatter.format(month.yearMonth)
-            }
-
-            // Optionally, you can select the first day of the current month if needed
-            selectDate(month.yearMonth.atDay(1))
-        }
 
 
-        // Update the month header to show abbreviated day names (Mon, Tue, Wed)
-        homeFragmentBinding.exSevenCalendar.monthHeaderBinder =
-            object : MonthHeaderFooterBinder<MonthViewContainer> {
-                override fun create(view: View) = MonthViewContainer(view)
+    //                Log.d("DOTTTTT", "bind: $datesWithDataTest")
+    //
+    //                if (datesWithDataTest.contains(day.date)) {
+    //                    container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(Color.RED)
+    //                    container.binding.dotLesson.visibility = View.VISIBLE
+    //                } else {
+    //                    container.binding.dotLesson.visibility = View.GONE
+    //                }
 
-                @SuppressLint("ResourceAsColor")
-                override fun bind(container: MonthViewContainer, month: CalendarMonth) {
-                    if (container.legendLayout.tag == null) {
-                        container.legendLayout.tag = month.yearMonth
+                    val currentDate = LocalDate.now()
+                    val firstDayOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+                    val lastDayOfWeek = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))
 
-                        val formattedMonth =
-                            DateTimeFormatter.ofPattern("MMM,yyyy").format(today.yearMonth)
-                        homeFragmentBinding.tvDate.text = formattedMonth
-                        // Get short day names like "Mon", "Tue", "Wed"
-                        val dayNames =
-                            daysOfWeek.map { it.name.take(3) }  // Get first 3 letters of each day name
-                        container.legendLayout.children.map { it as TextView }
-                            .forEachIndexed { index, tv ->
-                                tv.text = dayNames[index]
+                    fun isWithinCurrentWeek(date: LocalDate): Boolean {
+                        return !date.isBefore(firstDayOfWeek) && !date.isAfter(lastDayOfWeek)
+                    }
+
+                    fun applyDotIfWithinRange(
+                        startDateStr: String?,
+                        endDateStr: String?,
+                        workloadColor: String?,
+                        dotView: View,
+                        defaultColor: Int
+                    ) {
+                        if (!startDateStr.isNullOrEmpty() && !endDateStr.isNullOrEmpty()) {
+                            try {
+                                val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                val startDate = LocalDate.parse(startDateStr, dateFormatter)
+                                val endDate = LocalDate.parse(endDateStr, dateFormatter)
+
+                                if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate) && isWithinCurrentWeek(day.date)) {
+                                    val color = try {
+                                        if (!workloadColor.isNullOrEmpty()) Color.parseColor(workloadColor) else defaultColor
+                                    } catch (e: IllegalArgumentException) {
+                                        Log.e("ColorError", "Invalid color value: $workloadColor", e)
+                                        defaultColor
+                                    }
+                                    dotView.backgroundTintList = ColorStateList.valueOf(color)
+                                    dotView.visibility = View.VISIBLE
+                                } else {
+                                    dotView.visibility = View.GONE
+                                }
+                            } catch (e: Exception) {
+                                Log.e("DateParsingError", "Error parsing dates: $startDateStr - $endDateStr", e)
                             }
+                        } else {
+                            dotView.visibility = View.GONE
+                        }
+                    }
+
+                    Log.d("SLLSLSLSLS", "bind: $receivedworkloadColor     $receivedPreCompetitiveWorkloadColor   $receivedPreCompetitiveWorkloadColor")
+//
+//                    if (!receivedstartDate.isNullOrEmpty() && !receivedendDate.isNullOrEmpty()) {
+//                        try {
+//                            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//                            val startDate = LocalDate.parse(receivedstartDate, dateFormatter)
+//                            val endDate = LocalDate.parse(receivedendDate, dateFormatter)
+//
+//                            if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
+//                                val color = try {
+//                                    if (!receivedworkloadColor.isNullOrEmpty()) Color.parseColor(receivedworkloadColor) else Color.RED
+//                                } catch (e: IllegalArgumentException) {
+//                                    Log.e("ColorError", "Invalid color value: $receivedworkloadColor", e)
+//                                    Color.RED
+//                                }
+//                                container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(color)
+//                                container.binding.dotLesson.visibility = View.VISIBLE
+//                            }
+//                        } catch (e: Exception) {
+//                            Log.e("DateParsingError", "Error parsing dates: $receivedstartDate - $receivedendDate", e)
+//                        }
+//                    }
+//
+//                    if (!receivedPreCompetitiveStartDate.isNullOrEmpty() && !receivedPreCompetitiveEndDate.isNullOrEmpty()) {
+//                        try {
+//                            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//                            val startDate = LocalDate.parse(receivedPreCompetitiveStartDate, dateFormatter)
+//                            val endDate = LocalDate.parse(receivedPreCompetitiveEndDate, dateFormatter)
+//
+//                            if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
+//                                val color = try {
+//                                    if (!receivedPreCompetitiveWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedPreCompetitiveWorkloadColor) else Color.RED
+//                                } catch (e: IllegalArgumentException) {
+//                                    Log.e("ColorError", "Invalid color value: $receivedPreCompetitiveWorkloadColor", e)
+//                                    Color.RED
+//                                }
+//                                container.binding.dotTest.backgroundTintList = ColorStateList.valueOf(color)
+//                                container.binding.dotTest.visibility = View.VISIBLE
+//                            }
+//                        } catch (e: Exception) {
+//                            Log.e("DateParsingError", "Error parsing dates: $receivedPreCompetitiveStartDate - $receivedPreCompetitiveEndDate", e)
+//                        }
+//                    }
+//
+//                    if (!receivedCompetitiveStartDate.isNullOrEmpty() && !receivedCompetitiveEndDate.isNullOrEmpty()) {
+//                        try {
+//                            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//                            val startDate = LocalDate.parse(receivedCompetitiveStartDate, dateFormatter)
+//                            val endDate = LocalDate.parse(receivedCompetitiveEndDate, dateFormatter)
+//
+//                            if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
+//                                val color = try {
+//                                    if (!receivedCompetitiveWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedCompetitiveWorkloadColor) else Color.GRAY
+//                                } catch (e: IllegalArgumentException) {
+//                                    Log.e("ColorError", "Invalid color value: $receivedCompetitiveWorkloadColor", e)
+//                                    Color.GRAY
+//                                }
+//                                container.binding.dotEvent.backgroundTintList = ColorStateList.valueOf(color)
+//                                container.binding.dotEvent.visibility = View.VISIBLE
+//                            }
+//                        } catch (e: Exception) {
+//                            Log.e("DateParsingError", "Error parsing dates: $receivedCompetitiveStartDate - $receivedCompetitiveEndDate", e)
+//                        }
+//                    }
+//
+//                    if (!receivedTransitionStartDate.isNullOrEmpty() && !receivedTransitionEndDate.isNullOrEmpty()) {
+//                        try {
+//                            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//                            val startDate = LocalDate.parse(receivedTransitionStartDate, dateFormatter)
+//                            val endDate = LocalDate.parse(receivedTransitionEndDate, dateFormatter)
+//
+//                            if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
+//                                val color = try {
+//                                    if (!receivedTransitionWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedTransitionWorkloadColor) else Color.YELLOW
+//                                } catch (e: IllegalArgumentException) {
+//                                    Log.e("ColorError", "Invalid color value: $receivedTransitionWorkloadColor", e)
+//                                    Color.YELLOW
+//                                }
+//                                container.binding.dotProgram.backgroundTintList = ColorStateList.valueOf(color)
+//                                container.binding.dotProgram.visibility = View.VISIBLE
+//                            }
+//                        } catch (e: Exception) {
+//                            Log.e("DateParsingError", "Error parsing dates: $receivedTransitionStartDate - $receivedTransitionEndDate", e)
+//                        }
+//                    }
+//
+
+                    applyDotIfWithinRange(receivedstartDate, receivedendDate, receivedworkloadColor, container.binding.dotLesson, Color.GRAY)
+                    applyDotIfWithinRange(receivedPreCompetitiveStartDate, receivedPreCompetitiveEndDate, receivedPreCompetitiveWorkloadColor, container.binding.dotTest, Color.GRAY)
+                    applyDotIfWithinRange(receivedCompetitiveStartDate, receivedCompetitiveEndDate, receivedCompetitiveWorkloadColor, container.binding.dotEvent, Color.GRAY)
+                    applyDotIfWithinRange(receivedTransitionStartDate, receivedTransitionEndDate, receivedTransitionWorkloadColor, container.binding.dotProgram, Color.GRAY)
+
+                    container.view.setOnClickListener {
+                        if (day.owner == DayOwner.THIS_MONTH) {
+                            selectDate(day.date)
+
+                            formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+                            val receivedIdInt = receivedIds.toIntOrNull()
+
+                            Log.e("DJDJDJDJDJJDJDJDJ", "bind: $receivedIdInt")
+
+                            val userType = preferenceManager.GetFlage()
+
+                            if (userType == "Athlete") {
+                                if (receivedIdInt != null && receivedIdInt != 0) {
+                                    homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+
+                                    Log.d("FORMATTEDDATE", "bind: ${formattedDate.toString()}")
+
+                                    getPersonalDiaryData(formattedDate.toString())
+
+                                    fetchDayDataRecycler(day.date)
+
+                                } else {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Please Select Group First",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
+                            } else {
+                                if (receivedIdInt != null && receivedIdInt != 0) {
+                                    val intent =
+                                        Intent(requireContext(), SelectDayActivity::class.java).apply {
+                                            putExtra("id", receivedIdInt)
+                                            putExtra("date", formattedDate)
+                                        }
+                                    context!!.startActivity(intent)
+                                } else {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Please Select Group First",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+
+                        }
                     }
                 }
             }
-    }
 
+            homeFragmentBinding.exSevenCalendar!!.monthScrollListener = { month ->
+                // Format the month as "Month Year" (e.g., "January 2025")
+    //                val formattedMonth = DateTimeFormatter.ofPattern("MMMM yyyy").format(month.yearMonth)
+    //
+    //                // Set the TextView with the formatted month and year
+    //                homeFragmentBinding.tvDate.text = formattedMonth
+
+                val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+                val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
+                Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
+                homeFragmentBinding.tvDate.text = formattedMonthYear
+
+                // Optionally, apply custom formatting logic
+                if (month.year == today.year) {
+                    titleSameYearFormatter.format(month.yearMonth)
+                } else {
+                    titleFormatter.format(month.yearMonth)
+                }
+
+                // Optionally, you can select the first day of the current month if needed
+                selectDate(month.yearMonth.atDay(1))
+            }
+
+
+            // Update the month header to show abbreviated day names (Mon, Tue, Wed)
+            homeFragmentBinding.exSevenCalendar.monthHeaderBinder =
+                object : MonthHeaderFooterBinder<MonthViewContainer> {
+                    override fun create(view: View) = MonthViewContainer(view)
+
+                    @SuppressLint("ResourceAsColor")
+                    override fun bind(container: MonthViewContainer, month: CalendarMonth) {
+                        if (container.legendLayout.tag == null) {
+                            container.legendLayout.tag = month.yearMonth
+
+                            val formattedMonth =
+                                DateTimeFormatter.ofPattern("MMM,yyyy").format(today.yearMonth)
+                            homeFragmentBinding.tvDate.text = formattedMonth
+                            // Get short day names like "Mon", "Tue", "Wed"
+                            val dayNames =
+                                daysOfWeek.map { it.name.take(3) }  // Get first 3 letters of each day name
+                            container.legendLayout.children.map { it as TextView }
+                                .forEachIndexed { index, tv ->
+                                    tv.text = dayNames[index]
+                                }
+                        }
+                    }
+                }
+        }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun fetchCurrentWeekDates() {
@@ -764,7 +750,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
         Log.d("WEEK_DATES", "Current week dates: $weekDates")
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun selectDate(date: LocalDate) {
@@ -1571,6 +1556,18 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
+    @SuppressLint("NewApi")
+    private fun loadData() {
+        selectDate(LocalDate.now())
+
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete") {
+            fetchDayDataRecycler(LocalDate.now())
+        }else {
+        }
+    }
+
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
 
         val userType = preferenceManager.GetFlage()
@@ -1655,6 +1652,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                             val Message: String = resource.message!!
                             if (Success) {
                                 homeFragmentBinding.homeProgress.visibility = View.GONE
+                                loadData()
                             } else {
                                 homeFragmentBinding.homeProgress.visibility = View.GONE
                                 Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
@@ -1702,15 +1700,11 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                                 val Success: Boolean = resource?.status!!
                                 val Message: String = resource.message!!
                                 if (Success) {
+                                    loadData()
                                     homeFragmentBinding.homeProgress.visibility = View.GONE
                                 } else {
                                     homeFragmentBinding.homeProgress.visibility = View.GONE
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "" + Message,
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
+                                    Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
                                 }
                             } else if (code == 403) {
                                 Utils.setUnAuthDialog(requireContext())
@@ -1738,6 +1732,201 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             }catch (e:Exception){
                 Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
             }
+        } else if (string == "favtest"){
+            homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+            val id: MultipartBody.Part = MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.Favourite_Test(id)?.enqueue(object : Callback<RegisterData?> {
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: RegisterData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success) {
+                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            loadData()
+                        } else {
+                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(requireContext())
+                    } else {
+                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Toast.makeText(
+                            requireContext(),
+                            "" + response.message(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+        } else if (string == "unfavtest") {
+            homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+            var id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.DeleteFavourite_Test(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            if (Success) {
+                                homeFragmentBinding.homeProgress.visibility = View.GONE
+                                loadData()
+                            } else {
+                                homeFragmentBinding.homeProgress.visibility = View.GONE
+                                Toast.makeText(
+                                    requireContext(),
+                                    "" + Message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(requireContext())
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "" + response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Toast.makeText(
+                            requireContext(),
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                })
+        } else if (string == "favevent"){
+            homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+            val id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.Favourite_Event(id)?.enqueue(object : Callback<RegisterData?> {
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Log.d("TAG", response.code().toString() + "")
+                    val code = response.code()
+                    if (code == 200) {
+                        val resource: RegisterData? = response.body()
+                        val Success: Boolean = resource?.status!!
+                        val Message: String = resource.message!!
+                        if (Success) {
+                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            loadData()
+                        } else {
+                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            Toast.makeText(
+                                requireContext(),
+                                "" + Message,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+                    } else if (code == 403) {
+                        Utils.setUnAuthDialog(requireContext())
+                    } else {
+                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Toast.makeText(
+                            requireContext(),
+                            "" + response.message(),
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+        } else if (string == "unfavevent") {
+            homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+            val id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
+            apiInterface.DeleteFavourite_Event(type.toInt())
+                ?.enqueue(object : Callback<RegisterData?> {
+                    override fun onResponse(
+                        call: Call<RegisterData?>,
+                        response: Response<RegisterData?>
+                    ) {
+                        Log.d("TAG", response.code().toString() + "")
+                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        val code = response.code()
+                        if (code == 200) {
+                            val resource: RegisterData? = response.body()
+                            val Success: Boolean = resource?.status!!
+                            val Message: String = resource.message!!
+                            if (Success) {
+                                homeFragmentBinding.homeProgress.visibility = View.GONE
+                                loadData()
+                            } else {
+                                homeFragmentBinding.homeProgress.visibility = View.GONE
+                                Toast.makeText(
+                                    requireContext(),
+                                    "" + Message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+                        } else if (code == 403) {
+                            Utils.setUnAuthDialog(requireContext())
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "" + response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            call.cancel()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Toast.makeText(
+                            requireContext(),
+                            "" + t.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        call.cancel()
+                    }
+                })
         }
 
     }
