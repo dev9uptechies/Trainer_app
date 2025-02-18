@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.GroupListData
@@ -38,9 +39,13 @@ class PlanningAdapterAthlete(
         val movie = filteredData[position]
         val planning = movie.planning ?: return
 
+        Log.d("SLSLSLLSLSLS", "onBindViewHolder: ${planning.start_date}")
+        Log.d("SLSLSLLSLSLS", "onBindViewHolder: ${planning.competition_date}")
+
         holder.group_name.text = planning.name
         holder.tv_start_date.text = planning.start_date
         holder.tv_edt_time.text = planning.competition_date
+
 
         val mesocycles = movie.planning?.pre_competitive?.mesocycles
         val firstMesocycle = mesocycles?.getOrNull(0)
@@ -56,10 +61,6 @@ class PlanningAdapterAthlete(
         val preCompetitiveJson = gson.toJson(movie.planning?.pre_competitive)
         val CompetitiveJson = gson.toJson(movie.planning?.competitive)
         val TransitionJson = gson.toJson(movie.planning?.transition)
-        Log.d("2322232223232322", "onBindViewHolder: ${movie.planning?.pre_season?.start_date} END ${movie.planning?.pre_season?.end_date}")
-        Log.d("2322232223232322", "onBindViewHolder: ${movie.planning?.pre_competitive?.start_date} END ${movie.planning?.pre_competitive?.end_date}")
-        Log.d("2322232223232322", "onBindViewHolder: ${movie.planning?.competitive?.start_date} END ${movie.planning?.competitive?.end_date}")
-        Log.d("2322232223232322", "onBindViewHolder: ${movie.planning?.transition?.start_date} END ${movie.planning?.pre_season?.end_date}")
 
         holder.itemView.setOnClickListener {
             val intent = Intent(context, ViewTrainingPlanActivity::class.java)
@@ -128,5 +129,6 @@ class PlanningAdapterAthlete(
         var tv_edt_time: TextView = view.findViewById(R.id.tv_edt_time)
         var tv_start_date: TextView = view.findViewById(R.id.tv_start_date)
         var tv_athelet_name: TextView = view.findViewById(R.id.tv_athelet_name)
+        var LinerMeso: LinearLayout = view.findViewById(R.id.liner_meso)
     }
 }

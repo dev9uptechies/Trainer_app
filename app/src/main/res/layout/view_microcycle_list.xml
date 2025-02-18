@@ -51,7 +51,7 @@
                 android:fontFamily="@font/poppins_medium"
                 android:gravity="center"
                 android:text="start date"
-                android:textColor="#F3F3F3"
+                android:textColor="#BBBBBB"
                 android:textSize="@dimen/_12sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/training_name_one" />
@@ -63,7 +63,7 @@
                 android:fontFamily="@font/poppins_medium"
                 android:gravity="center"
                 android:text="@string/end_date"
-                android:textColor="#F3F3F3"
+                android:textColor="#BBBBBB"
                 android:textSize="@dimen/_12sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/start_date_one"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -80,15 +80,25 @@
                 android:clickable="false"
                 android:focusable="false"
                 android:maxHeight="@dimen/_5sdp"
+                android:visibility="gone"
                 android:progress="100"
                 android:progressDrawable="@drawable/custom_progress"
                 android:saveEnabled="false"
                 android:splitTrack="false"
+
                 android:thumb="@drawable/custom_thumb"
                 android:thumbOffset="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/start_date_one" />
+
+            <com.rtugeek.android.colorseekbar.ColorSeekBar
+                android:id="@+id/colorSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:colorSeekBarShowThumb="true"
+                app:layout_constraintTop_toTopOf="@+id/seekbar_workload" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

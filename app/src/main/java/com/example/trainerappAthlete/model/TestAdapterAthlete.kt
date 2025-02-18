@@ -18,7 +18,9 @@ import com.example.trainerapp.viewTestActivity
 class TestAdapterAthlete(
     private var data: ArrayList<GroupListAthlete.GroupTest>?,
     private val context: Context,
-    private val listener: OnItemClickListener.OnItemClickCallback
+    private val listener: OnItemClickListener.OnItemClickCallback,
+    val screen:String
+
 ) : RecyclerView.Adapter<TestAdapterAthlete.MyViewHolder>() {
 
     val athleteNames = ArrayList<String>()
@@ -53,6 +55,7 @@ class TestAdapterAthlete(
             Log.e("Error","ERror:-  ${e.message.toString()}")
         }
 
+
         holder.itemView.setOnClickListener(OnItemClickListener(position, listener, movie.id?.toLong() ?: 0L, "test"))
 
 
@@ -63,15 +66,16 @@ class TestAdapterAthlete(
             athleteResults.add(athleteData.result ?: "")
         }
 
-
-        holder.itemView.setOnClickListener {
-            val intent = Intent(context, viewTestActivity::class.java)
-            intent.putExtra("AthleteTestName",movie.test?.title)
-            intent.putExtra("AthleteTestGoal",movie.test?.goal)
-            intent.putExtra("AthleteTestUnit",movie.test?.unit)
-            intent.putStringArrayListExtra("AthleteTestAthleteNames", athleteNames)
-            intent.putStringArrayListExtra("AthleteTestAthleteResults", athleteResults)
-            context.startActivity(intent)
+        if(screen == "GroupDetailsScreen") {
+            holder.itemView.setOnClickListener {
+                val intent = Intent(context, viewTestActivity::class.java)
+                intent.putExtra("AthleteTestName", movie.test?.title)
+                intent.putExtra("AthleteTestGoal", movie.test?.goal)
+                intent.putExtra("AthleteTestUnit", movie.test?.unit)
+                intent.putStringArrayListExtra("AthleteTestAthleteNames", athleteNames)
+                intent.putStringArrayListExtra("AthleteTestAthleteResults", athleteResults)
+                context.startActivity(intent)
+            }
         }
 
         if (movie2.is_favourite!! == 1) {

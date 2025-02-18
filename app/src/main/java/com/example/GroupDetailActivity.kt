@@ -255,6 +255,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
                 groupDetailBinding.progressBarImage.visibility = View.VISIBLE
 
+                Log.d("SLLSLSLSL", "onCreate: $selectedImageUri")
                 Picasso.get()
                     .load("https://4trainersapp.com" + selectedImageUri)
                     .fit()
@@ -373,6 +374,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                                         planningIdList.add(it)
                                     }
                                 }
+
 
                                 Log.d("FVVFVFV", "Planning IDs: ${planningIdList.joinToString()}")
                                 val transformation: Transformation = RoundedTransformationBuilder()
@@ -509,8 +511,9 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
                                 groupDetailBinding.progressBarImage.visibility = View.VISIBLE
 
+                                Log.d("SKKSKSKSKSK", "onResponse: ${data.group!!.image}")
                                 Picasso.get()
-                                    .load("https://4trainersapp.com/api${data.group!!.image}")
+                                    .load("https://4trainersapp.com/${data.group!!.image}")
                                     .fit()
                                     .transform(transformation)
                                     .error(R.drawable.group_chate_boarder)
@@ -677,7 +680,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         try {
             val data = testData ?: ArrayList<GroupListAthlete.GroupTest>()
             groupDetailBinding.testRly.layoutManager = LinearLayoutManager(this)
-            testAdapterAthlete = TestAdapterAthlete(data, this, this)
+            testAdapterAthlete = TestAdapterAthlete(data, this, this,"GroupDetailsScreen")
             groupDetailBinding.testRly.adapter = testAdapterAthlete
         } catch (e: Exception) {
             Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
@@ -710,7 +713,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
             val data = lessonData ?: ArrayList<GroupListAthlete.GroupLesson>()
 
             groupDetailBinding.lessionRly.layoutManager = LinearLayoutManager(this)
-            lessonAdapterAthlete = LessonAdapterAthlete(data, this, this)
+            lessonAdapterAthlete = LessonAdapterAthlete(data, this, this,"GroupDetailsScreen")
             groupDetailBinding.lessionRly.adapter = lessonAdapterAthlete
         } catch (e: Exception) {
             Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")

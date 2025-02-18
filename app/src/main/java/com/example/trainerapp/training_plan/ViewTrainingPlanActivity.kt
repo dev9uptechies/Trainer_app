@@ -46,7 +46,6 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
     private var globalCompetitiveMesocycles: List<Map<String, Any>> = emptyList()
     private var globalTransitionMesocycles: List<Map<String, Any>> = emptyList()
 
-
     // Pre Season
     var AthleteGroupPreSeason: String ?= null
     var AthleteGroupName: String ?= null
@@ -467,7 +466,8 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
                 val gson = Gson()
                 val jsonMesocycles = gson.toJson(globalMesocycles) // Convert list to JSON
 
-                Log.d("SLLSLSLSL", "SetAthleteData: $jsonMesocycles")
+                Log.d("-----", "SetAthleteData: $globalMesocycles")
+                Log.d("-----", "SetAthleteData: $jsonMesocycles")
 
                 val intent = Intent(this, ViewTrainingPlanListActivity::class.java)
                 intent.putExtra("PreSeasonJson", jsonMesocycles) // Send JSON string
@@ -481,8 +481,12 @@ class ViewTrainingPlanActivity : AppCompatActivity(), OnItemClickListener.OnItem
         if (AthleteGroupPreCompetitive == "Pre Competitive") {
             addAthleteView("Pre Competitive", AthletePreComGroupName, AthletePreComGroupStartDate, AthletePreComGroupEndDate, AthletePreComGroupMesocycle) {
                 Log.d("CLICK_EVENT", "Pre Competitive clicked!")
+
                 val gson = Gson()
                 val jsonMesocycles = gson.toJson(globalPreCompetitiveMesocycles)
+
+                Log.d("+++++++", "SetAthleteData: $globalPreCompetitiveMesocycles")
+                Log.d("+++++++", "SetAthleteData: $jsonMesocycles")
 
                 val intent = Intent(this, ViewTrainingPlanListActivity::class.java)
                 intent.putExtra("PreCompetitiveJson", jsonMesocycles)

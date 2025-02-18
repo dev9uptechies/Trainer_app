@@ -163,11 +163,8 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     }
 
     private fun initRecycler(data: ArrayList<GroupChateListData.groupData>) {
-        chatBinding.groupChatRly.setLayoutManager(
-            LinearLayoutManager(requireContext())
-        )
-        groupadapter =
-            GroupChatAdapter(data, requireContext(), this)
+        chatBinding.groupChatRly.setLayoutManager(LinearLayoutManager(requireContext()))
+        groupadapter = GroupChatAdapter(data, requireContext(), this)
         chatBinding.groupChatRly.adapter = groupadapter
     }
 

@@ -30,15 +30,16 @@ class EventAdapterAthlete(
         holder.goal.setText("Event Type: ")
 
         try {
-            holder.name.text = event!!.event!!.title ?: "" // Use a default if null
-            holder.goaledi.text = event!!.event!!.type ?: "" // Use a default if null
-            holder.intrestedA.text = event.event!!.type ?: "" // Use a default if null
+            holder.name.text = event!!.event!!.title ?: ""
+            holder.goaledi.text = event!!.event!!.type ?: ""
+            holder.intrestedA.text = event.event!!.type ?: ""
+            holder.date.text = event.event?.date?.take(10) ?: ""
         }catch (e:Exception){
             Log.e("Error", "onBindViewHolder: Error:-  ${e.message.toString()} ")
         }
-//            holder.intrestedA.text = it.event?.date ?: "No Date" // Use a default if null
+
         holder.itemView.setOnClickListener {
-            OnItemClickListener(position, listener, it.id?.toLong() ?: 0L, "event")
+            OnItemClickListener(position, listener, it.id.toLong() ?: 0L, "event")
         }
 
 

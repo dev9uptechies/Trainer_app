@@ -82,7 +82,6 @@ class SignInActivity : AppCompatActivity() {
                 }
             }
         })
-
         signInBinding.edtPassword.addTextChangedListener(object : TextWatcher {
 
             override fun afterTextChanged(s: Editable) {
@@ -266,11 +265,9 @@ class SignInActivity : AppCompatActivity() {
                     Log.w("FCM", "Fetching FCM registration token failed", task.exception)
                     return@addOnCompleteListener
                 }
-                // Get the FCM token
                 val token = task.result
                 Log.d("FCM", "FCM Token: $token")
                 FCMToken = token
-                // You can save this token to your server if needed
             }
     }
 

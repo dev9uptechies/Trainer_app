@@ -325,62 +325,62 @@ class CompetitionActivity : AppCompatActivity() {
             }
         }
 
-        competitionBinding.edtCategory.setOnClickListener {
-            val list = categoryData.map { it.name }
-            val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val popupView = inflater.inflate(R.layout.popup_list, null)
-            val weightInPixels = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
-                330f, // The value in dp
-                resources.displayMetrics // The display metrics
-            ).toInt()
-
-            val popupWindow = PopupWindow(
-                popupView,
-//            ViewGroup.LayoutParams.WRAP_CONTENT,
-                weightInPixels,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                true // Focusable to allow outside clicks to dismiss
-            )
-            popupWindow.setBackgroundDrawable(
-                ContextCompat.getDrawable(
-                    this@CompetitionActivity,
-                    R.drawable.popup_background
-                )
-            )
-            popupWindow.elevation = 10f
-            val listView = popupView.findViewById<ListView>(R.id.listView)
-
-            val adapter =
-                object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
-                    override fun getView(
-                        position: Int,
-                        convertView: View?,
-                        parent: ViewGroup
-                    ): View {
-                        val view = super.getView(position, convertView, parent) as TextView
-                        val typeface = ResourcesCompat.getFont(this@CompetitionActivity, R.font.poppins_medium)
-                        view.typeface = typeface
-                        view.setTextColor(Color.WHITE) // Set text color to white
-                        return view
-                    }
-                }
-            listView.adapter = adapter
-            listView.setOnItemClickListener { _, _, position, _ ->
-                val selectedItem = list[position]
-                competitionBinding.edtCategory.setText(selectedItem)
-                categoryId.id = categoryData.filter { it.name == selectedItem }.first().id!!
-                println("Selected item: $selectedItem")
-                popupWindow.dismiss()
-            }
-            popupWindow.showAsDropDown(it)
-            popupWindow.setBackgroundDrawable(
-                AppCompatResources.getDrawable(
-                    this,
-                    android.R.color.white
-                )
-            )
-        }
+//        competitionBinding.edtCategory.setOnClickListener {
+//            val list = categoryData.map { it.name }
+//            val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+//            val popupView = inflater.inflate(R.layout.popup_list, null)
+//            val weightInPixels = TypedValue.applyDimension(
+//                TypedValue.COMPLEX_UNIT_DIP, // The unit type (dp)
+//                330f, // The value in dp
+//                resources.displayMetrics // The display metrics
+//            ).toInt()
+//
+//            val popupWindow = PopupWindow(
+//                popupView,
+////            ViewGroup.LayoutParams.WRAP_CONTENT,
+//                weightInPixels,
+//                ViewGroup.LayoutParams.WRAP_CONTENT,
+//                true // Focusable to allow outside clicks to dismiss
+//            )
+//            popupWindow.setBackgroundDrawable(
+//                ContextCompat.getDrawable(
+//                    this@CompetitionActivity,
+//                    R.drawable.popup_background
+//                )
+//            )
+//            popupWindow.elevation = 10f
+//            val listView = popupView.findViewById<ListView>(R.id.listView)
+//
+//            val adapter =
+//                object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
+//                    override fun getView(
+//                        position: Int,
+//                        convertView: View?,
+//                        parent: ViewGroup
+//                    ): View {
+//                        val view = super.getView(position, convertView, parent) as TextView
+//                        val typeface = ResourcesCompat.getFont(this@CompetitionActivity, R.font.poppins_medium)
+//                        view.typeface = typeface
+//                        view.setTextColor(Color.WHITE) // Set text color to white
+//                        return view
+//                    }
+//                }
+//            listView.adapter = adapter
+//            listView.setOnItemClickListener { _, _, position, _ ->
+//                val selectedItem = list[position]
+//                competitionBinding.edtCategory.setText(selectedItem)
+//                categoryId.id = categoryData.filter { it.name == selectedItem }.first().id!!
+//                println("Selected item: $selectedItem")
+//                popupWindow.dismiss()
+//            }
+//            popupWindow.showAsDropDown(it)
+//            popupWindow.setBackgroundDrawable(
+//                AppCompatResources.getDrawable(
+//                    this,
+//                    android.R.color.white
+//                )
+//            )
+//        }
 
         competitionBinding.edtArea.setOnClickListener {
             val list = areaData.map { it.title }
@@ -732,7 +732,7 @@ class CompetitionActivity : AppCompatActivity() {
                     competitionBinding.errorSelectArea.visibility = View.GONE
                 }
                 return true
-            }else{
+            } else{
                 val athleteName = competitionBinding.edtAthletes.text.toString()
                 val categoryName = competitionBinding.edtCategory.text.toString()
                 val competitionName = competitionBinding.edtCompetition.text.toString()

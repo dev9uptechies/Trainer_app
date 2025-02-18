@@ -75,11 +75,11 @@
              android:layout_height="wrap_content"
              android:fontFamily="@font/poppins_semi_bold"
              android:text="Unit:"
-             android:visibility="gone"
              android:textColor="@color/dark_text"
              android:textSize="@dimen/_11sdp"
+             android:visibility="gone"
              app:layout_constraintEnd_toEndOf="@+id/image"
-             app:layout_constraintTop_toBottomOf="@+id/date" />
+             app:layout_constraintTop_toBottomOf="@+id/image" />
 
 
          <TextView

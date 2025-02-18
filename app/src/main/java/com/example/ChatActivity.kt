@@ -20,12 +20,21 @@ class ChatActivity : AppCompatActivity() {
         chatBinding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(chatBinding.root)
 
+        initView()
+        buttonClick()
+
+    }
+
+    private fun initView() {
         val groupid = intent.getStringExtra("GroupId")
         chatBinding.userName.text = intent.getStringExtra("UserName")
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
         calapi(groupid)
+    }
 
+    private fun buttonClick() {
+        chatBinding.back.setOnClickListener { finish() }
     }
 
     private fun calapi(groupid: String?) {

@@ -134,17 +134,13 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
         }
     }
 
-
-
     private fun AddShareData(shareValue: Int) {
         try {
-
             val requestBody = mapOf("share" to shareValue)
 
             apiInterface.updateShareStatus(requestBody).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) { saveShareStatus(shareValue) // Save only the switch's status
-
 
                         Log.d("GFGGGFGFGFG", "onResponse: $shareValue")
 
@@ -195,7 +191,6 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
         return sharedPreferences.getInt("ShareStatus", 0) // Default is 0 (unchecked)
     }
 
-    // Set up the switch and restore its state
     private fun setupSwitch() {
         val savedStatus = getShareStatus()
         binding.switchShare.isChecked = (savedStatus == 1)

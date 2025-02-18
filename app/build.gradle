@@ -101,5 +101,6 @@ dependencies {
 
     // push notifications
     implementation ("com.google.firebase:firebase-messaging:23.3.1")
+    implementation ("com.github.rtugeek:colorseekbar:2.0.3")
 
 }

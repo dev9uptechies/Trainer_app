@@ -41,13 +41,16 @@ class GroupChatAdapter (private var splist: ArrayList<GroupChateListData.groupDa
     override fun onBindViewHolder(holder: GroupChatAdapter.MyViewHolder, position: Int) {
         val movie = splist!![position]
         holder.group_name.text = movie.name
+
+        Log.d("56555656", "onBindViewHolder: ${movie.cycles}")
+
         if(movie.cycles.equals(null)){
             holder.tv_cycle.text ="0 Cycle"
         }else{
             holder.tv_cycle.text = movie.cycles+" Cycle"
         }
-        holder.itemView.setOnClickListener(OnItemClickListener(position,listener,movie.id!!.toLong(),
-            movie.name!!))
+        holder.itemView.setOnClickListener(OnItemClickListener(position,listener,movie.id!!.toLong(), movie.name!!))
+
         val transformation: Transformation = RoundedTransformationBuilder()
             .borderColor(Color.WHITE)
             .borderWidthDp(1f)

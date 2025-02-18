@@ -428,16 +428,25 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="underweight in kg"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp" />
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_below"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
                     android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     app:cardBackgroundColor="#1A929492"
-
                     app:cardCornerRadius="@dimen/_9sdp"
                     app:layout_constraintTop_toBottomOf="@+id/card_weight"
                     tools:layout_editor_absoluteX="25dp">
@@ -461,12 +470,23 @@
 
                 </androidx.cardview.widget.CardView>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="fat in percentage"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp" />
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_athlete"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
                     android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     app:cardBackgroundColor="#1A929492"
                     app:cardCornerRadius="@dimen/_9sdp"
@@ -492,12 +512,23 @@
 
                 </androidx.cardview.widget.CardView>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="baseline in cm"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp" />
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_baseline"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
                     android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     app:cardBackgroundColor="#1A929492"
                     app:cardCornerRadius="@dimen/_9sdp"
@@ -521,12 +552,23 @@
 
                 </androidx.cardview.widget.CardView>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="fatmass in kg"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp" />
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_fat_mass"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
                     android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     app:cardBackgroundColor="#1A929492"
                     app:cardCornerRadius="@dimen/_9sdp"
@@ -552,13 +594,12 @@
 
                 </androidx.cardview.widget.CardView>
 
-
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_edt_save"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
                     android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     app:cardBackgroundColor="@color/splash_text_color"
                     app:cardCornerRadius="@dimen/_10sdp"

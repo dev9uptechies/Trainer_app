@@ -282,6 +282,9 @@
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
+
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/select_ly"
                                 android:layout_width="match_parent"
@@ -323,6 +326,14 @@
                                 </androidx.constraintlayout.widget.ConstraintLayout>
                             </androidx.cardview.widget.CardView>
 
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/fav_planning_rly"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_10sdp"
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                app:layout_constraintTop_toBottomOf="@+id/select_ly"/>
+
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/season_ly"
                                 android:layout_width="match_parent"
@@ -333,7 +344,7 @@
                                 android:visibility="gone"
                                 app:cardBackgroundColor="#1A929492"
                                 app:cardCornerRadius="@dimen/_10sdp"
-                                app:layout_constraintTop_toBottomOf="@+id/select_ly">
+                                app:layout_constraintTop_toBottomOf="@+id/fav_planning_rly">
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="match_parent"
@@ -346,10 +357,10 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
                                         android:layout_marginTop="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Pre Season"
                                         android:textColor="#F3F3F3"
-                                        android:textSize="@dimen/_15sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -358,10 +369,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Start:"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toBottomOf="@+id/title_tv" />
 
@@ -370,10 +381,11 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="25 March, 2021"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:visibility="visible"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toEndOf="@+id/tv_start"
                                         app:layout_constraintTop_toTopOf="@+id/tv_start" />
 
@@ -389,10 +401,10 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginStart="@dimen/_10sdp"
-                                            android:fontFamily="@font/poppins_medium"
+                                            android:fontFamily="@font/poppins_semi_bold"
                                             android:text="End:"
                                             android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_12sdp"
+                                            android:textSize="@dimen/_11sdp"
                                             app:layout_constraintStart_toStartOf="parent"
                                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -401,10 +413,10 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginStart="@dimen/_5sdp"
-                                            android:fontFamily="@font/poppins_medium"
+                                            android:fontFamily="@font/poppins_semi_bold"
                                             android:text="27 March, 2021"
                                             android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_12sdp"
+                                            android:textSize="@dimen/_11sdp"
                                             app:layout_constraintStart_toEndOf="@+id/tv_end"
                                             app:layout_constraintTop_toTopOf="@+id/tv_end" />
 
@@ -415,10 +427,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Mesocycle:"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toBottomOf="@+id/tv_start" />
 
@@ -427,10 +439,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="02 Cycle"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toEndOf="@+id/tv_mesocycle"
                                         app:layout_constraintTop_toTopOf="@+id/tv_mesocycle" />
 
@@ -485,10 +497,10 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
                                         android:layout_marginTop="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Pre Season"
                                         android:textColor="#F3F3F3"
-                                        android:textSize="@dimen/_15sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -497,10 +509,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Start:"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toBottomOf="@+id/title_tvPreCompetitive" />
 
@@ -509,10 +521,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="25 March, 2021"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toEndOf="@+id/tv_startPreCompetitive"
                                         app:layout_constraintTop_toTopOf="@+id/tv_startPreCompetitive" />
 
@@ -528,10 +540,10 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginStart="@dimen/_10sdp"
-                                            android:fontFamily="@font/poppins_medium"
+                                            android:fontFamily="@font/poppins_semi_bold"
                                             android:text="End:"
                                             android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_12sdp"
+                                            android:textSize="@dimen/_11sdp"
                                             app:layout_constraintStart_toStartOf="parent"
                                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -540,10 +552,10 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginStart="@dimen/_5sdp"
-                                            android:fontFamily="@font/poppins_medium"
+                                            android:fontFamily="@font/poppins_semi_bold"
                                             android:text="27 March, 2021"
                                             android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_12sdp"
+                                            android:textSize="@dimen/_11sdp"
                                             app:layout_constraintStart_toEndOf="@+id/tv_endPreCompetitive"
                                             app:layout_constraintTop_toTopOf="@+id/tv_endPreCompetitive" />
 
@@ -554,10 +566,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Mesocycle:"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toBottomOf="@+id/tv_startPreCompetitive" />
 
@@ -566,10 +578,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="02 Cycle"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toEndOf="@+id/tv_mesocyclePreCompetitive"
                                         app:layout_constraintTop_toTopOf="@+id/tv_mesocyclePreCompetitive" />
 
@@ -578,11 +590,11 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Mesocycle:"
                                         android:visibility="gone"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_13sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toBottomOf="@+id/tv_mesocyclePreCompetitive" />
 
@@ -594,7 +606,7 @@
                                         android:text="Strength, Speed"
                                         android:textColor="#BBBBBB"
                                         android:visibility="gone"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toEndOf="@+id/tv_abilities_techniquePreCompetitive"
                                         app:layout_constraintTop_toTopOf="@+id/tv_abilities_techniquePreCompetitive" />
 
@@ -624,10 +636,10 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
                                         android:layout_marginTop="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Pre Season"
                                         android:textColor="#F3F3F3"
-                                        android:textSize="@dimen/_15sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -636,10 +648,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Start:"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toBottomOf="@+id/title_tvCompetitive" />
 
@@ -648,10 +660,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="25 March, 2021"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toEndOf="@+id/tv_startCompetitive"
                                         app:layout_constraintTop_toTopOf="@+id/tv_startCompetitive" />
 
@@ -667,10 +679,10 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginStart="@dimen/_10sdp"
-                                            android:fontFamily="@font/poppins_medium"
+                                            android:fontFamily="@font/poppins_semi_bold"
                                             android:text="End:"
                                             android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_12sdp"
+                                            android:textSize="@dimen/_11sdp"
                                             app:layout_constraintStart_toStartOf="parent"
                                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -679,10 +691,10 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginStart="@dimen/_5sdp"
-                                            android:fontFamily="@font/poppins_medium"
+                                            android:fontFamily="@font/poppins_semi_bold"
                                             android:text="27 March, 2021"
                                             android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_12sdp"
+                                            android:textSize="@dimen/_11sdp"
                                             app:layout_constraintStart_toEndOf="@+id/tv_endCompetitive"
                                             app:layout_constraintTop_toTopOf="@+id/tv_endCompetitive" />
 
@@ -693,10 +705,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Mesocycle:"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toBottomOf="@+id/tv_startCompetitive" />
 
@@ -705,10 +717,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="02 Cycle"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toEndOf="@+id/tv_mesocycleCompetitive"
                                         app:layout_constraintTop_toTopOf="@+id/tv_mesocycleCompetitive" />
 
@@ -717,11 +729,11 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
+                                        android:fontFamily="@font/poppins_semi_bold"
                                         android:text="Mesocycle:"
                                         android:visibility="gone"
                                         android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_13sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toBottomOf="@+id/tv_mesocycleCompetitive" />
 
@@ -733,7 +745,7 @@
                                         android:text="Strength, Speed"
                                         android:textColor="#BBBBBB"
                                         android:visibility="gone"
-                                        android:textSize="@dimen/_12sdp"
+                                        android:textSize="@dimen/_11sdp"
                                         app:layout_constraintStart_toEndOf="@+id/tv_abilities_techniqueCompetitive"
                                         app:layout_constraintTop_toTopOf="@+id/tv_abilities_techniqueCompetitive" />
 
@@ -916,7 +928,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
-                                android:visibility="visible">
+                                android:visibility="gone">
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
@@ -1006,7 +1018,7 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_20sdp"
+                                android:layout_marginTop="@dimen/_15sdp"
                                 android:orientation="vertical">
 
 
@@ -2239,7 +2251,7 @@
         android:layout_gravity="start"
         android:background="#141414"
         android:fitsSystemWindows="true"
-        android:visibility="gone"
+        android:visibility="visible"
         app:headerLayout="@layout/header_layout"
         app:itemIconTint="@color/white"
         app:itemTextAppearance="@style/DrawerMenuTextAppearance"

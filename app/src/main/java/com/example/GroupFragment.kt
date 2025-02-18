@@ -54,8 +54,6 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     private var groupList: ArrayList<GroupListData.groupData> = ArrayList()
     private var groupListAthlete: List<GroupListAthlete.Data>? = null
 
-
-
     override fun onResume() {
         checkUser()
         super.onResume()

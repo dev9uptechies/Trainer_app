@@ -18,7 +18,7 @@
             android:layout_marginTop="@dimen/_10sdp">
 
             <ImageView
-                android:id="@+id/sidemenu"
+                android:id="@+id/back"
                 android:layout_width="@dimen/_40sdp"
                 android:padding="@dimen/_5sdp"
                 android:layout_height="@dimen/_40sdp"
@@ -36,10 +36,10 @@
                 android:id="@+id/user_name"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_16sdp"
-                app:layout_constraintBottom_toBottomOf="@+id/sidemenu"
+                app:layout_constraintBottom_toBottomOf="@+id/back"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/sidemenu"/>
+                app:layout_constraintTop_toTopOf="@+id/back"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -47,8 +47,10 @@
             android:id="@+id/chat_rly"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_10sdp"
             tools:listitem="@layout/chat_item"
-            android:layout_margin="@dimen/_10sdp"/>
+            app:spanCount="10"/>
+
     </LinearLayout>
 
 

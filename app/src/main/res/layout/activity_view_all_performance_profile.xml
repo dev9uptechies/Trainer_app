@@ -36,26 +36,19 @@
             app:layout_constraintStart_toEndOf="@+id/back"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/performance_view"
+        <TextView
+            android:id="@+id/title"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_40sdp"
+            android:layout_height="@dimen/_35sdp"
             android:layout_margin="@dimen/_10sdp"
-            android:visibility="visible"
-            app:cardBackgroundColor="#535353"
-            app:cardCornerRadius="@dimen/_10sdp"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title"
-            tools:layout_editor_absoluteX="13dp">
+            android:background="@drawable/border_white"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="Mesocycle 01"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
-            <TextView
-                android:id="@+id/title"
-                style="@style/Text_15_White_Poppins_Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Performance Analysis" />
-
-        </androidx.cardview.widget.CardView>
 
         <com.highsoft.highcharts.core.HIChartView
             android:id="@+id/chartView"
@@ -64,7 +57,7 @@
             android:layout_marginTop="@dimen/_15sdp"
             android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/performance_view" />
+            app:layout_constraintTop_toBottomOf="@+id/title" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

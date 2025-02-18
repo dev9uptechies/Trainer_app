@@ -38,10 +38,12 @@ class SetTestInProfile(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val movie = filterList[position]
         val test = movie.test
+        holder.unit.visibility = View.VISIBLE
 
+        holder.total_time.text = "Intrested Athlete"
         holder.tvFname.text = test?.title ?: ""
         holder.tvgoal.text = test?.goal ?: ""
-        holder.unit.text = test?.unit ?: ""
+        holder.unit.text = "Unit: "+test?.unit ?: ""
         holder.tvAthlete.text = test?.testAthletes?.getOrNull(0)?.athlete?.name ?: ""
 
         if (test?.isFavourite == 1) {
@@ -50,7 +52,6 @@ class SetTestInProfile(
             holder.image.setImageResource(R.drawable.ic_favorite_red)
         }
 
-        // Always clear previous click listeners
         holder.image.setOnClickListener(null)
 
         // Assign a new click listener

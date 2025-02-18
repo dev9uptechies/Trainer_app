@@ -69,7 +69,7 @@ class EditTrainingPlanActivity : AppCompatActivity() {
     private val dateRangeMap = mutableMapOf<Int, Pair<String, String>>()
     private var startDateMilliss: Long = 0
     private var endDateMilliss: Long = 0
-    val indexxx = mutableListOf<String>()
+    var indexxx = mutableListOf<String>()
 
     lateinit var adapter: EditeTrainingPlanAdapter
 
@@ -166,18 +166,20 @@ class EditTrainingPlanActivity : AppCompatActivity() {
                 if (missingIndex != null) {
                     Log.d("DDKKDKDKDK", "Before Add: $indexxx")
 
-                    indexxx.add(missingIndex.toString()) // ✅ Always append to avoid shifting indexes
+                    // Directly add the missing index without modifying existing elements
+                    if (!indexxx.contains(missingIndex.toString())) {
+                        indexxx.add(missingIndex.toString())
+                    }
 
                     Log.d("DDKKDKDKDK", "After Add: $indexxx")
 
                     addTrainingPlanView("", "", "", "", "")
-                    updateTrainingPlanIndices() // ✅ Maintain UI stability
+                    updateTrainingPlanIndices()
                 } else {
                     Log.d("DDKKDKDKDK", "No missing index found. Cannot add more.")
                 }
             }
         }
-
 
 
         editTrainingPlanBinding.cardSave.setOnClickListener { EditeProgramData() }
@@ -749,36 +751,36 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         return start1 <= end2 && start2 <= end1  // Changed `<` to `<=`
     }
 
-    private fun saveTrainingPlansToPreferences(index: Int) {
-        val sharedPreferences = getSharedPreferences("TrainingPlansPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        val trainingPlanList = trainingPlanLayouts.map { layout ->
-            val nameEditText: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
-            val startDateEditText: AppCompatEditText =
-                layout.findViewById(R.id.ent_start_date_liner)
-            val endDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
-
-            val phaseType = nameEditText.hint?.toString() ?: "Unknown Phase"
-            val name = nameEditText.text.toString()
-            val startDate = startDateEditText.text.toString()
-            val endDate = endDateEditText.text.toString()
-
-            mapOf(
-                "1" to "1",
-                "2" to "2",
-                "3" to "3",
-                "4" to "4",
-            )
-        }
-
-        // Convert the list to JSON
-        val json = Gson().toJson(trainingPlanList)
-        editor.putString("savedTrainingPlans", json)
-        editor.apply()
-
-        Log.d("MDKMMKKKKKKKMK", "saveTrainingPlansToPreferences: $json")
-    }
+//    private fun saveTrainingPlansToPreferences(index: Int) {
+//        val sharedPreferences = getSharedPreferences("TrainingPlansPrefs", Context.MODE_PRIVATE)
+//        val editor = sharedPreferences.edit()
+//
+//        val trainingPlanList = trainingPlanLayouts.map { layout ->
+//            val nameEditText: AppCompatEditText = layout.findViewById(R.id.ent_pre_sea_name)
+//            val startDateEditText: AppCompatEditText =
+//                layout.findViewById(R.id.ent_start_date_liner)
+//            val endDateEditText: AppCompatEditText = layout.findViewById(R.id.ent_ent_date_liner)
+//
+//            val phaseType = nameEditText.hint?.toString() ?: "Unknown Phase"
+//            val name = nameEditText.text.toString()
+//            val startDate = startDateEditText.text.toString()
+//            val endDate = endDateEditText.text.toString()
+//
+//            mapOf(
+//                "1" to "1",
+//                "2" to "2",
+//                "3" to "3",
+//                "4" to "4",
+//            )
+//        }
+//
+//        // Convert the list to JSON
+//        val json = Gson().toJson(trainingPlanList)
+//        editor.putString("savedTrainingPlans", json)
+//        editor.apply()
+//
+//        Log.d("MDKMMKKKKKKKMK", "saveTrainingPlansToPreferences: $json")
+//    }
 
     private fun addTrainingPlanView(
         name: String,
@@ -799,26 +801,21 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             if (!indexxx.contains(reusedIndex.toString())) {
                 indexxx.add(reusedIndex.toString())
             }
-
             reusedIndex
         } else {
             trainingPlanLayouts.size
         }
 
-        Log.d("SPSPSPSPP", "addTrainingPlanView: $indexToAdd")
 
+        Log.d("SPSPSPSPP", "addTrainingPlanView00: $indexToAdd")
         val sortedIndices = indexxx.mapNotNull { it.toIntOrNull() }.sorted()
 
-        val indexForView = if (sortedIndices.isNotEmpty()) {
+        val indexForView = sortedIndices.indexOf(indexToAdd)
 
-            (1..sortedIndices.maxOrNull()!!).firstOrNull { !sortedIndices.contains(it) } ?: sortedIndices.size -1
-        } else {
-            indexToAdd
-        }
+        Log.d("2222222222", "addTrainingPlanView: $indexForView  --   $sortedIndices")
 
-        Log.d("AddTrainingPlannnnnnnnn", "Using index: $indexForView")
+        indexxx = sortedIndices.map { it.toString() }.toMutableList()
 
-        Log.d("DBBBHBHBHB", "addTrainingPlanView: $indexToAdd")
 
         val trainingPlanView = layoutInflater.inflate(R.layout.add_training_plan_list, null)
 
@@ -1037,15 +1034,12 @@ class EditTrainingPlanActivity : AppCompatActivity() {
 
             activeLayoutIndex = savedIndex?.toInt()
 
-
             if (editTrainingPlanBinding.edtEndDate.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select a start date first", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             } else {
-                val minDateMillis =
-                    formatDateToMillis(editTrainingPlanBinding.edtStartDate.text.toString())
-                val maxDateMillis =
-                    formatDateToMillis(editTrainingPlanBinding.edtEndDate.text.toString())
+                val minDateMillis = formatDateToMillis(editTrainingPlanBinding.edtStartDate.text.toString())
+                val maxDateMillis = formatDateToMillis(editTrainingPlanBinding.edtEndDate.text.toString())
 
                 showDateRangePickerDialogfor(
                     startDateEditText.context,
@@ -1080,7 +1074,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
         trainingPlanContainer.addView(trainingPlanView, indexForView)
         trainingPlanLayouts.add(indexForView, trainingPlanView)
 
-        updateTrainingPlanIndices()
 //        nameEditText = trainingPlanView.findViewById(R.id.ent_pre_sea_name)
 //        nameEditText.hint = getTrainingPlanDetails(indexToAdd)
 
@@ -1281,10 +1274,11 @@ class EditTrainingPlanActivity : AppCompatActivity() {
 
                 val handledIndexes = HashSet<String>()
 
-                Log.d("REMOVEINDEXXXXXXX", "removeTrainingPlan: $indexxx")
 
                 val childViewsMap = mutableMapOf<String, View>()
                 val originalIndexes = indexxx.toSet().toMutableList() // Convert to Set to remove duplicates
+
+                Log.d("SLSLSLSLSLSLS", "EditeProgramData: $originalIndexes  --- $indexxx")
 
                 for ((pos, i) in originalIndexes.withIndex()) {
                     trainingPlanContainer.getChildAt(pos)?.let { view ->
@@ -1567,7 +1561,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
 
         Log.d("DPPDPSPPSPAA", "updateTrainingPlanIndices: $indexxx")
 
-
         indexxx.forEachIndexed { listIndex, actualIndexStr ->
             val actualIndex = actualIndexStr.toIntOrNull() ?: return@forEachIndexed
 
@@ -1597,43 +1590,50 @@ class EditTrainingPlanActivity : AppCompatActivity() {
 
     private fun removeTrainingPlan(trainingPlanLayout: View) {
         val index = trainingPlanLayouts.indexOf(trainingPlanLayout)
+        Log.d("SLSLSLSLSL", "removeTrainingPlan: $index")
+
         if (index != -1) {
+            Log.d("REMOVEINDEXXXXXXX", "Before removal: $indexxx -- Index in layout: $index")
+
+            // Remove the layout from container and list
             trainingPlanContainer.removeView(trainingPlanLayout)
             trainingPlanLayouts.removeAt(index)
             trainingPlanCount--
             dateRangeMap.remove(index)
-            indexxx.removeAt(index)
-            saveTrainingPlansToPreferences(index)
 
-            Log.d("REMOVEINDEXXXXXXX", "removeTrainingPlan: $indexxx")
-            if (activeLayoutIndex == index) {
-                activeLayoutIndex = null
-            } else if (activeLayoutIndex != null && activeLayoutIndex!! > index) {
-                activeLayoutIndex = activeLayoutIndex?.minus(1)
+            // Add the removed index to missingIndices for future reuse
+            if (!missingIndices.contains(index)) {
+                missingIndices.add(index)
+                missingIndices.sort()  // Keep it sorted for reuse
             }
 
-            // Move the removed index to missingIndices
-            missingIndices.add(index)
+            // Remove the specific index from indexxx without altering others
+            indexxx.remove(index.toString())
 
-            // Log the removal
-            Log.d("RemoveTrainingPlan", "Index $index added to missing indices.")
+            Log.d("REMOVEINDEXXXXXXXe", "Updated indexxx after removal: $indexxx")
+            Log.d("RemoveTrainingPlan", "Missing Indices: $missingIndices")
 
-            // Adjust the indices for the remaining plans
-            adjustIndicesAfterRemoval(index)
+        } else {
+            Log.d("REMOVEINDEXXXXXXX", "Error: trainingPlanLayout not found in trainingPlanLayouts.")
         }
     }
 
-    private fun adjustIndicesAfterRemoval(removedIndex: Int) {
-        // Adjust the indices in trainingPlanLayouts to maintain the correct order
-        for (i in removedIndex until trainingPlanLayouts.size) {
-            // Shift the index of each subsequent item
-            dateRangeMap[i]?.let {
-                dateRangeMap[i] = Pair(it.first, it.second)
-            }
-        }
+    private fun adjustIndicesAfterRemoval() {
+        val updatedList = mutableListOf<String>()
 
-        // You can also update saved data if necessary, here we'll just handle UI state
-        Log.d("AdjustIndices", "Reindexed plans after removal. Current layouts: $trainingPlanLayouts")
+        trainingPlanLayouts.forEachIndexed { newIndex, _ ->
+            updatedList.add(newIndex.toString())
+        }
+        Log.d("AdjustIndices", "AFTER:- Reindexed plans after removal: $indexxx")
+        indexxx = updatedList
+        Log.d("AdjustIndices", "Reindexed plans after removal: $indexxx")
+    }
+
+    private fun updateIndexxxAfterRemoval(index: Int) {
+        // Remove the index from indexxx
+        indexxx.remove(index.toString())
+        indexxx = indexxx.sorted().toMutableList()
+        Log.d("REMOVEINDEXXXXXXXe", "Updated indexxx after removal: $indexxx")
     }
 
 
@@ -1873,7 +1873,6 @@ class EditTrainingPlanActivity : AppCompatActivity() {
             editText.setText(formattedDateDisplay)
         }
     }
-
 
     override fun onResume() {
         checkUser()

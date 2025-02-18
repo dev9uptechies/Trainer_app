@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.OnItemClickListener
 import com.example.model.training_plan.MicroCycle.GetMicrocycle
 import com.example.trainerapp.R
+import com.rtugeek.android.colorseekbar.ColorSeekBar
+import com.rtugeek.android.colorseekbar.thumb.DefaultThumbDrawer
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -42,16 +44,31 @@ class ViewMicrocycleListAdapter(
         holder.progress.progress = item.workload ?: 0
 
 
+        holder.colorSeekBar.maxProgress = 1000
+        holder.colorSeekBar.progress = 50
+        holder.colorSeekBar.borderColor = Color.BLACK
+        holder.colorSeekBar.borderRadius = 10
+        holder.colorSeekBar.borderSize = 10
+        holder. colorSeekBar.thumbDrawer = DefaultThumbDrawer(25,Color.WHITE,Color.BLUE)
+        holder. colorSeekBar.isVertical = false
+        holder. colorSeekBar.barHeight = 10
+        holder. colorSeekBar.color = Color.BLACK
+        holder. colorSeekBar.isEnabled =false
+
+
         val gradientDrawable = GradientDrawable(
             GradientDrawable.Orientation.LEFT_RIGHT,
             intArrayOf(
-                Color.parseColor("#F3F3F3"),
-                Color.parseColor("#10E218"), // Orange
-                Color.parseColor("#E2C110"), // Red
-                Color.parseColor("#F17A0B"), // Purple
-                Color.parseColor("#FF0000")  // Blue
+                Color.parseColor("#FFFFFF"), // White
+                Color.parseColor("#00FF00"), // Green
+                Color.parseColor("#FFFF00"), // Yellow
+                Color.parseColor("#FFA500"), // Orange
+                Color.parseColor("#FF4500"), // Red-Orange
+                Color.parseColor("#FF0000")  // Red
             )
         )
+        gradientDrawable.cornerRadius = 8f
+        holder.progress.progressDrawable = gradientDrawable
 
         gradientDrawable.gradientType = GradientDrawable.LINEAR_GRADIENT
         gradientDrawable.cornerRadius = 8f
@@ -71,6 +88,7 @@ class ViewMicrocycleListAdapter(
         var start_date: TextView = view.findViewById(R.id.start_date_one)
         var end_date: TextView = view.findViewById(R.id.end_date_one)
         var progress: SeekBar = view.findViewById(R.id.seekbar_workload)
+        var colorSeekBar: ColorSeekBar = view.findViewById(R.id.colorSeekBar)
         var card: CardView = view.findViewById(R.id.card_one)
 
     }

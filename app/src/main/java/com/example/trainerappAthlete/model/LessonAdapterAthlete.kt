@@ -16,7 +16,8 @@ import com.example.trainerapp.R
 class LessonAdapterAthlete(
     private var data: ArrayList<GroupListAthlete.GroupLesson>?,
     private val context: Context,
-    private val listener: OnItemClickListener.OnItemClickCallback
+    private val listener: OnItemClickListener.OnItemClickCallback,
+    val screen:String
 ) : RecyclerView.Adapter<LessonAdapterAthlete.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -35,19 +36,21 @@ class LessonAdapterAthlete(
         holder.date.text = lesson.lession?.date ?: ""
         holder.goal.text = lesson.lession?.lesson_programs?.getOrNull(0)?.program?.goal?.name ?: ""
 
-        holder.itemView.setOnClickListener {
-            val lessonId = lesson.lession?.id?.toInt() ?: 0
-            val lessonName = lesson.lession?.name ?: ""
-            val totalTime = lesson.lession?.time ?: ""
-            val sectionTime = lesson.lession?.section_time ?: ""
+        if(screen == "GroupDetailsScreen") {
+            holder.itemView.setOnClickListener {
+                val lessonId = lesson.lession?.id?.toInt() ?: 0
+                val lessonName = lesson.lession?.name ?: ""
+                val totalTime = lesson.lession?.time ?: ""
+                val sectionTime = lesson.lession?.section_time ?: ""
 
-            Log.d("AdapterId", "onBindViewHolder: "+ lessonId)
-            val intent = Intent(context, ViewLessonActivity::class.java).apply {
-                putExtra("lessonId", lessonId)
-                putExtra("position",position)
-                putExtra("GroupAttends","GroupAttends")
+                Log.d("AdapterId", "onBindViewHolder: " + lessonId)
+                val intent = Intent(context, ViewLessonActivity::class.java).apply {
+                    putExtra("lessonId", lessonId)
+                    putExtra("position", position)
+                    putExtra("GroupAttends", "GroupAttends")
+                }
+                context.startActivity(intent)
             }
-            context.startActivity(intent)
         }
 
         if (lesson2 != null) {

@@ -149,7 +149,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                     ).apply {
                         putExtra("athleteId", "${athleteId.id}")
                         putExtra("athleteIdd", "${aid}")
-                        putExtra("catName", "All Area Performance")
+                        putExtra("catName", "Average Area Performance")
                     })
             }
         } catch (e: Exception) {
