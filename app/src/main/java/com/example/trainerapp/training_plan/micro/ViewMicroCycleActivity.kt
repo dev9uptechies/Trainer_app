@@ -1,6 +1,8 @@
 package com.example.trainerapp.training_plan.micro
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -200,7 +202,26 @@ class ViewMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_one)
             val seekbar_workload = athleteView.findViewById<SeekBar>(R.id.seekbar_workload)
 
+            val gradientDrawable = GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                intArrayOf(
+                    Color.parseColor("#FFFFFF"), // White
+                    Color.parseColor("#00FF00"), // Green
+                    Color.parseColor("#FFFF00"), // Yellow
+                    Color.parseColor("#FFA500"), // Orange
+                    Color.parseColor("#FF4500"), // Red-Orange
+                    Color.parseColor("#FF0000")  // Red
+                )
+            )
+            gradientDrawable.cornerRadius = 8f
+            seekbar_workload.progressDrawable = gradientDrawable
+
+            gradientDrawable.gradientType = GradientDrawable.LINEAR_GRADIENT
+            gradientDrawable.cornerRadius = 8f
+
+            seekbar_workload.progressDrawable = gradientDrawable
             seekbar_workload.isEnabled = false
+
             seekbar_workload.isClickable = false
             seekbar_workload.isActivated = false
 

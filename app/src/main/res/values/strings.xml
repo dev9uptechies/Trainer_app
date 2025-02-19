@@ -74,4 +74,17 @@
 
     <string name="open">Open</string>
     <string name="close">Close</string>
+
+    <array name="custom_colors">
+
+        <item>#FFFFFF</item>
+        <item>#00FF00</item>
+        <item>#FFFF00</item>
+        <item>#FFA500</item>
+        <item>#FF4500</item>
+        <item>#FF0000</item>
+
+    </array>
+
+
 </resources>

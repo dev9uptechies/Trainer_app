@@ -1,6 +1,9 @@
 package com.example.trainerapp
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ChatActivity
 import com.example.GroupChateListData
@@ -22,12 +26,24 @@ import retrofit2.Response
 class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     lateinit var chatBinding: FragmentChatBinding
 
+    private val chatUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context:     Context?, intent: Intent?) {
+            Log.d("CHATFRAGMENTREFRESH", "Notification received - Refreshing chat")
+            val userType = preferenceManager.GetFlage()
+
+            if (userType == "Athlete") {
+                callGroupChatApiAthlete()
+            } else {
+                callGroupChatApi()
+            }
+        }
+    }
+
     //lateinit var recycler_view: RecyclerView
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
     lateinit var preferenceManager: PreferencesManager
 
-    //lateinit var group_progress: ProgressBar
     lateinit var groupadapter: GroupChatAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +66,17 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             callGroupChatApi()
         }
 
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+            chatUpdateReceiver,
+            IntentFilter("com.example.trainerapp.REFRESH_CHAT")
+        )
+
         return chatBinding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(chatUpdateReceiver)
     }
 
     private fun callGroupChatApi() {
@@ -76,12 +102,7 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                 } else if (response.code() == 403) {
                     chatBinding.groupChatProgress.visibility = View.GONE
                     val message = response.message()
-                    Toast.makeText(
-                        requireContext(),
-                        "Too Many Request",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT).show()
                     call.cancel()
                     preferenceManager.setUserLogIn(false)
                     startActivity(
@@ -121,6 +142,7 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                     val Success: Boolean = resource?.status!!
                     val Message: String = resource.message!!
                     if (Success) {
+                        Log.d("SPSPSPPSPS", "onResponse: Refresh")
                         chatBinding.groupChatProgress.visibility = View.GONE
                         initRecycler(resource.data!!)
                     } else {
@@ -154,8 +176,7 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             }
 
             override fun onFailure(call: Call<GroupChateListData?>, t: Throwable) {
-                Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT).show()
                 call.cancel()
                 chatBinding.groupChatProgress.visibility = View.GONE
             }
@@ -169,11 +190,9 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     }
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
-        startActivity(
-            Intent(requireContext(), ChatActivity::class.java).putExtra(
-                "GroupId",
-                type.toString()
-            ).putExtra("UserName", string)
+        startActivity(Intent(requireContext(), ChatActivity::class.java)
+            .putExtra("GroupId", type.toString())
+            .putExtra("UserName", string)
         )
     }
 

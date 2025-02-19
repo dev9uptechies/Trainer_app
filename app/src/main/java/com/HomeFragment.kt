@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -190,14 +191,39 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
         val userType = preferenceManager.GetFlage()
 
+
+        if (userType == "Athlete") {
+            val menu = homeFragmentBinding.navigationView.menu
+            menu.clear()
+
+            menu.add(Menu.NONE, R.id.tv_notification, Menu.NONE, "Notification").setIcon(R.drawable.ic_notification)
+
+            menu.add(Menu.NONE, R.id.tv_policy, Menu.NONE, "Privacy Policy").setIcon(R.drawable.ic_privacy)
+
+            menu.add(Menu.NONE, R.id.tv_favorite, Menu.NONE, "Favorites").setIcon(R.drawable.ic_favorite)
+
+            menu.add(Menu.NONE, R.id.tv_profile, Menu.NONE, "Performance Profile").setIcon(R.drawable.ic_perfomance)
+
+            menu.add(Menu.NONE, R.id.tv_analysis, Menu.NONE, "Competition Analysis").setIcon(R.drawable.ic_competition)
+
+            menu.add(Menu.NONE, R.id.tv_view_analysis, Menu.NONE, "View Analysis").setIcon(R.drawable.ic_competition)
+
+            menu.add(Menu.NONE, R.id.tv_personal_diary, Menu.NONE, "Personal Diary").setIcon(R.drawable.ic_diaryy)
+
+            menu.add(Menu.NONE, R.id.tv_setting, Menu.NONE, "Settings").setIcon(R.drawable.ic_setting)
+
+            menu.add(Menu.NONE, R.id.logout, Menu.NONE, "Logout").setIcon(R.drawable.logout)
+        } else {
+            homeFragmentBinding.navigationView.inflateMenu(R.menu.activity_main_drawer)
+        }
+
+
         if (userType == "Athlete") {
 
             homeFragmentBinding.startTv.text = "START YOUR"
             homeFragmentBinding.mainTv.text = "NEXT WORKOUT"
             homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
-            homeFragmentBinding.navigationView.menu.findItem(R.id.tv_library).isVisible = false
-            homeFragmentBinding.navigationView.menu.findItem(R.id.tv_athletes).isVisible = false
-            homeFragmentBinding.navigationView.menu.findItem(R.id.tv_remind).isVisible = false
+
 
             Log.d("SSLLSLSLSL", "onCreateView: $receivedGroup_Ids")
 

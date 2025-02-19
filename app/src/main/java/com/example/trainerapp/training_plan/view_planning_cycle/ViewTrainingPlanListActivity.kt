@@ -9,6 +9,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Adapter.training_plan.view.ViewTraingPalnListAdapter
 import com.example.OnItemClickListener
@@ -294,11 +296,15 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
         ) {
             val athleteView = LayoutInflater.from(this).inflate(R.layout.viewtrainingplanlist, parentLayout, false)
 
-            val AthletePlanName = athleteView.findViewById<TextView>(R.id.training_name_one)
-            val AthletePlanStartDate = athleteView.findViewById<TextView>(R.id.start_date_one)
-            val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_one)
-            val AthletePlanMesocycle = athleteView.findViewById<TextView>(R.id.mesocycle_one)
+            val time_card_one = athleteView.findViewById<CardView>(R.id.card_one)
+            val time_card_two = athleteView.findViewById<CardView>(R.id.card_two)
+            val AthletePlanName = athleteView.findViewById<TextView>(R.id.training_name_two)
+            val AthletePlanStartDate = athleteView.findViewById<TextView>(R.id.start_date_two)
+            val AthletePlanEndDate = athleteView.findViewById<TextView>(R.id.end_date_two)
+            val AthletePlanMesocycle = athleteView.findViewById<TextView>(R.id.mesocycle_two)
 
+            time_card_one.visibility = View.GONE
+            time_card_two.visibility = View.VISIBLE
             val start = formatDate(startDate)
             val end = formatDate(endDate)
             AthletePlanName.text = name ?: phase
@@ -312,6 +318,7 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
             ).apply {
                 setMargins(0, 10, 0, 10)
             }
+
             athleteView.layoutParams = layoutParams
 
             athleteView.setOnClickListener { onClick() }
@@ -338,7 +345,7 @@ class ViewTrainingPlanListActivity : AppCompatActivity(), OnItemClickListener.On
                         val intent = Intent(this, ViewMicroCycleActivity::class.java)
                         intent.putExtra("PreSeasonJson", jsonMicrocycle)
                         intent.putExtra("PreSeason", "PreSeason")
-                        intent.putExtra("MesocycleName", name) // **Sending Mesocycle Name**
+                        intent.putExtra("MesocycleName", name)
                         startActivity(intent)
                     }
                 }

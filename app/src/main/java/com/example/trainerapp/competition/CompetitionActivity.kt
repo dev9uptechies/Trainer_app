@@ -514,7 +514,6 @@ class CompetitionActivity : AppCompatActivity() {
                     putExtra("compDate", competitionBinding.edtDate.text.toString())
                     startActivity(this)
                 }
-                resetData()
             }
         }
     }

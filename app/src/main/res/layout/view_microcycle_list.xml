@@ -52,7 +52,7 @@
                 android:gravity="center"
                 android:text="start date"
                 android:textColor="#BBBBBB"
-                android:textSize="@dimen/_12sdp"
+                android:textSize="@dimen/_11sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/training_name_one" />
 
@@ -64,7 +64,7 @@
                 android:gravity="center"
                 android:text="@string/end_date"
                 android:textColor="#BBBBBB"
-                android:textSize="@dimen/_12sdp"
+                android:textSize="@dimen/_11sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/start_date_one"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.865"
@@ -77,27 +77,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_6sdp"
-                android:clickable="false"
-                android:focusable="false"
+                android:clickable="true"
+                android:focusable="true"
                 android:maxHeight="@dimen/_5sdp"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:progress="100"
                 android:progressDrawable="@drawable/custom_progress"
-                android:saveEnabled="false"
-                android:splitTrack="false"
-
+                android:saveEnabled="true"
+                android:splitTrack="true"
                 android:thumb="@drawable/custom_thumb"
                 android:thumbOffset="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/start_date_one" />
-
-            <com.rtugeek.android.colorseekbar.ColorSeekBar
-                android:id="@+id/colorSeekBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:colorSeekBarShowThumb="true"
-                app:layout_constraintTop_toTopOf="@+id/seekbar_workload" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

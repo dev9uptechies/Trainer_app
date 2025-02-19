@@ -64,8 +64,7 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                         Toast.makeText(
                             this@FavoriteActivity,
                             "" + response.message(),
-                            Toast.LENGTH_SHORT
-                        )
+                            Toast.LENGTH_SHORT)
                             .show()
                         call.cancel()
                     }
@@ -462,29 +461,25 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
 
     private fun initLessonRecyclerView(data: ArrayList<LessonData.lessionData>?) {
         favoriteBinding.favLessonRly.layoutManager = LinearLayoutManager(this)
-        lessonadapter =
-            FavoritelessonAdapter(data, this, this)
+        lessonadapter = FavoritelessonAdapter(data, this, this)
         favoriteBinding.favLessonRly.adapter = lessonadapter
     }
 
     private fun initEventRecyclerView(data: ArrayList<LessonData.lessionData>?) {
         favoriteBinding.favEventRly.layoutManager = LinearLayoutManager(this)
-        eventadapter =
-            FavoriteeventAdapter(data, this, this)
+        eventadapter = FavoriteeventAdapter(data, this, this)
         favoriteBinding.favEventRly.adapter = eventadapter
     }
 
     private fun initTestRecyclerView(data: ArrayList<LessonData.lessionData>?) {
         favoriteBinding.favTestRly.layoutManager = LinearLayoutManager(this)
-        testadapter =
-            FavoritetestAdapter(data, this, this)
+        testadapter = FavoritetestAdapter(data, this, this)
         favoriteBinding.favTestRly.adapter = testadapter
     }
 
     private fun initExerciseRecyclerView(data: ArrayList<LessonData.lessionData>?) {
         favoriteBinding.favExerciseRly.layoutManager = LinearLayoutManager(this)
-        exerciseadapter =
-            FavoriteexerciseAdapter(data, this, this)
+        exerciseadapter = FavoriteexerciseAdapter(data, this, this)
         favoriteBinding.favExerciseRly.adapter = exerciseadapter
     }
 

@@ -40,10 +40,12 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            app:layout_constraintBottom_toTopOf="@+id/save"
             app:layout_constraintTop_toBottomOf="@+id/tv_title">
 
             <LinearLayout
@@ -108,17 +110,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginBottom="@dimen/_100sdp"
+                    android:layout_marginBottom="@dimen/_30sdp"
                     tools:listitem="@layout/analysis_star_item" />
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/performance_view"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_40sdp"
-                    android:layout_margin="@dimen/_10sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    android:layout_margin="@dimen/_7sdp"
                     android:visibility="visible"
-                    app:cardBackgroundColor="#535353"
-                    app:cardCornerRadius="@dimen/_10sdp"
+                    app:cardBackgroundColor="#4D929492"
+                    app:cardCornerRadius="@dimen/_5sdp"
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <TextView
@@ -128,7 +130,7 @@
                         android:fontFamily="@font/poppins_medium"
                         android:text="Performance Analysis"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_18sdp" />
+                        android:textSize="@dimen/_13sdp" />
 
                 </androidx.cardview.widget.CardView>
 
@@ -159,6 +161,28 @@
             </LinearLayout>
 
         </ScrollView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/save"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_margin="@dimen/_10sdp"
+            app:cardBackgroundColor="@color/splash_text_color"
+            app:cardCornerRadius="@dimen/_10sdp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:text="Save"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_18sdp" />
+
+        </androidx.cardview.widget.CardView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
@@ -171,24 +195,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/save"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_40sdp"
-        android:layout_margin="@dimen/_10sdp"
-        app:cardBackgroundColor="@color/splash_text_color"
-        app:cardCornerRadius="@dimen/_10sdp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/poppins_semi_bold"
-            android:text="Save"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_18sdp" />
-
-    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

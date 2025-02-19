@@ -1496,7 +1496,6 @@ class AddMicroCycleActivity : AppCompatActivity() {
 
             seekBar.progressDrawable = gradientDrawable
 
-
             applyButton.setOnClickListener {
                 val progress = seekBar.progress
                 val (colorCode, _) = getWorkloadColorAndString(progress)

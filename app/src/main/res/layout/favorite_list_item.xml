@@ -113,7 +113,7 @@
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:fontFamily="@font/poppins_semi_bold"
-             android:text="Total Time:"
+             android:text="Time:"
              android:textColor="@color/dark_text"
              android:textSize="@dimen/_11sdp"
              app:layout_constraintStart_toStartOf="@+id/tvinAt"
@@ -131,6 +131,8 @@
              android:textSize="@dimen/_11sdp"
              app:layout_constraintTop_toTopOf="@+id/total_time"
              app:layout_constraintBottom_toBottomOf="@+id/total_time"/>
+
+
 
      </androidx.constraintlayout.widget.ConstraintLayout>
 

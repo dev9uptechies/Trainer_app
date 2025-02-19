@@ -10,6 +10,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.trainerapp.MainActivity
 import com.example.trainerapp.R
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -26,6 +27,12 @@ class FirebaseMessageReceiver : FirebaseMessagingService() {
         Log.d(TAG, "New Firebase Token: $token")
     }
 
+    private fun sendChatUpdateBroadcast() {
+        val intent = Intent("com.example.trainerapp.REFRESH_CHAT")
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+    }
+
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d(TAG, "Received Notification: $remoteMessage")
 
@@ -36,6 +43,8 @@ class FirebaseMessageReceiver : FirebaseMessagingService() {
             Log.d(TAG, "Notification Title: $title")
             Log.d(TAG, "Notification Body: $body")
             showNotification(title, body)
+            sendChatUpdateBroadcast()
+
         } else {
             Log.d(TAG, "Message does not contain a notification")
         }

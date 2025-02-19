@@ -168,12 +168,27 @@
                     android:layout_height="wrap_content">
 
                 </TextView>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/fav_event_rly"
+                <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_marginStart="@dimen/_10sdp"/>
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/fav_event_rly"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/_10sdp"
+                            android:layout_marginStart="@dimen/_10sdp"/>
+
+                    </LinearLayout>
+
+
+                </androidx.core.widget.NestedScrollView>
+
+
             </LinearLayout>
 
             <LinearLayout

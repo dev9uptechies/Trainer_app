@@ -43,9 +43,8 @@ class PlanningAdapterAthlete(
         Log.d("SLSLSLLSLSLS", "onBindViewHolder: ${planning.competition_date}")
 
         holder.group_name.text = planning.name
-        holder.tv_start_date.text = planning.start_date
-        holder.tv_edt_time.text = planning.competition_date
-
+        holder.tv_start_date.text = planning.competition_date
+        holder.tv_edt_time.text = planning.start_date
 
         val mesocycles = movie.planning?.pre_competitive?.mesocycles
         val firstMesocycle = mesocycles?.getOrNull(0)

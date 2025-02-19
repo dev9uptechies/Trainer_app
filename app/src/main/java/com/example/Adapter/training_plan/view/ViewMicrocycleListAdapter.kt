@@ -44,17 +44,6 @@ class ViewMicrocycleListAdapter(
         holder.progress.progress = item.workload ?: 0
 
 
-        holder.colorSeekBar.maxProgress = 1000
-        holder.colorSeekBar.progress = 50
-        holder.colorSeekBar.borderColor = Color.BLACK
-        holder.colorSeekBar.borderRadius = 10
-        holder.colorSeekBar.borderSize = 10
-        holder. colorSeekBar.thumbDrawer = DefaultThumbDrawer(25,Color.WHITE,Color.BLUE)
-        holder. colorSeekBar.isVertical = false
-        holder. colorSeekBar.barHeight = 10
-        holder. colorSeekBar.color = Color.BLACK
-        holder. colorSeekBar.isEnabled =false
-
 
         val gradientDrawable = GradientDrawable(
             GradientDrawable.Orientation.LEFT_RIGHT,
@@ -88,7 +77,6 @@ class ViewMicrocycleListAdapter(
         var start_date: TextView = view.findViewById(R.id.start_date_one)
         var end_date: TextView = view.findViewById(R.id.end_date_one)
         var progress: SeekBar = view.findViewById(R.id.seekbar_workload)
-        var colorSeekBar: ColorSeekBar = view.findViewById(R.id.colorSeekBar)
         var card: CardView = view.findViewById(R.id.card_one)
 
     }

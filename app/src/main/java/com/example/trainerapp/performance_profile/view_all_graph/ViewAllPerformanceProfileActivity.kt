@@ -46,7 +46,8 @@
     import retrofit2.Callback
     import retrofit2.Response
     
-    class ViewAllPerformanceProfileActivity : AppCompatActivity() {
+    class
+    ViewAllPerformanceProfileActivity : AppCompatActivity() {
         lateinit var viewAllPerformanceProfileBinding: ActivityViewAllPerformanceProfileBinding
         lateinit var apiInterface: APIInterface
         lateinit var apiClient: APIClient

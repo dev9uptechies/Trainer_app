@@ -39,10 +39,12 @@ class SetTestInProfile(
         val movie = filterList[position]
         val test = movie.test
         holder.unit.visibility = View.VISIBLE
+        holder.date.visibility = View.VISIBLE
 
-        holder.total_time.text = "Intrested Athlete"
+        holder.total_time.text = "Intrested Athlete:"
         holder.tvFname.text = test?.title ?: ""
         holder.tvgoal.text = test?.goal ?: ""
+        holder.date.text = test?.date?.take(10) ?: ""
         holder.unit.text = "Unit: "+test?.unit ?: ""
         holder.tvAthlete.text = test?.testAthletes?.getOrNull(0)?.athlete?.name ?: ""
 
@@ -54,7 +56,6 @@ class SetTestInProfile(
 
         holder.image.setOnClickListener(null)
 
-        // Assign a new click listener
         holder.image.setOnClickListener {
             test?.id?.let { id ->
                 if (test.isFavourite == 1) {
@@ -65,7 +66,6 @@ class SetTestInProfile(
             } ?: Log.e("SetTestInProfile", "Test or ID is null at position: $position")
         }
     }
-
 
     override fun getItemCount(): Int {
         return filterList.size

@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -635,6 +636,34 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
 
         Log.d("CalenderFragmentR", "Received ID from SharedPreferences: $receivedId")
         Log.d("CalenderFragmentR", "Received ID from SharedPreferences: $receivedGropu_Id")
+
+        val userType = preferenceManager.GetFlage()
+        if (userType == "Athlete") {
+            val menu = calenderBinding.navigationView.menu
+            menu.clear() // Remove existing items
+
+            menu.add(Menu.NONE, R.id.tv_notification, Menu.NONE, "Notification").setIcon(R.drawable.ic_notification)
+
+            menu.add(Menu.NONE, R.id.tv_policy, Menu.NONE, "Privacy Policy").setIcon(R.drawable.ic_privacy)
+
+            menu.add(Menu.NONE, R.id.tv_favorite, Menu.NONE, "Favorites").setIcon(R.drawable.ic_favorite)
+
+            menu.add(Menu.NONE, R.id.tv_profile, Menu.NONE, "Performance Profile").setIcon(R.drawable.ic_perfomance)
+
+            menu.add(Menu.NONE, R.id.tv_analysis, Menu.NONE, "Competition Analysis").setIcon(R.drawable.ic_competition)
+
+            menu.add(Menu.NONE, R.id.tv_view_analysis, Menu.NONE, "View Analysis").setIcon(R.drawable.ic_competition)
+
+            menu.add(Menu.NONE, R.id.tv_personal_diary, Menu.NONE, "Personal Diary").setIcon(R.drawable.ic_diaryy)
+
+            menu.add(Menu.NONE, R.id.tv_setting, Menu.NONE, "Settings").setIcon(R.drawable.ic_setting)
+
+            menu.add(Menu.NONE, R.id.logout, Menu.NONE, "Logout").setIcon(R.drawable.logout)
+        } else {
+            // Default menu setup for other users
+            calenderBinding.navigationView.inflateMenu(R.menu.activity_main_drawer) // Load menu from XML
+        }
+
     }
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
