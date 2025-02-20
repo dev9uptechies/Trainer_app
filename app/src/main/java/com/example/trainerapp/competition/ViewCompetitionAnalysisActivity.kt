@@ -13,6 +13,9 @@ import com.example.model.competition.create.AddCompetitionBodyAthlete
 import com.example.model.competition.create.RatingData
 import com.example.model.competition.create.RatingDataAthlete
 import com.example.model.newClass.competition.Competition
+import com.example.model.newClass.competition.GetCompetition
+import com.example.model.newClass.competition.GetCompetitionAll
+import com.example.model.newClass.competition.GetCompetitionRequest
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.EventListData
@@ -22,6 +25,7 @@ import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityViewCompetitionAnalysisBinding
+import com.google.gson.Gson
 import com.highsoft.highcharts.common.HIColor
 import com.highsoft.highcharts.common.hichartsclasses.HICSSObject
 import com.highsoft.highcharts.common.hichartsclasses.HIChart
@@ -62,6 +66,9 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
     var compDate = ""
     var compName = ""
 
+
+    lateinit var competitionData: MutableList<Competition.CompetitionData>
+    lateinit var competition: MutableList<Competition.CompetitionData>
     lateinit var eventList: ArrayList<EventListData.testData>
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
@@ -72,6 +79,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
     var athlete = true
     lateinit var compAdapter: ViewCompetitionAdapter
     lateinit var analysisData: MutableList<RatingItem>
+
 
     var warmupDesc = "Give a score to the following entries pre-competition and during warm-up"
     var mentalDesc = "Give a score to the following entries."
@@ -162,6 +170,10 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         setContentView(viewCompetitionAnalysisBinding.root)
         initViews()
         checkButtonClick()
+        getCompetitionDataAthlete()
+
+
+
     }
 
     private fun checkButtonClick() {
@@ -224,6 +236,115 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
 
         viewCompetitionAnalysisBinding.back.setOnClickListener { finish() }
     }
+
+    private fun getCompetitionDataAthlete() {
+        try {
+            viewCompetitionAnalysisBinding.progressBar.visibility = View.VISIBLE
+
+            val request = GetCompetitionRequest(
+                eventId = eventId.id!!.toInt(),
+                category = catName,
+                date = compDate,
+                areaId = areaId.id!!.toInt()
+            )
+
+            apiInterface.GetCompetitionAnalysisDataAthleteAll(request)
+                .enqueue(object : Callback<GetCompetitionAll> {
+                    override fun onResponse(call: Call<GetCompetitionAll>, response: Response<GetCompetitionAll>) {
+                        viewCompetitionAnalysisBinding.progressBar.visibility = View.GONE
+
+                        if (response.isSuccessful) {
+                            val responseBody = response.body()
+                            val gson = Gson()
+                            val jsonResponse = gson.toJson(responseBody)
+                            Log.d("API Response JSON", jsonResponse)
+
+                            if (responseBody?.status == true) {
+                                val compData = responseBody.data
+
+                                if (compData != null) {
+                                    Log.d("Event ID:", "Item Event ID: ${compData.event_id}")
+                                    Log.d("Category:", "Item Category: ${compData.category}")
+                                    Log.d("Date:", "Item Date: ${compData.date}")
+                                    Log.d("Area ID:", "Item Area ID: ${compData.competition_analysis_area?.id}")
+                                    Log.d("Athlete Name:", "Athlete: ${compData.athlete?.name}")
+
+                                    // Directly set the data without filtering or checking for duplicates
+                                    competitionData.clear()
+                                    competitionData.add(compData)
+
+                                    Log.d("Final Competition Data", "$competitionData")
+
+                                    setRatingData(competitionData)
+                                    competitionData.get(0).competition_progress?.let {
+                                        setChartOnlineData(
+                                            it
+                                        )
+                                    }
+                                } else {
+                                    Log.e("API Error", "Data is null in response: $jsonResponse")
+                                }
+                            } else {
+                                Log.e("API Error", "Status is false, response: $jsonResponse")
+                            }
+                        } else {
+                            Log.e("API Failure", "Response code: ${response.code()}, message: ${response.message()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<GetCompetitionAll>, t: Throwable) {
+                        viewCompetitionAnalysisBinding.progressBar.visibility = View.GONE
+                        Log.d("API Failure", "Error: ${t.message}")
+                    }
+                })
+        } catch (e: Exception) {
+            Log.d("Error :-", "${e.message}")
+        }
+    }
+
+    private fun setRatingData(competition: MutableList<Competition.CompetitionData>) {
+        analysisData.clear()
+        for (i in competition) {
+            for (j in i.competition_progress!!) {
+
+                Log.d("@@@@@22222", "setRatingData: ${j.id}")
+                val coachRating = j.coach_star?.toIntOrNull() ?: 0
+                val athleteRating = j.athlete_star?.toIntOrNull() ?: 0
+                analysisData.add(
+                    RatingItem(
+                        name = j.title,
+                        coachRating = coachRating,
+                        athleteRating = athleteRating,
+                        isByCoach = false,
+                        isByAthlete = false
+                    )
+                )
+
+            }
+        }
+
+        val userType = preferenceManager.GetFlage()
+
+        if (userType == "Athlete") {
+            viewCompetitionAnalysisBinding.performanceRly.visibility = View.VISIBLE
+            compAdapter = ViewCompetitionAdapter(analysisData, this, false, true)
+            viewCompetitionAnalysisBinding.performanceRly.adapter = compAdapter
+        } else {
+            if ("false" == "false"){
+                viewCompetitionAnalysisBinding.performanceRly.visibility = View.VISIBLE
+                compAdapter = ViewCompetitionAdapter(analysisData, this, false, false)
+                viewCompetitionAnalysisBinding.performanceRly.adapter = compAdapter
+            }else{
+                viewCompetitionAnalysisBinding.performanceRly.visibility = View.VISIBLE
+                compAdapter = ViewCompetitionAdapter(analysisData, this, true, false)
+                viewCompetitionAnalysisBinding.performanceRly.adapter = compAdapter
+            }
+
+        }
+
+    }
+
+
 
     private fun saveCompetitionData(data: MutableList<RatingData>) {
         try {
@@ -466,13 +587,20 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         apiInterface = apiClient.client().create(APIInterface::class.java)
         eventList = arrayListOf()
         chartView = viewCompetitionAnalysisBinding.chartView
+        analysisData = mutableListOf()
+        competition = mutableListOf()
+        competitionData = mutableListOf()
+
         getEventData()
         getIntData()
-        analysisData = mutableListOf()
+
         Log.d(
             "Values Passed :- ",
             "${athleteId.id}\n${catId.id}\n${areaId.id}\n${areaName}\n${compDate}\n${compName}\n${eventId.id}"
         )
+
+
+
         viewCompetitionAnalysisBinding.tvTitle.text = areaName
 
         val usertype = preferenceManager.GetFlage()

@@ -191,7 +191,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
         val userType = preferenceManager.GetFlage()
 
-
         if (userType == "Athlete") {
             val menu = homeFragmentBinding.navigationView.menu
             menu.clear()
@@ -214,6 +213,9 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
             menu.add(Menu.NONE, R.id.logout, Menu.NONE, "Logout").setIcon(R.drawable.logout)
         } else {
+            val menu = homeFragmentBinding.navigationView.menu
+
+            menu.clear()
             homeFragmentBinding.navigationView.inflateMenu(R.menu.activity_main_drawer)
         }
 

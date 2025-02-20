@@ -373,7 +373,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             menu.add(Menu.NONE, R.id.logout, Menu.NONE, "Logout").setIcon(R.drawable.logout)
         } else {
-            // Default menu setup for other users
             homeBinding.navigationView.inflateMenu(R.menu.activity_main_drawer) // Load menu from XML
         }
 

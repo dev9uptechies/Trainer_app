@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:fontFamily="@font/poppins_medium"
-                android:hint="Select Category"
+                android:hint="Enter Category"
                 android:textSize="@dimen/_13sdp"
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
@@ -161,7 +161,7 @@
                         android:clickable="false"
                         android:focusable="false"
                         android:fontFamily="@font/poppins_medium"
-                        android:hint="Select Date"
+                        android:hint="Date"
                         android:paddingStart="@dimen/_12sdp"
                         android:paddingVertical="@dimen/_9sdp"
                         android:textColor="@color/white"
@@ -176,7 +176,8 @@
                         android:layout_width="@dimen/_22sdp"
                         android:layout_height="@dimen/_22sdp"
                         android:layout_marginEnd="@dimen/_7sdp"
-                        android:src="@drawable/ic_calendar" />
+                        android:src="@drawable/ic_calendar_white" />
+
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

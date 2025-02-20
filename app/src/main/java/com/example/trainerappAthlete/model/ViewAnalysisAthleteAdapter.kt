@@ -41,6 +41,7 @@ class ViewAnalysisAthleteAdapter(
             Log.d("Event Id :-", "${splist[position].id} \t ${splist[position].category}")
             val intent = Intent(context, ViewAnalysisDataActivity::class.java).apply {
                 putExtra("title", splist[position].competition_analysis_area?.title)
+                putExtra("CatName", splist[position].category)
                 putExtra("eventId", splist[position].id)
                 putExtra("eventIdss", splist[position].event_id)
                 putExtra("Date", splist[position].date)

@@ -2,6 +2,8 @@ package com.example.trainerapp.competition
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Build
 import android.preference.PreferenceManager
 import android.util.Log
@@ -65,9 +67,18 @@ class EventListSelectAdapter(
 
         holder.checkbox.isChecked = selectedPosition == position
 
+        val colorStateList = if (position == selectedPosition) {
+            ColorStateList.valueOf(Color.RED)
+        } else {
+            ColorStateList.valueOf(Color.WHITE)
+        }
+        holder.checkbox.buttonTintList = colorStateList
+
         holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 // Update selected position and notify changes
+                id_list.clear()
+                name_list.clear()
                 val previousPosition = selectedPosition
                 selectedPosition = holder.adapterPosition
                 notifyItemChanged(previousPosition)

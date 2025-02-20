@@ -25,6 +25,8 @@ import com.example.model.newClass.audio.Audio
 import com.example.model.newClass.competition.Competition
 import com.example.model.newClass.competition.EditeAnalsisData
 import com.example.model.newClass.competition.GetCompetition
+import com.example.model.newClass.competition.GetCompetitionAll
+import com.example.model.newClass.competition.GetCompetitionRequest
 import com.example.model.newClass.cycle.AddTimerBody
 import com.example.model.newClass.delete.DeleteBase
 import com.example.model.newClass.excercise.Exercise
@@ -839,6 +841,12 @@ interface APIInterface {
 
     @GET("Athlete/competition_analysis")
     fun GetCompetitionAnalysisDataAthlete(): Call<GetCompetition>
+
+    @POST("Athlete/competition_analysis")
+    fun GetCompetitionAnalysisDataAthleteAll(
+        @Body request: GetCompetitionRequest
+    ): Call<GetCompetitionAll>
+
 
     @POST("Athlete/group/join")
     fun JoinGroup(@Query("group_id") Group_id: String): Call<Any>
