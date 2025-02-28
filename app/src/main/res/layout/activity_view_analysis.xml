@@ -11,11 +11,16 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/create_bg"
+        android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
         android:layout_gravity="center"
-        android:gravity="center"
-        android:background="@drawable/create_bg">
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/back"
@@ -116,4 +121,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    </LinearLayout>
 </LinearLayout>

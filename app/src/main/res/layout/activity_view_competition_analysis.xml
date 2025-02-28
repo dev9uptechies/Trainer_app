@@ -140,7 +140,7 @@
                     android:layout_height="@dimen/_300sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_120sdp"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
 
                 <!--                <com.github.mikephil.charting.charts.RadarChart-->
                 <!--                    android:id="@+id/chartView"-->

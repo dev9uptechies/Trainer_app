@@ -1,4 +1,4 @@
-package com.example.trainerapp
+    package com.example.trainerapp
 
 import android.app.Dialog
 import android.content.Context

@@ -207,7 +207,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
             menu.add(Menu.NONE, R.id.tv_view_analysis, Menu.NONE, "View Analysis").setIcon(R.drawable.ic_competition)
 
-            menu.add(Menu.NONE, R.id.tv_personal_diary, Menu.NONE, "Personal Diary").setIcon(R.drawable.ic_diaryy)
+            menu.add(Menu.NONE, R.id.tv_personal_diary, Menu.NONE, "Personal Diary").setIcon(R.drawable.icd)
 
             menu.add(Menu.NONE, R.id.tv_setting, Menu.NONE, "Settings").setIcon(R.drawable.ic_setting)
 

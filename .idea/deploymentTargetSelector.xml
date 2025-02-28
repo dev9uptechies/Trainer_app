@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-02-19T11:26:59.260866Z">
+        <DropdownSelection timestamp="2025-02-27T06:05:33.766913500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=1394373971000RA" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=4738b566" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -25,9 +25,6 @@
             </Target>
           </targets>
         </DialogSelection>
-      </SelectionState>
-      <SelectionState runConfigName="EditTrainingPlanActivity">
-        <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
   </component>
