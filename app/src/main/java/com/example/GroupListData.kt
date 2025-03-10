@@ -3,6 +3,7 @@ package com.example
 import com.example.model.newClass.lesson.LessonGoal
 import com.example.model.newClass.lesson.LessonProgram
 import com.example.trainerapp.ApiClass.ProgramListData
+import com.example.trainerappAthlete.model.GroupListAthlete.microcycles
 import com.google.gson.annotations.SerializedName
 import org.jetbrains.annotations.Async.Schedule
 
@@ -480,6 +481,9 @@ class GroupListData {
         @SerializedName("competitive")
         var competitive: Competitive? = null
 
+        @SerializedName("transition")
+        var transition: Transition? = null
+
     }
 
     class Pre_Season {
@@ -497,6 +501,11 @@ class GroupListData {
 
         @SerializedName("end_date")
         var end_date: String? = null
+
+
+        @SerializedName("name")
+        var name: String? = null
+
 
         @SerializedName("mesocycles")
         var mesocycles: ArrayList<Mesocycles>? = null
@@ -520,6 +529,9 @@ class GroupListData {
 
         @SerializedName("periods")
         var periods: String? = null
+
+        @SerializedName("microcycles")
+        var microcycles: ArrayList<microcycles>? = null
     }
 
     class Pre_Competitive {
@@ -534,6 +546,9 @@ class GroupListData {
 
         @SerializedName("start_date")
         var start_date: String? = null
+
+        @SerializedName("name")
+        var name: String? = null
 
         @SerializedName("end_date")
         var end_date: String? = null
@@ -560,6 +575,10 @@ class GroupListData {
 
         @SerializedName("periods")
         var periods: String? = null
+
+
+        @SerializedName("microcycles")
+        var microcycles: ArrayList<microcycles>? = null
     }
 
     class Competitive {
@@ -575,11 +594,39 @@ class GroupListData {
         @SerializedName("start_date")
         var start_date: String? = null
 
+
+        @SerializedName("name")
+        var name: String? = null
+
         @SerializedName("end_date")
         var end_date: String? = null
 
         @SerializedName("mesocycles")
         var mesocycles: ArrayList<ComMesocycles>? = null
+    }
+
+    class Transition {
+        @SerializedName("id")
+        var id: Int? = null
+
+        @SerializedName("planning_id")
+        var planning_id: String? = null
+
+        @SerializedName("mesocycle")
+        var mesocycle: String? = null
+
+        @SerializedName("start_date")
+        var start_date: String? = null
+
+
+        @SerializedName("name")
+        var name: String? = null
+
+        @SerializedName("end_date")
+        var end_date: String? = null
+
+        @SerializedName("mesocycles")
+        var mesocycles: ArrayList<TraMesocycles>? = null
     }
 
     class ComMesocycles {
@@ -600,6 +647,32 @@ class GroupListData {
 
         @SerializedName("periods")
         var periods: String? = null
+
+        @SerializedName("microcycles")
+        var microcycles: ArrayList<microcycles>? = null
+    }
+
+    class TraMesocycles {
+        @SerializedName("id")
+        var id: Int? = null
+
+        @SerializedName("planning_c_id")
+        var planning_pc_id: String? = null
+
+        @SerializedName("name")
+        var name: String? = null
+
+        @SerializedName("start_date")
+        var start_date: String? = null
+
+        @SerializedName("end_date")
+        var end_date: String? = null
+
+        @SerializedName("periods")
+        var periods: String? = null
+
+        @SerializedName("microcycles")
+        var microcycles: ArrayList<microcycles>? = null
     }
 
     class GroupProgram {

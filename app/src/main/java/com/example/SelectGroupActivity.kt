@@ -24,6 +24,7 @@ import com.example.trainerapp.databinding.ActivitySelectGroupBinding
 import com.example.trainerapp.databinding.ActivityViewAetleteBinding
 import com.example.trainerappAthlete.model.GroupListAthlete
 import com.example.trainerappAthlete.model.selectGroupAdapterAthlete
+import com.google.gson.Gson
 import org.checkerframework.checker.units.qual.A
 import retrofit2.Call
 import retrofit2.Callback
@@ -93,7 +94,7 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
                     val bundlePreCompetitive = Bundle().apply {
                         selectedPreCompetitiveGroupData.forEach { (key, value) ->
-                            putString(key, value)
+                            putString(key, value.toString())
                         }
                     }
 
@@ -132,6 +133,28 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
             binding.cardSave.setOnClickListener {
                 try {
                     val selectedGroupId = groupadapter.getSelectedGroupId()
+                    val selectedGroupData = groupadapter.getSelectedGroupData()
+                    val selectedPreCompetitiveGroupData = groupadapter.getSelectedPreCompetitiveGroupData()
+                    val selectedCompetitiveGroupData = groupadapter.getSelectedCompetitiveGroupData()
+
+
+                    val bundle = Bundle().apply {
+                        selectedGroupData.forEach { (key, value) ->
+                            putString(key, value)
+                        }
+                    }
+
+                    val bundlePreCompetitive = Bundle().apply {
+                        selectedPreCompetitiveGroupData.forEach { (key, value) ->
+                            putString(key, value)
+                        }
+                    }
+
+                    val bundleCompetitive = Bundle().apply {
+                        selectedCompetitiveGroupData.forEach { (key, value) ->
+                            putString(key, value)
+                        }
+                    }
 
                     if (selectedGroupId == null) {
                         Toast.makeText(this, "Please select a group", Toast.LENGTH_SHORT).show()
@@ -139,8 +162,14 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                     }
 
                     Log.d("SelectedGroup", "Selected Group ID: $selectedGroupId")
-                    val intent = Intent(this, HomeActivity::class.java)
-                    intent.putExtra("idddd", selectedGroupId.toString())
+
+                    val intent = Intent(this, HomeActivity::class.java).apply {
+                        putExtra("idddd", selectedGroupId.toString())
+                        putExtras(bundle)
+                        putExtras(bundlePreCompetitive)
+                        putExtras(bundleCompetitive)
+                    }
+
                     startActivity(intent)
                     finish()
                 } catch (e: Exception) {
@@ -157,62 +186,64 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     private fun callGroupApi() {
         binding.groupProgress.visibility = View.VISIBLE
         apiInterface.GropList()?.enqueue(object : Callback<GroupListData?> {
-            override fun onResponse(
-                call: Call<GroupListData?>,
-                response: Response<GroupListData?>
-            ) {
-
+            override fun onResponse(call: Call<GroupListData?>, response: Response<GroupListData?>) {
                 val code = response.code()
                 if (code == 200) {
                     val resource: GroupListData? = response.body()
-                    val Success: Boolean = resource?.status!!
-                    val Message: String = resource.message!!
+                    val success: Boolean = resource?.status ?: false
+                    val message: String = resource?.message ?: "No message"
 
-                    if (Success) {
+                    if (success) {
                         binding.groupProgress.visibility = View.GONE
-                        initrecycler(resource.data!!)
+// Convert List to ArrayList before passing to initrecycler
+                        initrecycler(ArrayList(resource?.data ?: emptyList()))
+
+                        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+
+                        // ✅ Corrected extraction of mesocycles
+                        val firstGroup = resource?.data?.firstOrNull() // ✅ Ensure `data` is not empty
+                        val groupPlannings = firstGroup?.group_plannings?.firstOrNull()?.planning
+
+                        val preSeasonMesocycles = groupPlannings?.pre_season?.mesocycles ?: emptyList()
+                        val preCompetitiveMesocycles = groupPlannings?.pre_competitive?.mesocycles ?: emptyList()
+                        val competitiveMesocycles = groupPlannings?.competitive?.mesocycles ?: emptyList()
+//                        val transitionMesocycles = groupPlannings?.transition?.mesocycles ?: emptyList()
+
+                        // ✅ Save mesocycles in SharedPreferences
+                        editor.putString("pre_season_mesocycles", Gson().toJson(preSeasonMesocycles))
+                        editor.putString("pre_competitive_mesocycles", Gson().toJson(preCompetitiveMesocycles))
+                        editor.putString("competitive_mesocycles", Gson().toJson(competitiveMesocycles))
+//                        editor.putString("transition_mesocycles", Gson().toJson(transitionMesocycles))
+
+                        editor.apply()
+
+                        Log.d("MesocycleStorage", "Pre-Season Mesocycles: $preSeasonMesocycles")
+                        Log.d("MesocycleStorage", "Pre-Competitive Mesocycles: $preCompetitiveMesocycles")
+                        Log.d("MesocycleStorage", "Competitive Mesocycles: $competitiveMesocycles")
+//                        Log.d("MesocycleStorage", "Transition Mesocycles: $transitionMesocycles")
+
                     } else {
                         binding.groupProgress.visibility = View.GONE
-                        Toast.makeText(this@SelectGroupActivity, "" + Message, Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(this@SelectGroupActivity, message, Toast.LENGTH_SHORT).show()
                     }
-                } else if (response.code() == 403) {
-                    binding.groupProgress.visibility = View.GONE
-                    val message = response.message()
-                    Toast.makeText(
-                        this@SelectGroupActivity,
-                        "" + message,
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    call.cancel()
-                    preferenceManager.setUserLogIn(false)
-                    startActivity(
-                        Intent(
-                            this@SelectGroupActivity,
-                            SignInActivity::class.java
-                        )
-                    )
-                    finish()
                 } else {
                     binding.groupProgress.visibility = View.GONE
                     val message = response.message()
-                    //                    Toast.makeText(requireContext(), "" + message, Toast.LENGTH_SHORT)
-                    //                        .show()
-
+                    Toast.makeText(this@SelectGroupActivity, message, Toast.LENGTH_SHORT).show()
                     call.cancel()
                 }
             }
 
             override fun onFailure(call: Call<GroupListData?>, t: Throwable) {
-                Toast.makeText(this@SelectGroupActivity, "" + t.message, Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(this@SelectGroupActivity, t.message ?: "Unknown error", Toast.LENGTH_SHORT).show()
                 call.cancel()
-                Log.d("GROOOOOOOP", t.message.toString() + "")
+                Log.d("GROOOOOOOP", t.message.toString())
                 binding.groupProgress.visibility = View.GONE
             }
         })
     }
+
 
     private fun callGroupApiAthlete() {
         binding.groupProgress.visibility = View.VISIBLE

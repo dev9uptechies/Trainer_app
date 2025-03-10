@@ -39,6 +39,8 @@ import com.example.model.SelectedDaysModel
 import com.example.model.personal_diary.GetDiaryDataForEdit
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
+import com.example.trainerapp.ApiClass.MesoCycleData
+import com.example.trainerapp.ApiClass.MicroCycleData
 import com.example.trainerapp.ApiClass.RegisterData
 import com.example.trainerapp.ApiClass.WorkOutAdapter
 import com.example.trainerapp.HomeAdapter
@@ -67,6 +69,8 @@ import com.example.trainerappAthlete.model.PlanningAdapterAthlete
 import com.example.trainerappAthlete.model.PlanningAdapterAthleteHome
 import com.example.trainerappAthlete.model.TestAdapterAthlete
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
@@ -104,6 +108,13 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     private lateinit var lessonAdapterAthlete: LessonAdapterAthlete
     private lateinit var adapterAthelete: PlanningAdapterAthleteHome
     private var newsData: MutableList<NewsModel.Data> = mutableListOf()
+
+
+    private var receivedPreSeasonMesocycles: List<MesoCycleData>? = null
+    private var receivedPreCompetitiveMesocycles: List<MesoCycleData>? = null
+    private var receivedCompetitiveMesocycles: List<MesoCycleData>? = null
+    private var receivedTransitionMesocycles: List<MesoCycleData>? = null
+
 
     // Received Data
     private var receivedIds: String = ""
@@ -176,6 +187,67 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
         calendarView = homeFragmentBinding.exSevenCalendar
 
+        preferenceManager = PreferencesManager(requireContext())
+        Log.d("Login Token", preferenceManager.getToken()!!)
+
+        val sharedPreferences1 = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
+
+        receivedPreSeasonMesocycles = Gson().fromJson(
+            sharedPreferences1.getString("pre_season_mesocycles", "[]"),
+            object : TypeToken<List<MesoCycleData>>() {}.type
+        )
+
+        receivedPreCompetitiveMesocycles = Gson().fromJson(
+            sharedPreferences1.getString("pre_competitive_mesocycles", "[]"),
+            object : TypeToken<List<MesoCycleData>>() {}.type
+        )
+
+        receivedCompetitiveMesocycles = Gson().fromJson(
+            sharedPreferences1.getString("competitive_mesocycles", "[]"),
+            object : TypeToken<List<MesoCycleData>>() {}.type
+        )
+
+        receivedTransitionMesocycles = Gson().fromJson(
+            sharedPreferences1.getString("transition_mesocycles", "[]"),
+            object : TypeToken<List<MesoCycleData>>() {}.type
+        )
+
+
+
+
+
+        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        receivedIds = sharedPreferences.getString("id", "default_value") ?: ""
+
+        receivedGroup_Ids = sharedPreferences.getString("group_id", "default_value") ?: ""
+        Log.e("USERIDDDDDDDDDDD", "onCreateView: "+preferenceManager.getUserId()!!.toInt() )
+
+        receivedname = sharedPreferences.getString("name", null)
+        receivedstartDate = sharedPreferences.getString("start_date", null)
+        receivedendDate = sharedPreferences.getString("end_date", null)
+        receivedmesocycle = sharedPreferences.getString("mesocycle", null)
+        receivedworkloadColor = sharedPreferences.getString("workload_color", null)
+
+        receivedPreCompetitiveName = sharedPreferences.getString("preCompetitiveName", null)
+        receivedPreCompetitiveStartDate = sharedPreferences.getString("preCompetitiveStartDate", null)
+        receivedPreCompetitiveEndDate = sharedPreferences.getString("preCompetitiveEndDate", null)
+        receivedPreCompetitiveMesocycle = sharedPreferences.getString("preCompetitiveMesocycle", null)
+        receivedPreCompetitiveWorkloadColor = sharedPreferences.getString("preCompetitiveWorkloadColor", null)
+
+
+        receivedCommpetitiveName = sharedPreferences.getString("CompetitiveName", null)
+        receivedCompetitiveStartDate = sharedPreferences.getString("CompetitiveStartDate", null)
+        receivedCompetitiveEndDate = sharedPreferences.getString("CompetitiveEndDate", null)
+        receivedCompetitiveMesocycle = sharedPreferences.getString("CompetitiveMesocycle", null)
+        receivedCompetitiveWorkloadColor = sharedPreferences.getString("CompetitiveWorkloadColor", null)
+
+        receivedTransitionName = sharedPreferences.getString("TransitionName", null)
+        receivedTransitionStartDate = sharedPreferences.getString("TransitionStartDate", null)
+        receivedTransitionEndDate = sharedPreferences.getString("TransitionEndDate", null)
+        receivedTransitionMesocycle = sharedPreferences.getString("TransitionMesocycle", null)
+        receivedTransitionWorkloadColor = sharedPreferences.getString("TransitionWorkloadColor", null)
+
         initViews()
         setDrawerToggle()
         getInstraction()
@@ -187,7 +259,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         homeFragmentBinding.tvDate.text = formattedMonthYear
 
         val receivedIdInt = receivedIds.toIntOrNull()
-        Log.d("QOQOQOQOQOOQOQO", "onCreateView: $receivedIds")
 
         val userType = preferenceManager.GetFlage()
 
@@ -241,37 +312,37 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
                 Log.d("SSSJSJSJSJSJJr", "onCreateView: $receivedCommpetitiveName   $receivedstartDate ")
 
-//                if (!receivedname.isNullOrEmpty()) {
-//                    homeFragmentBinding.seasonLy.visibility = View.VISIBLE
-//                    homeFragmentBinding.titleTv.text = receivedname
-//                    homeFragmentBinding.edtStartDate.text = receivedstartDate
-//                    homeFragmentBinding.edtEndDate.text = receivedendDate
-//                    homeFragmentBinding.edtMesocycle.text = receivedmesocycle
-//                }else {
-//                    homeFragmentBinding.seasonLy.visibility = View.GONE
-//                }
-//
-//                Log.d("AQQAAQQAQA", "onCreateView: $receivedPreCompetitiveName")
-//
-//                if (!receivedPreCompetitiveName.isNullOrEmpty()) {
-//                    homeFragmentBinding.PreCompetitiveLy.visibility = View.GONE
-//                    homeFragmentBinding.titleTvPreCompetitive.text = receivedPreCompetitiveName
-//                    homeFragmentBinding.edtStartDatePreCompetitive.text = receivedPreCompetitiveStartDate
-//                    homeFragmentBinding.edtEndDatePreCompetitive.text = receivedPreCompetitiveEndDate
-//                    homeFragmentBinding.edtMesocyclePreCompetitive.text = receivedPreCompetitiveMesocycle
-//                }else {
-//                    homeFragmentBinding.PreCompetitiveLy.visibility = View.GONE
-//                }
-//
-//                if (!receivedCommpetitiveName.isNullOrEmpty()) {
-//                    homeFragmentBinding.CompetitiveLy.visibility = View.GONE
-//                    homeFragmentBinding.titleTvCompetitive.text = receivedCommpetitiveName
-//                    homeFragmentBinding.edtStartDateCompetitive.text = receivedCompetitiveStartDate
-//                    homeFragmentBinding.edtEndDateCompetitive.text = receivedCompetitiveEndDate
-//                    homeFragmentBinding.edtMesocycleCompetitive.text = receivedCompetitiveMesocycle
-//                } else {
-//                    homeFragmentBinding.CompetitiveLy.visibility = View.GONE
-//                }
+                if (!receivedname.isNullOrEmpty()) {
+                    homeFragmentBinding.seasonLy.visibility = View.VISIBLE
+                    homeFragmentBinding.titleTv.text = receivedname
+                    homeFragmentBinding.edtStartDate.text = receivedstartDate
+                    homeFragmentBinding.edtEndDate.text = receivedendDate
+                    homeFragmentBinding.edtMesocycle.text = receivedmesocycle
+                }else {
+                    homeFragmentBinding.seasonLy.visibility = View.GONE
+                }
+
+                Log.d("AQQAAQQAQA", "onCreateView: $receivedPreCompetitiveName")
+
+                if (!receivedPreCompetitiveName.isNullOrEmpty()) {
+                    homeFragmentBinding.PreCompetitiveLy.visibility = View.GONE
+                    homeFragmentBinding.titleTvPreCompetitive.text = receivedPreCompetitiveName
+                    homeFragmentBinding.edtStartDatePreCompetitive.text = receivedPreCompetitiveStartDate
+                    homeFragmentBinding.edtEndDatePreCompetitive.text = receivedPreCompetitiveEndDate
+                    homeFragmentBinding.edtMesocyclePreCompetitive.text = receivedPreCompetitiveMesocycle
+                }else {
+                    homeFragmentBinding.PreCompetitiveLy.visibility = View.GONE
+                }
+
+                if (!receivedCommpetitiveName.isNullOrEmpty()) {
+                    homeFragmentBinding.CompetitiveLy.visibility = View.GONE
+                    homeFragmentBinding.titleTvCompetitive.text = receivedCommpetitiveName
+                    homeFragmentBinding.edtStartDateCompetitive.text = receivedCompetitiveStartDate
+                    homeFragmentBinding.edtEndDateCompetitive.text = receivedCompetitiveEndDate
+                    homeFragmentBinding.edtMesocycleCompetitive.text = receivedCompetitiveMesocycle
+                } else {
+                    homeFragmentBinding.CompetitiveLy.visibility = View.GONE
+                }
 
                 Log.d("SSSJSJSJSJSJJr", "onCreateView: $receivedCommpetitiveName   $receivedendDate ")
             }
@@ -457,144 +528,151 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     }
 
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpCalendar() {
-            val daysOfWeek = daysOfWeekFromLocale()
-            val currentMonth = YearMonth.now()
-            val today = LocalDate.now()
 
-            homeFragmentBinding.exSevenCalendar!!.apply {
-                setup(currentMonth.minusMonths(100), currentMonth.plusMonths(100), daysOfWeek.first())
-                scrollToMonth(currentMonth)
-            }
+        val sharedPreferences = requireActivity().getSharedPreferences("MyPrefss", Context.MODE_PRIVATE)
+        val mesocyclesJson = sharedPreferences.getString("mesocycles", "[]")
+        val mesocycles: List<MesoCycleData> = Gson().fromJson(mesocyclesJson, object : TypeToken<List<MesoCycleData>>() {}.type)
 
-            homeFragmentBinding.exSevenCalendar!!.post {
-                homeFragmentBinding.exSevenCalendar!!.scrollToDate(today)
-                fetchCurrentWeekDates()
-            }
 
-            class DayViewContainer(view: View) : ViewContainer(view) {
-                lateinit var day: CalendarDay
-                lateinit var month: YearMonth
-                val binding = Example3CalendarDayBinding.bind(view)
+        val daysOfWeek = daysOfWeekFromLocale()
+        val currentMonth = YearMonth.now()
+        val today = LocalDate.now()
 
-                init {
+        homeFragmentBinding.exSevenCalendar!!.apply {
+            setup(currentMonth.minusMonths(100), currentMonth.plusMonths(100), daysOfWeek.first())
+            scrollToMonth(currentMonth)
+        }
 
-                    val formattedMonth = DateTimeFormatter.ofPattern("MMM,yyyy").format(currentMonth)
-                    homeFragmentBinding.tvDate.text = formattedMonth
+        homeFragmentBinding.exSevenCalendar!!.post {
+            homeFragmentBinding.exSevenCalendar!!.scrollToDate(today)
+            fetchCurrentWeekDates()
+        }
 
-                    view.setOnClickListener {
+        class DayViewContainer(view: View) : ViewContainer(view) {
+            lateinit var day: CalendarDay
+            lateinit var month: YearMonth
+            val binding = Example3CalendarDayBinding.bind(view)
 
-                        Log.d("HFGFGFFGGFFG", "setUpCalendar: $month")
+            init {
 
-                        if (day.owner == DayOwner.THIS_MONTH) {
-                            selectDate(day.date)
-                            formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                val formattedMonth = DateTimeFormatter.ofPattern("MMM,yyyy").format(currentMonth)
+                homeFragmentBinding.tvDate.text = formattedMonth
 
-                        }
+                view.setOnClickListener {
+
+                    Log.d("HFGFGFFGGFFG", "setUpCalendar: $month")
+
+                    if (day.owner == DayOwner.THIS_MONTH) {
+                        selectDate(day.date)
+                        formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
                     }
                 }
             }
+        }
 
-            class MonthViewContainer(view: View) : ViewContainer(view) {
-                val legendLayout = Example3CalendarHeaderBinding.bind(view).legendLayout.root
-            }
+        class MonthViewContainer(view: View) : ViewContainer(view) {
+            val legendLayout = Example3CalendarHeaderBinding.bind(view).legendLayout.root
+        }
 
-            homeFragmentBinding.exSevenCalendar.dayBinder = object : DayBinder<DayViewContainer> {
-                override fun create(view: View) = DayViewContainer(view)
+        homeFragmentBinding.exSevenCalendar.dayBinder = object : DayBinder<DayViewContainer> {
+            override fun create(view: View) = DayViewContainer(view)
 
-                override fun bind(container: DayViewContainer, day: CalendarDay) {
-                    container.day = day
-                    val textView = container.binding.exThreeDayText
-                    textView.text = day.date.dayOfMonth.toString()
+            override fun bind(container: DayViewContainer, day: CalendarDay) {
+                container.day = day
+                val textView = container.binding.exThreeDayText
+                textView.text = day.date.dayOfMonth.toString()
 
-                    with(textView) {
-                        setTextColor(resources.getColor(R.color.white))
-                        setBackgroundColor(0x1A000000)
-                    }
+                with(textView) {
+                    setTextColor(resources.getColor(R.color.white))
+                    setBackgroundColor(0x1A000000)
+                }
 
-                    when {
-                        day.owner == DayOwner.THIS_MONTH -> {
-                            when {
-                                day.date == today -> {
-                                    with(textView) {
-                                        setTextColor(resources.getColor(R.color.white))
-                                        setBackgroundResource(R.drawable.bg_red_round_corner_10)
-                                    }
+                when {
+                    day.owner == DayOwner.THIS_MONTH -> {
+                        when {
+                            day.date == today -> {
+                                with(textView) {
+                                    setTextColor(resources.getColor(R.color.white))
+                                    setBackgroundResource(R.drawable.bg_red_round_corner_10)
                                 }
+                            }
 
-                                day.date == selectedDate -> {
-                                    with(textView) {
-                                        setTextColor(resources.getColor(R.color.splash_text_color))
-                                    }
+                            day.date == selectedDate -> {
+                                with(textView) {
+                                    setTextColor(resources.getColor(R.color.splash_text_color))
                                 }
+                            }
 
-                                else -> {
-                                    with(textView) {
-                                        setTextColor(resources.getColor(R.color.white))
-                                        setBackgroundColor(0x1A000000)
-                                    }
+                            else -> {
+                                with(textView) {
+                                    setTextColor(resources.getColor(R.color.white))
+                                    setBackgroundColor(0x1A000000)
                                 }
                             }
                         }
-
-                        else -> {
-                            textView.setTextColor(resources.getColor(R.color.grey))
-                        }
                     }
 
-
-    //                Log.d("DOTTTTT", "bind: $datesWithDataTest")
-    //
-    //                if (datesWithDataTest.contains(day.date)) {
-    //                    container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(Color.RED)
-    //                    container.binding.dotLesson.visibility = View.VISIBLE
-    //                } else {
-    //                    container.binding.dotLesson.visibility = View.GONE
-    //                }
-
-                    val currentDate = LocalDate.now()
-                    val firstDayOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
-                    val lastDayOfWeek = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))
-
-                    fun isWithinCurrentWeek(date: LocalDate): Boolean {
-                        return !date.isBefore(firstDayOfWeek) && !date.isAfter(lastDayOfWeek)
+                    else -> {
+                        textView.setTextColor(resources.getColor(R.color.grey))
                     }
+                }
 
-                    fun applyDotIfWithinRange(
-                        startDateStr: String?,
-                        endDateStr: String?,
-                        workloadColor: String?,
-                        dotView: View,
-                        defaultColor: Int
-                    ) {
-                        if (!startDateStr.isNullOrEmpty() && !endDateStr.isNullOrEmpty()) {
-                            try {
-                                val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                                val startDate = LocalDate.parse(startDateStr, dateFormatter)
-                                val endDate = LocalDate.parse(endDateStr, dateFormatter)
 
-                                if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate) && isWithinCurrentWeek(day.date)) {
-                                    val color = try {
-                                        if (!workloadColor.isNullOrEmpty()) Color.parseColor(workloadColor) else defaultColor
-                                    } catch (e: IllegalArgumentException) {
-                                        Log.e("ColorError", "Invalid color value: $workloadColor", e)
-                                        defaultColor
-                                    }
-                                    dotView.backgroundTintList = ColorStateList.valueOf(color)
-                                    dotView.visibility = View.VISIBLE
-                                } else {
-                                    dotView.visibility = View.GONE
-                                }
-                            } catch (e: Exception) {
-                                Log.e("DateParsingError", "Error parsing dates: $startDateStr - $endDateStr", e)
-                            }
-                        } else {
-                            dotView.visibility = View.GONE
-                        }
-                    }
+                //                Log.d("DOTTTTT", "bind: $datesWithDataTest")
+                //
+                //                if (datesWithDataTest.contains(day.date)) {
+                //                    container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(Color.RED)
+                //                    container.binding.dotLesson.visibility = View.VISIBLE
+                //                } else {
+                //                    container.binding.dotLesson.visibility = View.GONE
+                //                }
 
-                    Log.d("SLLSLSLSLS", "bind: $receivedworkloadColor     $receivedPreCompetitiveWorkloadColor   $receivedPreCompetitiveWorkloadColor")
+                val currentDate = LocalDate.now()
+                val firstDayOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+                val lastDayOfWeek = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))
+
+                fun isWithinCurrentWeek(date: LocalDate): Boolean {
+                    return !date.isBefore(firstDayOfWeek) && !date.isAfter(lastDayOfWeek)
+                }
+
+//                fun applyDotIfWithinRange(
+//                    startDateStr: String?,
+//                    endDateStr: String?,
+//                    workloadColor: String?,
+//                    dotView: View,
+//                    defaultColor: Int
+//                ) {
+//                    if (!startDateStr.isNullOrEmpty() && !endDateStr.isNullOrEmpty()) {
+//                        try {
+//                            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//                            val startDate = LocalDate.parse(startDateStr, dateFormatter)
+//                            val endDate = LocalDate.parse(endDateStr, dateFormatter)
+//
+//                            if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
+//                                val color = try {
+//                                    if (!workloadColor.isNullOrEmpty()) Color.parseColor(workloadColor) else defaultColor
+//                                } catch (e: IllegalArgumentException) {
+//                                    Log.e("ColorError", "Invalid color value: $workloadColor", e)
+//                                    defaultColor
+//                                }
+//                                dotView.backgroundTintList = ColorStateList.valueOf(color)
+//                                dotView.visibility = View.VISIBLE
+//                            } else {
+//                                dotView.visibility = View.GONE
+//                            }
+//                        } catch (e: Exception) {
+//                            Log.e("DateParsingError", "Error parsing dates: $startDateStr - $endDateStr", e)
+//                        }
+//                    } else {
+//                        dotView.visibility = View.GONE
+//                    }
+//                }
+
+                Log.d("SLLSLSLSLS", "bind: $receivedworkloadColor     $receivedPreCompetitiveWorkloadColor   $receivedPreCompetitiveWorkloadColor")
 //
 //                    if (!receivedstartDate.isNullOrEmpty() && !receivedendDate.isNullOrEmpty()) {
 //                        try {
@@ -681,128 +759,159 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 //                    }
 
 
-                    val preSeasonStartDate = receivedstartDate?.toLocalDate()
-                    val preSeasonEndDate = receivedendDate?.toLocalDate()
-                    val preCompStartDate = receivedPreCompetitiveStartDate?.toLocalDate()
-                    val preCompEndDate = receivedPreCompetitiveEndDate?.toLocalDate()
-                    val CompStartDate = receivedCompetitiveStartDate?.toLocalDate()
-                    val CompEndDate = receivedCompetitiveEndDate?.toLocalDate()
+                val matchingMicrocycle = mesocycles.flatMap { it.microcycles ?: emptyList() }
+                    .find { micro ->
+                        try {
+                            val startDate = LocalDate.parse(micro.start_date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                            val endDate = LocalDate.parse(micro.end_date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                            val isMatching = !day.date.isBefore(startDate) && !day.date.isAfter(endDate)
 
-                    if (preSeasonStartDate == today || preSeasonEndDate == today) {
-                        applyDotIfWithinRange(receivedstartDate, receivedendDate, receivedworkloadColor, container.binding.dotLesson, Color.GRAY)
+                            if (isMatching) {
+                                Log.d("COLOR_DEBUG", "Matched Date: ${day.date}, Color: ${micro.workload_color}")
+                            }
+
+                            isMatching
+                        } catch (e: Exception) {
+                            Log.e("DateParsingError", "Error parsing microcycle date: ${micro.start_date} - ${micro.end_date}", e)
+                            false
+                        }
                     }
-                    if (preCompStartDate == today || preCompEndDate == today) {
-                        Log.d("$$$$$$$$", "onResponse: $$$$$")
-                        applyDotIfWithinRange(receivedPreCompetitiveStartDate, receivedPreCompetitiveEndDate, receivedPreCompetitiveWorkloadColor, container.binding.dotTest, Color.GRAY)
+
+                val dotView = container.binding.dotLesson
+
+                if (matchingMicrocycle != null) {
+                    val workloadColor = matchingMicrocycle.workload_color
+
+                    val selectedColor = try {
+                        if (!workloadColor.isNullOrEmpty()) {
+                            Color.parseColor("#" + workloadColor.replace("#", ""))
+                        } else Color.GRAY
+                    } catch (e: IllegalArgumentException) {
+                        Log.e("ColorError", "Invalid color: $workloadColor", e)
+                        Color.GRAY
                     }
 
-                    if (CompStartDate == today || CompEndDate == today) {
-                        applyDotIfWithinRange(receivedCompetitiveStartDate, receivedCompetitiveEndDate, receivedCompetitiveWorkloadColor, container.binding.dotEvent, Color.GRAY)
-                    }
+                    dotView.backgroundTintList = ColorStateList.valueOf(selectedColor)
+                    dotView.visibility = View.VISIBLE
+
+                    Log.d("DotApplied", "Applied color: $workloadColor for ${day.date}")
+                } else {
+                    dotView.visibility = View.GONE
+                }
 
 
-//                    applyDotIfWithinRange(receivedTransitionStartDate, receivedTransitionEndDate, receivedTransitionWorkloadColor, container.binding.dotProgram, Color.GRAY)
+                val preSeasonStartDate = receivedstartDate?.toLocalDate()
+                val preSeasonEndDate = receivedendDate?.toLocalDate()
+                val preCompStartDate = receivedPreCompetitiveStartDate?.toLocalDate()
+                val preCompEndDate = receivedPreCompetitiveEndDate?.toLocalDate()
+                val CompStartDate = receivedCompetitiveStartDate?.toLocalDate()
+                val CompEndDate = receivedCompetitiveEndDate?.toLocalDate()
 
-                    container.view.setOnClickListener {
-                        if (day.owner == DayOwner.THIS_MONTH) {
-                            selectDate(day.date)
 
-                            formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-                            val receivedIdInt = receivedIds.toIntOrNull()
 
-                            Log.e("DJDJDJDJDJJDJDJDJ", "bind: $receivedIdInt")
+                container.view.setOnClickListener {
+                    if (day.owner == DayOwner.THIS_MONTH) {
+                        selectDate(day.date)
 
-                            val userType = preferenceManager.GetFlage()
+                        formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-                            if (userType == "Athlete") {
-                                if (receivedIdInt != null && receivedIdInt != 0) {
-                                    homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+                        val receivedIdInt = receivedIds.toIntOrNull()
 
-                                    Log.d("FORMATTEDDATE", "bind: ${formattedDate.toString()}")
+                        Log.e("DJDJDJDJDJJDJDJDJ", "bind: $receivedIdInt")
 
-                                    getPersonalDiaryData(formattedDate.toString())
+                        val userType = preferenceManager.GetFlage()
+
+                        if (userType == "Athlete") {
+                            if (receivedIdInt != null && receivedIdInt != 0) {
+                                homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+
+                                Log.d("FORMATTEDDATE", "bind: ${formattedDate.toString()}")
+
+                                getPersonalDiaryData(formattedDate.toString())
 
 //                                    fetchDayDataRecycler(day.date)
 
-                                } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Please Select Group First",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-
                             } else {
-                                if (receivedIdInt != null && receivedIdInt != 0) {
-                                    val intent =
-                                        Intent(requireContext(), SelectDayActivity::class.java).apply {
-                                            putExtra("id", receivedIdInt)
-                                            putExtra("date", formattedDate)
-                                        }
-                                    context!!.startActivity(intent)
-                                } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Please Select Group First",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Please Select Group First",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
 
+                        } else {
+                            if (receivedIdInt != null && receivedIdInt != 0) {
+                                val intent =
+                                    Intent(requireContext(), SelectDayActivity::class.java).apply {
+                                        putExtra("id", receivedIdInt)
+                                        putExtra("date", formattedDate)
+                                    }
+                                context!!.startActivity(intent)
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Please Select Group First",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
+
                     }
                 }
             }
-
-            homeFragmentBinding.exSevenCalendar!!.monthScrollListener = { month ->
-                // Format the month as "Month Year" (e.g., "January 2025")
-    //                val formattedMonth = DateTimeFormatter.ofPattern("MMMM yyyy").format(month.yearMonth)
-    //
-    //                // Set the TextView with the formatted month and year
-    //                homeFragmentBinding.tvDate.text = formattedMonth
-
-                val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
-                val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
-                Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
-                homeFragmentBinding.tvDate.text = formattedMonthYear
-
-                // Optionally, apply custom formatting logic
-                if (month.year == today.year) {
-                    titleSameYearFormatter.format(month.yearMonth)
-                } else {
-                    titleFormatter.format(month.yearMonth)
-                }
-
-                // Optionally, you can select the first day of the current month if needed
-                selectDate(month.yearMonth.atDay(1))
-            }
-
-
-            // Update the month header to show abbreviated day names (Mon, Tue, Wed)
-            homeFragmentBinding.exSevenCalendar.monthHeaderBinder =
-                object : MonthHeaderFooterBinder<MonthViewContainer> {
-                    override fun create(view: View) = MonthViewContainer(view)
-
-                    @SuppressLint("ResourceAsColor")
-                    override fun bind(container: MonthViewContainer, month: CalendarMonth) {
-                        if (container.legendLayout.tag == null) {
-                            container.legendLayout.tag = month.yearMonth
-
-                            val formattedMonth =
-                                DateTimeFormatter.ofPattern("MMM,yyyy").format(today.yearMonth)
-                            homeFragmentBinding.tvDate.text = formattedMonth
-                            // Get short day names like "Mon", "Tue", "Wed"
-                            val dayNames =
-                                daysOfWeek.map { it.name.take(3) }  // Get first 3 letters of each day name
-                            container.legendLayout.children.map { it as TextView }
-                                .forEachIndexed { index, tv ->
-                                    tv.text = dayNames[index]
-                                }
-                        }
-                    }
-                }
         }
+
+        homeFragmentBinding.exSevenCalendar!!.monthScrollListener = { month ->
+            // Format the month as "Month Year" (e.g., "January 2025")
+            //                val formattedMonth = DateTimeFormatter.ofPattern("MMMM yyyy").format(month.yearMonth)
+            //
+            //                // Set the TextView with the formatted month and year
+            //                homeFragmentBinding.tvDate.text = formattedMonth
+
+            val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+            val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
+            Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
+            homeFragmentBinding.tvDate.text = formattedMonthYear
+
+            // Optionally, apply custom formatting logic
+            if (month.year == today.year) {
+                titleSameYearFormatter.format(month.yearMonth)
+            } else {
+                titleFormatter.format(month.yearMonth)
+            }
+
+            // Optionally, you can select the first day of the current month if needed
+            selectDate(month.yearMonth.atDay(1))
+        }
+
+
+        // Update the month header to show abbreviated day names (Mon, Tue, Wed)
+        homeFragmentBinding.exSevenCalendar.monthHeaderBinder =
+            object : MonthHeaderFooterBinder<MonthViewContainer> {
+                override fun create(view: View) = MonthViewContainer(view)
+
+                @SuppressLint("ResourceAsColor")
+                override fun bind(container: MonthViewContainer, month: CalendarMonth) {
+                    if (container.legendLayout.tag == null) {
+                        container.legendLayout.tag = month.yearMonth
+
+                        val formattedMonth =
+                            DateTimeFormatter.ofPattern("MMM,yyyy").format(today.yearMonth)
+                        homeFragmentBinding.tvDate.text = formattedMonth
+                        // Get short day names like "Mon", "Tue", "Wed"
+                        val dayNames =
+                            daysOfWeek.map { it.name.take(3) }  // Get first 3 letters of each day name
+                        container.legendLayout.children.map { it as TextView }
+                            .forEachIndexed { index, tv ->
+                                tv.text = dayNames[index]
+                            }
+                    }
+                }
+            }
+    }
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun fetchCurrentWeekDates() {
@@ -900,15 +1009,13 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun callGroupApi(receivedId: Int) {
         homeFragmentBinding.homeProgress.visibility = View.VISIBLE
         Log.d("API Call", "Received ID: $receivedId")
 
         apiInterface.GropList()?.enqueue(object : Callback<GroupListData?> {
-            override fun onResponse(
-                call: Call<GroupListData?>,
-                response: Response<GroupListData?>
-            ) {
+            override fun onResponse(call: Call<GroupListData?>, response: Response<GroupListData?>) {
                 val code = response.code()
                 if (code == 200) {
                     val resource = response.body()
@@ -920,10 +1027,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         val group = resource!!.data?.find { it.id == receivedId }
 
                         if (group != null) {
-                            Log.d(
-                                "API Response",
-                                "Group found: ${group.name}, Group ID: ${group.id}"
-                            )
+                            Log.d("API Response", "Group found: ${group.name}, Group ID: ${group.id}")
 
                             saveSelectedGroupData(
                                 group.name.toString(),
@@ -932,21 +1036,41 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                             )
 
                             homeFragmentBinding.selectGroupTxt.text = group.name
+                            val planning = group.group_plannings?.firstOrNull()?.planning
 
-                            val planning = group.group_plannings?.firstOrNull()
-                            if (planning != null && planning.planning != null) {
-                                homeFragmentBinding.edtStartDate.text =
-                                    planning.planning?.start_date
+
+                            // ✅ Create an empty list to store mesocycles
+                            val mesocycles = mutableListOf<MesoCycleData>()
+
+                            // ✅ Convert and add mesocycles from different sections
+                            planning?.pre_season?.mesocycles?.map { convertPreSeasonMesoCycle1(it) }?.let { mesocycles.addAll(it) }
+                            planning?.pre_competitive?.mesocycles?.map { convertPreCompetitiveMesoCycle1(it) }?.let { mesocycles.addAll(it) }
+                            planning?.competitive?.mesocycles?.map { convertCompetitiveMesoCycle1(it) }?.let { mesocycles.addAll(it) }
+                            planning?.transition?.mesocycles?.map { convertTranstionMesoCycle1(it) }?.let { mesocycles.addAll(it) }
+
+                            // ✅ Debugging log
+                            if (mesocycles.isNotEmpty()) {
+                                Log.d("API_RESPONSEEEGG", "Extracted mesocycles: ${Gson().toJson(mesocycles)}")
+
+                                // ✅ Save mesocycles to SharedPreferences
+                                val sharedPreferences = requireActivity().getSharedPreferences("MyPrefss", Context.MODE_PRIVATE)
+                                sharedPreferences.edit().putString("mesocycles", Gson().toJson(mesocycles)).apply()
+
+                                // ✅ Apply dots only when a group is selected
+                                setUpCalendar()
                             } else {
-                                homeFragmentBinding.edtStartDate.text = ""
+                                Log.e("API_RESPONSEEEGG", "No mesocycles found, clearing calendar dots!")
+                                clearCalendarDots()
                             }
+
                         } else {
-                            homeFragmentBinding.selectGroupTxt.text =
-                                "Group not found for ID: $receivedId"
+                            homeFragmentBinding.selectGroupTxt.text = "Group not found for ID: $receivedId"
+                            clearCalendarDots()
                         }
                     } else {
                         homeFragmentBinding.homeProgress.visibility = View.GONE
                         homeFragmentBinding.selectGroupTxt.text = "Failed to fetch data: $message"
+                        clearCalendarDots()
                     }
                 } else if (code == 403) {
                     homeFragmentBinding.homeProgress.visibility = View.GONE
@@ -957,6 +1081,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     homeFragmentBinding.homeProgress.visibility = View.GONE
                     Log.e("API Error", "Error code: $code, ${response.message()}")
                     call.cancel()
+                    clearCalendarDots()
                 }
             }
 
@@ -964,8 +1089,98 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 Log.e("GROOOOOOOP", "API call failed: ${t.message}")
                 homeFragmentBinding.homeProgress.visibility = View.GONE
                 call.cancel()
+                clearCalendarDots()
             }
         })
+    }
+
+
+    private fun convertPreSeasonMesoCycle1(meso: GroupListData.Mesocycles): MesoCycleData {
+        return MesoCycleData().apply {
+            id = meso.id
+            planning_ps_id = meso.planning_ps_id  // ✅ Ensure correct ID is used
+            name = meso.name
+            start_date = meso.start_date
+            end_date = meso.end_date
+
+            microcycles = meso.microcycles?.map { micro ->
+                MicroCycleData().apply {
+                    id = micro.id
+                    planning_ps_id = micro.pc_mesocycle_id
+                    name = micro.name
+                    start_date = micro.startDate  // ✅ Use correct attribute
+                    end_date = micro.endDate
+                    workload_color = micro.workloadColor  // ✅ Use correct attribute
+                }
+            } ?: emptyList()
+        }
+    }
+
+
+    /** ✅ Convert Pre-Competitive Mesocycles */
+    private fun convertPreCompetitiveMesoCycle1(meso: GroupListData.PreMesocycles): MesoCycleData {
+        return MesoCycleData().apply {
+            id = meso.id
+            planning_ps_id = meso.planning_pc_id
+            name = meso.name
+            start_date = meso.start_date
+            end_date = meso.end_date
+
+            microcycles = meso.microcycles?.map { micro ->
+                MicroCycleData().apply {
+                    id = micro.id
+                    planning_ps_id = micro.pc_mesocycle_id
+                    name = micro.name
+                    start_date = micro.startDate
+                    end_date = micro.endDate
+                    workload_color = micro.workloadColor
+                }
+            } ?: emptyList()
+        }
+    }
+
+    /** ✅ Convert Competitive Mesocycles */
+    private fun convertCompetitiveMesoCycle1(meso: GroupListData.ComMesocycles): MesoCycleData {
+        return MesoCycleData().apply {
+            id = meso.id
+            planning_ps_id = meso.planning_pc_id
+            name = meso.name
+            start_date = meso.start_date
+            end_date = meso.end_date
+
+            microcycles = meso.microcycles?.map { micro ->
+                MicroCycleData().apply {
+                    id = micro.id
+                    planning_ps_id = micro.pc_mesocycle_id
+                    name = micro.name
+                    start_date = micro.startDate
+                    end_date = micro.endDate
+                    workload_color = micro.workloadColor
+                }
+            } ?: emptyList()
+        }
+    }
+
+
+    private fun convertTranstionMesoCycle1(meso: GroupListData.TraMesocycles): MesoCycleData {
+        return MesoCycleData().apply {
+            id = meso.id
+            planning_ps_id = meso.planning_pc_id
+            name = meso.name
+            start_date = meso.start_date
+            end_date = meso.end_date
+
+            microcycles = meso.microcycles?.map { micro ->
+                MicroCycleData().apply {
+                    id = micro.id
+                    planning_ps_id = micro.pc_mesocycle_id
+                    name = micro.name
+                    start_date = micro.startDate
+                    end_date = micro.endDate
+                    workload_color = micro.workloadColor
+                }
+            } ?: emptyList()
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -976,7 +1191,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             null
         }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun callGroupApiAthlete(receivedId: Int) {
@@ -999,10 +1213,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         val group = resource!!.data?.find { it.id == receivedId }
 
                         if (group != null) {
-                            Log.d(
-                                "API Response",
-                                "Group found: ${group.group!!.name}, Group ID: ${group.id}"
-                            )
+                            Log.d("API Response", "Group found: ${group.group!!.name}, Group ID: ${group.id}")
+
                             saveSelectedGroupData(
                                 group.group!!.name.toString(),
                                 group.group!!.group_plannings?.firstOrNull()?.planning?.start_date ?: "",
@@ -1011,45 +1223,40 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
                             homeFragmentBinding.selectGroupTxt.text = group.group!!.name
 
-                            val planning = group.group!!.group_plannings?.firstOrNull()
-                            if (planning != null && planning.planning != null) {
+                            val planning = group.group!!.group_plannings?.firstOrNull()?.planning
+
+                            // ✅ Create an empty list to store mesocycles
+                            val mesocycles = mutableListOf<MesoCycleData>()
+
+                            // ✅ Convert and add mesocycles from different sections
+                            planning?.pre_season?.mesocycles?.map { convertPreSeasonMesoCycle(it) }?.let { mesocycles.addAll(it) }
+                            planning?.pre_competitive?.mesocycles?.map { convertPreCompetitiveMesoCycle(it) }?.let { mesocycles.addAll(it) }
+                            planning?.competitive?.mesocycles?.map { convertCompetitiveMesoCycle(it) }?.let { mesocycles.addAll(it) }
+
+
+                            // ✅ Debugging log
+                            if (mesocycles.isNotEmpty()) {
+                                Log.d("API_RESPONSEEEGG", "Extracted mesocycles: ${Gson().toJson(mesocycles)}")
+
+                                // ✅ Save mesocycles to SharedPreferences
+                                val sharedPreferences = requireActivity().getSharedPreferences("MyPrefss", Context.MODE_PRIVATE)
+                                sharedPreferences.edit().putString("mesocycles", Gson().toJson(mesocycles)).apply()
+
+                                // ✅ Apply dots only when a group is selected
+                                setUpCalendar()
                             } else {
-                                homeFragmentBinding.edtStartDate.text = ""
+                                Log.e("API_RESPONSEEEGG", "No mesocycles found, clearing calendar dots!")
+                                clearCalendarDots()
                             }
-
-
-                            Log.d("SKSKSKSK", "onResponse: $today -- $receivedPreCompetitiveStartDate -- $receivedPreCompetitiveEndDate")
-
-                            val preSeasonStartDate = receivedstartDate?.toLocalDate()
-                            val preSeasonEndDate = receivedendDate?.toLocalDate()
-                            val preCompStartDate = receivedPreCompetitiveStartDate?.toLocalDate()
-                            val preCompEndDate = receivedPreCompetitiveEndDate?.toLocalDate()
-                            val CompStartDate = receivedCompetitiveStartDate?.toLocalDate()
-                            val CompEndDate = receivedCompetitiveEndDate?.toLocalDate()
-
-                            Log.d("SKSKSKSK", "onResponse: $today -- $receivedPreCompetitiveStartDate -- $receivedPreCompetitiveEndDate")
-                            if (preSeasonStartDate == today || preSeasonEndDate == today) {
-                                initPlanningDataAthlete(group.group!!.group_plannings,"ToDayPreSeason")
-                            }
-                            if (preCompStartDate == today || preCompEndDate == today) {
-                                Log.d("$$$$$$$$", "onResponse: $$$$$")
-                                initPlanningDataAthlete(group.group!!.group_plannings, "ToDayPreCompetitive")
-                            }
-
-                            if (CompStartDate == today || CompEndDate == today) {
-                                initPlanningDataAthlete(group.group!!.group_plannings,"ToDayCompetitive")
-                            }
-
-                            initLessonDataAthlete(group.group!!.group_lessions)
-                            initEventDataAthlete(group.group!!.group_events)
-                            initTestDataAthlete(group.group!!.group_tests)
 
                         } else {
                             homeFragmentBinding.selectGroupTxt.text = "Group not found for ID: $receivedId"
+                            clearCalendarDots()
                         }
                     } else {
                         homeFragmentBinding.homeProgress.visibility = View.GONE
                         homeFragmentBinding.selectGroupTxt.text = "Failed to fetch data: $message"
+                        clearCalendarDots()
                     }
                 } else if (code == 403) {
                     homeFragmentBinding.homeProgress.visibility = View.GONE
@@ -1060,6 +1267,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     homeFragmentBinding.homeProgress.visibility = View.GONE
                     Log.e("API Error", "Error code: $code, ${response.message()}")
                     call.cancel()
+                    clearCalendarDots()
                 }
             }
 
@@ -1067,9 +1275,98 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 Log.e("GROOOOOOOP", "API call failed: ${t.message}")
                 homeFragmentBinding.homeProgress.visibility = View.GONE
                 call.cancel()
+                clearCalendarDots()
             }
         })
     }
+
+    /** ✅ Convert Pre-Season Mesocycles */
+    private fun convertPreSeasonMesoCycle(meso: GroupListAthlete.PreSMesocycles): MesoCycleData {
+        return MesoCycleData().apply {
+            id = meso.id
+            planning_ps_id = meso.planning_ps_id
+            name = meso.name
+            start_date = meso.start_date
+            end_date = meso.end_date
+
+            microcycles = meso.microcycles?.map { micro ->
+                MicroCycleData().apply {
+                    id = micro.id
+                    planning_ps_id = micro.pc_mesocycle_id
+                    name = micro.name
+                    start_date = micro.startDate
+                    end_date = micro.endDate
+                    workload_color = micro.workloadColor
+                }
+            } ?: emptyList()
+        }
+    }
+
+    /** ✅ Convert Pre-Competitive Mesocycles */
+    private fun convertPreCompetitiveMesoCycle(meso: GroupListAthlete.PreMesocycles): MesoCycleData {
+        return MesoCycleData().apply {
+            id = meso.id
+            planning_ps_id = meso.planning_pc_id
+            name = meso.name
+            start_date = meso.start_date
+            end_date = meso.end_date
+
+            microcycles = meso.microcycles?.map { micro ->
+                MicroCycleData().apply {
+                    id = micro.id
+                    planning_ps_id = micro.pc_mesocycle_id
+                    name = micro.name
+                    start_date = micro.startDate
+                    end_date = micro.endDate
+                    workload_color = micro.workloadColor
+                }
+            } ?: emptyList()
+        }
+    }
+
+    /** ✅ Convert Competitive Mesocycles */
+    private fun convertCompetitiveMesoCycle(meso: GroupListAthlete.ComMesocycles): MesoCycleData {
+        return MesoCycleData().apply {
+            id = meso.id
+            planning_ps_id = meso.planning_pc_id
+            name = meso.name
+            start_date = meso.start_date
+            end_date = meso.end_date
+
+            microcycles = meso.microcycles?.map { micro ->
+                MicroCycleData().apply {
+                    id = micro.id
+                    planning_ps_id = micro.pc_mesocycle_id
+                    name = micro.name
+                    start_date = micro.startDate
+                    end_date = micro.endDate
+                    workload_color = micro.workloadColor
+                }
+            } ?: emptyList()
+        }
+    }
+
+    /** ✅ Clear dots if no mesocycles exist */
+    private fun clearCalendarDots() {
+        homeFragmentBinding.exSevenCalendar.notifyCalendarChanged()
+    }
+
+
+
+
+    private class DayViewContainer(view: View) : ViewContainer(view) {
+        lateinit var day: CalendarDay
+        val binding = Example3CalendarDayBinding.bind(view) // ✅ Replace with your actual ViewBinding
+
+        init {
+            view.setOnClickListener {
+                Log.d("CalendarClick", "Clicked on date: ${day.date}")
+            }
+        }
+    }
+
+
+
 
 
     private fun saveSelectedGroupData(groupName: String, startDate: String, id: String) {
@@ -1172,42 +1469,13 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     private fun initViews() {
         apiClient = APIClient(requireContext())
-        preferenceManager = PreferencesManager(requireContext())
-        Log.d("Login Token", preferenceManager.getToken()!!)
+
         apiInterface = apiClient.client().create(APIInterface::class.java)
         Sportlist = ArrayList()
         WorkOutlist = ArrayList()
         LessonData = ArrayList()
 
-        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        receivedIds = sharedPreferences.getString("id", "default_value") ?: ""
 
-        receivedGroup_Ids = sharedPreferences.getString("group_id", "default_value") ?: ""
-
-        receivedname = sharedPreferences.getString("name", null)
-        receivedstartDate = sharedPreferences.getString("start_date", null)
-        receivedendDate = sharedPreferences.getString("end_date", null)
-        receivedmesocycle = sharedPreferences.getString("mesocycle", null)
-        receivedworkloadColor = sharedPreferences.getString("workload_color", null)
-
-        receivedPreCompetitiveName = sharedPreferences.getString("preCompetitiveName", null)
-        receivedPreCompetitiveStartDate = sharedPreferences.getString("preCompetitiveStartDate", null)
-        receivedPreCompetitiveEndDate = sharedPreferences.getString("preCompetitiveEndDate", null)
-        receivedPreCompetitiveMesocycle = sharedPreferences.getString("preCompetitiveMesocycle", null)
-        receivedPreCompetitiveWorkloadColor = sharedPreferences.getString("preCompetitiveWorkloadColor", null)
-
-
-        receivedCommpetitiveName = sharedPreferences.getString("CompetitiveName", null)
-        receivedCompetitiveStartDate = sharedPreferences.getString("CompetitiveStartDate", null)
-        receivedCompetitiveEndDate = sharedPreferences.getString("CompetitiveEndDate", null)
-        receivedCompetitiveMesocycle = sharedPreferences.getString("CompetitiveMesocycle", null)
-        receivedCompetitiveWorkloadColor = sharedPreferences.getString("CompetitiveWorkloadColor", null)
-
-        receivedTransitionName = sharedPreferences.getString("TransitionName", null)
-        receivedTransitionStartDate = sharedPreferences.getString("TransitionStartDate", null)
-        receivedTransitionEndDate = sharedPreferences.getString("TransitionEndDate", null)
-        receivedTransitionMesocycle = sharedPreferences.getString("TransitionMesocycle", null)
-        receivedTransitionWorkloadColor = sharedPreferences.getString("TransitionWorkloadColor", null)
 
         Log.d("CalenderFragment", "Received ID from SharedPreferences: $receivedIds")
     }
@@ -1720,6 +1988,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 clearSavedGroupData()
             }
         }else {
+
         }
     }
 

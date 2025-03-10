@@ -104,49 +104,60 @@ class selectGroupAdapterAthlete(
         )
     }
 
-    fun getSelectedPreCompetitiveGroupData(): Map<String, String?> {
+    fun getSelectedPreCompetitiveGroupData(): Map<String, Any?> {
         val groupPlanning = PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.pre_competitive
-        val mesocycles = groupPlanning?.mesocycles
-        val microcycles = mesocycles?.getOrNull(0)?.microcycles
+        val mesocycles = groupPlanning?.mesocycles ?: emptyList()
+
+        val workloadColors = mesocycles.flatMap { it.microcycles ?: emptyList() }.mapNotNull { it.workloadColor }
 
         return mapOf(
             "PreCompetitivename" to groupPlanning?.name,
             "PreCompetitivestart_date" to groupPlanning?.start_date,
             "PreCompetitiveend_date" to groupPlanning?.end_date,
             "PreCompetitivemesocycle" to groupPlanning?.mesocycle,
-            "PreCompetitiveworkload_color" to microcycles?.getOrNull(0)?.workloadColor
+            "PreCompetitiveworkload_color" to workloadColors
         )
     }
 
+
+
     fun getSelectedCompetitiveGroupData(): Map<String, String?> {
         val groupPlanning = PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.competitive
-        val mesocycles = groupPlanning?.mesocycles
-        val microcycles = mesocycles?.getOrNull(0)?.microcycles
+        val mesocycles = groupPlanning?.mesocycles ?: emptyList()
+        val microcycles = mesocycles.firstOrNull()?.microcycles ?: emptyList()
+
+        val workloadColor = microcycles.firstOrNull()?.workloadColor ?: "#FFFFFF"
+
+        Log.e("CompetitiveData", "Workload Color: $workloadColor")
 
         return mapOf(
             "Competitivename" to groupPlanning?.name,
             "Competitivestart_date" to groupPlanning?.start_date,
             "Competitiveend_date" to groupPlanning?.end_date,
             "Competitivemesocycle" to groupPlanning?.mesocycle,
-            "Competitiveworkload_color" to microcycles?.getOrNull(0)?.workloadColor
+            "Competitiveworkload_color" to workloadColor
         )
     }
 
+
     fun getSelectedTransitionGroupData(): Map<String, String?> {
         val groupPlanning = PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.transition
-        val mesocycles = groupPlanning?.mesocycles
-        val microcycles = mesocycles?.getOrNull(0)?.microcycles
+        val mesocycles = groupPlanning?.mesocycles ?: emptyList()
+        val microcycles = mesocycles.firstOrNull()?.microcycles ?: emptyList()
 
-        Log.d("AXAXAXAXAX", "getSelectedTransitionGroupData: ${groupPlanning}")
+        val workloadColor = microcycles.firstOrNull()?.workloadColor ?: "#FFFFFF"
+
+        Log.e("TransitionData", "Workload Color: $workloadColor")
 
         return mapOf(
             "Transitionname" to groupPlanning?.name,
             "Transitionstart_date" to groupPlanning?.start_date,
             "Transitionend_date" to groupPlanning?.end_date,
             "Transitionmesocycle" to groupPlanning?.mesocycle,
-            "Transitionworkload_color" to microcycles?.getOrNull(0)?.workloadColor
+            "Transitionworkload_color" to workloadColor
         )
     }
+
 
     override fun getItemCount(): Int {
         return splist!!.size

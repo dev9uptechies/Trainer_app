@@ -130,6 +130,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         editor.putString("TransitionEndDate", TransitionEndDate)
         editor.putString("TransitionMesocycle", TransitionMesocycle)
         editor.putString("TransitionWorkloadColor", TransitionWorkloadColor)
+
+
         editor.apply()
 
 
@@ -169,7 +171,10 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         editor.putString("TransitionMesocycle", TransitionMesocycle)
         editor.putString("TransitionWorkloadColor", TransitionWorkloadColor)
 
+
+
         editor.apply()
+
 
 
         Log.d("desss", "onDestroy: App destroyed, ID removed")
@@ -324,6 +329,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         TransitionWorkloadColor = bundleTransition?.getString("Transitionworkload_color")
 
         Log.d("SLSLSLSLLSLSL", "initViews: $name   $TransitionStartDate")
+        Log.e("EDDDDDIEEEEEE", "onDestroy: "+workloadColor )
 
         if (preferenceManager.GetFlage() == "Athlete") {
             homeBinding.LinerAthlete.visibility = View.VISIBLE
