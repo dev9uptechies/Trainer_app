@@ -53,8 +53,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.math.log
 
-class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
+class ProfileFragment : Fragment(),OnItemClickListener.OnItemClickCallback {
 
     lateinit var binding: FragmentProfileBinding
 
@@ -65,6 +66,7 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     private lateinit var Sportlist: java.util.ArrayList<Sport_list>
     private var selectedImageUri: Uri? = null
     lateinit var adapterTest: SetTestInProfile
+    var TestDataList: ArrayList<RegisterData.TestAthletes>? = null
     val sportsIds = mutableListOf<Int>()
 
     override fun onCreateView(
@@ -74,7 +76,7 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         binding = FragmentProfileBinding.inflate(inflater, container, false)
 
         initView()
-        GetProfile()
+        GetProfile(false)
         checkBoxManage()
         buttonClick()
 //        GetTestList()
@@ -127,22 +129,31 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         }
     }
 
-    private fun GetProfile() {
-        binding.progressBar.visibility = View.VISIBLE
+    private fun GetProfile(from:Boolean) {
+//        binding.progressBar.visibility = View.VISIBLE
+        Utils.showLoading(requireActivity())
+
 
         apiInterface.ProfileDataAthlete()?.enqueue(object : Callback<RegisterData?> {
             override fun onResponse(call: Call<RegisterData?>, response: Response<RegisterData?>) {
-                binding.progressBar.visibility = View.GONE
+                Utils.hideLoading(requireActivity())
+
 
                 if (response.isSuccessful) {
                     val resource = response.body()
 
                     val data = resource?.data
                     if (data != null) {
-                        Sportlist.clear()
-                        initrecyclerTest(resource.data!!.test_athlete)
+                        if (from == true){
+                            TestDataList = resource.data!!.test_athlete
+                            initrecyclerTest(TestDataList)
+                        }else{
+                            TestDataList = resource.data!!.test_athlete
+                            initrecyclerTest(TestDataList)
+                            Sportlist.clear()
+                            setData(data)
+                        }
 
-                        setData(data)
                     } else {
                         Toast.makeText(
                             requireContext(),
@@ -158,7 +169,7 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             }
 
             override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                binding.progressBar.visibility = View.GONE
+                Utils.hideLoading(requireActivity())
                 Log.d("FERROR", "onFailure: ${t.message}")
                 Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT)
                     .show()
@@ -166,7 +177,6 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             }
         })
     }
-
 
     private fun setData(data: RegisterData.Data?) {
         binding.groupName.setText(data?.name ?: "")
@@ -192,14 +202,14 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
             .build()
 
         Picasso.get()
-            .load("https://4trainersapp.com" + data?.image)
+            .load("https://uat.4trainersapp.com" + data?.image)
             .fit()
             .transform(transformation)
             .error(R.drawable.app_icon)
             .into(binding.roundImage)
 
         val imageUrl =
-            "https://4trainersapp.com" + (data?.image ?: "")
+            "https://uat.4trainersapp.com" + (data?.image ?: "")
         Log.d("ImageURL", "URL: $imageUrl")
 
         val sharedPreferences = context?.getSharedPreferences("appPrefs", Context.MODE_PRIVATE)
@@ -281,9 +291,10 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     }
 
     private fun UpdateProfile(context: Context, imageUri: Uri?) {
-        binding.progressBar.visibility = View.VISIBLE
+        Utils.showLoading(requireActivity())
+
         if (!validations()) {
-            binding.progressBar.visibility = View.GONE
+            Utils.hideLoading(requireActivity())
             return // Stop execution if validation fails
         }
 
@@ -300,7 +311,7 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
         if (imageParttest == null) {
             Log.e("ERRORNUll", "Invalid file URI or file does not exist.")
-            binding.progressBar.visibility = View.GONE
+            Utils.hideLoading(requireActivity())
             return
         }
 
@@ -353,7 +364,7 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                     call: Call<RegisterData?>,
                     response: Response<RegisterData?>
                 ) {
-                    binding.progressBar.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
 
                     if (response.isSuccessful) {
                         val resource = response.body()
@@ -386,7 +397,7 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                 }
 
                 override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                    binding.progressBar.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.e("UpdateProfile", "Error: ${t.message}")
                     Toast.makeText(
                         requireContext(),
@@ -685,17 +696,21 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 //    }
 
     private fun initrecyclerTest(testdatalist: ArrayList<RegisterData.TestAthletes>?) {
-        binding.progressBar.visibility = View.GONE
+        Utils.hideLoading(requireActivity())
         binding.rcvtest.layoutManager = LinearLayoutManager(requireContext())
         adapterTest = SetTestInProfile(testdatalist, requireContext(), this)
         binding.rcvtest.adapter = adapterTest
     }
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
+
+        Log.d("HSHSHSHS", "onItemClicked: $string")
+
         if (string == "favtest") {
 
             Log.d("FAVTEST", "onItemClicked: FIRST")
-            binding.progressBar.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
+
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.Favourite_Test(id)?.enqueue(object : Callback<RegisterData?> {
@@ -706,7 +721,8 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
                     Log.d("FAVTEST", "onItemClicked: SECOND")
 
-                    binding.progressBar.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
+
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
@@ -716,11 +732,15 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                         if (Success) {
                             Log.d("FAVTEST", "onItemClicked: THIRD")
 
-                            binding.progressBar.visibility = View.GONE
+                            GetProfile(true)
+
+                            Utils.hideLoading(requireActivity())
+
 //                            loadData()
                         } else {
 
-                            binding.progressBar.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
+
                             Toast.makeText(
                                 requireContext(),
                                 "" + Message,
@@ -731,7 +751,8 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(requireContext())
                     } else {
-                        binding.progressBar.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
+
                         Toast.makeText(
                             requireContext(),
                             "" + response.message(),
@@ -743,14 +764,16 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                 }
 
                 override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                    binding.progressBar.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
+
                     Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
                         .show()
                     call.cancel()
                 }
             })
         }else if (string == "unfavtest"){
-            binding.progressBar.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
+
             var id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.DeleteFavourite_Test(type.toInt())
@@ -760,17 +783,23 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                         response: Response<RegisterData?>
                     ) {
                         Log.d("TAG", response.code().toString() + "")
-                        binding.progressBar.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
+
                         val code = response.code()
                         if (code == 200) {
                             val resource: RegisterData? = response.body()
                             val Success: Boolean = resource?.status!!
                             val Message: String = resource.message!!
                             if (Success) {
-                                binding.progressBar.visibility = View.GONE
+                                Utils.hideLoading(requireActivity())
+
+                                GetProfile(true)
+
+//                                initrecyclerTest(TestDataList)
 //                                loadData()
                             } else {
-                                binding.progressBar.visibility = View.GONE
+                                Utils.hideLoading(requireActivity())
+
                                 Toast.makeText(
                                     requireContext(),
                                     "" + Message,
@@ -791,7 +820,8 @@ class ProfileFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                     }
 
                     override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                        binding.progressBar.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
+
                         Toast.makeText(
                             requireContext(),
                             "" + t.message,

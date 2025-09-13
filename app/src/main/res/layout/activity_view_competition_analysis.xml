@@ -38,7 +38,7 @@
             app:layout_constraintStart_toEndOf="@+id/back"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="@dimen/_10sdp"
@@ -60,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="sub title"
+                    android:text="@string/warmupDesc"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp" />
 
@@ -160,7 +160,7 @@
                     android:visibility="gone" />
             </LinearLayout>
 
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/save"
@@ -177,7 +177,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="Save"
+                android:text="@string/save"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_18sdp" />
 

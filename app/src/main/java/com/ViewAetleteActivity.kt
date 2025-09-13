@@ -158,6 +158,7 @@ class ViewAetleteActivity : AppCompatActivity(),  OnItemClickListener.OnItemClic
 
             startActivity(Intent(this, PerformanceProfileActivity::class.java).apply {
                 putExtra("athleteId", mainId)
+                putExtra("From", "AthleteSection")
             })
         }
 

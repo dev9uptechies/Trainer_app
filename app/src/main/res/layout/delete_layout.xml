@@ -14,7 +14,7 @@
         android:layout_height="@dimen/_45sdp"
         android:gravity="center"
         android:padding="12dp"
-        android:text="Alert"
+        android:text="@string/alert"
         android:textColor="@color/black"
         android:textSize="18sp" />
 
@@ -26,7 +26,7 @@
         android:layout_marginEnd="@dimen/_5sdp"
         android:fontFamily="@font/poppins_medium"
         android:gravity="center"
-        android:text="Are You Sure you want to Delete ?"
+        android:text="@string/areYouSure"
         android:textColor="@color/black"
         android:textSize="15sp" />
 
@@ -47,7 +47,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/poppins_semi_bold"
             android:gravity="center"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 
@@ -63,7 +63,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/poppins_semi_bold"
             android:gravity="center"
-            android:text="Ok"
+            android:text="@string/okay"
             android:textColor="@android:color/black"
             android:textSize="18sp" />
     </LinearLayout>

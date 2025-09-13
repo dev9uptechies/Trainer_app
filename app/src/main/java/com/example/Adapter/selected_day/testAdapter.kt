@@ -1,6 +1,7 @@
 package com.example.Adapter.selected_day
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.OnItemClickListener
 import com.example.model.SelectedDaysModel
 import com.example.trainerapp.R
+import com.example.trainerapp.viewTestActivity
 
 class testAdapter(
     private var user: List<SelectedDaysModel.Test>,
@@ -22,6 +24,9 @@ class testAdapter(
             .inflate(R.layout.favorite_list_item, parent, false)
         return MyViewHolder(itemView)
     }
+
+    val athleteNames = ArrayList<String>()
+    val athleteResults = ArrayList<String>()
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val data = user?.get(position)
@@ -40,6 +45,18 @@ class testAdapter(
             holder.image.setImageResource(R.drawable.ic_favorite_select)
         } else {
             holder.image.setImageResource(R.drawable.ic_favorite_red)
+        }
+
+        data.test_athletes?.forEach { athleteData ->
+            athleteData.athlete?.name?.let { athleteNames.add(it) }
+            athleteResults.add((athleteData.result ?: "").toString())
+        }
+
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, viewTestActivity::class.java)
+            intent.putExtra("TestId", data.id)
+            context.startActivity(intent)
         }
 
         holder.image.setOnClickListener(

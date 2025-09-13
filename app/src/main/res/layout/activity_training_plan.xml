@@ -40,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Training Plans"
+                    android:text="@string/planning"
                     android:textColor="@color/splash_text_color"
                     android:textSize="@dimen/_18sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -109,7 +109,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_8sdp"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Add Training Plan"
+                android:text="@string/addPlanning"
                 android:textColor="@color/white" />
 
         </LinearLayout>

@@ -242,7 +242,7 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
 
                                 when {
                                     !exercise.video.isNullOrEmpty() -> {
-                                        playNormalVideo("https://4trainersapp.com${exercise.video}")
+                                        playNormalVideo("https://uat.4trainersapp.com${exercise.video}")
                                     }
                                     !exercise.video_link.isNullOrEmpty() -> {
                                         if (isYouTubeUrl(exercise.video_link)) {
@@ -1217,7 +1217,7 @@ class EdiExerciseActivity : AppCompatActivity(), PickiTCallbacks,
         id = ArrayList()
         type = ArrayList()
         editExerciseBinding.nextButtonText.text = "Edit"
-        editExerciseBinding.titleName.text = "Edit Exercise"
+        editExerciseBinding.titleName.text = getString(R.string.editExercise)
         exerciselist = mutableListOf()
         generallist = mutableListOf()
         specificlist = mutableListOf()

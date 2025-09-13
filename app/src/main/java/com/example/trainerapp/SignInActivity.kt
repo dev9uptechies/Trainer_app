@@ -45,11 +45,12 @@ class SignInActivity : AppCompatActivity() {
 //        signInBinding.edtPassword.setText("Testing@112")
         signInBinding.edtEmail.setText("4trainersapp@gmail.com")
         signInBinding.edtPassword.setText("4Trainersapp!")
+        signInBinding.edtEmail.setText("test01@yopmail.com")
+        signInBinding.edtPassword.setText("Test@1234")
 //        signInBinding.edtEmail.setText("sujaldevani05@gmail.com")
         //        signInBinding.edtPassword.setText("Sujal@_07")
 //        signInBinding.edtEmail.setText("athlete91@app.com")
 //        signInBinding.edtPassword.setText("Athlete@123")
-
 
         checkFieldValue()
         checkButtonClick()
@@ -186,11 +187,9 @@ class SignInActivity : AppCompatActivity() {
                                                 SelectSportActivity::class.java
                                             )
                                         )
+                                        finish()
 
 //                                        val intent = Intent(this@SignInActivity, SelectSportActivity::class.java)
-
-
-                                        finish()
                                     } else {
 //                                val intent =
 //                                      Intent(this@SignInActivity, MainHomeActivity::class.java)
@@ -241,8 +240,7 @@ class SignInActivity : AppCompatActivity() {
                         } else {
                             progress_bar.visibility = View.GONE
                             val message = response.message()
-                            Toast.makeText(this@SignInActivity, "" + message, Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(this@SignInActivity, "" + message, Toast.LENGTH_SHORT).show()
                             call.cancel()
                         }
                     }

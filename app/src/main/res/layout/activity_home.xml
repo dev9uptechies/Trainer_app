@@ -7,8 +7,8 @@
     android:layout_height="match_parent"
     android:background="@color/black"
     tools:context=".HomeActivity"
+    android:fitsSystemWindows="true"
     tools:openDrawer="start">
-
 
     <FrameLayout
         android:layout_width="match_parent"

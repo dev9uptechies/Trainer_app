@@ -28,10 +28,15 @@ class FavoritelessonAdapter(private var user: ArrayList<LessonData.lessionData>?
         holder.date.visibility = View.VISIBLE
         holder.tvFname.text = movie!!.name
         holder.date.text = movie!!.date
-        holder.tvgoal.text = movie!!.goal?.name
+        holder.tvgoal.text = movie.lessonPrograms
+            ?.mapNotNull { it.program?.goal?.name }
+            ?.joinToString(", ") ?: ""
+
         holder.tv_athlet.text = movie!!.time
         holder.image.setImageResource(R.drawable.ic_favorite_select)
         holder.image.setOnClickListener(OnItemClickListener(position, listener, movie.id!!.toLong() , "lesson"))
+
+        Log.d("SKKSKKSKSKSK", "onBindViewHolder: ${movie.goal?.name}")
 
         holder.itemView.setOnClickListener {
             val lessonId = movie?.id?.toInt() ?: 0

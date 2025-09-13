@@ -113,6 +113,7 @@ class CreateTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     }
 
     private fun loadData() {
+        timerData.clear()
         getTimerData()
         createTimerBinding.scrollView.isRefreshing = false
     }
@@ -235,7 +236,7 @@ class CreateTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
             "Edit" -> {
                 val intent = Intent(this, EdiTimerActivity::class.java)
-                intent.putExtra("timerId", type.toInt())
+                intent.putExtra("timerId", type.toString())
                 startActivity(intent)
 //                Toast.makeText(this@CreateTimerActivity, "edit $type click", Toast.LENGTH_SHORT)
 //                    .show()

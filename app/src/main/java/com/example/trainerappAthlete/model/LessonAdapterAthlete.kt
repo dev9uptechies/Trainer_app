@@ -9,12 +9,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.GroupListData
 import com.example.OnItemClickListener
 import com.example.ViewLessonActivity
 import com.example.trainerapp.R
 
 class LessonAdapterAthlete(
-    private var data: ArrayList<GroupListAthlete.GroupLesson>?,
+    private var data: ArrayList<GroupListData.GroupLesson>?,
     private val context: Context,
     private val listener: OnItemClickListener.OnItemClickCallback,
     val screen:String
@@ -34,7 +35,9 @@ class LessonAdapterAthlete(
         holder.name.text = lesson.lession?.name ?: ""
         holder.totaltime.text = lesson.lession?.time ?: ""
         holder.date.text = lesson.lession?.date ?: ""
-        holder.goal.text = lesson.lession?.lesson_programs?.getOrNull(0)?.program?.goal?.name ?: ""
+        holder.goal.text = lesson.lession?.lesson_programs
+            ?.mapNotNull { it.program?.goal?.name }
+            ?.joinToString(", ") ?: ""
 
         if(screen == "GroupDetailsScreen") {
             holder.itemView.setOnClickListener {

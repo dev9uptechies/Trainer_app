@@ -31,6 +31,10 @@ class FavoritetestAdapter(private var user: ArrayList<LessonData.lessionData>?, 
 
         holder.date.visibility = View.VISIBLE
         holder.unit.visibility = View.VISIBLE
+        holder.tvinAthlete.visibility = View.VISIBLE
+        holder.total_time.visibility = View.GONE
+        holder.tv_athlet.visibility = View.GONE
+
 
         holder.total_time.text = "Instrested Athlete:"
 
@@ -39,6 +43,10 @@ class FavoritetestAdapter(private var user: ArrayList<LessonData.lessionData>?, 
         holder.tvFname.text = movie!!.title
         holder.tvgoal.text = movie!!.goal
         holder.tv_athlet.text = movie!!.testAthletes?.getOrNull(0)?.athlete?.name ?: ""
+        holder.tvinAthlete.text = "Instrested Athlete: " +  movie.testAthletes
+            ?.mapNotNull { it.athlete?.name }
+            ?.joinToString(", ") ?: ""
+
 
         holder.itemView.setOnClickListener {
 
@@ -76,6 +84,8 @@ class FavoritetestAdapter(private var user: ArrayList<LessonData.lessionData>?, 
         var goal: TextView = view.findViewById<View>(R.id.goal) as TextView
         var total_time: TextView = view.findViewById<View>(R.id.total_time) as TextView
         var tv_athlet: TextView = view.findViewById<View>(R.id.tv_athlet) as TextView
+        var tvinAthlete: TextView = view.findViewById(R.id.tvinAt)
+
 
     }
 }

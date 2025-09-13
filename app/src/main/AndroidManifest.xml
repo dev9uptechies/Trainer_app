@@ -17,8 +17,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
-
-
     <application
         android:allowBackup="true"
         android:enableOnBackInvokedCallback="true"
@@ -32,8 +30,12 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan"
         tools:targetApi="m">
+        <activity
+            android:name=".TemplateActivity"
+            android:exported="false" />
 
-        <service android:name="com.example.model.FirebaseMessageReceiver"
+        <service
+            android:name="com.example.model.FirebaseMessageReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -41,7 +43,7 @@
         </service>
 
         <activity
-            android:name="com.example.trainerapp.viewTestActivity"
+            android:name=".viewTestActivity"
             android:exported="false" />
         <activity
             android:name="com.example.trainerappAthlete.ProfileActivity"
@@ -264,7 +266,6 @@
         <activity
             android:name=".MainActivity2"
             android:exported="false"
-            android:label="@string/title_activity_main2"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.TrainerApp.NoActionBar"
             android:windowSoftInputMode="adjustPan" />

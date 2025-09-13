@@ -282,7 +282,7 @@ class CreateNewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val width = (displayMetrics.widthPixels * 0.9f).toInt()
+        val width = WindowManager.LayoutParams.WRAP_CONTENT
         val height = WindowManager.LayoutParams.WRAP_CONTENT
         dialog.window!!.setLayout(width, height)
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

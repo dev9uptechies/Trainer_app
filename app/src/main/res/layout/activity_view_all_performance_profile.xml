@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20sdp"
             android:fontFamily="@font/poppins_medium"
-            android:text="Performance Profile"
+            android:text="@string/performanceProfile"
             android:textColor="@color/splash_text_color"
             android:textSize="@dimen/_18sdp"
             app:layout_constraintEnd_toEndOf="parent"

@@ -19,19 +19,24 @@ import com.example.trainerapp.databinding.ActivityViewRemindMeBinding
 class ViewRemindMeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityViewRemindMeBinding
-
     private val sharedPreferences by lazy {
         getSharedPreferences("RemindMePrefs", MODE_PRIVATE)
     }
-
     private val reminderList = mutableListOf<String>()
+    private lateinit var adapter: ReminderAdapter // Define adapter globally
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewRemindMeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val adapter = ReminderAdapter(this, reminderList)
+        // Initialize adapter with delete functionality
+        adapter = ReminderAdapter(this, reminderList,
+            { position -> deleteReminder(position) },  // ✅ Delete Callback
+            { position -> editReminder(position) }  // ✅ Edit Callback
+        )
+        binding.reminderListView.adapter = adapter
+
         binding.reminderListView.adapter = adapter
 
         ButtonClick()
@@ -40,9 +45,7 @@ class ViewRemindMeActivity : AppCompatActivity() {
 
     private fun ButtonClick() {
         binding.back.setOnClickListener { finish() }
-        binding.add.setOnClickListener {
-            AddRemindMe()
-        }
+        binding.add.setOnClickListener { AddRemindMe() }
     }
 
     private fun AddRemindMe() {
@@ -54,8 +57,7 @@ class ViewRemindMeActivity : AppCompatActivity() {
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val width = (displayMetrics.widthPixels * 0.9f).toInt()
-        val height = WindowManager.LayoutParams.WRAP_CONTENT
-        dialog.window!!.setLayout(width, height)
+        dialog.window!!.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val editText = dialog.findViewById<EditText>(R.id.edt_name)
@@ -71,12 +73,7 @@ class ViewRemindMeActivity : AppCompatActivity() {
             if (inputText.isNotEmpty() && inputText2.isNotEmpty()) {
                 val combinedReminder = "$inputText - $inputText2"
                 reminderList.add(combinedReminder)
-
-                with(sharedPreferences.edit()) {
-                    putStringSet("RemindMeDataList", reminderList.toSet()) // Store as Set
-                    apply()
-                }
-
+                saveReminders()
                 getSavedReminders()
 
                 Toast.makeText(this, "Reminder saved!", Toast.LENGTH_SHORT).show()
@@ -89,21 +86,80 @@ class ViewRemindMeActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private fun editReminder(position: Int) {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.dialog_add_remind_me)
+
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val width = (displayMetrics.widthPixels * 0.9f).toInt()
+        dialog.window!!.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val editText = dialog.findViewById<EditText>(R.id.edt_name)
+        val editText2 = dialog.findViewById<EditText>(R.id.tv_pause_cycle)
+        val saveButton = dialog.findViewById<CardView>(R.id.card_add)
+        val cancelButton = dialog.findViewById<CardView>(R.id.crad_cancel)
+
+        // ✅ Pre-fill the edit texts with the selected reminder details
+        val selectedReminder = reminderList[position].split(" - ")
+        if (selectedReminder.size == 2) {
+            editText.setText(selectedReminder[0])  // Set Name
+            editText2.setText(selectedReminder[1])  // Set Date
+        }
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+
+        saveButton.setOnClickListener {
+            val newName = editText.text.toString().trim()
+            val newDate = editText2.text.toString().trim()
+
+            if (newName.isNotEmpty() && newDate.isNotEmpty()) {
+                // ✅ Update the existing reminder
+                reminderList[position] = "$newName - $newDate"
+                saveReminders()
+                getSavedReminders()
+
+                Toast.makeText(this, "Reminder updated!", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            } else {
+                Toast.makeText(this, "Please enter valid data", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialog.show()
+    }
+
     private fun getSavedReminders() {
         val savedSet = sharedPreferences.getStringSet("RemindMeDataList", null)
 
         if (!savedSet.isNullOrEmpty()) {
             reminderList.clear()
             reminderList.addAll(savedSet)
-
-            (binding.reminderListView.adapter as ReminderAdapter).notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
 
             binding.reminderListView.visibility = View.VISIBLE
             binding.tvNodata.visibility = View.GONE
         } else {
-            // Show "No Data" message if there are no reminders saved
             binding.reminderListView.visibility = View.GONE
             binding.tvNodata.visibility = View.VISIBLE
+        }
+    }
+
+    private fun deleteReminder(position: Int) {
+        if (position < reminderList.size) {
+            reminderList.removeAt(position)
+            saveReminders()
+            getSavedReminders()
+        }
+    }
+
+    private fun saveReminders() {
+        with(sharedPreferences.edit()) {
+            putStringSet("RemindMeDataList", reminderList.toSet())
+            apply()
         }
     }
 }

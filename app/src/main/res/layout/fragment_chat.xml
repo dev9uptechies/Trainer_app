@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="Group Chat"
+                android:text="@string/groupChat"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_16sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/sidemenu"

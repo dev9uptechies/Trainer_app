@@ -142,10 +142,50 @@ class viewTestActivity : AppCompatActivity() {
             }
 
         } else {
-            viewTestBinding.nestedScrollView2.visibility = View.VISIBLE
-            viewTestBinding.nestedScrollView3.visibility = View.VISIBLE
-            viewTestBinding.linerAdd.visibility= View.GONE
-            loadData()
+            val From = intent.getStringExtra("From")
+
+            if (From == "AthleteSection"){
+                viewTestBinding.nestedScrollView2.visibility = View.GONE
+                viewTestBinding.nestedScrollView3.visibility = View.VISIBLE
+                viewTestBinding.cbRepeat.isEnabled = false
+                viewTestBinding.cbRepeat.isChecked = false
+                viewTestBinding.goalTxt.text = "Goal: $AthleteTestGoal"
+                viewTestBinding.unitTxt.text = "Unit: $AthleteTestUnit"
+                viewTestBinding.test.text = AthleteTestName
+
+                val parentLayout = viewTestBinding.linerAdd
+
+                parentLayout.removeAllViews()
+
+                for (i in AthleteTestAthleteName.indices) {
+                    val athleteView = LayoutInflater.from(this).inflate(R.layout.athlete_result_data, null)
+
+                    val athleteNameTextView = athleteView.findViewById<TextView>(R.id.athelete_name)
+                    val resultEditText = athleteView.findViewById<EditText>(R.id.Result_edt)
+
+
+                    athleteNameTextView.text = AthleteTestAthleteName[i]
+                    resultEditText.setText(AthleteTestAthleteResult.getOrNull(i) ?: "")
+
+                    val layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        resources.getDimensionPixelSize(R.dimen._30sdp)
+                    ).apply {
+                        setMargins(0, 10, 0, 0)
+                    }
+
+                    athleteView.layoutParams = layoutParams
+
+                    parentLayout.addView(athleteView)
+                }
+
+            }else{
+                viewTestBinding.nestedScrollView2.visibility = View.VISIBLE
+                viewTestBinding.nestedScrollView3.visibility = View.VISIBLE
+                viewTestBinding.linerAdd.visibility= View.GONE
+                loadData()
+            }
+
         }
 
 

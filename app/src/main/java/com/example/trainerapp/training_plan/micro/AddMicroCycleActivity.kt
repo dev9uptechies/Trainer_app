@@ -803,10 +803,10 @@ class AddMicroCycleActivity : AppCompatActivity() {
                 Locale.getDefault()
             ) // Updated format to match "02 Jan, 2025"
             val date = format.parse(dateString)
-            date?.time ?: System.currentTimeMillis() // Fallback to current time if parsing fails
+            date?.time ?: System.currentTimeMillis()
         } catch (e: Exception) {
             Log.e("DateConversion009990", "Error converting date: ${e.message}")
-            System.currentTimeMillis() // Fallback to current time
+            System.currentTimeMillis()
         }
     }
 

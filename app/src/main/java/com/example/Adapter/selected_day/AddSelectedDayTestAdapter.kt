@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.OnItemClickListener
@@ -60,7 +61,7 @@ class AddSelectedDayTestAdapter(
         holder.checkBox.isChecked = position == selectedPosition
         holder.checkBox.isClickable = false
 
-        holder.itemView.setOnClickListener {
+        holder.card.setOnClickListener {
             val currentPosition = holder.adapterPosition
             if (selectedPosition != currentPosition) {
                 val previousSelectedPosition = selectedPosition
@@ -140,5 +141,8 @@ class AddSelectedDayTestAdapter(
         var tvDate: TextView = view.findViewById(R.id.tv_date)
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox)
         var editImage: ImageView = view.findViewById(R.id.img_edit)
+        var swipe: SwipeLayout = view.findViewById(R.id.swipe_layout)
+        var card: CardView = view.findViewById(R.id.rela_dragged)
+
     }
 }

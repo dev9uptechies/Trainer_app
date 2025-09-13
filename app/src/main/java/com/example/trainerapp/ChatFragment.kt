@@ -39,6 +39,20 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         }
     }
 
+    private var isReceiverRegistered = false
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isReceiverRegistered) {
+            context?.let {
+                LocalBroadcastManager.getInstance(it).unregisterReceiver(chatUpdateReceiver)
+            }
+            isReceiverRegistered = false
+        }
+    }
+
+
     private lateinit var apiInterface: APIInterface
     private lateinit var apiClient: APIClient
     private lateinit var preferenceManager: PreferencesManager
@@ -50,6 +64,26 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     ): View {
         chatBinding = FragmentChatBinding.inflate(inflater, container, false)
         return chatBinding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!isReceiverRegistered) {
+
+            if (!isReceiverRegistered) {
+                LocalBroadcastManager.getInstance(requireContext())
+                    .registerReceiver(chatUpdateReceiver, IntentFilter("update_chat"))
+                isReceiverRegistered = true
+            }
+            val userType = preferenceManager.GetFlage()
+
+            if (userType == "Athlete") {
+                callGroupChatApiAthlete()
+            } else {
+                callGroupChatApi()
+            }
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -77,83 +111,97 @@ class ChatFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(chatUpdateReceiver)
+        context?.let {
+            LocalBroadcastManager.getInstance(it).unregisterReceiver(chatUpdateReceiver)
+        }
     }
 
     private fun callGroupChatApi() {
-        chatBinding.groupChatProgress.visibility = View.VISIBLE
-        apiInterface.GropChateList()?.enqueue(object : Callback<GroupChateListData?> {
-            override fun onResponse(
-                call: Call<GroupChateListData?>,
-                response: Response<GroupChateListData?>
-            ) {
-                if (!isAdded) return
-                Log.d("TAG", response.code().toString())
-                val code = response.code()
-                chatBinding.groupChatProgress.visibility = View.GONE
+        try {
 
-                if (code == 200) {
-                    val resource = response.body()
-                    val success = resource?.status ?: false
-                    val message = resource?.message ?: ""
+            Utils.showLoading(requireActivity())
+            apiInterface.GropChateList()?.enqueue(object : Callback<GroupChateListData?> {
+                override fun onResponse(
+                    call: Call<GroupChateListData?>,
+                    response: Response<GroupChateListData?>
+                ) {
+                    if (!isAdded) return
+                    Log.d("TAG", response.code().toString())
+                    val code = response.code()
+                    Utils.hideLoading(requireActivity())
 
-                    if (success) {
-                        initRecycler(resource!!.data!!)
+                    if (code == 200) {
+                        val resource = response.body()
+                        val success = resource?.status ?: false
+                        val message = resource?.message ?: ""
+
+                        if (success) {
+                            initRecycler(resource!!.data!!)
+                        } else {
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    } else if (code == 403) {
+                        handleSessionExpired()
                     } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, response.message(), Toast.LENGTH_SHORT).show()
                     }
-                } else if (code == 403) {
-                    handleSessionExpired()
-                } else {
-                    Toast.makeText(context, response.message(), Toast.LENGTH_SHORT).show()
                 }
-            }
 
-            override fun onFailure(call: Call<GroupChateListData?>, t: Throwable) {
-                if (!isAdded) return
-                chatBinding.groupChatProgress.visibility = View.GONE
-                Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
-                call.cancel()
-            }
-        })
+                override fun onFailure(call: Call<GroupChateListData?>, t: Throwable) {
+                    if (!isAdded) return
+                    Utils.hideLoading(requireActivity())
+                    Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
+                    call.cancel()
+                }
+            })
+
+        } catch (e: Exception) {
+
+        }
     }
 
     private fun callGroupChatApiAthlete() {
-        chatBinding.groupChatProgress.visibility = View.VISIBLE
-        apiInterface.GropChateListAthlete()?.enqueue(object : Callback<GroupChateListData?> {
-            override fun onResponse(
-                call: Call<GroupChateListData?>,
-                response: Response<GroupChateListData?>
-            ) {
-                if (!isAdded) return
-                Log.d("TAG", response.code().toString())
-                val code = response.code()
-                chatBinding.groupChatProgress.visibility = View.GONE
+        try {
 
-                if (code == 200) {
-                    val resource = response.body()
-                    val success = resource?.status ?: false
-                    val message = resource?.message ?: ""
+            Utils.showLoading(requireActivity())
+            apiInterface.GropChateListAthlete()?.enqueue(object : Callback<GroupChateListData?> {
+                override fun onResponse(
+                    call: Call<GroupChateListData?>,
+                    response: Response<GroupChateListData?>
+                ) {
+                    if (!isAdded) return
+                    Log.d("TAG", response.code().toString())
+                    val code = response.code()
+                    Utils.hideLoading(requireActivity())
 
-                    if (success) {
-                        initRecycler(resource!!.data!!)
+                    if (code == 200) {
+                        val resource = response.body()
+                        val success = resource?.status ?: false
+                        val message = resource?.message ?: ""
+
+                        if (success) {
+                            initRecycler(resource!!.data!!)
+                        } else {
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    } else if (code == 403) {
+                        handleSessionExpired()
                     } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, response.message(), Toast.LENGTH_SHORT).show()
                     }
-                } else if (code == 403) {
-                    handleSessionExpired()
-                } else {
-                    Toast.makeText(context, response.message(), Toast.LENGTH_SHORT).show()
                 }
-            }
 
-            override fun onFailure(call: Call<GroupChateListData?>, t: Throwable) {
-                if (!isAdded) return
-                chatBinding.groupChatProgress.visibility = View.GONE
-                Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
-                call.cancel()
-            }
-        })
+                override fun onFailure(call: Call<GroupChateListData?>, t: Throwable) {
+                    if (!isAdded) return
+                    Utils.hideLoading(requireActivity())
+                    Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
+                    call.cancel()
+                }
+            })
+
+        } catch (e: Exception) {
+
+        }
     }
 
     private fun handleSessionExpired() {

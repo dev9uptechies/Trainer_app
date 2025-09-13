@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
@@ -28,6 +29,7 @@ import com.example.trainerapp.PreferencesManager
 import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityEditPersonalDiaryDataBinding
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,14 +43,15 @@ class EditPersonalDiaryDataActivity : AppCompatActivity() {
     private lateinit var apiClient: APIClient
     private lateinit var diaryDataa: MutableList<GetDiaryDataForEdit.Data>
     private var date: String? = null
+    private var DiaryId: Int = 0
+    private var AthleteId: String? = null
+    private var FromAthlete: Boolean ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditPersonalDiaryDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        date = intent.getStringExtra("Date")
-        Log.d("DEBUG", "onCreate: Date received from intent: $date")
 
         initViews()
         loadData()
@@ -121,27 +124,76 @@ class EditPersonalDiaryDataActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
-        getPersonalDiaryData(date.toString())
+        val userType = preferenceManager.GetFlage()
+        if (userType == "Athlete"){
+            getPersonalDiaryData(AthleteId.toString(),date.toString())
+        }else{
+            getPersonalDiaryData("",date.toString())
+        }
     }
 
     private fun initViews() {
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
         preferenceManager = PreferencesManager(this)
+        date = intent.getStringExtra("Date")
+        DiaryId = intent.getIntExtra("DiaryId",0)
+        AthleteId = intent.getStringExtra("AthleteId")
+        FromAthlete = intent.getBooleanExtra("FromAthlete",false)
+        Log.d("DEBUG", "onCreate: Date received from intent: $date   -----   $FromAthlete    ---   $DiaryId")
+
+
+        if (FromAthlete == true){
+            binding.cardSave.visibility = View.GONE
+            binding.EnergyBT.isEnabled = false
+            binding.EnergyDT.isEnabled = false
+            binding.EnergyAT.isEnabled = false
+            binding.SatisfationBT.isEnabled = false
+            binding.SatisfationDT.isEnabled = false
+            binding.SatisfationAT.isEnabled = false
+            binding.HapinessDT.isEnabled = false
+            binding.HapinessBT.isEnabled = false
+            binding.HapinessAT.isEnabled = false
+            binding.IrritabilityDT.isEnabled = false
+            binding.IrritabilityBT.isEnabled = false
+            binding.IrritabilityAT.isEnabled = false
+            binding.DeterminationBT.isEnabled = false
+            binding.DeterminationDT.isEnabled = false
+            binding.DeterminationAT.isEnabled = false
+            binding.AnxietyBT.isEnabled = false
+            binding.AnxietyDT.isEnabled = false
+            binding.AnxietyAT.isEnabled = false
+            binding.TirednessBT.isEnabled = false
+            binding.TirednessDT.isEnabled = false
+            binding.TirednessAT.isEnabled = false
+            binding.NutritionAndHydration.isEnabled = false
+            binding.Notes.isEnabled = false
+            binding.editDate.isEnabled = false
+            binding.editTime.isEnabled = false
+        }
+
     }
 
-    private fun getPersonalDiaryData(date: String) {
+    private fun getPersonalDiaryData(athleteid :String,date: String) {
         try {
-            apiInterface.GetPersonalDiaryData(date)?.enqueue(object : Callback<GetDiaryDataForEdit> {
+            Log.d("QWQWWQWQW", "getPersonalDiaryData: $date    $athleteid")
+            apiInterface.GetPersonalDiaryDataAthlete(athleteid,date)?.enqueue(object : Callback<GetDiaryDataForEdit> {
                 override fun onResponse(
                     call: Call<GetDiaryDataForEdit>,
                     response: Response<GetDiaryDataForEdit>
                 ) {
-                    Log.d("TAG", "Response code: ${response.code()}")
+                    Log.d("BVBVBV", "Response code: ${response.code()}")
+                    Log.d("BVBVBV", "Response code: ${response.body()?.message}  \n  ${response.body()?.status}")
+                    Log.d("BVBVBV", "Response code: ${response.errorBody()}")
 
                     when (response.code()) {
                         200 -> {
-                            // Check if the response is successful and the body is not null
+                            response.body()?.let { responseBody ->
+                                val jsonResponse = Gson().toJson(responseBody)
+                                Log.d("API_RESPONSE000", "Full JSON Response: $jsonResponse")
+                            } ?: run {
+                                Log.e("API_RESPONSE", "Response body is null")
+                            }
                             response.body()?.let { responseBody ->
                                 val diaryData = responseBody.data
 
@@ -214,8 +266,8 @@ class EditPersonalDiaryDataActivity : AppCompatActivity() {
     }
 
     private fun saveDiaryData() {
-        // Create an instance of the data class to hold the updated diary data
         val updatedDiaryData = TrainingSession(
+            id = DiaryId ,
             date = binding.dateTextView.text.toString(),
             sleep_hours = binding.sleepHoursTextView.text.toString(),
             nutrition_and_hydration = binding.NutritionAndHydration.text.toString(),
@@ -224,12 +276,14 @@ class EditPersonalDiaryDataActivity : AppCompatActivity() {
             data = createPersonalDiaryDetails()
         )
 
-        // Call the API to save the data
+
+        Log.d("SKSKSKSK", "saveDiaryData: $DiaryId")
+
         apiInterface.AddPersonalDIaryData(updatedDiaryData)?.enqueue(object : Callback<GetPersonalDiaryData> {
             override fun onResponse(call: Call<GetPersonalDiaryData>, response: Response<GetPersonalDiaryData>) {
                 if (response.isSuccessful) {
                     Toast.makeText(this@EditPersonalDiaryDataActivity, "Data saved successfully", Toast.LENGTH_SHORT).show()
-                    finish() // Close the activity if save is successful
+                    finish()
                 } else {
                     Toast.makeText(this@EditPersonalDiaryDataActivity, "Failed to save data", Toast.LENGTH_SHORT).show()
                 }

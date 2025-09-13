@@ -1,57 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/bg_black_round_corner_10"
-    android:padding="@dimen/_10sdp"
     android:elevation="@dimen/_10sdp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.appcompat.widget.AppCompatTextView
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="vertical"
         android:gravity="center"
-        android:id="@+id/tvReps"
-        android:text="Round No."
-        android:layout_marginTop="@dimen/_10sdp"
-        style="@style/Text_15_White_Poppins_Medium"/>
-
-    <NumberPicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tvReps"
+        android:layout_margin="@dimen/_10sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:theme="@style/AppTheme.Picker"
-        android:showDividers="beginning"
-        android:divider="@color/white"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:id="@+id/npGoal"/>
+        app:layout_constraintTop_toTopOf="parent">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:layout_width="0dp"
-        style="@style/Btn_Text_13_Round_10_Light_Grey"
-        android:layout_height="wrap_content"
-        android:text="@string/action_cancel"
-        android:layout_marginEnd="@dimen/_10sdp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnApply"
-        app:layout_constraintTop_toBottomOf="@id/npGoal"
-        android:id="@+id/btnCancel"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center"
+            android:id="@+id/tvReps"
+            android:text="@string/roundNo"
+            android:layout_marginTop="@dimen/_10sdp"
+            style="@style/Text_15_White_Poppins_Medium"/>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:layout_width="0dp"
-        style="@style/Btn_Round_10_Red"
-        android:text="@string/action_apply"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/btnCancel"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="@dimen/_10sdp"
-        app:layout_constraintTop_toTopOf="@id/btnCancel"
-        app:layout_constraintBottom_toBottomOf="@id/btnCancel"
-        android:id="@+id/btnApply"/>
+        <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tvReps"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:theme="@style/AppTheme.Picker"
+            android:showDividers="beginning"
+            android:divider="@color/white"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:id="@+id/npGoal"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginBottom="@dimen/_10sdp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="match_parent"
+                style="@style/Btn_Text_13_Round_10_Light_Grey"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/_10sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnApply"
+                app:layout_constraintTop_toBottomOf="@id/npGoal"
+                android:id="@+id/btnCancel"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="match_parent"
+                style="@style/Btn_Round_10_Red"
+                android:text="@string/apply"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:layout_constraintStart_toEndOf="@id/btnCancel"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="@dimen/_10sdp"
+                app:layout_constraintTop_toTopOf="@id/btnCancel"
+                app:layout_constraintBottom_toBottomOf="@id/btnCancel"
+                android:id="@+id/btnApply"/>
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

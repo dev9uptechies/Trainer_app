@@ -40,7 +40,7 @@
                         android:layout_marginTop="@dimen/_14sdp"
                         android:fontFamily="@font/poppins_semi_bold"
                         android:gravity="bottom"
-                        android:text="Event"
+                        android:text="@string/event"
                         android:textColor="@color/splash_text_color"
                         android:textSize="@dimen/_16sdp"
 
@@ -111,7 +111,7 @@
                                 android:fontFamily="@font/poppins_medium"
                                 android:gravity="start"
                                 android:paddingStart="@dimen/_10sdp"
-                                android:text="Lesson List"
+                                android:text="@string/lessonList"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_14sdp" />
                         </LinearLayout>
@@ -201,7 +201,7 @@
                                 android:fontFamily="@font/poppins_medium"
                                 android:gravity="start"
                                 android:paddingStart="@dimen/_10sdp"
-                                android:text="Event List"
+                                android:text="@string/eventList"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_14sdp" />
 
@@ -247,7 +247,7 @@
                                 android:fontFamily="@font/poppins_medium"
                                 android:gravity="start"
                                 android:paddingStart="@dimen/_10sdp"
-                                android:text="Test List"
+                                android:text="@string/testList"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_14sdp" />
                         </LinearLayout>
@@ -269,6 +269,17 @@
 
         <ProgressBar
             android:id="@+id/progress_calender"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progress_calender2"
             android:layout_width="@dimen/_40sdp"
             android:layout_height="@dimen/_40sdp"
             android:layout_gravity="center"

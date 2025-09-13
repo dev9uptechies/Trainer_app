@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:fontFamily="@font/poppins_medium"
-        android:text="Select Profile Template"
+        android:text="@string/selectProfileTemplate"
         android:textColor="@color/splash_text_color"
         android:textSize="@dimen/_18sdp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +69,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_semi_bold"
             android:gravity="center"
-            android:text="Add To Performance Profile"
+            android:text="@string/addPerformaceProfile"
             android:textColor="@color/white" />
     </androidx.cardview.widget.CardView>
 

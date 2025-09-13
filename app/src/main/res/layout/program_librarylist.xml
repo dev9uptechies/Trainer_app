@@ -143,7 +143,7 @@
                 app:layout_constraintStart_toEndOf="@+id/img_edit"
                 app:layout_constraintTop_toBottomOf="@+id/image"
                 app:layout_constraintVertical_bias="1.0"
-                app:srcCompat="@drawable/img_copy"
+                app:srcCompat="@drawable/ic_duplicate"
                 app:tint="@color/red"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

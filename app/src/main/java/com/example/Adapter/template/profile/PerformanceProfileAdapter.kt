@@ -20,6 +20,7 @@ class PerformanceProfileAdapter(
     private var catList: MutableList<PerformanceCategoryData>? = null,
     private var qualityList: MutableList<PerformanceQualityData>? = null,
     var context: Context,
+    var From: Boolean,
     val listener: OnItemClickListener.OnItemClickCallback,
     val qualityListener: OnQualityClick
 ) :
@@ -50,16 +51,24 @@ class PerformanceProfileAdapter(
 
         preferenceManager = PreferencesManager(context)
 
-        val userType =  preferenceManager.GetFlage()
+        val userType = preferenceManager.GetFlage()
 
-        if (userType == "Athlete"){
+        if (userType == "Athlete") {
             holder.add_performance.visibility = View.GONE
             holder.edit_performance.visibility = View.GONE
             holder.del_performance.visibility = View.GONE
-        }else{
-            holder.add_performance.visibility = View.VISIBLE
-            holder.edit_performance.visibility = View.VISIBLE
-            holder.del_performance.visibility = View.VISIBLE
+        } else {
+
+            if (From == true) {
+                holder.add_performance.visibility = View.GONE
+                holder.edit_performance.visibility = View.GONE
+                holder.del_performance.visibility = View.GONE
+            }else{
+                holder.add_performance.visibility = View.VISIBLE
+                holder.edit_performance.visibility = View.VISIBLE
+                holder.del_performance.visibility = View.VISIBLE
+            }
+
         }
 
         val filteredQualities =
@@ -79,6 +88,13 @@ class PerformanceProfileAdapter(
                 val athlete_star = addView.findViewById<TextView>(R.id.performance_athelete_star)
                 val edit = addView.findViewById<ImageView>(R.id.img_edit)
                 val delete = addView.findViewById<ImageView>(R.id.img_delete)
+
+                val userType = preferenceManager.GetFlage()
+                if (userType == "Athlete"){
+                    swipe.setOnTouchListener { _, _ -> true }  // Prevent all touch events
+
+                }
+
 
 
                 val margin = context.resources.getDimensionPixelSize(R.dimen._35sdp)

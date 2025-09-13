@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="Select Group"
+            android:text="@string/selectGroup"
             android:textColor="@color/splash_text_color"
             android:textSize="@dimen/_16sdp"
             app:layout_constraintBottom_toBottomOf="@+id/back"
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Save"
+                android:text="@string/save"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_15sdp" />
 

@@ -28,7 +28,7 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit Mesocycycle"
+            android:text="@string/editMesocycle"
             android:textColor="@color/splash_text_color"
             android:fontFamily="@font/poppins_semi_bold"
             android:textSize="@dimen/_16sdp"
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
             android:gravity="center"
-            android:text="You can create Mesocycle between"
+            android:text="@string/youCanCreateMeso"
             android:textColor="@color/white"
             android:textSize="@dimen/_12sdp"
             android:fontFamily="@font/poppins_medium"
@@ -169,7 +169,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_medium"
-            android:text="Save"
+            android:text="@string/save"
             android:textColor="@color/white"
             android:textSize="@dimen/_15sdp" />
 

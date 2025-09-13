@@ -54,16 +54,16 @@ class SetTestInProfile(
             holder.image.setImageResource(R.drawable.ic_favorite_red)
         }
 
-        holder.image.setOnClickListener(null)
-
         holder.image.setOnClickListener {
-            test?.id?.let { id ->
-                if (test.isFavourite == 1) {
-                    OnItemClickListener(position, listener, test.id!!.toLong(), "unfavtest")
-                } else {
-                    OnItemClickListener(position,listener, id.toLong(), "favtest")
-                }
-            } ?: Log.e("SetTestInProfile", "Test or ID is null at position: $position")
+            Log.d("HSHSHSHS", "onBindViewHolder: ${test?.isFavourite}")
+            if (test?.isFavourite == 1) {
+                listener.onItemClicked(it, position, test.id!!.toLong(), "unfavtest")
+//                OnItemClickListener(position, listener, test.id!!.toLong(), "unfavtest")
+            } else {
+                listener.onItemClicked(it, position, test?.id!!.toLong(), "favtest")
+
+//                OnItemClickListener(position, listener, test?.id!!.toLong(), "favtest")
+            }
         }
     }
 

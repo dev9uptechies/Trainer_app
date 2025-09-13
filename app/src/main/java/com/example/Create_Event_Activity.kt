@@ -87,13 +87,14 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
     var typed: String = ""
     var fromDay: Boolean = false
 
-    var EventLPosition:Int ?= null
-    var EventLberyid:Int ?= null
+    var EventLPosition: Int? = null
+    var EventLberyid: Int? = null
 
-    var EventPositionGroup:Int ?= null
-    var EventIdGroup:Int ?= null
+    var EventPositionGroup: Int? = null
+    var EventIdGroup: Int? = null
 
     var type = "create"
+    var From = "ViewOnly"
     private var types: String? = ""
     private var position1: Int? = 0
 
@@ -128,18 +129,53 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
 
         val position1 = intent.getIntExtra("position", 0)
         val types = intent.getStringExtra("type")
+        From = intent.getStringExtra("From").toString()
+
         Log.e("CXXCXCXCXC", "Position: $position1, Type: $types")
         Log.e("CXXCXCXCXC", "onCreate: " + types)
 
         initViews()
         loadData()
 
-        if (EventLberyid.toString() != "0" || EventLberyid != 0 ){
+        if (From == "ViewOnly") {
+            createEventBinding.eventName.isFocusable = false
+            createEventBinding.eventName.isFocusableInTouchMode = false
+            createEventBinding.eventName.isClickable = false
+
+            createEventBinding.edtTest.isFocusable = false
+            createEventBinding.edtTest.isFocusableInTouchMode = false
+            createEventBinding.edtTest.isClickable = false
+
+            createEventBinding.tvAthelate.isFocusable = false
+            createEventBinding.tvAthelate.isFocusableInTouchMode = false
+            createEventBinding.tvAthelate.isClickable = false
+
+            createEventBinding.calenderView.isEnabled = false
+            createEventBinding.calenderView.isClickable = false
+            createEventBinding.calenderView.isFocusable = false
+
+            createEventBinding.etEnterTest.isFocusable = false
+            createEventBinding.etEnterTest.isFocusableInTouchMode = false
+            createEventBinding.etEnterTest.isClickable = false
+
+            createEventBinding.cardEvent.isFocusable = false
+            createEventBinding.cardEvent.isFocusableInTouchMode = false
+            createEventBinding.cardEvent.isClickable = false
+
+            createEventBinding.cardTest.isFocusable = false
+            createEventBinding.cardTest.isFocusableInTouchMode = false
+            createEventBinding.cardTest.isClickable = false
+            createEventBinding.cardTest.isEnabled = false
+
+
+        }
+
+        if (EventLberyid.toString() != "0" || EventLberyid != 0) {
 
             type = "edit"
             geteventlistLibaray()
 //            Log.d("okokokok", "onCreate: $programData")
-        }else{
+        } else {
             type = "create"
         }
 
@@ -148,7 +184,7 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
             type = "edit"
             geteventlistGroup()
 //            Log.d("okokokok", "onCreate: $programData")
-        }else{
+        } else {
             type = "create"
         }
 
@@ -172,7 +208,7 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         textChangeListener()
         checkButtonClick()
 
-        if (fromDay == false){
+        if (fromDay == false) {
             if (savedInstanceState == null) {
                 calendarView!!.post {
                     selectDate(today)
@@ -471,9 +507,11 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
                 eventId.toInt().toString()
             }
 
-            val finalID = if(idToUse == null || idToUse.isNullOrEmpty() || idToUse == "0") EventLberyid else idToUse
+            val finalID =
+                if (idToUse == null || idToUse.isNullOrEmpty() || idToUse == "0") EventLberyid else idToUse
 
-            val finalGroupID = if(finalID == null || finalID == 0 || finalID == "0") EventIdGroup else finalID
+            val finalGroupID =
+                if (finalID == null || finalID == 0 || finalID == "0") EventIdGroup else finalID
 
             Log.d("KDKKKDK", "editData: $finalID    $idToUse")
 
@@ -623,7 +661,8 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
             object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, unitArray) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent) as TextView
-                    val typeface = ResourcesCompat.getFont(this@Create_Event_Activity, R.font.poppins_medium)
+                    val typeface =
+                        ResourcesCompat.getFont(this@Create_Event_Activity, R.font.poppins_medium)
                     view.typeface = typeface
                     view.setTextColor(Color.WHITE) // Set text color to white
                     return view
@@ -655,10 +694,10 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         apiInterface = apiClient.client().create(APIInterface::class.java)
         calendarView = findViewById(R.id.calenderView)
         EventList = ArrayList()
-        EventLPosition = intent.getIntExtra("EventLibraryPosition",0)
-        EventLberyid = intent.getIntExtra("EventLibraryId",0)
-        EventPositionGroup = intent.getIntExtra("EventPositionGroup",0)
-        EventIdGroup = intent.getIntExtra("EventIdGroup",0)
+        EventLPosition = intent.getIntExtra("EventLibraryPosition", 0)
+        EventLberyid = intent.getIntExtra("EventLibraryId", 0)
+        EventPositionGroup = intent.getIntExtra("EventPositionGroup", 0)
+        EventIdGroup = intent.getIntExtra("EventIdGroup", 0)
         Log.d("SSJSSJJS", "initView: $EventPositionGroup     $EventIdGroup")
     }
 
@@ -812,7 +851,7 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun selectDate(date: LocalDate) {
-        Log.e("SUJALLLLLLL", "selectDate: "+date )
+        Log.e("SUJALLLLLLL", "selectDate: " + date)
         if (selectedDate != date) {
 
             val oldDate = selectedDate
@@ -1059,6 +1098,7 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
     private fun setEventData(testData: EventListData.testData) {
         createEventBinding.eventName.setText(testData.title)
         createEventBinding.edtTest.setText(testData.type)
+        createEventBinding.edtTest.setText(testData.type)
         id.clear()
         name.clear()
         for (i in testData.event_athletes!!) {
@@ -1076,6 +1116,8 @@ class Create_Event_Activity : AppCompatActivity(), OnItemClickListener.OnItemCli
         createEventBinding.tvAthelate.text = str1
 
         val date = testData.date!!.split("T")[0]
+
+        Log.d("SPSLSLS", "setEventData: $date")
         selectDate(LocalDate.parse(date))
 
 //        createEventBinding.saveEvent.isEnabled = true

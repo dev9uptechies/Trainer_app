@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="Add Microcycycle"
+                android:text="@string/addMicrocycle"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_16sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/back"
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:gravity="center"
-                android:text="You can create Mesocycle between"
+                android:text="@string/youCanCreateMicro"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_12sdp"
                 android:fontFamily="@font/poppins_medium"
@@ -163,7 +163,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_10sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Abilities and Technique"
+                            android:text="@string/abilitiesAndTechnique"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_14sdp" />
 
@@ -182,7 +182,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginStart="@dimen/_10sdp"
                                 android:fontFamily="@font/poppins_medium"
-                                android:text="Select Abilities and Technique"
+                                android:text="@string/selectAbility"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_15sdp" />
 
@@ -241,7 +241,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No MicroCycle Data Found."
+                    android:text="@string/noMicroDataFound"
                     android:fontFamily="@font/poppins_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_15sdp" />
@@ -260,7 +260,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Add"
+                        android:text="@string/add"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_15sdp" />
 
@@ -283,7 +283,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Save"
+                    android:text="@string/save"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_15sdp" />
 

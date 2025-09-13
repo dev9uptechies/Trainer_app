@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="View Exercise"
+                    android:text="@string/viewExercise"
                     android:textColor="@color/splash_text_color"
                     android:textSize="@dimen/_18sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -89,6 +89,13 @@
                             android:layout_height="match_parent"
                             android:padding="@dimen/_5sdp"
                             android:visibility="gone" />
+
+                        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                            android:id="@+id/youtube_player_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:visibility="gone"
+                            android:padding="@dimen/_4sdp" />
 
                         <VideoView
                             android:id="@+id/video_upload"
@@ -145,7 +152,7 @@ looking at its layout."
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:fontFamily="@font/poppins_semi_bold"
-                            android:text="View Timer"
+                            android:text="@string/viewTimer"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_17sdp" />
 

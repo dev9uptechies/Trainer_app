@@ -98,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Quality"
+                    android:text="@string/quality"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_11sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -128,7 +128,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
                     android:gravity="center"
-                    android:text="Coach s."
+                    android:text="@string/coachS"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_11sdp" />
 
@@ -154,7 +154,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
                     android:gravity="center"
-                    android:text="Athelete S."
+                    android:text="@string/atheleteS"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_11sdp"
                     app:layout_constraintBottom_toBottomOf="parent"

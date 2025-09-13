@@ -40,7 +40,7 @@
                 android:layout_height="@dimen/_35sdp"
                 android:layout_margin="@dimen/_10sdp"
                 android:scaleType="fitXY"
-                android:src="@drawable/profile_image"
+                android:src="@drawable/app_icon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:riv_corner_radius="@dimen/_5sdp" />
@@ -52,7 +52,7 @@
                 android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_70sdp"
                 android:fontFamily="@font/poppins_medium"
-                android:text="TRAIN FOR THE"
+                android:text="@string/trainFor"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_14sdp"
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:fontFamily="@font/bebes_reguler"
-                android:text="BEST PERFORMANCE"
+                android:text="@string/bestPerformance"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_30sdp"
@@ -96,7 +96,7 @@
                             android:layout_marginStart="@dimen/_20sdp"
                             android:layout_marginTop="@dimen/_10sdp"
                             android:fontFamily="@font/poppins_semi_bold"
-                            android:text="Daily Workout"
+                            android:text="@string/dailyWorkout"
                             android:textColor="@color/splash_text_color"
                             android:textSize="@dimen/_17sdp"
                             app:layout_constraintStart_toStartOf="parent"
@@ -136,7 +136,7 @@
                                         android:layout_marginStart="@dimen/_20sdp"
                                         android:layout_weight="1"
                                         android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="March, 2022"
+                                        android:text="march, 2022"
                                         android:textColor="@color/white"
                                         android:textSize="@dimen/_10sdp"
                                         app:layout_constraintStart_toStartOf="parent"
@@ -204,7 +204,7 @@
                                                     android:layout_height="wrap_content"
                                                     android:layout_marginBottom="4dp"
                                                     android:fontFamily="@font/poppins_medium"
-                                                    android:text="0% - 20%"
+                                                    android:text="@string/p0_20"
                                                     android:textColor="#00FF00"
                                                     android:textSize="14sp" />
 
@@ -213,7 +213,7 @@
                                                     android:layout_height="wrap_content"
                                                     android:layout_marginBottom="4dp"
                                                     android:fontFamily="@font/poppins_medium"
-                                                    android:text="20% - 40%"
+                                                    android:text="@string/p20_40"
                                                     android:textColor="#32CD32"
                                                     android:textSize="14sp" />
 
@@ -221,7 +221,7 @@
                                                     android:layout_width="wrap_content"
                                                     android:layout_height="wrap_content"
                                                     android:fontFamily="@font/poppins_medium"
-                                                    android:text="40% - 60%"
+                                                    android:text="@string/p40_60"
                                                     android:textColor="#FFD700"
                                                     android:textSize="14sp" />
                                             </LinearLayout>
@@ -236,7 +236,7 @@
                                                     android:layout_height="wrap_content"
                                                     android:layout_marginBottom="4dp"
                                                     android:fontFamily="@font/poppins_medium"
-                                                    android:text="60% - 80%"
+                                                    android:text="@string/p60_80"
                                                     android:textColor="#FFA500"
                                                     android:textSize="14sp" />
 
@@ -244,7 +244,7 @@
                                                     android:layout_width="wrap_content"
                                                     android:layout_height="wrap_content"
                                                     android:fontFamily="@font/poppins_medium"
-                                                    android:text="80% - 100%"
+                                                    android:text="@string/p80_100"
                                                     android:textColor="#FF0000"
                                                     android:textSize="14sp" />
                                             </LinearLayout>
@@ -258,7 +258,7 @@
                                             android:background="@drawable/dialog_home_btn"
                                             android:fontFamily="@font/poppins_medium"
                                             android:gravity="center"
-                                            android:text="Close"
+                                            android:text="@string/close"
                                             android:textColor="#FFFFFF" />
 
                                     </LinearLayout>
@@ -307,7 +307,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/_10sdp"
                                         android:fontFamily="@font/poppins_medium"
-                                        android:text="Select Group"
+                                        android:text="@string/selectGroup"
                                         android:textColor="@color/white"
                                         android:textSize="@dimen/_13sdp"
                                         app:layout_constraintBottom_toBottomOf="parent"
@@ -321,7 +321,7 @@
                                         android:src="@drawable/ic_select"
                                         app:layout_constraintBottom_toBottomOf="parent"
                                         app:layout_constraintEnd_toEndOf="parent"
-                                        app:layout_constraintTop_toTopOf="parent" />
+                                        app:layout_constraintTop_toTopOf="parent"/>
 
                                 </androidx.constraintlayout.widget.ConstraintLayout>
                             </androidx.cardview.widget.CardView>
@@ -334,423 +334,40 @@
                                 android:layout_marginEnd="@dimen/_10sdp"
                                 app:layout_constraintTop_toBottomOf="@+id/select_ly"/>
 
-                            <androidx.cardview.widget.CardView
-                                android:id="@+id/season_ly"
+                            <LinearLayout
+                                android:id="@+id/planningContainer"
+                                android:orientation="vertical"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/_10sdp"
-                                android:layout_marginTop="@dimen/_10sdp"
-                                android:layout_marginEnd="@dimen/_10sdp"
+                                android:padding="8dp"
                                 android:visibility="gone"
-                                app:cardBackgroundColor="#1A929492"
-                                app:cardCornerRadius="@dimen/_10sdp"
                                 app:layout_constraintTop_toBottomOf="@+id/fav_planning_rly">
 
-                                <androidx.constraintlayout.widget.ConstraintLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginBottom="@dimen/_10sdp">
+                            </LinearLayout>
 
-                                    <TextView
-                                        android:id="@+id/title_tv"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:layout_marginTop="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Pre Season"
-                                        android:textColor="#F3F3F3"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toTopOf="parent" />
-
-                                    <TextView
-                                        android:id="@+id/tv_start"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Start:"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/title_tv" />
-
-                                    <TextView
-                                        android:id="@+id/edt_start_date"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="25 March, 2021"
-                                        android:textColor="#BBBBBB"
-                                        android:visibility="visible"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toEndOf="@+id/tv_start"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_start" />
-
-                                    <androidx.constraintlayout.widget.ConstraintLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginEnd="@dimen/_5sdp"
-                                        app:layout_constraintEnd_toEndOf="parent"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_start">
-
-                                        <TextView
-                                            android:id="@+id/tv_end"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="@dimen/_10sdp"
-                                            android:fontFamily="@font/poppins_semi_bold"
-                                            android:text="End:"
-                                            android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_11sdp"
-                                            app:layout_constraintStart_toStartOf="parent"
-                                            app:layout_constraintTop_toTopOf="parent" />
-
-                                        <TextView
-                                            android:id="@+id/edt_end_date"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="@dimen/_5sdp"
-                                            android:fontFamily="@font/poppins_semi_bold"
-                                            android:text="27 March, 2021"
-                                            android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_11sdp"
-                                            app:layout_constraintStart_toEndOf="@+id/tv_end"
-                                            app:layout_constraintTop_toTopOf="@+id/tv_end" />
-
-                                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                                    <TextView
-                                        android:id="@+id/tv_mesocycle"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Mesocycle:"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/tv_start" />
-
-                                    <TextView
-                                        android:id="@+id/edt_mesocycle"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="02 Cycle"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toEndOf="@+id/tv_mesocycle"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_mesocycle" />
-
-                                    <TextView
-                                        android:id="@+id/tv_abilities_technique"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_medium"
-                                        android:text="Mesocycle:"
-                                        android:visibility="gone"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_13sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/tv_mesocycle" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Strength, Speed"
-                                        android:textColor="#BBBBBB"
-                                        android:visibility="gone"
-                                        android:textSize="@dimen/_12sdp"
-                                        app:layout_constraintStart_toEndOf="@+id/tv_abilities_technique"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_abilities_technique" />
-
-                                </androidx.constraintlayout.widget.ConstraintLayout>
-                            </androidx.cardview.widget.CardView>
 
                             <androidx.cardview.widget.CardView
-                                android:id="@+id/PreCompetitive_ly"
+                                android:id="@+id/see_all_about_today"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/_10sdp"
-                                android:layout_marginTop="@dimen/_10sdp"
-                                android:layout_marginEnd="@dimen/_10sdp"
+                                android:layout_height="@dimen/_40sdp"
+                                android:layout_marginHorizontal="@dimen/_20sdp"
+                                android:layout_marginVertical="@dimen/_8sdp"
                                 android:visibility="gone"
-                                app:cardBackgroundColor="#1A929492"
+                                app:cardBackgroundColor="@color/splash_text_color"
                                 app:cardCornerRadius="@dimen/_10sdp"
-                                app:layout_constraintTop_toBottomOf="@+id/season_ly">
+                                app:layout_constraintTop_toBottomOf="@+id/planningContainer">
 
-                                <androidx.constraintlayout.widget.ConstraintLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginBottom="@dimen/_10sdp">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/poppins_semi_bold"
+                                    android:text="@string/see_all_about_today"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_15sdp" />
 
-                                    <TextView
-                                        android:id="@+id/title_tvPreCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:layout_marginTop="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Pre Season"
-                                        android:textColor="#F3F3F3"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toTopOf="parent" />
-
-                                    <TextView
-                                        android:id="@+id/tv_startPreCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Start:"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/title_tvPreCompetitive" />
-
-                                    <TextView
-                                        android:id="@+id/edt_start_datePreCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="25 March, 2021"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toEndOf="@+id/tv_startPreCompetitive"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_startPreCompetitive" />
-
-                                    <androidx.constraintlayout.widget.ConstraintLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginEnd="@dimen/_5sdp"
-                                        app:layout_constraintEnd_toEndOf="parent"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_startPreCompetitive">
-
-                                        <TextView
-                                            android:id="@+id/tv_endPreCompetitive"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="@dimen/_10sdp"
-                                            android:fontFamily="@font/poppins_semi_bold"
-                                            android:text="End:"
-                                            android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_11sdp"
-                                            app:layout_constraintStart_toStartOf="parent"
-                                            app:layout_constraintTop_toTopOf="parent" />
-
-                                        <TextView
-                                            android:id="@+id/edt_end_datePreCompetitive"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="@dimen/_5sdp"
-                                            android:fontFamily="@font/poppins_semi_bold"
-                                            android:text="27 March, 2021"
-                                            android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_11sdp"
-                                            app:layout_constraintStart_toEndOf="@+id/tv_endPreCompetitive"
-                                            app:layout_constraintTop_toTopOf="@+id/tv_endPreCompetitive" />
-
-                                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                                    <TextView
-                                        android:id="@+id/tv_mesocyclePreCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Mesocycle:"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/tv_startPreCompetitive" />
-
-                                    <TextView
-                                        android:id="@+id/edt_mesocyclePreCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="02 Cycle"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toEndOf="@+id/tv_mesocyclePreCompetitive"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_mesocyclePreCompetitive" />
-
-                                    <TextView
-                                        android:id="@+id/tv_abilities_techniquePreCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Mesocycle:"
-                                        android:visibility="gone"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/tv_mesocyclePreCompetitive" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Strength, Speed"
-                                        android:textColor="#BBBBBB"
-                                        android:visibility="gone"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toEndOf="@+id/tv_abilities_techniquePreCompetitive"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_abilities_techniquePreCompetitive" />
-
-                                </androidx.constraintlayout.widget.ConstraintLayout>
                             </androidx.cardview.widget.CardView>
 
-                            <androidx.cardview.widget.CardView
-                                android:id="@+id/Competitive_ly"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/_10sdp"
-                                android:layout_marginTop="@dimen/_10sdp"
-                                android:layout_marginEnd="@dimen/_10sdp"
-                                android:visibility="gone"
-                                app:cardBackgroundColor="#1A929492"
-                                app:cardCornerRadius="@dimen/_10sdp"
-                                app:layout_constraintTop_toBottomOf="@+id/PreCompetitive_ly">
-
-                                <androidx.constraintlayout.widget.ConstraintLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginBottom="@dimen/_10sdp">
-
-                                    <TextView
-                                        android:id="@+id/title_tvCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:layout_marginTop="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Pre Season"
-                                        android:textColor="#F3F3F3"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toTopOf="parent" />
-
-                                    <TextView
-                                        android:id="@+id/tv_startCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Start:"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/title_tvCompetitive" />
-
-                                    <TextView
-                                        android:id="@+id/edt_start_dateCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="25 March, 2021"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toEndOf="@+id/tv_startCompetitive"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_startCompetitive" />
-
-                                    <androidx.constraintlayout.widget.ConstraintLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginEnd="@dimen/_5sdp"
-                                        app:layout_constraintEnd_toEndOf="parent"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_startCompetitive">
-
-                                        <TextView
-                                            android:id="@+id/tv_endCompetitive"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="@dimen/_10sdp"
-                                            android:fontFamily="@font/poppins_semi_bold"
-                                            android:text="End:"
-                                            android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_11sdp"
-                                            app:layout_constraintStart_toStartOf="parent"
-                                            app:layout_constraintTop_toTopOf="parent" />
-
-                                        <TextView
-                                            android:id="@+id/edt_end_dateCompetitive"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="@dimen/_5sdp"
-                                            android:fontFamily="@font/poppins_semi_bold"
-                                            android:text="27 March, 2021"
-                                            android:textColor="#BBBBBB"
-                                            android:textSize="@dimen/_11sdp"
-                                            app:layout_constraintStart_toEndOf="@+id/tv_endCompetitive"
-                                            app:layout_constraintTop_toTopOf="@+id/tv_endCompetitive" />
-
-                                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                                    <TextView
-                                        android:id="@+id/tv_mesocycleCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Mesocycle:"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/tv_startCompetitive" />
-
-                                    <TextView
-                                        android:id="@+id/edt_mesocycleCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="02 Cycle"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toEndOf="@+id/tv_mesocycleCompetitive"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_mesocycleCompetitive" />
-
-                                    <TextView
-                                        android:id="@+id/tv_abilities_techniqueCompetitive"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_10sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Mesocycle:"
-                                        android:visibility="gone"
-                                        android:textColor="#BBBBBB"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/tv_mesocycleCompetitive" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="@dimen/_5sdp"
-                                        android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Strength, Speed"
-                                        android:textColor="#BBBBBB"
-                                        android:visibility="gone"
-                                        android:textSize="@dimen/_11sdp"
-                                        app:layout_constraintStart_toEndOf="@+id/tv_abilities_techniqueCompetitive"
-                                        app:layout_constraintTop_toTopOf="@+id/tv_abilities_techniqueCompetitive" />
-
-                                </androidx.constraintlayout.widget.ConstraintLayout>
-                            </androidx.cardview.widget.CardView>
 
                             <TextView
                                 android:id="@+id/next_tv"
@@ -758,13 +375,13 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_20sdp"
                                 android:layout_marginTop="@dimen/_10sdp"
-                                android:fontFamily="@font/poppins_medium"
-                                android:text="Your Next Lesson"
+                                android:fontFamily="@font/poppins_semi_bold"
+                                android:text="@string/nextLesson"
                                 android:textColor="@color/splash_text_color"
                                 android:textSize="@dimen/_18sdp"
                                 android:visibility="gone"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/season_ly" />
+                                app:layout_constraintTop_toBottomOf="@+id/see_all_about_today" />
 
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/view_recycler"
@@ -779,6 +396,18 @@
                                 tools:listitem="@layout/next_lession_rly_item">
 
                             </androidx.recyclerview.widget.RecyclerView>
+
+
+                            <LinearLayout
+                                android:id="@+id/next_lesson_container"
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="8dp"
+                                app:layout_constraintTop_toBottomOf="@+id/next_tv"/>
+
+
+
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -839,7 +468,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
-                                android:visibility="visible">
+                                android:visibility="gone">
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
@@ -854,7 +483,7 @@
                                         android:layout_marginTop="@dimen/_20sdp"
                                         android:layout_weight="1"
                                         android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Lesson List"
+                                        android:text="@string/lessonList"
                                         android:textColor="@color/white"
                                         android:textSize="@dimen/_15sdp" />
 
@@ -884,7 +513,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
-                                android:visibility="visible">
+                                android:visibility="gone">
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
@@ -899,7 +528,7 @@
                                         android:layout_marginTop="@dimen/_20sdp"
                                         android:layout_weight="1"
                                         android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Event List"
+                                        android:text="@string/eventList"
                                         android:textColor="@color/white"
                                         android:textSize="@dimen/_15sdp" />
 
@@ -943,7 +572,7 @@
                                         android:layout_marginTop="@dimen/_20sdp"
                                         android:layout_weight="1"
                                         android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Program List"
+                                        android:text="@string/programList"
                                         android:textColor="@color/white"
                                         android:textSize="@dimen/_15sdp" />
 
@@ -968,13 +597,12 @@
 
                             </LinearLayout>
 
-
                             <LinearLayout
                                 android:id="@+id/ly_test"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
-                                android:visibility="visible">
+                                android:visibility="gone">
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
@@ -989,7 +617,7 @@
                                         android:layout_marginTop="@dimen/_20sdp"
                                         android:layout_weight="1"
                                         android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Test List"
+                                        android:text="@string/testList"
                                         android:textColor="@color/white"
                                         android:textSize="@dimen/_15sdp" />
 
@@ -1019,6 +647,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/_15sdp"
+                                android:visibility="gone"
                                 android:orientation="vertical">
 
 
@@ -1034,7 +663,7 @@
                                         android:layout_marginTop="@dimen/_20sdp"
                                         android:layout_weight="1"
                                         android:fontFamily="@font/poppins_semi_bold"
-                                        android:text="Personal Diary"
+                                        android:text="@string/personalDairy"
                                         android:textColor="@color/white"
                                         android:textSize="@dimen/_16sdp" />
 
@@ -1301,7 +930,7 @@
                                     android:background="@drawable/round_item_per_second"
                                     android:baselineAligned="false"
                                     android:gravity="center"
-                                    android:visibility="gone"
+                                    android:visibility="visible"
                                     android:orientation="horizontal">
 
                                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -1953,7 +1582,7 @@
                                     android:background="@drawable/round_item_per_second"
                                     android:baselineAligned="false"
                                     android:gravity="center"
-                                    android:visibility="gone"
+                                    android:visibility="visible"
                                     android:orientation="horizontal">
 
                                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -2097,7 +1726,7 @@
                                             android:layout_gravity="center"
                                             android:fontFamily="@font/poppins_medium"
                                             android:gravity="center"
-                                            android:text="TIredness"
+                                            android:text="Nutrition And Hydration"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp"
                                             app:layout_constraintBottom_toBottomOf="parent"
@@ -2170,7 +1799,7 @@
                                             android:layout_gravity="center"
                                             android:fontFamily="@font/poppins_medium"
                                             android:gravity="center"
-                                            android:text="Nutrition And Hydration"
+                                            android:text="Notes"
                                             android:textColor="@color/white"
                                             android:textSize="@dimen/_10sdp"
                                             app:layout_constraintBottom_toBottomOf="parent"
@@ -2223,7 +1852,6 @@
                             </LinearLayout>
 
                         </LinearLayout>
-
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 

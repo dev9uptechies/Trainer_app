@@ -98,12 +98,13 @@
 
          <TextView
              android:id="@+id/tvinAt"
-             android:layout_width="wrap_content"
+             android:layout_width="match_parent"
              android:layout_height="wrap_content"
              android:fontFamily="@font/poppins_semi_bold"
              android:text="2 Program"
              android:textColor="@color/dark_text"
              android:textSize="@dimen/_11sdp"
+             android:layout_marginEnd="@dimen/_25sdp"
              android:visibility="gone"
              app:layout_constraintStart_toStartOf="@+id/goal"
              app:layout_constraintTop_toBottomOf="@+id/goal" />
@@ -123,15 +124,12 @@
              android:id="@+id/tv_athlet"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:text="01 day"
-             android:layout_marginStart="@dimen/_5sdp"
-             android:textColor="@color/dark_text"
              android:fontFamily="@font/poppins_semi_bold"
-             app:layout_constraintStart_toEndOf="@+id/total_time"
+             android:text="01 day"
+             android:textColor="@color/dark_text"
              android:textSize="@dimen/_11sdp"
-             app:layout_constraintTop_toTopOf="@+id/total_time"
-             app:layout_constraintBottom_toBottomOf="@+id/total_time"/>
-
+             app:layout_constraintStart_toEndOf="@+id/total_time"
+             app:layout_constraintTop_toTopOf="@+id/total_time" />
 
 
      </androidx.constraintlayout.widget.ConstraintLayout>

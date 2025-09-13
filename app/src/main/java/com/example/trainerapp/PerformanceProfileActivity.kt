@@ -50,6 +50,7 @@ import com.example.trainerapp.performance_profile.view_all_graph.ViewAllPerforma
 import com.example.trainerapp.performance_profile.view_average_graph.ViewPerformanesProfileAverageActivity
 import com.example.trainerapp.performance_profile.view_graph.ViewPerformanceProfileActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -72,6 +73,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
     private val categoryQualityMap =
         mutableMapOf<Int, MutableList<PerformanceQualityData>>() // Ensure this matches the expected type
 
+    var From:String = ""
 
     private var selectedOptionId: Long? = null
     var aid: Int = 0
@@ -87,7 +89,6 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
             initViews()
             resetData()
             checkButtonClick()
-
 
             val userType = preferenceManager.GetFlage()
 
@@ -109,11 +110,11 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                 registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                     if (result.resultCode == RESULT_OK) {
                         selectedOptionId = result.data?.getLongExtra("selected_option_id", -1L)
-                        Log.d("select Option Id - ", "$selectedOptionId")
+                        Log.d("CFCFCFCFC", "$selectedOptionId")
                         if (selectedOptionId != null && selectedOptionId != -1L) {
-                            tempData =
-                                performanceTempData.filter { it.id == selectedOptionId!!.toInt() }
-                                    .toMutableList()
+                            tempData = performanceTempData.filter { it.id == selectedOptionId!!.toInt() }.toMutableList()
+
+                            Log.d("CFCFCFCFC", "onCreate: $tempData")
                             for (i in tempData) {
                                 Log.d("Temp data = ", "${i.name}")
                             }
@@ -138,7 +139,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                 startActivity(Intent(this, ViewAllPerformanceProfileActivity::class.java).apply {
                     putExtra("athleteId", "${athleteId.id}")
                     putExtra("athleteIdd", "${aid}")
-                    putExtra("catName", "All Area Performance")
+                    putExtra("catName", getString(R.string.allAreaPerformance))
                 })
             }
             performanceProfileBinding.btnAverage.setOnClickListener {
@@ -149,7 +150,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                     ).apply {
                         putExtra("athleteId", "${athleteId.id}")
                         putExtra("athleteIdd", "${aid}")
-                        putExtra("catName", "Average Area Performance")
+                        putExtra("catName", getString(R.string.averageAreaPerformance))
                     })
             }
         } catch (e: Exception) {
@@ -192,7 +193,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                                 var addQuality = AddQuality()
                                 addQuality = AddQuality(
                                     athlete_id = athleteId.id,
-                                    performance_category_id = data!!.id,
+                                    performance_category_id = data?.id ?: 0,
                                     qualities = quality1
                                 )
                                 try {
@@ -211,7 +212,11 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                                                 if (code == 200) {
                                                     if (response.isSuccessful) {
 
-                                                        loadPerformance(athleteId.id!!)
+                                                        if (From == "AthleteSection"){
+                                                            loadPerformance(aid)
+                                                        }else{
+                                                            loadPerformance(athleteId.id!!)
+                                                        }
                                                     }
                                                 } else if (code == 403) {
                                                     Utils.setUnAuthDialog(this@PerformanceProfileActivity)
@@ -303,12 +308,26 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
         selectTemplate.setOnClickListener {
             // Handle the click for "Select Template"
             Log.d("TAG", "Select Template :- ${performanceProfileBinding.edtAthletes.text}")
+
             bottomSheetDialog.dismiss()
-            if (performanceProfileBinding.edtAthletes.text.isNullOrEmpty()) {
-                Toast.makeText(this, "Please Select Athlete", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+
+            if (From == "AthleteSection"){
+                if (aid == null || aid == 0){
+                    Toast.makeText(this, "Please Select Athlete", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+            }else{
+                if (performanceProfileBinding.edtAthletes.text.isNullOrEmpty()) {
+                    Toast.makeText(this, "Please Select Athlete", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
             }
+
+
             val intent = Intent(this, SelectTemplateActivity::class.java)
+            intent.putExtra("athlete_id", aid)
+            intent.putExtra("From", "AthleteSection")
             secondActivityLauncher.launch(intent)
 
         }
@@ -339,11 +358,11 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
         val addButton = view.findViewById<TextView>(R.id.addButton)
         val cancelButton = view.findViewById<TextView>(R.id.cancelButton)
 
-        title.text = "Add Performance Category"
-        editTitle.text = "Performance Category Name :"
-        editText.hint = "Enter Category"
-        addButton.text = "Add"
-        cancelButton.text = "Cancel"
+        title.text = getString(R.string.addPerfomanceCategory)
+        editTitle.text = getString(R.string.categoryName)
+        editText.hint = getString(R.string.categoryName)
+        addButton.text = getString(R.string.add)
+        cancelButton.text = getString(R.string.cancel)
 
         addButton.setOnClickListener {
             performanceProfileBinding.main.setBackgroundColor(resources.getColor(R.color.black))
@@ -364,52 +383,75 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
 
     private fun addCategory(catName: String) {
         try {
+            Log.d("AddCategory", "Function called with catName: $catName, From: $From")
+
+            Log.d("ALALALALALLALA", "addCategory: $aid ----- ${athleteId.id}")
+            val selectedId = if (From == "AthleteSection") aid else athleteId.id
+            Log.d("AddCategory", "Selected ID: $selectedId")
+
             performanceProfileBinding.ProgressBar.visibility = View.VISIBLE
-            apiInterface.AddPerformanceCategory(athleteId.id, catName)
+            Log.d("AddCategory", "Progress bar set to visible")
+
+            apiInterface.AddPerformanceCategory(selectedId, catName)
                 .enqueue(object : Callback<PerformanceCategoryAdd> {
                     override fun onResponse(
                         call: Call<PerformanceCategoryAdd>,
                         response: Response<PerformanceCategoryAdd>
                     ) {
                         performanceProfileBinding.ProgressBar.visibility = View.GONE
-                        Log.d("TAG", response.code().toString() + "")
+                        Log.d("AddCategory", "Progress bar set to gone")
+
                         val code = response.code()
+                        Log.d("AddCategory", "Response code: $code")
+
                         if (code == 200) {
                             if (response.isSuccessful) {
+                                Log.d("AddCategory", "Response is successful: ${response.body()}")
+
                                 Toast.makeText(
                                     this@PerformanceProfileActivity,
-                                    "" + response.message(),
+                                    "Success: ${response.message()}",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                loadPerformance(athleteId.id!!)
+
+                                val reloadId = if (From == "AthleteSection") aid else athleteId.id!!
+                                Log.d("AddCategory", "Reloading performance data for ID: $reloadId")
+
+                                loadPerformance(reloadId)
                             }
                         } else if (code == 403) {
+                            Log.d("AddCategory", "Unauthorized (403) response received")
                             Utils.setUnAuthDialog(this@PerformanceProfileActivity)
                         } else {
+                            Log.d("AddCategory", "Error response received: ${response.message()}")
                             Toast.makeText(
                                 this@PerformanceProfileActivity,
-                                "" + response.message(),
+                                "Error: ${response.message()}",
                                 Toast.LENGTH_SHORT
-                            )
-                                .show()
+                            ).show()
                             call.cancel()
+                            Log.d("AddCategory", "API call canceled")
                         }
                     }
 
                     override fun onFailure(call: Call<PerformanceCategoryAdd>, t: Throwable) {
                         performanceProfileBinding.ProgressBar.visibility = View.GONE
+                        Log.d("AddCategory", "Progress bar set to gone due to failure")
+
+                        Log.e("AddCategory", "API call failed: ${t.message}", t)
+
                         Toast.makeText(
                             this@PerformanceProfileActivity,
-                            "" + t.message,
+                            "Failure: ${t.message}",
                             Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        call.cancel()
-                    }
+                        ).show()
 
+                        call.cancel()
+                        Log.d("AddCategory", "API call canceled due to failure")
+                    }
                 })
         } catch (e: Exception) {
-            Log.d("Error :-", "${e.message}")
+            Log.e("AddCategory", "Exception occurred: ${e.message}", e)
         }
     }
 
@@ -544,6 +586,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                             val data = response.body()?.data ?: mutableListOf()
                             Log.d("RESPONSE_DATA", "onResponse: $data")
 
+                            categoryData.clear()
                             val addedCategoryIds = categoryData.map { it.id }.toMutableSet()
 
                             data.forEach { category ->
@@ -554,8 +597,9 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                                 }
                             }
 
+
                             if (categoryData.isNotEmpty()) {
-                                initRecyclerView()
+                                initRecyclerView(false)
 
                                 categoryData.forEach { category ->
                                     Log.d("CategoryID", "${category.id}")
@@ -564,6 +608,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                             } else {
                                 handleApiError(response.code(), response.message())
                                 call.cancel()
+                                performanceProfileBinding.tvNodata.visibility = View.VISIBLE
                                 performanceProfileBinding.performanceRly.visibility = View.GONE
                             }
                         } else {
@@ -601,14 +646,14 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                     if (response.isSuccessful) {
                         val data = response.body()?.data ?: mutableListOf()
 
-                        // Append the quality data without clearing previous entries
+                        qualityData.clear()
                         data.forEach { quality ->
                             if (!qualityData.contains(quality)) {
                                 qualityData.add(quality)
                             }
                         }
 
-                        initRecyclerView() // Refresh RecyclerView
+                        initRecyclerView(false) // Refresh RecyclerView
                     } else {
                         handleApiError(response.code(), response.message())
                     }
@@ -734,23 +779,26 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
 //        }
 //    }
 
-    private fun initRecyclerView() {
+    private fun initRecyclerView(IsAthlete:Boolean) {
         performanceProfileBinding.performanceRly.layoutManager = LinearLayoutManager(this)
 
         if (categoryData.isNotEmpty()) {
-            // Show RecyclerView and hide "No Data Found" message
             performanceProfileBinding.performanceRly.visibility = View.VISIBLE
             performanceProfileBinding.tvNodata.visibility = View.GONE
 
-            adapter = PerformanceProfileAdapter(categoryData, qualityData, this, this, this)
-            performanceProfileBinding.performanceRly.adapter = adapter
+            if (From == "AthleteSection"){
+                adapter = PerformanceProfileAdapter(categoryData, qualityData, this, true,this, this)
+                performanceProfileBinding.performanceRly.adapter = adapter
+            }else{
+                adapter = PerformanceProfileAdapter(categoryData, qualityData, this, false,this, this)
+                performanceProfileBinding.performanceRly.adapter = adapter
+            }
+
         } else {
-            // Hide RecyclerView and show "No Data Found" message
             performanceProfileBinding.performanceRly.visibility = View.GONE
             performanceProfileBinding.tvNodata.visibility = View.VISIBLE
         }
     }
-
 
 //    private fun loadPerformanceQuailty(id: Int, performId: Int?) {
 //        try {
@@ -868,14 +916,14 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                                     categoryData.add(category)
                                     addedCategoryIds.add(category.id)
 
-                                    // Load the quality data for each category asynchronously
                                     loadPerformanceQualityAthlete(category.id)
                                 }
                             }
 
                             if (categoryData.isNotEmpty()) {
-                                initRecyclerView() // Update visibility
+                                initRecyclerView(true) // Update visibility
                             } else {
+                                performanceProfileBinding.tvNodata.visibility = View.VISIBLE
                                 performanceProfileBinding.performanceRly.visibility = View.GONE
                             }
                         } else if (response.code() == 403) {
@@ -928,7 +976,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                                     categoryQualityMap[category.id] ?: mutableListOf()
                                 )
                             }
-                            initRecyclerView() // Update RecyclerView
+                            initRecyclerView(true) // Update RecyclerView
                         }
                     } else if (response.code() == 403) {
                         Utils.setUnAuthDialog(this@PerformanceProfileActivity)
@@ -1012,7 +1060,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                     if (response.isSuccessful) {
                         val data = response.body()?.data ?: listOf()
                         performanceTempData.addAll(data)
-                        initRecyclerView() // Update visibility
+                        initRecyclerView(false) // Update visibility
                     } else if (response.code() == 403) {
                         Utils.setUnAuthDialog(this@PerformanceProfileActivity)
                     } else {
@@ -1107,7 +1155,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                 performanceProfileBinding.ProgressBar.visibility = View.GONE
                 if (response.isSuccessful) {
                     athleteData.addAll(response.body()?.data ?: listOf())
-                    initRecyclerView() // Update visibility
+                    initRecyclerView(false) // Update visibility
                 } else if (response.code() == 403) {
                     Utils.setUnAuthDialog(this@PerformanceProfileActivity)
                 } else {
@@ -1141,9 +1189,10 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
         categoryData = mutableListOf()
         qualityData = mutableListOf()
         aid = intent.getIntExtra("athleteId", 0)
+        From = intent.getStringExtra("From").toString()
         performanceProfileBinding.edtAthletes.visibility = View.VISIBLE
 
-        Log.d("aid", "aid:-  $aid")
+        Log.d("aid", "aid:-  $aid  ---- $From")
 
 
         val userType = preferenceManager.GetFlage()
@@ -1174,11 +1223,8 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                     performanceProfileBinding.viewQualityGraph
                 )
             }
-
         }
-
     }
-
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
         when (string) {
@@ -1186,16 +1232,32 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                 try {
                     val category = categoryData.firstOrNull { it.id == type.toInt() }
                     Log.d("catData:", "${category!!.id}")
-                    startActivity(
-                        Intent(
-                            this@PerformanceProfileActivity,
-                            ViewPerformanceProfileActivity::class.java
-                        ).apply {
-                            putExtra("athleteId", "${athleteId.id}")
-                            putExtra("catId", "${type.toInt()}")
-                            putExtra("catName", "${category?.name}")
-                        }
-                    )
+
+                    if (From == "AthleteSection"){
+                        startActivity(
+                            Intent(
+                                this@PerformanceProfileActivity,
+                                ViewPerformanceProfileActivity::class.java
+                            ).apply {
+                                putExtra("athleteId", "${aid}")
+                                putExtra("catId", "${type.toInt()}")
+                                putExtra("catName", "${category?.name}")
+                            }
+                        )
+                    }else{
+                        startActivity(
+                            Intent(
+                                this@PerformanceProfileActivity,
+                                ViewPerformanceProfileActivity::class.java
+                            ).apply {
+                                putExtra("athleteId", "${athleteId.id}")
+                                putExtra("catId", "${type.toInt()}")
+                                putExtra("catName", "${category?.name}")
+                            }
+                        )
+                    }
+
+
                 } catch (e: Exception) {
                     Log.d("Exception :-", "${e.message}")
                 }
@@ -1323,10 +1385,10 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                     val addButton = view.findViewById<TextView>(R.id.okButton)
                     val cancelButton = view.findViewById<TextView>(R.id.cancelButton)
 
-                    title.text = "Alert"
-                    editTitle.text = "Are You Sure you want to Delete ?"
-                    addButton.text = "Ok"
-                    cancelButton.text = "Cancel"
+                    title.text = getString(R.string.alert)
+                    editTitle.text =  getString(R.string.areYouSure)
+                    addButton.text =  getString(R.string.okay)
+                    cancelButton.text =  getString(R.string.cancel)
 
                     addButton.setOnClickListener {
                         performanceProfileBinding.main.setBackgroundColor(resources.getColor(R.color.black))
@@ -1351,7 +1413,7 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                                                     "" + response.message(),
                                                     Toast.LENGTH_SHORT
                                                 ).show()
-                                                loadPerformance(athleteId.id!!)
+                                               loadPerformance(athleteId.id!!)
                                             }
                                         } else if (code == 403) {
                                             Utils.setUnAuthDialog(this@PerformanceProfileActivity)
@@ -1407,11 +1469,11 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                     val cancelButton = view.findViewById<TextView>(R.id.cancelButton)
 
                     title.text = "Edit Performance Category"
-                    editTitle.text = "Performance Category Name :"
-                    editText.hint = "Enter Category"
+                    editTitle.text =  getString(R.string.categoryName)
+                    editText.hint =  getString(R.string.enterCategory)
                     editText.setText(performanceProfile.name)
-                    addButton.text = "Save"
-                    cancelButton.text = "Cancel"
+                    addButton.text =  getString(R.string.save)
+                    cancelButton.text =  getString(R.string.cancel)
 
                     addButton.setOnClickListener {
                         performanceProfileBinding.main.setBackgroundColor(resources.getColor(R.color.black))
@@ -1595,6 +1657,8 @@ class PerformanceProfileActivity : AppCompatActivity(), OnItemClickListener.OnIt
                                     val code = response.code()
                                     if (code == 200) {
                                         if (response.isSuccessful) {
+
+
                                             Toast.makeText(
                                                 this@PerformanceProfileActivity,
                                                 "Update Successfully" + response.message(),

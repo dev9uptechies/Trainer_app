@@ -1,6 +1,7 @@
 package com.example
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import com.example.model.AthleteDataPackage.AthleteDetails
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.R
+import com.example.trainerapp.viewTestActivity
 
 class TestAdapterAthlete(
     private val athleteList: List<AthleteDetails.Athlete.TestAthlete>,
@@ -29,6 +31,9 @@ class TestAdapterAthlete(
             .inflate(R.layout.test_layout, parent, false)
         return MyViewHolder(itemView)
     }
+
+    val athleteNames = ArrayList<String>()
+    val athleteResults = ArrayList<String>()
 
 
     override fun onBindViewHolder(holder: TestAdapterAthlete.MyViewHolder, position: Int) {
@@ -50,6 +55,24 @@ class TestAdapterAthlete(
         holder.tvtime.text = athlete.athlete?.name ?: ""
         holder.tvdate.text = athlete.test?.date?.take(10) ?: ""
         holder.tvunit.text = "Unit: " + (athlete.test?.unit ?: "")
+
+
+        athlete.test?.test_athletes?.forEach { athleteData ->
+            athleteData.athlete?.name?.let { athleteNames.add(it) }
+            athleteResults.add(athleteData.result ?: "")
+        }
+
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, viewTestActivity::class.java)
+            intent.putExtra("AthleteTestName", athlete.test?.title)
+            intent.putExtra("AthleteTestGoal", athlete.test?.goal)
+            intent.putExtra("From", "AthleteSection")
+            intent.putExtra("AthleteTestUnit", athlete.test?.unit)
+            intent.putStringArrayListExtra("AthleteTestAthleteNames", athleteNames)
+            intent.putStringArrayListExtra("AthleteTestAthleteResults", athleteResults)
+            context.startActivity(intent)
+        }
 
     }
 

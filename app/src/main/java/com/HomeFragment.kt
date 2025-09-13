@@ -5,8 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.icu.text.DateFormatSymbols
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -19,16 +22,18 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
+import androidx.cardview.widget.CardView
 import androidx.core.text.HtmlCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.children
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.Adapter.selected_day.LessonAdapter
-import com.example.Adapter.selected_day.eventAdapter
-import com.example.Adapter.selected_day.testAdapter
+import com.example.Adapter.SelectedEvent.SelectedEventEventAdapter
+import com.example.Adapter.SelectedEvent.SelectedEventLessonAdapter
+import com.example.Adapter.SelectedEvent.SelectedEventTestAdapter
 import com.example.AthletesActivity
+import com.example.GroupDetailActivity
 import com.example.GroupListData
 import com.example.NewsAdapter
 import com.example.OnItemClickListener
@@ -36,7 +41,9 @@ import com.example.SelectGroupActivity
 import com.example.model.HomeFragment.NewsModel
 import com.example.model.PrivacyPolicy.privacypolicy
 import com.example.model.SelectedDaysModel
+import com.example.model.SelectedEventModel
 import com.example.model.personal_diary.GetDiaryDataForEdit
+import com.example.model.training_plan.TrainingPlanData
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.MesoCycleData
@@ -70,9 +77,10 @@ import com.example.trainerappAthlete.model.PlanningAdapterAthleteHome
 import com.example.trainerappAthlete.model.TestAdapterAthlete
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.client.methods.RequestBuilder.post
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.kizitonwose.calendarview.CalendarView
-import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
@@ -83,11 +91,20 @@ import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.time.temporal.WeekFields
+import java.util.Locale
+import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
+import com.kizitonwose.calendarview.model.CalendarDay
+import com.makeramen.roundedimageview.RoundedTransformationBuilder
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Transformation
+import java.util.Date
 
 class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener,
     OnItemClickListener.OnItemClickCallback {
@@ -103,17 +120,24 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     lateinit var newsadapter: NewsAdapter
     lateinit var workoutadapter: WorkOutAdapter
     private var instractionData: privacypolicy.Data? = null
-    private lateinit var testAdapterAthlete: TestAdapterAthlete
-    private lateinit var eventAdapterAthlete: EventAdapterAthlete
-    private lateinit var lessonAdapterAthlete: LessonAdapterAthlete
-    private lateinit var adapterAthelete: PlanningAdapterAthleteHome
     private var newsData: MutableList<NewsModel.Data> = mutableListOf()
+
+    private var eventsData: List<SelectedEventModel.Event> = emptyList()
+    private var groupIndex: Int = -1
 
 
     private var receivedPreSeasonMesocycles: List<MesoCycleData>? = null
     private var receivedPreCompetitiveMesocycles: List<MesoCycleData>? = null
     private var receivedCompetitiveMesocycles: List<MesoCycleData>? = null
     private var receivedTransitionMesocycles: List<MesoCycleData>? = null
+
+
+    private var preSeason: GroupListData.Pre_Season? = null
+    private var preCompetitive: GroupListData.Pre_Competitive? = null
+    private var competitive: GroupListData.Competitive? = null
+    private var transition: GroupListData.Transition? = null
+
+    private var scdule: List<GroupListData.Schedule>? = null
 
 
     // Received Data
@@ -125,37 +149,15 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     private var receivedmesocycle: String? = null
     private var receivedworkloadColor: String? = null
 
-    private var receivedPreCompetitiveName: String? = null
-    private var receivedPreCompetitiveStartDate: String? = null
-    private var receivedPreCompetitiveEndDate: String? = null
-    private var receivedPreCompetitiveMesocycle: String? = null
-    private var receivedPreCompetitiveWorkloadColor: String? = null
 
-    private var receivedCommpetitiveName: String? = null
-    private var receivedCompetitiveStartDate: String? = null
-    private var receivedCompetitiveEndDate: String? = null
-    private var receivedCompetitiveMesocycle: String? = null
-    private var receivedCompetitiveWorkloadColor: String? = null
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    var formattedDate: String = sdf.format(Date())   // 👈 defaults to today
 
-    private var receivedTransitionName: String? = null
-    private var receivedTransitionStartDate: String? = null
-    private var receivedTransitionEndDate: String? = null
-    private var receivedTransitionMesocycle: String? = null
-    private var receivedTransitionWorkloadColor: String? = null
+    private val datesWithDataTest = mutableSetOf<LocalDate>()
 
-
-
-
-    var formattedDate: String? = null
-    var LessonData: MutableList<SelectedDaysModel.Lesson> = mutableListOf()
-    var TestData: MutableList<SelectedDaysModel.Test> = mutableListOf()
-    var EventData: MutableList<SelectedDaysModel.Event> = mutableListOf()
-    private val datesWithDataTest = mutableSetOf<LocalDate>() // Set to track dates with data
-
-
-    lateinit var lessonadapter: LessonAdapter
-    lateinit var eventadapter: eventAdapter
-    lateinit var testadapter: testAdapter
+    lateinit var lessonadapter: SelectedEventLessonAdapter
+    lateinit var eventadapter: SelectedEventEventAdapter
+    lateinit var testadapter: SelectedEventTestAdapter
 
     @RequiresApi(Build.VERSION_CODES.O)
     private val selectionFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -190,7 +192,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         preferenceManager = PreferencesManager(requireContext())
         Log.d("Login Token", preferenceManager.getToken()!!)
 
-        val sharedPreferences1 = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val sharedPreferences1 = requireActivity().getSharedPreferences("MyPrefs", MODE_PRIVATE)
 
 
         receivedPreSeasonMesocycles = Gson().fromJson(
@@ -213,15 +215,20 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             object : TypeToken<List<MesoCycleData>>() {}.type
         )
 
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val shouldSave = sharedPreferences.getBoolean("ShouldSave", false)
 
-
-
-
-        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        receivedIds = sharedPreferences.getString("id", "default_value") ?: ""
+        Log.d("SHOULDSAVE", "onCreate: $shouldSave")
 
         receivedGroup_Ids = sharedPreferences.getString("group_id", "default_value") ?: ""
-        Log.e("USERIDDDDDDDDDDD", "onCreateView: "+preferenceManager.getUserId()!!.toInt() )
+
+        receivedIds = sharedPreferences.getString("id", "default_value") ?: ""
+        receivedGroup_Ids = sharedPreferences.getString("group_id", "default_value") ?: ""
+        Log.e("USERIDDDDDDDDDDD", "onCreateView: " + receivedIds + receivedGroup_Ids)
+
+        Log.e("USERIDDDDDDDDDDD", "onCreateView: " + preferenceManager.getUserId()!!.toInt())
+
 
         receivedname = sharedPreferences.getString("name", null)
         receivedstartDate = sharedPreferences.getString("start_date", null)
@@ -229,65 +236,70 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         receivedmesocycle = sharedPreferences.getString("mesocycle", null)
         receivedworkloadColor = sharedPreferences.getString("workload_color", null)
 
-        receivedPreCompetitiveName = sharedPreferences.getString("preCompetitiveName", null)
-        receivedPreCompetitiveStartDate = sharedPreferences.getString("preCompetitiveStartDate", null)
-        receivedPreCompetitiveEndDate = sharedPreferences.getString("preCompetitiveEndDate", null)
-        receivedPreCompetitiveMesocycle = sharedPreferences.getString("preCompetitiveMesocycle", null)
-        receivedPreCompetitiveWorkloadColor = sharedPreferences.getString("preCompetitiveWorkloadColor", null)
-
-
-        receivedCommpetitiveName = sharedPreferences.getString("CompetitiveName", null)
-        receivedCompetitiveStartDate = sharedPreferences.getString("CompetitiveStartDate", null)
-        receivedCompetitiveEndDate = sharedPreferences.getString("CompetitiveEndDate", null)
-        receivedCompetitiveMesocycle = sharedPreferences.getString("CompetitiveMesocycle", null)
-        receivedCompetitiveWorkloadColor = sharedPreferences.getString("CompetitiveWorkloadColor", null)
-
-        receivedTransitionName = sharedPreferences.getString("TransitionName", null)
-        receivedTransitionStartDate = sharedPreferences.getString("TransitionStartDate", null)
-        receivedTransitionEndDate = sharedPreferences.getString("TransitionEndDate", null)
-        receivedTransitionMesocycle = sharedPreferences.getString("TransitionMesocycle", null)
-        receivedTransitionWorkloadColor = sharedPreferences.getString("TransitionWorkloadColor", null)
-
         initViews()
         setDrawerToggle()
         getInstraction()
         GetNews()
         setUpCalendar()
-        val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+
+        val userType = preferenceManager.GetFlage()
+        if (userType == "Athlete") {
+            GetProfileAthlete()
+        } else {
+            GetProfile()
+        }
+
+        val currentDate =
+            homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
         val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
         Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
         homeFragmentBinding.tvDate.text = formattedMonthYear
 
         val receivedIdInt = receivedIds.toIntOrNull()
 
-        val userType = preferenceManager.GetFlage()
 
         if (userType == "Athlete") {
             val menu = homeFragmentBinding.navigationView.menu
             menu.clear()
 
-            menu.add(Menu.NONE, R.id.tv_notification, Menu.NONE, "Notification").setIcon(R.drawable.ic_notification)
+            menu.add(Menu.NONE, R.id.tv_notification, Menu.NONE, getString(R.string.notification))
+                .setIcon(R.drawable.ic_notification)
 
-            menu.add(Menu.NONE, R.id.tv_policy, Menu.NONE, "Privacy Policy").setIcon(R.drawable.ic_privacy)
+            menu.add(Menu.NONE, R.id.tv_policy, Menu.NONE, getString(R.string.privacyPolicy))
+                .setIcon(R.drawable.ic_privacy)
 
-            menu.add(Menu.NONE, R.id.tv_favorite, Menu.NONE, "Favorites").setIcon(R.drawable.ic_favorite)
+            menu.add(Menu.NONE, R.id.tv_favorite, Menu.NONE, getString(R.string.favourite))
+                .setIcon(R.drawable.ic_favorite)
 
-            menu.add(Menu.NONE, R.id.tv_profile, Menu.NONE, "Performance Profile").setIcon(R.drawable.ic_perfomance)
+            menu.add(Menu.NONE, R.id.tv_profile, Menu.NONE, getString(R.string.performanceProfile))
+                .setIcon(R.drawable.ic_perfomance)
 
-            menu.add(Menu.NONE, R.id.tv_analysis, Menu.NONE, "Competition Analysis").setIcon(R.drawable.ic_competition)
+            menu.add(
+                Menu.NONE,
+                R.id.tv_analysis,
+                Menu.NONE,
+                getString(R.string.competitionAnalysis)
+            ).setIcon(R.drawable.ic_competition)
 
-            menu.add(Menu.NONE, R.id.tv_view_analysis, Menu.NONE, "View Analysis").setIcon(R.drawable.ic_competition)
+            menu.add(Menu.NONE, R.id.tv_view_analysis, Menu.NONE, getString(R.string.viewAnalysis))
+                .setIcon(R.drawable.ic_competition)
 
-            menu.add(Menu.NONE, R.id.tv_personal_diary, Menu.NONE, "Personal Diary").setIcon(R.drawable.icd)
+            menu.add(
+                Menu.NONE,
+                R.id.tv_personal_diary,
+                Menu.NONE,
+                getString(R.string.personalDiary)
+            ).setIcon(R.drawable.icd)
 
-            menu.add(Menu.NONE, R.id.tv_setting, Menu.NONE, "Settings").setIcon(R.drawable.ic_setting)
+            menu.add(Menu.NONE, R.id.tv_setting, Menu.NONE, getString(R.string.settings))
+                .setIcon(R.drawable.ic_setting)
 
-            menu.add(Menu.NONE, R.id.logout, Menu.NONE, "Logout").setIcon(R.drawable.logout)
+            menu.add(Menu.NONE, R.id.logout, Menu.NONE, getString(R.string.logout))
+                .setIcon(R.drawable.logout)
         } else {
-            val menu = homeFragmentBinding.navigationView.menu
+//            val menu = homeFragmentBinding.navigationView.menu
 
-            menu.clear()
-            homeFragmentBinding.navigationView.inflateMenu(R.menu.activity_main_drawer)
+//            homeFragmentBinding.navigationView.inflateMenu(R.menu.activity_main_drawer)
         }
 
 
@@ -308,44 +320,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 clearSavedGroupData()
             }
 
-            if (!receivedGroup_Ids.isNullOrEmpty()) {
-
-                Log.d("SSSJSJSJSJSJJr", "onCreateView: $receivedCommpetitiveName   $receivedstartDate ")
-
-                if (!receivedname.isNullOrEmpty()) {
-                    homeFragmentBinding.seasonLy.visibility = View.VISIBLE
-                    homeFragmentBinding.titleTv.text = receivedname
-                    homeFragmentBinding.edtStartDate.text = receivedstartDate
-                    homeFragmentBinding.edtEndDate.text = receivedendDate
-                    homeFragmentBinding.edtMesocycle.text = receivedmesocycle
-                }else {
-                    homeFragmentBinding.seasonLy.visibility = View.GONE
-                }
-
-                Log.d("AQQAAQQAQA", "onCreateView: $receivedPreCompetitiveName")
-
-                if (!receivedPreCompetitiveName.isNullOrEmpty()) {
-                    homeFragmentBinding.PreCompetitiveLy.visibility = View.GONE
-                    homeFragmentBinding.titleTvPreCompetitive.text = receivedPreCompetitiveName
-                    homeFragmentBinding.edtStartDatePreCompetitive.text = receivedPreCompetitiveStartDate
-                    homeFragmentBinding.edtEndDatePreCompetitive.text = receivedPreCompetitiveEndDate
-                    homeFragmentBinding.edtMesocyclePreCompetitive.text = receivedPreCompetitiveMesocycle
-                }else {
-                    homeFragmentBinding.PreCompetitiveLy.visibility = View.GONE
-                }
-
-                if (!receivedCommpetitiveName.isNullOrEmpty()) {
-                    homeFragmentBinding.CompetitiveLy.visibility = View.GONE
-                    homeFragmentBinding.titleTvCompetitive.text = receivedCommpetitiveName
-                    homeFragmentBinding.edtStartDateCompetitive.text = receivedCompetitiveStartDate
-                    homeFragmentBinding.edtEndDateCompetitive.text = receivedCompetitiveEndDate
-                    homeFragmentBinding.edtMesocycleCompetitive.text = receivedCompetitiveMesocycle
-                } else {
-                    homeFragmentBinding.CompetitiveLy.visibility = View.GONE
-                }
-
-                Log.d("SSSJSJSJSJSJJr", "onCreateView: $receivedCommpetitiveName   $receivedendDate ")
-            }
 
         } else {
             homeFragmentBinding.linerAthlete.visibility = View.GONE
@@ -364,9 +338,10 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
         if (savedGroupName != null && savedStartDate != null) {
             homeFragmentBinding.selectGroupTxt.text = savedGroupName
-            homeFragmentBinding.edtStartDate.text = savedStartDate
+//            homeFragmentBinding.edtStartDate.text = savedStartDate
+            homeFragmentBinding.seeAllAboutToday.visibility = View.VISIBLE
         } else {
-            homeFragmentBinding.edtStartDate.text = ""
+//            homeFragmentBinding.edtStartDate.text = ""
         }
 
         homeFragmentBinding.dialogButton.setOnClickListener {
@@ -389,129 +364,41 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
         setContent()
 
+
+
         return homeFragmentBinding.root
     }
 
-        @SuppressLint("NewApi")
-        private fun fetchDayDataRecycler(selectedDate: LocalDate) {
-            try {
-                val formattedDate = selectionFormatter.format(selectedDate)
-                Log.d("CalendarFragment", "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids")
-                homeFragmentBinding.homeProgress.visibility = View.VISIBLE
-                apiInterface.GetSelectedDaysAthlete(formattedDate, receivedGroup_Ids)!!
-                    .enqueue(object : Callback<SelectedDaysModel> {
-                        override fun onResponse(
-                            call: Call<SelectedDaysModel>,
-                            response: Response<SelectedDaysModel>
-                        ) {
-                            homeFragmentBinding.homeProgress.visibility = View.GONE
-
-                            if (response.isSuccessful && response.body() != null) {
-
-                                val selectedDaysModel = response.body()
-                                Log.d("API Response", "Response: $selectedDaysModel")
-
-                                val data = selectedDaysModel?.data
-                                if (data != null) {
-                                    if (::eventadapter.isInitialized) {
-                                        eventadapter.clearData()
-                                    }
-
-                                    if (data.lessons.isNotEmpty()) {
-                                        LessonData.clear()
-                                        LessonData.addAll(data.lessons)
-                                        initLessonRecyclerView(LessonData)
-
-                                        if (!datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.add(selectedDate)
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    } else {
-
-                                    }
-
-                                    if (data.events.isNotEmpty()) {
-                                        EventData.clear()
-                                        EventData.addAll(data.events)
-                                        initEventRecyclerView(EventData)
-                                        if (!datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.add(selectedDate)
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    } else {
-
-                                    }
-
-                                    if (data.tests.isNotEmpty()) {
-                                        TestData.clear()
-                                        TestData.addAll(data.tests)
-                                        initTestRecyclerView(TestData)
-
-                                        if (!datesWithDataTest.contains(selectedDate)) {
-                                            datesWithDataTest.add(selectedDate)
-                                            calendarView!!.notifyDateChanged(selectedDate)
-                                        }
-                                    } else {
-
-                                    }
-
-                                    Log.d("?????", "onResponse: ${TestData.getOrNull(0)?.title} \n ${EventData.getOrNull(0)?.title} \n ${LessonData.getOrNull(0)?.name}")
-
-                                    Log.d("SKSKKSKSKSK", "onResponse: $datesWithDataTest")
-
-                                } else {
-                                    Log.e("API Response", "Data is null. No dot added.")
-                                }
-
-
-
-                                Log.d("MDKMKDMKDKDKK", "onResponse: $data")
-                            } else if (response.code() == 429) {
-                                homeFragmentBinding.homeProgress.visibility = View.GONE
-                                Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT)
-                                    .show()
-                            } else {
-                                Log.e("API Response", "Failed to fetch data: ${response.message()}")
-                            }
-                        }
-
-                        override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
-                            homeFragmentBinding.homeProgress.visibility = View.GONE
-
-                            Log.e("API Response", "Error: ${t.message}")
-                        }
-                    })
-            } catch (e: Exception) {
-                homeFragmentBinding.homeProgress.visibility = View.GONE
-                Log.e("Catch", "CatchError :- ${e.message}")
-            }
-        }
-
-    private fun initLessonRecyclerView(programs: List<SelectedDaysModel.Lesson>) {
+    private fun initLessonRecyclerView(programs: List<SelectedEventModel.Lesson>) {
         homeFragmentBinding.favLessonRly.layoutManager = LinearLayoutManager(requireContext())
-        lessonadapter = LessonAdapter(programs, requireContext(), this)
+        lessonadapter = SelectedEventLessonAdapter(programs, requireContext(), this)
         homeFragmentBinding.favLessonRly.adapter = lessonadapter
     }
 
-    private fun initTestRecyclerView(tests: List<SelectedDaysModel.Test>) {
+    private fun initTestRecyclerView(tests: List<SelectedEventModel.Test>) {
         homeFragmentBinding.favTestRly.layoutManager = LinearLayoutManager(requireContext())
-        testadapter = testAdapter(tests, requireContext(), this)
+        testadapter = SelectedEventTestAdapter(tests, requireContext(), this)
         homeFragmentBinding.favTestRly.adapter = testadapter
     }
 
-    private fun initEventRecyclerView(events: List<SelectedDaysModel.Event>) {
+    private fun initEventRecyclerView(events: List<SelectedEventModel.Event>) {
         if (events.isNotEmpty()) {
             Log.d("Event RecyclerView", "Setting up RecyclerView with events.")
             homeFragmentBinding.favEventRly.layoutManager = LinearLayoutManager(requireContext())
-            eventadapter = eventAdapter(events, requireContext(), this)
+            eventadapter = SelectedEventEventAdapter(events, requireContext(), this)
             homeFragmentBinding.favEventRly.adapter = eventadapter
+
         } else {
             Log.d("Event RecyclerView", "No events available.")
         }
     }
 
     private fun setContent() {
-        val workout = arrayOf("Instruction", "Information", "News")
+        val workout = arrayOf(
+            getString(R.string.instruction),
+            getString(R.string.information),
+            getString(R.string.news)
+        )
 
         for (item in workout.indices) {
             WorkOutlist.add(Work_Out(workout[item]))
@@ -528,27 +415,46 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     }
 
+    private var mesocycles: List<MesoCycleData> = emptyList()
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpCalendar() {
 
-        val sharedPreferences = requireActivity().getSharedPreferences("MyPrefss", Context.MODE_PRIVATE)
-        val mesocyclesJson = sharedPreferences.getString("mesocycles", "[]")
-        val mesocycles: List<MesoCycleData> = Gson().fromJson(mesocyclesJson, object : TypeToken<List<MesoCycleData>>() {}.type)
+        val txt = homeFragmentBinding.selectGroupTxt.text.toString()
+        Log.d("00000", "onCreateView: $txt")
+        if (txt != "Select Group" && txt != "Seleccionar Grupo") {
+            val sharedPreferences = requireActivity().getSharedPreferences("MyPrefss", MODE_PRIVATE)
+            val mesocyclesJson = sharedPreferences.getString("mesocycles", "[]")
+            mesocycles =
+                Gson().fromJson(mesocyclesJson, object : TypeToken<List<MesoCycleData>>() {}.type)
+        }
 
 
         val daysOfWeek = daysOfWeekFromLocale()
         val currentMonth = YearMonth.now()
         val today = LocalDate.now()
+        val oneWeekBefore = YearMonth.from(LocalDate.now().minusWeeks(1))
 
-        homeFragmentBinding.exSevenCalendar!!.apply {
+        homeFragmentBinding.exSevenCalendar.apply {
             setup(currentMonth.minusMonths(100), currentMonth.plusMonths(100), daysOfWeek.first())
             scrollToMonth(currentMonth)
         }
 
-        homeFragmentBinding.exSevenCalendar!!.post {
-            homeFragmentBinding.exSevenCalendar!!.scrollToDate(today)
+        homeFragmentBinding.exSevenCalendar.post {
+            homeFragmentBinding.exSevenCalendar.scrollToDate(today)
             fetchCurrentWeekDates()
+            val firstVisibleDay =
+                homeFragmentBinding.exSevenCalendar.findFirstVisibleDay()?.date ?: today
+
+            homeFragmentBinding.exSevenCalendar.post {
+                val firstVisibleMonth = homeFragmentBinding.exSevenCalendar.findFirstVisibleMonth()
+                if (firstVisibleMonth != null) {
+                    homeFragmentBinding.exSevenCalendar.monthScrollListener?.invoke(
+                        firstVisibleMonth
+                    )
+                }
+            }
+
         }
 
         class DayViewContainer(view: View) : ViewContainer(view) {
@@ -621,158 +527,44 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     }
                 }
 
-
-                //                Log.d("DOTTTTT", "bind: $datesWithDataTest")
-                //
-                //                if (datesWithDataTest.contains(day.date)) {
-                //                    container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(Color.RED)
-                //                    container.binding.dotLesson.visibility = View.VISIBLE
-                //                } else {
-                //                    container.binding.dotLesson.visibility = View.GONE
-                //                }
-
                 val currentDate = LocalDate.now()
-                val firstDayOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
-                val lastDayOfWeek = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))
+                val firstDayOfWeek =
+                    currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+                val lastDayOfWeek =
+                    currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))
 
                 fun isWithinCurrentWeek(date: LocalDate): Boolean {
                     return !date.isBefore(firstDayOfWeek) && !date.isAfter(lastDayOfWeek)
                 }
 
-//                fun applyDotIfWithinRange(
-//                    startDateStr: String?,
-//                    endDateStr: String?,
-//                    workloadColor: String?,
-//                    dotView: View,
-//                    defaultColor: Int
-//                ) {
-//                    if (!startDateStr.isNullOrEmpty() && !endDateStr.isNullOrEmpty()) {
-//                        try {
-//                            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//                            val startDate = LocalDate.parse(startDateStr, dateFormatter)
-//                            val endDate = LocalDate.parse(endDateStr, dateFormatter)
-//
-//                            if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
-//                                val color = try {
-//                                    if (!workloadColor.isNullOrEmpty()) Color.parseColor(workloadColor) else defaultColor
-//                                } catch (e: IllegalArgumentException) {
-//                                    Log.e("ColorError", "Invalid color value: $workloadColor", e)
-//                                    defaultColor
-//                                }
-//                                dotView.backgroundTintList = ColorStateList.valueOf(color)
-//                                dotView.visibility = View.VISIBLE
-//                            } else {
-//                                dotView.visibility = View.GONE
-//                            }
-//                        } catch (e: Exception) {
-//                            Log.e("DateParsingError", "Error parsing dates: $startDateStr - $endDateStr", e)
-//                        }
-//                    } else {
-//                        dotView.visibility = View.GONE
-//                    }
-//                }
-
-                Log.d("SLLSLSLSLS", "bind: $receivedworkloadColor     $receivedPreCompetitiveWorkloadColor   $receivedPreCompetitiveWorkloadColor")
-//
-//                    if (!receivedstartDate.isNullOrEmpty() && !receivedendDate.isNullOrEmpty()) {
-//                        try {
-//                            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//                            val startDate = LocalDate.parse(receivedstartDate, dateFormatter)
-//                            val endDate = LocalDate.parse(receivedendDate, dateFormatter)
-//
-//                            if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
-//                                val color = try {
-//                                    if (!receivedworkloadColor.isNullOrEmpty()) Color.parseColor(receivedworkloadColor) else Color.RED
-//                                } catch (e: IllegalArgumentException) {
-//                                    Log.e("ColorError", "Invalid color value: $receivedworkloadColor", e)
-//                                    Color.RED
-//                                }
-//                                container.binding.dotLesson.backgroundTintList = ColorStateList.valueOf(color)
-//                                container.binding.dotLesson.visibility = View.VISIBLE
-//                            }
-//                        } catch (e: Exception) {
-//                            Log.e("DateParsingError", "Error parsing dates: $receivedstartDate - $receivedendDate", e)
-//                        }
-//                    }
-//
-//                    if (!receivedPreCompetitiveStartDate.isNullOrEmpty() && !receivedPreCompetitiveEndDate.isNullOrEmpty()) {
-//                        try {
-//                            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//                            val startDate = LocalDate.parse(receivedPreCompetitiveStartDate, dateFormatter)
-//                            val endDate = LocalDate.parse(receivedPreCompetitiveEndDate, dateFormatter)
-//
-//                            if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
-//                                val color = try {
-//                                    if (!receivedPreCompetitiveWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedPreCompetitiveWorkloadColor) else Color.RED
-//                                } catch (e: IllegalArgumentException) {
-//                                    Log.e("ColorError", "Invalid color value: $receivedPreCompetitiveWorkloadColor", e)
-//                                    Color.RED
-//                                }
-//                                container.binding.dotTest.backgroundTintList = ColorStateList.valueOf(color)
-//                                container.binding.dotTest.visibility = View.VISIBLE
-//                            }
-//                        } catch (e: Exception) {
-//                            Log.e("DateParsingError", "Error parsing dates: $receivedPreCompetitiveStartDate - $receivedPreCompetitiveEndDate", e)
-//                        }
-//                    }
-//
-//                    if (!receivedCompetitiveStartDate.isNullOrEmpty() && !receivedCompetitiveEndDate.isNullOrEmpty()) {
-//                        try {
-//                            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//                            val startDate = LocalDate.parse(receivedCompetitiveStartDate, dateFormatter)
-//                            val endDate = LocalDate.parse(receivedCompetitiveEndDate, dateFormatter)
-//
-//                            if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
-//                                val color = try {
-//                                    if (!receivedCompetitiveWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedCompetitiveWorkloadColor) else Color.GRAY
-//                                } catch (e: IllegalArgumentException) {
-//                                    Log.e("ColorError", "Invalid color value: $receivedCompetitiveWorkloadColor", e)
-//                                    Color.GRAY
-//                                }
-//                                container.binding.dotEvent.backgroundTintList = ColorStateList.valueOf(color)
-//                                container.binding.dotEvent.visibility = View.VISIBLE
-//                            }
-//                        } catch (e: Exception) {
-//                            Log.e("DateParsingError", "Error parsing dates: $receivedCompetitiveStartDate - $receivedCompetitiveEndDate", e)
-//                        }
-//                    }
-//
-//                    if (!receivedTransitionStartDate.isNullOrEmpty() && !receivedTransitionEndDate.isNullOrEmpty()) {
-//                        try {
-//                            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//                            val startDate = LocalDate.parse(receivedTransitionStartDate, dateFormatter)
-//                            val endDate = LocalDate.parse(receivedTransitionEndDate, dateFormatter)
-//
-//                            if (!day.date.isBefore(startDate) && !day.date.isAfter(endDate)) {
-//                                val color = try {
-//                                    if (!receivedTransitionWorkloadColor.isNullOrEmpty()) Color.parseColor(receivedTransitionWorkloadColor) else Color.YELLOW
-//                                } catch (e: IllegalArgumentException) {
-//                                    Log.e("ColorError", "Invalid color value: $receivedTransitionWorkloadColor", e)
-//                                    Color.YELLOW
-//                                }
-//                                container.binding.dotProgram.backgroundTintList = ColorStateList.valueOf(color)
-//                                container.binding.dotProgram.visibility = View.VISIBLE
-//                            }
-//                        } catch (e: Exception) {
-//                            Log.e("DateParsingError", "Error parsing dates: $receivedTransitionStartDate - $receivedTransitionEndDate", e)
-//                        }
-//                    }
-
-
                 val matchingMicrocycle = mesocycles.flatMap { it.microcycles ?: emptyList() }
                     .find { micro ->
                         try {
-                            val startDate = LocalDate.parse(micro.start_date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                            val endDate = LocalDate.parse(micro.end_date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                            val isMatching = !day.date.isBefore(startDate) && !day.date.isAfter(endDate)
+                            val startDate = LocalDate.parse(
+                                micro.start_date,
+                                DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                            )
+                            val endDate = LocalDate.parse(
+                                micro.end_date,
+                                DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                            )
+                            val isMatching =
+                                !day.date.isBefore(startDate) && !day.date.isAfter(endDate)
 
                             if (isMatching) {
-                                Log.d("COLOR_DEBUG", "Matched Date: ${day.date}, Color: ${micro.workload_color}")
+                                Log.d(
+                                    "COLOR_DEBUG",
+                                    "Matched Date: ${day.date}, Color: ${micro.workload_color}"
+                                )
                             }
 
                             isMatching
                         } catch (e: Exception) {
-                            Log.e("DateParsingError", "Error parsing microcycle date: ${micro.start_date} - ${micro.end_date}", e)
+                            Log.e(
+                                "DateParsingError",
+                                "Error parsing microcycle date: ${micro.start_date} - ${micro.end_date}",
+                                e
+                            )
                             false
                         }
                     }
@@ -802,12 +594,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
                 val preSeasonStartDate = receivedstartDate?.toLocalDate()
                 val preSeasonEndDate = receivedendDate?.toLocalDate()
-                val preCompStartDate = receivedPreCompetitiveStartDate?.toLocalDate()
-                val preCompEndDate = receivedPreCompetitiveEndDate?.toLocalDate()
-                val CompStartDate = receivedCompetitiveStartDate?.toLocalDate()
-                val CompEndDate = receivedCompetitiveEndDate?.toLocalDate()
-
-
 
 
                 container.view.setOnClickListener {
@@ -817,20 +603,37 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         formattedDate = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
                         val receivedIdInt = receivedIds.toIntOrNull()
+                        val receivedIdIntAthlete = receivedGroup_Ids.toIntOrNull()
 
-                        Log.e("DJDJDJDJDJJDJDJDJ", "bind: $receivedIdInt")
+                        Log.e("DJDJDJDJDJJDJDJDJ", "bind: $receivedIdIntAthlete")
 
                         val userType = preferenceManager.GetFlage()
 
                         if (userType == "Athlete") {
-                            if (receivedIdInt != null && receivedIdInt != 0) {
+                            if (receivedIdIntAthlete != null && receivedIdIntAthlete != 0) {
                                 homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
 
                                 Log.d("FORMATTEDDATE", "bind: ${formattedDate.toString()}")
 
-                                getPersonalDiaryData(formattedDate.toString())
+                                checkAndDisplayWeekData(formattedDate)
 
-//                                    fetchDayDataRecycler(day.date)
+                                getPersonalDiaryData(formattedDate.toString())
+//
+//                                var isPaused = false
+//
+//                                if (!isPaused) {
+//                                    homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+//
+//                                    fetchDayDataAthleteDate(selectedDate!!, true)
+//
+//                                    isPaused = true
+//                                    Handler(Looper.getMainLooper()).postDelayed({
+//                                        isPaused = false
+//                                        homeFragmentBinding.homeProgress.visibility = View.GONE
+//                                    }, 2000)
+//                                }
+
+//                                fetchDayDataAthlete(day.date,true)
 
                             } else {
                                 Toast.makeText(
@@ -842,12 +645,20 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
                         } else {
                             if (receivedIdInt != null && receivedIdInt != 0) {
-                                val intent =
-                                    Intent(requireContext(), SelectDayActivity::class.java).apply {
-                                        putExtra("id", receivedIdInt)
-                                        putExtra("date", formattedDate)
-                                    }
-                                context!!.startActivity(intent)
+
+                                checkAndDisplayWeekData(formattedDate)
+
+
+//                                val intent =
+//                                    Intent(requireContext(), SelectDayActivity::class.java).apply {
+//                                        putExtra("id", receivedIdInt)
+//                                        putExtra("date", formattedDate)
+//                                    }
+//                                context!!.startActivity(intent)
+                            } else if (receivedIdIntAthlete != null && receivedIdIntAthlete != 0) {
+                                Log.d("DNENEN", "bind: $receivedIdIntAthlete")
+//                                checkAndDisplayWeekData(formattedDate)
+
                             } else {
                                 Toast.makeText(
                                     requireContext(),
@@ -862,56 +673,93 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             }
         }
 
-        homeFragmentBinding.exSevenCalendar!!.monthScrollListener = { month ->
+        homeFragmentBinding.exSevenCalendar.monthScrollListener = { month ->
             // Format the month as "Month Year" (e.g., "January 2025")
             //                val formattedMonth = DateTimeFormatter.ofPattern("MMMM yyyy").format(month.yearMonth)
             //
             //                // Set the TextView with the formatted month and year
             //                homeFragmentBinding.tvDate.text = formattedMonth
 
-            val currentDate = homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: LocalDate.now()
+            val currentDate =
+                homeFragmentBinding.exSevenCalendar.findFirstVisibleDay()?.date ?: LocalDate.now()
             val formattedMonthYear = DateTimeFormatter.ofPattern("MMMM yyyy").format(currentDate)
             Log.d("CalendarLog", "Current month and year: $formattedMonthYear")
             homeFragmentBinding.tvDate.text = formattedMonthYear
 
-            // Optionally, apply custom formatting logic
+            Log.d("SLSLSLLS", "setUpCalendar: ${month.weekDays}")
+
             if (month.year == today.year) {
                 titleSameYearFormatter.format(month.yearMonth)
             } else {
                 titleFormatter.format(month.yearMonth)
             }
 
-            // Optionally, you can select the first day of the current month if needed
+            val firstVisibleDate =
+                homeFragmentBinding.exSevenCalendar!!.findFirstVisibleDay()?.date ?: today
+
+            val visibleWeekDays = month.weekDays.flatten()
+            Log.d("SCROLL_LISTENER", "Scroll Triggered: Visible Dates -> $visibleWeekDays")
+
             selectDate(month.yearMonth.atDay(1))
+
+//            checkAndDisplayWeekData(visibleWeekDays.toString())
+            val userType = preferenceManager.GetFlage()
+
+            if (userType == "Athlete") {
+                homeFragmentBinding.nextLessonContainer.visibility = View.VISIBLE
+                checkAndDisplayWeekDataaa(visibleWeekDays)
+
+            } else {
+                if (scdule != null) {
+                    checkAndDisplayWeekDataaa(visibleWeekDays)
+                }
+
+            }
+
         }
 
-
-        // Update the month header to show abbreviated day names (Mon, Tue, Wed)
         homeFragmentBinding.exSevenCalendar.monthHeaderBinder =
             object : MonthHeaderFooterBinder<MonthViewContainer> {
                 override fun create(view: View) = MonthViewContainer(view)
 
-                @SuppressLint("ResourceAsColor")
                 override fun bind(container: MonthViewContainer, month: CalendarMonth) {
                     if (container.legendLayout.tag == null) {
                         container.legendLayout.tag = month.yearMonth
 
-                        val formattedMonth =
-                            DateTimeFormatter.ofPattern("MMM,yyyy").format(today.yearMonth)
-                        homeFragmentBinding.tvDate.text = formattedMonth
-                        // Get short day names like "Mon", "Tue", "Wed"
+
+                        val sharedPreferences =
+                            homeFragmentBinding.root.context.getSharedPreferences(
+                                "AppSettings",
+                                Context.MODE_PRIVATE
+                            )
+                        val selectedLanguage =
+                            sharedPreferences.getString("Selected_Language", "en") ?: "en"
+                        val locale = Locale(selectedLanguage)
+
+                        // Get localized month name
+                        val monthFormatter = DateTimeFormatter.ofPattern("MMM, yyyy", locale)
+                        val formattedMonth = monthFormatter.format(month.yearMonth)
+                        homeFragmentBinding.tvDate.text =
+                            formattedMonth.uppercase(locale) // Ensure month is also uppercase
+
+                        // Get localized short day names, ensuring Sunday is first
                         val dayNames =
-                            daysOfWeek.map { it.name.take(3) }  // Get first 3 letters of each day name
-                        container.legendLayout.children.map { it as TextView }
+                            DateFormatSymbols(locale).shortWeekdays.drop(1) // Remove empty index 0
+                        val orderedDayNames =
+                            listOf(dayNames[0]) + dayNames.slice(1..6) // Start from Sunday
+
+                        // Apply localized day names to the header in uppercase
+                        container.legendLayout.children.filterIsInstance<TextView>()
                             .forEachIndexed { index, tv ->
-                                tv.text = dayNames[index]
+                                tv.text =
+                                    orderedDayNames[index].uppercase(locale) // Convert to uppercase
                             }
                     }
                 }
+
+
             }
     }
-
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun fetchCurrentWeekDates() {
@@ -920,17 +768,41 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         val lastDayOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val weekDates = mutableListOf<String>()
+        val weekDates = mutableListOf<LocalDate>()
 
         var date = firstDayOfWeek
         while (!date.isAfter(lastDayOfWeek)) {
-            weekDates.add(date.format(formatter))
-//            fetchDayDataRecycler(date)
+            weekDates.add(date)
             date = date.plusDays(1)
         }
 
-        Log.d("WEEK_DATES", "Current week dates: $weekDates")
+        Log.d("WEEK_DATES", "Checking dates: $weekDates")
+
+        // ✅ Ensure the list has 7 elements (Monday-Sunday)
+        if (weekDates.size == 7) {
+            checkNextAvailableDate(weekDates, 0)  // Safe call
+        } else {
+            Log.e("WEEK_DATES_ERROR", "Expected 7 dates but got: ${weekDates.size}")
+        }
     }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkNextAvailableDate(weekDates: List<LocalDate>, index: Int) {
+        if (index >= weekDates.size) {
+            Log.d("WEEK_DATES", "No available data found in the selected week.")
+            return
+        }
+
+        val selectedDate = weekDates[index]
+
+        fetchDayDataAthlete(selectedDate, true) { hasData ->
+            if (!hasData) {
+                checkNextAvailableDate(weekDates, index + 1)
+            }
+        }
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun selectDate(date: LocalDate) {
@@ -944,7 +816,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
             )
 
             val data = SelectedDaysModel.Data(
-                lessons = listOf(), // Provide a valid list of lessons
+                lessons = listOf(),
                 events = listOf(),  // Provide a valid list of events
                 tests = listOf(),    // Provide a valid list of tests
                 programs = listOf(),    // Provide a valid list of tests
@@ -966,6 +838,149 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 daysOfWeek.slice(0 until firstDayOfWeek.ordinal)
     }
 
+    @SuppressLint("NewApi")
+    private fun fetchDayDataAthlete(
+        selectedDate: LocalDate,
+        showData: Boolean,
+        onComplete: (Boolean) -> Unit
+    ) {
+        try {
+            val formattedDate = selectionFormatter.format(selectedDate)
+            Log.d(
+                "CalendarFragmentF",
+                "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids"
+            )
+
+            apiInterface.GetSelectedEventAthlete(formattedDate, receivedGroup_Ids)!!
+                .enqueue(object : Callback<SelectedEventModel> {
+                    override fun onResponse(
+                        call: Call<SelectedEventModel>,
+                        response: Response<SelectedEventModel>
+                    ) {
+                        if (response.isSuccessful && response.body() != null) {
+                            val selectedDaysModel = response.body()
+                            Log.d(
+                                "API Response",
+                                "Response for date $formattedDate: $selectedDaysModel"
+                            )
+
+                            val data = selectedDaysModel?.data
+                            if (data != null && (data.list.lessons.isNotEmpty() || data.list.events.isNotEmpty() || data.list.tests.isNotEmpty())) {
+                                if (::eventadapter.isInitialized) {
+                                    eventadapter.clearData()
+                                }
+
+                                if (showData) {
+                                    initLessonRecyclerView(emptyList())
+                                    initEventRecyclerView(emptyList())
+                                    initTestRecyclerView(emptyList())
+
+                                    if (data.list.lessons.isNotEmpty()) {
+                                        initLessonRecyclerView(data.list.lessons)
+                                    }
+                                    if (data.list.events.isNotEmpty()) {
+                                        eventsData = data.list.events
+                                        initEventRecyclerView(eventsData)
+                                    }
+                                    if (data.list.tests.isNotEmpty()) {
+                                        initTestRecyclerView(data.list.tests)
+                                    }
+                                }
+
+                                // Data found, no need to check further
+                                onComplete(true)
+                            } else {
+                                Log.e(
+                                    "API Response",
+                                    "No data for date $formattedDate. Checking next."
+                                )
+                                onComplete(false)  // No data found, check next date
+                            }
+                        } else {
+                            Log.e("API Response", "Failed to fetch data: ${response.message()}")
+                            onComplete(false)  // API call failed, check next date
+                        }
+                    }
+
+                    override fun onFailure(call: Call<SelectedEventModel>, t: Throwable) {
+                        Log.e("API Response", "Error: ${t.message}")
+                        onComplete(false)  // API request failed, check next date
+                    }
+                })
+        } catch (e: Exception) {
+            Log.e("Catch", "CatchError :- ${e.message}")
+            onComplete(false)  // Exception occurred, check next date
+        }
+    }
+
+
+    @SuppressLint("NewApi")
+    private fun fetchDayDataAthleteDate(selectedDate: LocalDate, ShowData: Boolean) {
+        try {
+            val formattedDate = selectionFormatter.format(selectedDate)
+            Log.d(
+                "CalendarFragmentF",
+                "Fetching data for date: $formattedDate with ID: $receivedGroup_Ids"
+            )
+
+            apiInterface.GetSelectedEventAthlete(formattedDate, receivedGroup_Ids)!!
+                .enqueue(object : Callback<SelectedEventModel> {
+                    override fun onResponse(
+                        call: Call<SelectedEventModel>,
+                        response: Response<SelectedEventModel>
+                    ) {
+                        if (response.isSuccessful && response.body() != null) {
+                            val selectedDaysModel = response.body()
+                            Log.d("API Response", "Response: $selectedDaysModel")
+
+                            val countData = selectedDaysModel?.data?.count
+                            if (!countData.isNullOrEmpty()) {
+                            } else {
+                                Log.e("API Response", "Count data is empty.")
+                            }
+
+                            val data = selectedDaysModel?.data
+                            if (data != null) {
+                                if (::eventadapter.isInitialized) {
+                                    eventadapter.clearData()
+                                }
+
+                                if (ShowData == true) {
+                                    initLessonRecyclerView(emptyList())
+                                    initEventRecyclerView(emptyList())
+                                    initTestRecyclerView(emptyList())
+
+                                    if (data.list.lessons.isNotEmpty()) {
+                                        initLessonRecyclerView(data.list.lessons)
+                                    }
+                                    if (data.list.events.isNotEmpty()) {
+                                        eventsData = data.list.events
+                                        initEventRecyclerView(eventsData)
+                                    }
+                                    if (data.list.tests.isNotEmpty()) {
+                                        initTestRecyclerView(data.list.tests)
+                                    }
+                                }
+
+
+                            } else {
+                                Log.e("API Response", "Data is null. No dot added.")
+                            }
+                        } else {
+                            Log.e("API Response", "Failed to fetch data: ${response.message()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<SelectedEventModel>, t: Throwable) {
+                        Log.e("API Response", "Error: ${t.message}")
+                    }
+                })
+        } catch (e: Exception) {
+            Log.e("Catch", "CatchError :- ${e.message}")
+        }
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun checkDatesForMonth(selectedDate: LocalDate, data: SelectedDaysModel.Data) {
         val currentMonth = YearMonth.from(selectedDate)
@@ -977,14 +992,12 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
             val date = currentMonth.atDay(day)
 
-            // Combine all date lists into one
             val allDates = mutableSetOf<String>().apply {
                 addAll(data.lessons.map { it.date })
                 addAll(data.events.map { it.date })
                 addAll(data.tests.map { it.date })
             }
 
-            // Update dateSet for the calendar
             updateDatesList(date, allDates, datesWithDataTest)
         }
     }
@@ -1011,11 +1024,15 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun callGroupApi(receivedId: Int) {
-        homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+        Utils.showLoading(requireActivity())
+
         Log.d("API Call", "Received ID: $receivedId")
 
         apiInterface.GropList()?.enqueue(object : Callback<GroupListData?> {
-            override fun onResponse(call: Call<GroupListData?>, response: Response<GroupListData?>) {
+            override fun onResponse(
+                call: Call<GroupListData?>,
+                response: Response<GroupListData?>
+            ) {
                 val code = response.code()
                 if (code == 200) {
                     val resource = response.body()
@@ -1023,11 +1040,20 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     val message = resource?.message ?: "No message available"
 
                     if (success) {
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
+
                         val group = resource!!.data?.find { it.id == receivedId }
+                        val groupList = resource?.data ?: emptyList()
+                        groupIndex = groupList.indexOfFirst { it.id == receivedId }
+
+                        Log.d("SHSHSHSHS", "onResponse: $groupIndex")
+
 
                         if (group != null) {
-                            Log.d("API Response", "Group found: ${group.name}, Group ID: ${group.id}")
+                            Log.d(
+                                "API Response",
+                                "Group found: ${group.name}, Group ID: ${group.id}"
+                            )
 
                             saveSelectedGroupData(
                                 group.name.toString(),
@@ -1037,48 +1063,93 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
                             homeFragmentBinding.selectGroupTxt.text = group.name
                             val planning = group.group_plannings?.firstOrNull()?.planning
+                            homeFragmentBinding.seeAllAboutToday.visibility = View.VISIBLE
 
 
-                            // ✅ Create an empty list to store mesocycles
+                            Log.d("SSJJSJ", "onResponse: ${group.schedule}")
+
+                            val gson = GsonBuilder().setPrettyPrinting().create()
+                            val jsonString = gson.toJson(group?.group_plannings)
+                            val jsonString2 = gson.toJson(planning?.pre_season)
+
+                            scdule = group?.schedule
+                            Log.d("()()", "onResponse: $jsonString")
+
                             val mesocycles = mutableListOf<MesoCycleData>()
 
-                            // ✅ Convert and add mesocycles from different sections
-                            planning?.pre_season?.mesocycles?.map { convertPreSeasonMesoCycle1(it) }?.let { mesocycles.addAll(it) }
-                            planning?.pre_competitive?.mesocycles?.map { convertPreCompetitiveMesoCycle1(it) }?.let { mesocycles.addAll(it) }
-                            planning?.competitive?.mesocycles?.map { convertCompetitiveMesoCycle1(it) }?.let { mesocycles.addAll(it) }
-                            planning?.transition?.mesocycles?.map { convertTranstionMesoCycle1(it) }?.let { mesocycles.addAll(it) }
+                            Log.d(
+                                "SJKJSJSJ",
+                                "onResponse: ${
+                                    planning?.pre_season?.mesocycles?.get(0)?.microcycles?.get(0)?.pcMicrocycleAbility?.get(
+                                        0
+                                    )?.ability?.name
+                                }"
+                            )
+                            preSeason = planning?.pre_season
+                            preCompetitive = planning?.pre_competitive
+                            competitive = planning?.competitive
+                            transition = planning?.transition
 
-                            // ✅ Debugging log
+                            planning?.pre_season?.mesocycles?.map { convertPreSeasonMesoCycle1(it) }
+                                ?.let { mesocycles.addAll(it) }
+                            planning?.pre_competitive?.mesocycles?.map {
+                                convertPreCompetitiveMesoCycle1(
+                                    it
+                                )
+                            }?.let { mesocycles.addAll(it) }
+                            planning?.competitive?.mesocycles?.map { convertCompetitiveMesoCycle1(it) }
+                                ?.let { mesocycles.addAll(it) }
+                            planning?.transition?.mesocycles?.map { convertTranstionMesoCycle1(it) }
+                                ?.let { mesocycles.addAll(it) }
+
+                            Log.d(
+                                "BVBVVB",
+                                "onResponse: ${planning?.pre_season?.start_date}\n ${planning?.pre_season?.end_date}"
+                            )
+
+//                            homeFragmentBinding.seasonLy.visibility = View.VISIBLE
+//                            homeFragmentBinding.titleTv.text = planning?.pre_season?.name ?: ""
+//                            homeFragmentBinding.edtStartDate.text = planning?.pre_season?.start_date
+//                            homeFragmentBinding.edtEndDate.text = planning?.pre_season?.end_date
+//                            homeFragmentBinding.edtMesocycle.text = planning?.pre_season?.mesocycle
+
                             if (mesocycles.isNotEmpty()) {
-                                Log.d("API_RESPONSEEEGG", "Extracted mesocycles: ${Gson().toJson(mesocycles)}")
+                                Log.d(
+                                    "API_RESPONSEEEGG",
+                                    "Extracted mesocycles: ${Gson().toJson(mesocycles)}"
+                                )
 
-                                // ✅ Save mesocycles to SharedPreferences
-                                val sharedPreferences = requireActivity().getSharedPreferences("MyPrefss", Context.MODE_PRIVATE)
-                                sharedPreferences.edit().putString("mesocycles", Gson().toJson(mesocycles)).apply()
+                                val sharedPreferences =
+                                    requireActivity().getSharedPreferences("MyPrefss", MODE_PRIVATE)
+                                sharedPreferences.edit()
+                                    .putString("mesocycles", Gson().toJson(mesocycles)).apply()
 
-                                // ✅ Apply dots only when a group is selected
                                 setUpCalendar()
                             } else {
-                                Log.e("API_RESPONSEEEGG", "No mesocycles found, clearing calendar dots!")
+                                Log.e(
+                                    "API_RESPONSEEEGG",
+                                    "No mesocycles found, clearing calendar dots!"
+                                )
                                 clearCalendarDots()
                             }
 
                         } else {
-                            homeFragmentBinding.selectGroupTxt.text = "Group not found for ID: $receivedId"
+                            homeFragmentBinding.selectGroupTxt.text =
+                                "Group not found for ID: $receivedId"
                             clearCalendarDots()
                         }
                     } else {
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         homeFragmentBinding.selectGroupTxt.text = "Failed to fetch data: $message"
                         clearCalendarDots()
                     }
                 } else if (code == 403) {
-                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.e("API Error", "Access forbidden: ${response.message()}")
                     call.cancel()
                     preferenceManager.setUserLogIn(false)
                 } else {
-                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.e("API Error", "Error code: $code, ${response.message()}")
                     call.cancel()
                     clearCalendarDots()
@@ -1087,7 +1158,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
             override fun onFailure(call: Call<GroupListData?>, t: Throwable) {
                 Log.e("GROOOOOOOP", "API call failed: ${t.message}")
-                homeFragmentBinding.homeProgress.visibility = View.GONE
+                Utils.hideLoading(requireActivity())
                 call.cancel()
                 clearCalendarDots()
             }
@@ -1095,10 +1166,274 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     }
 
 
+    @SuppressLint("NewApi")
+    private fun checkAndDisplayWeekData(weekDays: String) {
+        val weekDates = weekDays
+        homeFragmentBinding.planningContainer.removeAllViews()
+        homeFragmentBinding.planningContainer.visibility = View.VISIBLE
+
+        fun addPlanningData(
+            title: String,
+            startDate: String?,
+            endDate: String?,
+            mesocycle: String?
+        ) {
+            val planningView =
+                LayoutInflater.from(context).inflate(R.layout.viewtrainingplanlist, null)
+            planningView.findViewById<TextView>(R.id.training_name_one).text = title
+            planningView.findViewById<TextView>(R.id.start_date_one).text = "start: " + startDate
+            planningView.findViewById<TextView>(R.id.end_date_one).text = "end: " + endDate
+            planningView.findViewById<TextView>(R.id.mesocycle_one).text = "mesocycle: " + mesocycle
+
+            homeFragmentBinding.planningContainer.addView(planningView)
+        }
+
+        fun addAbilityData(abilities: List<String>) {
+            // Remove duplicates
+            val uniqueAbilities = abilities.distinct()
+
+            if (uniqueAbilities.isNotEmpty()) {
+                val joinedAbilities = uniqueAbilities.joinToString(separator = ", ")
+
+                Log.d("DJIND", "addAbilityData: $joinedAbilities")
+
+                for (i in 0 until homeFragmentBinding.planningContainer.childCount) {
+                    val child = homeFragmentBinding.planningContainer.getChildAt(i)
+                    if (child.tag == "abilityCard") {
+                        homeFragmentBinding.planningContainer.removeView(child)
+                        break
+                    }
+                }
+
+                val abilityCardView =
+                    LayoutInflater.from(context).inflate(R.layout.view_ability_card, null)
+                abilityCardView.tag = "abilityCard"
+                val abilitiesTextView = abilityCardView.findViewById<TextView>(R.id.ability_txt)
+                abilitiesTextView.text = joinedAbilities
+                homeFragmentBinding.planningContainer.addView(abilityCardView)
+            }
+        }
+
+        val firstDayOfWeek = weekDates
+
+
+        preSeason?.let { season ->
+            val start = season.start_date
+            val end = season.end_date
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+//            val selectedDate = LocalDate.parse(firstDayOfWeek, formatter)
+
+            Log.d(
+                "SMDHB  GDVFV",
+                "checkAndDisplayWeekData: $start -- $end ---- $firstDayOfWeek -- $selectedDate"
+            )
+            if (start != null && end != null && firstDayOfWeek in start..end) {
+                addPlanningData(
+                    season.name ?: "PreSeason",
+                    season.start_date,
+                    season.end_date,
+                    season.mesocycle
+                )
+
+
+
+                val abilities = season.mesocycles?.flatMap { meso ->
+                    meso.microcycles?.flatMap { micro ->
+                        micro.pcMicrocycleAbility?.mapNotNull { it.ability?.name } ?: emptyList()
+                    } ?: emptyList()
+                } ?: emptyList()
+
+                Log.d(
+                    "SLSLLSssssL",
+                    "${
+                        preSeason!!.mesocycles?.get(0)?.microcycles?.get(0)?.pcMicrocycleAbility?.get(
+                            0
+                        )?.ability?.name
+                    }"
+                )
+
+                if (abilities.isNotEmpty()) {
+                    addAbilityData(abilities)
+                } else {
+                    Log.d("SLSLLSL", "No ability data found for PreSeason")
+                }
+            }
+        }
+
+
+        preCompetitive?.let { season ->
+            val start = season.start_date
+            val end = season.end_date
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+//            val selectedDate = LocalDate.parse(firstDayOfWeek, formatter)
+
+            Log.d(
+                "SMDHB  GDVFV",
+                "checkAndDisplayWeekData: $start -- $end ---- $firstDayOfWeek -- $selectedDate"
+            )
+            if (start != null && end != null && firstDayOfWeek in start..end) {
+                addPlanningData(
+                    season.name ?: "PreCompetitive",
+                    season.start_date,
+                    season.end_date,
+                    season.mesocycle
+                )
+
+                val abilities = season.mesocycles?.flatMap { meso ->
+                    meso.microcycles?.flatMap { micro ->
+                        micro.pcMicrocycleAbility?.mapNotNull { it.ability?.name } ?: emptyList()
+                    } ?: emptyList()
+                } ?: emptyList()
+
+                if (abilities.isNotEmpty()) {
+                    addAbilityData(abilities)
+                } else {
+                    Log.d("SLSLLSL", "No ability data found for PreCompetitive")
+                }
+            }
+        }
+
+        competitive?.let { season ->
+            val start = season.start_date
+            val end = season.end_date
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+//            val selectedDate = LocalDate.parse(firstDayOfWeek, formatter)
+
+            Log.d(
+                "SMDHB  GDVFV",
+                "checkAndDisplayWeekData: $start -- $end ---- $firstDayOfWeek -- $selectedDate"
+            )
+            if (start != null && end != null && firstDayOfWeek in start..end) {
+                addPlanningData(
+                    season.name ?: "Competitive",
+                    season.start_date,
+                    season.end_date,
+                    season.mesocycle
+                )
+
+                val abilities = season.mesocycles?.flatMap { meso ->
+                    meso.microcycles?.flatMap { micro ->
+                        micro.pcMicrocycleAbility?.mapNotNull { it.ability?.name } ?: emptyList()
+                    } ?: emptyList()
+                } ?: emptyList()
+
+                if (abilities.isNotEmpty()) {
+                    addAbilityData(abilities)
+                } else {
+                    Log.d("SLSLLSL", "No ability data found for Competitive")
+                }
+            }
+        }
+
+        transition?.let { season ->
+            val start = season.start_date
+            val end = season.end_date
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+//            val selectedDate = LocalDate.parse(firstDayOfWeek, formatter)
+
+            Log.d(
+                "SMDHB  GDVFV",
+                "checkAndDisplayWeekData: $start -- $end ---- $firstDayOfWeek -- $selectedDate"
+            )
+            if (start != null && end != null && firstDayOfWeek in start..end) {
+                addPlanningData(
+                    season.name ?: "Transition",
+                    season.start_date,
+                    season.end_date,
+                    season.mesocycle
+                )
+
+                val abilities = season.mesocycles?.flatMap { meso ->
+                    meso.microcycles?.flatMap { micro ->
+                        micro.pcMicrocycleAbility?.mapNotNull { it.ability?.name } ?: emptyList()
+                    } ?: emptyList()
+                } ?: emptyList()
+
+                if (abilities.isNotEmpty()) {
+                    addAbilityData(abilities)
+                } else {
+                    Log.d("SLSLLSL", "No ability data found for Transition")
+                }
+            }
+        }
+
+
+
+    }
+
+    @SuppressLint("NewApi")
+    private fun checkAndDisplayWeekDataaa(weekDays: List<CalendarDay>) {
+        val weekDates = weekDays.map { it.date }
+        homeFragmentBinding.nextLessonContainer.removeAllViews()
+
+        fun addScheduleData(
+            day: String,
+            count: String,
+            firstStartTime: String,
+            firstEndTime: String
+        ) {
+            homeFragmentBinding.nextTv.visibility = View.VISIBLE
+
+            val scheduleView =
+                LayoutInflater.from(context).inflate(R.layout.next_lession_rly_item, null)
+            scheduleView.findViewById<TextView>(R.id.name).text =
+                day.take(3).replaceFirstChar { it.uppercase() }
+            scheduleView.findViewById<TextView>(R.id.count).text = count.ifEmpty { "0" }
+            scheduleView.findViewById<TextView>(R.id.time).text = firstStartTime.ifEmpty { "" }
+            scheduleView.findViewById<TextView>(R.id.endtime).text = firstEndTime.ifEmpty { "" }
+            scheduleView.findViewById<CardView>(R.id.card_view).setOnClickListener {
+                startActivity(
+                    Intent(requireContext(), GroupDetailActivity::class.java).apply {
+                        putExtra("group_id", receivedIds)
+                        putExtra("position", groupIndex)
+                    }
+                )
+            }
+            homeFragmentBinding.nextLessonContainer.addView(scheduleView)
+        }
+
+        val dayToDateMap = listOf(
+            "Sun" to DayOfWeek.SUNDAY,
+            "Mon" to DayOfWeek.MONDAY,
+            "Tue" to DayOfWeek.TUESDAY,
+            "Wed" to DayOfWeek.WEDNESDAY,
+            "Thu" to DayOfWeek.THURSDAY,
+            "Fri" to DayOfWeek.FRIDAY,
+            "Sat" to DayOfWeek.SATURDAY
+        )
+
+        val today = LocalDate.now().dayOfWeek
+
+        // 🔥 Filter only today and upcoming days (skip previous days)
+        val validDays = dayToDateMap.map { it.first }  // ✅ All week days (Sun–Sat)
+
+        val groupedSchedules = scdule?.groupBy { it.day?.trim() } ?: emptyMap()
+
+        validDays.forEach { day ->
+            val schedules = groupedSchedules[day] ?: return@forEach  // 🔥 Skip if no data
+            val correspondingDay = dayToDateMap.find { it.first == day }?.second ?: return@forEach
+            val matchingDate = weekDates.find { it.dayOfWeek == correspondingDay } ?: return@forEach
+
+            val count = schedules.size.toString()
+            val firstStartTime = schedules.firstOrNull()?.start_time?.trim() ?: ""
+            val lastEndTime = schedules.lastOrNull()?.end_time?.trim() ?: ""
+
+            addScheduleData(day, count, firstStartTime, lastEndTime)
+        }
+
+        homeFragmentBinding.nextLessonContainer.requestLayout()
+
+    }
+
+
     private fun convertPreSeasonMesoCycle1(meso: GroupListData.Mesocycles): MesoCycleData {
         return MesoCycleData().apply {
             id = meso.id
-            planning_ps_id = meso.planning_ps_id  // ✅ Ensure correct ID is used
+            planning_ps_id = meso.planning_ps_id
             name = meso.name
             start_date = meso.start_date
             end_date = meso.end_date
@@ -1152,6 +1487,10 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 MicroCycleData().apply {
                     id = micro.id
                     planning_ps_id = micro.pc_mesocycle_id
+
+
+
+
                     name = micro.name
                     start_date = micro.startDate
                     end_date = micro.endDate
@@ -1183,6 +1522,27 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
+    private fun convertTranstionMesoCycle(meso: GroupListData.TraMesocycles): MesoCycleData {
+        return MesoCycleData().apply {
+            id = meso.id
+            planning_ps_id = meso.planning_pc_id
+            name = meso.name
+            start_date = meso.start_date
+            end_date = meso.end_date
+
+            microcycles = meso.microcycles?.map { micro ->
+                MicroCycleData().apply {
+                    id = micro.id
+                    planning_ps_id = micro.pc_mesocycle_id
+                    name = micro.name
+                    start_date = micro.startDate
+                    end_date = micro.endDate
+                    workload_color = micro.workloadColor
+                }
+            } ?: emptyList()
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun String.toLocalDate(): LocalDate? {
         return try {
@@ -1194,13 +1554,14 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun callGroupApiAthlete(receivedId: Int) {
-        homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+        Utils.showLoading(requireActivity())
+
         Log.d("API Call", "Received ID: $receivedId")
 
-        apiInterface.GropListAthlete()?.enqueue(object : Callback<GroupListAthlete?> {
+        apiInterface.GropListAthlete()?.enqueue(object : Callback<GroupListData?> {
             override fun onResponse(
-                call: Call<GroupListAthlete?>,
-                response: Response<GroupListAthlete?>
+                call: Call<GroupListData?>,
+                response: Response<GroupListData?>
             ) {
                 val code = response.code()
                 if (code == 200) {
@@ -1209,71 +1570,95 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     val message = resource?.message ?: "No message available"
 
                     if (success) {
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         val group = resource!!.data?.find { it.id == receivedId }
 
+
                         if (group != null) {
-                            Log.d("API Response", "Group found: ${group.group!!.name}, Group ID: ${group.id}")
+                            Log.d("API Response", "Group found: ${group.name}, Group ID: ${group.id}")
 
                             saveSelectedGroupData(
-                                group.group!!.name.toString(),
-                                group.group!!.group_plannings?.firstOrNull()?.planning?.start_date ?: "",
+                                group.name.toString(),
+                                group.group_plannings?.firstOrNull()?.planning?.start_date
+                                    ?: "",
                                 group.id.toString()
                             )
 
-                            homeFragmentBinding.selectGroupTxt.text = group.group!!.name
+                            homeFragmentBinding.selectGroupTxt.text = group.name
+                            homeFragmentBinding.seeAllAboutToday.visibility = View.VISIBLE
 
-                            val planning = group.group!!.group_plannings?.firstOrNull()?.planning
+                            val planning = group.group_plannings?.firstOrNull()?.planning
 
-                            // ✅ Create an empty list to store mesocycles
                             val mesocycles = mutableListOf<MesoCycleData>()
 
-                            // ✅ Convert and add mesocycles from different sections
-                            planning?.pre_season?.mesocycles?.map { convertPreSeasonMesoCycle(it) }?.let { mesocycles.addAll(it) }
-                            planning?.pre_competitive?.mesocycles?.map { convertPreCompetitiveMesoCycle(it) }?.let { mesocycles.addAll(it) }
-                            planning?.competitive?.mesocycles?.map { convertCompetitiveMesoCycle(it) }?.let { mesocycles.addAll(it) }
+                            preSeason = planning?.pre_season
+                            preCompetitive = planning?.pre_competitive
+                            competitive = planning?.competitive
+                            transition = planning?.transition
 
 
-                            // ✅ Debugging log
+                            planning?.pre_season?.mesocycles?.map { convertPreSeasonMesoCycle(it) }
+                                ?.let { mesocycles.addAll(it) }
+                            planning?.pre_competitive?.mesocycles?.map {
+                                convertPreCompetitiveMesoCycle(
+                                    it
+                                )
+                            }?.let { mesocycles.addAll(it) }
+                            planning?.competitive?.mesocycles?.map { convertCompetitiveMesoCycle(it) }
+                                ?.let { mesocycles.addAll(it) }
+                            planning?.transition?.mesocycles?.map { convertTranstionMesoCycle(it) }
+                                ?.let { mesocycles.addAll(it) }
+
+                            scdule = group?.schedule
+
                             if (mesocycles.isNotEmpty()) {
-                                Log.d("API_RESPONSEEEGG", "Extracted mesocycles: ${Gson().toJson(mesocycles)}")
+                                Log.d(
+                                    "API_RESPONSEEEGG",
+                                    "Extracted mesocycles: ${Gson().toJson(mesocycles)}"
+                                )
 
-                                // ✅ Save mesocycles to SharedPreferences
-                                val sharedPreferences = requireActivity().getSharedPreferences("MyPrefss", Context.MODE_PRIVATE)
-                                sharedPreferences.edit().putString("mesocycles", Gson().toJson(mesocycles)).apply()
+                                val sharedPreferences =
+                                    requireActivity().getSharedPreferences("MyPrefss", MODE_PRIVATE)
+                                sharedPreferences.edit()
+                                    .putString("mesocycles", Gson().toJson(mesocycles)).apply()
 
-                                // ✅ Apply dots only when a group is selected
+                                Log.d("OOOOOSO", "clearCalendarDots: SAVE")
+
                                 setUpCalendar()
                             } else {
-                                Log.e("API_RESPONSEEEGG", "No mesocycles found, clearing calendar dots!")
+                                Log.e(
+                                    "API_RESPONSEEEGG",
+                                    "No mesocycles found, clearing calendar dots!"
+                                )
                                 clearCalendarDots()
                             }
 
                         } else {
-                            homeFragmentBinding.selectGroupTxt.text = "Group not found for ID: $receivedId"
+                            homeFragmentBinding.selectGroupTxt.text =
+                                "Group not found for ID: $receivedId"
                             clearCalendarDots()
                         }
                     } else {
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         homeFragmentBinding.selectGroupTxt.text = "Failed to fetch data: $message"
                         clearCalendarDots()
                     }
                 } else if (code == 403) {
-                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.e("API Error", "Access forbidden: ${response.message()}")
                     call.cancel()
                     preferenceManager.setUserLogIn(false)
                 } else {
-                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.e("API Error", "Error code: $code, ${response.message()}")
                     call.cancel()
                     clearCalendarDots()
                 }
             }
 
-            override fun onFailure(call: Call<GroupListAthlete?>, t: Throwable) {
+            override fun onFailure(call: Call<GroupListData?>, t: Throwable) {
                 Log.e("GROOOOOOOP", "API call failed: ${t.message}")
-                homeFragmentBinding.homeProgress.visibility = View.GONE
+                Utils.hideLoading(requireActivity())
                 call.cancel()
                 clearCalendarDots()
             }
@@ -1281,7 +1666,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     }
 
     /** ✅ Convert Pre-Season Mesocycles */
-    private fun convertPreSeasonMesoCycle(meso: GroupListAthlete.PreSMesocycles): MesoCycleData {
+    private fun convertPreSeasonMesoCycle(meso: GroupListData.Mesocycles): MesoCycleData {
         return MesoCycleData().apply {
             id = meso.id
             planning_ps_id = meso.planning_ps_id
@@ -1303,7 +1688,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     }
 
     /** ✅ Convert Pre-Competitive Mesocycles */
-    private fun convertPreCompetitiveMesoCycle(meso: GroupListAthlete.PreMesocycles): MesoCycleData {
+    private fun convertPreCompetitiveMesoCycle(meso: GroupListData.PreMesocycles): MesoCycleData {
         return MesoCycleData().apply {
             id = meso.id
             planning_ps_id = meso.planning_pc_id
@@ -1324,8 +1709,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
-    /** ✅ Convert Competitive Mesocycles */
-    private fun convertCompetitiveMesoCycle(meso: GroupListAthlete.ComMesocycles): MesoCycleData {
+    private fun convertCompetitiveMesoCycle(meso: GroupListData.ComMesocycles): MesoCycleData {
         return MesoCycleData().apply {
             id = meso.id
             planning_ps_id = meso.planning_pc_id
@@ -1346,17 +1730,23 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
-    /** ✅ Clear dots if no mesocycles exist */
+    override fun onDestroy() {
+        super.onDestroy()
+        clearCalendarDots()
+    }
+
     private fun clearCalendarDots() {
         homeFragmentBinding.exSevenCalendar.notifyCalendarChanged()
+        val sharedPreferences = requireActivity().getSharedPreferences("MyPrefss", MODE_PRIVATE)
+        sharedPreferences.edit().remove("mesocycles").apply()
+
+        Log.d("OOOOOSO", "clearCalendarDots: CLAER")
     }
-
-
-
 
     private class DayViewContainer(view: View) : ViewContainer(view) {
         lateinit var day: CalendarDay
-        val binding = Example3CalendarDayBinding.bind(view) // ✅ Replace with your actual ViewBinding
+        val binding =
+            Example3CalendarDayBinding.bind(view)
 
         init {
             view.setOnClickListener {
@@ -1366,13 +1756,10 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     }
 
 
-
-
-
     private fun saveSelectedGroupData(groupName: String, startDate: String, id: String) {
         Log.d("Save Group Data", "Saving group data: $groupName, $startDate, $id")
         val sharedPreferences =
-            requireContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("selectedGroupName", groupName)
         editor.putString("selectedStartDate", startDate)
@@ -1384,18 +1771,22 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
     }
 
     private fun getSavedGroupData(): Triple<String?, String?, String?> {
+        Log.d("Get Dataaa", "Clearing saved group data")
+
         val sharedPreferences =
-            requireContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val groupName = sharedPreferences.getString("selectedGroupName", null)
         val startDate = sharedPreferences.getString("selectedStartDate", null)
         val id = sharedPreferences.getString("selectedId", null)  // Retrieve the id
+        val receivedGroup_Ids = sharedPreferences.getString("group_id", "default_value") ?: ""
+
         return Triple(groupName, startDate, id)
     }
 
     private fun clearSavedGroupData() {
         Log.d("Clear Data", "Clearing saved group data")
         val sharedPreferences =
-            requireContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.remove("selectedGroupName")
         editor.remove("selectedStartDate")
@@ -1420,62 +1811,37 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     }
 
-    private fun initTestDataAthlete(testData: ArrayList<GroupListAthlete.GroupTest>?) {
-        try {
-            val data = testData ?: ArrayList<GroupListAthlete.GroupTest>()
-            homeFragmentBinding.favTestRly.layoutManager = LinearLayoutManager(requireContext())
-            testAdapterAthlete = TestAdapterAthlete(data, requireContext(), this,"Home")
-            homeFragmentBinding.favTestRly.adapter = testAdapterAthlete
-        } catch (e: Exception) {
-            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
-        }
-    }
-
-    private fun initEventDataAthlete(eventData: ArrayList<GroupListAthlete.GroupEvents>?) {
-        try {
-            val data = eventData ?: ArrayList<GroupListAthlete.GroupEvents>()
-            homeFragmentBinding.favEventRly.layoutManager = LinearLayoutManager(requireContext())
-            eventAdapterAthlete = EventAdapterAthlete(data, requireContext(), this)
-            homeFragmentBinding.favEventRly.adapter = eventAdapterAthlete
-        } catch (e: Exception) {
-            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
-        }
-    }
-
-    private fun initLessonDataAthlete(lessonData: ArrayList<GroupListAthlete.GroupLesson>?) {
-        try {
-            val data = lessonData ?: ArrayList<GroupListAthlete.GroupLesson>()
-
-            homeFragmentBinding.favLessonRly.layoutManager = LinearLayoutManager(requireContext())
-            lessonAdapterAthlete = LessonAdapterAthlete(data, requireContext(), this,"Home")
-            homeFragmentBinding.favLessonRly.adapter = lessonAdapterAthlete
-        } catch (e: Exception) {
-            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
-        }
-    }
-
-    private fun initPlanningDataAthlete(data: ArrayList<GroupListAthlete.GroupPlanning>?,type:String) {
-        try {
-            Log.d("ARARARR", "initPlanningDataAthlete: $type")
-            homeFragmentBinding.favPlanningRly.layoutManager = LinearLayoutManager(requireContext())
-            adapterAthelete = PlanningAdapterAthleteHome(data, requireContext(), this, type)
-            homeFragmentBinding.favPlanningRly.adapter = adapterAthelete
-        } catch (e: Exception) {
-            Log.d("ARARARR", "initPlanningDataAthlete: $type")
-
-            Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
-        }
-    }
-
     private fun initViews() {
         apiClient = APIClient(requireContext())
 
         apiInterface = apiClient.client().create(APIInterface::class.java)
         Sportlist = ArrayList()
         WorkOutlist = ArrayList()
-        LessonData = ArrayList()
+
+        val receivedIdInt = receivedIds.toIntOrNull()
+        val receivedIdIntAthlete = receivedGroup_Ids.toIntOrNull()
+
+        val userType = preferenceManager.GetFlage()
+
+        homeFragmentBinding.seeAllAboutToday.setOnClickListener {
+            if (userType == "Athlete") {
+                val intent = Intent(requireContext(), SelectDayActivity::class.java).apply {
+                    putExtra("id", receivedIdIntAthlete)
+                    putExtra("date", formattedDate)
+                }
+                requireContext().startActivity(intent)
+
+            } else {
+                val intent = Intent(requireContext(), SelectDayActivity::class.java).apply {
+                    putExtra("id", receivedIdInt)
+                    putExtra("date", formattedDate)
+                }
+                requireContext().startActivity(intent)
+
+            }
 
 
+        }
 
         Log.d("CalenderFragment", "Received ID from SharedPreferences: $receivedIds")
     }
@@ -1504,8 +1870,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         workoutadapter = WorkOutAdapter(reorderedList, requireContext(), this)
         homeFragmentBinding.recyclerView.adapter = workoutadapter
 
-
-//
 //            newsadapter = NewsAdapter(newsData, requireContext(), this)
 //            homeFragmentBinding.recyclerNews.layoutManager = LinearLayoutManager(requireContext())
 //            homeFragmentBinding.recyclerView.adapter = adapter2
@@ -1525,7 +1889,11 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                                 Log.d("APIResponse", "Data added: $it")
                             } ?: run {
                                 Log.d("APIResponse", "Response data is null")
-                                Toast.makeText(requireContext(), "No data found", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No data found",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
 
                             if (newsData.isNotEmpty()) {
@@ -1587,12 +1955,17 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                                 bindDataToUI(instractionData!!)
                             } else {
                                 Log.d("APIResponse", "Response data is null")
-                                Toast.makeText(requireContext(), "No data found", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No data found",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
 
                         429 -> {
-                            Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT)
+                                .show()
                         }
 
                         403 -> {
@@ -1629,7 +2002,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         homeFragmentBinding.descriptionPp.text = descriptionPlainText
     }
 
-
     private fun getPersonalDiaryData(date: String) {
         try {
             apiInterface.GetPersonalDiaryData(date)
@@ -1648,7 +2020,6 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                                     if (diaryData != null) {
                                         Log.d("DATA", "Date: ${diaryData.date}")
 
-                                        // Access the personal_dairie_detaile list
                                         val personalDiaryDetails = diaryData.personalDiaryDetails
                                         personalDiaryDetails?.forEach { detail ->
                                             Log.d(
@@ -1717,8 +2088,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         // Set basic details
 //        binding.dateTextView.text = data.date ?: ""
 //        binding.sleepHoursTextView.text = data.sleepHours ?: ""
-        homeFragmentBinding.NutritionAndHydration.setText(data.nutritionAndHydration ?: "")
-        homeFragmentBinding.Tiredness.setText(data.notes ?: "")
+        homeFragmentBinding.NutritionAndHydration.setText(data.notes ?: "")
+        homeFragmentBinding.Tiredness.setText(data.nutritionAndHydration ?: "")
 
         if (data.personalDiaryDetails.isNullOrEmpty() || data.personalDiaryDetails.equals("0")) {
             // Set all values to empty string if no details available
@@ -1911,13 +2282,14 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
         } else if (item.itemId == R.id.logout) {
             homeFragmentBinding.drawerLayout.closeDrawer(GravityCompat.START)
 
-            homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
+
             apiInterface.LogOut()?.enqueue(object : Callback<RegisterData?> {
                 override fun onResponse(
                     call: Call<RegisterData?>,
                     response: Response<RegisterData?>
                 ) {
-                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.d("TAG", response.code().toString() + "")
                     val resource: RegisterData? = response.body()
                     //                    val Success: Boolean = resource?.status!!
@@ -1948,7 +2320,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         Toast.makeText(
                             requireContext(),
                             "" + response.message(),
-                            Toast.LENGTH_SHORT).show()
+                            Toast.LENGTH_SHORT
+                        ).show()
                         call.cancel()
                         //                        preferenceManager.setUserLogIn(false)
                         //                        val intent = Intent(requireContext(), MainActivity::class.java)
@@ -1960,7 +2333,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
                     Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT).show()
                     call.cancel()
-                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                 }
             })
 
@@ -1985,9 +2358,125 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
             } else {
                 Log.e("API Call", "Invalid receivedId: $receivedIds")
-                clearSavedGroupData()
+//                clearSavedGroupData()
             }
-        }else {
+        } else {
+
+        }
+    }
+
+    private fun GetProfileAthlete() {
+        try {
+
+            Utils.showLoading(requireActivity())
+
+            apiInterface.ProfileDataAthlete()?.enqueue(object : Callback<RegisterData?> {
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+                    Utils.hideLoading(requireActivity())
+
+                    if (response.isSuccessful) {
+                        val resource = response.body()
+
+                        val data = resource?.data
+                        if (data != null) {
+
+                            val transformation: Transformation = RoundedTransformationBuilder()
+                                .borderColor(Color.BLACK)
+                                .borderWidthDp(1f)
+                                .cornerRadiusDp(10f)
+                                .oval(false)
+                                .build()
+
+                            Picasso.get()
+                                .load("https://uat.4trainersapp.com" + data?.image)
+                                .fit()
+                                .transform(transformation)
+                                .error(R.drawable.app_icon)
+                                .into(homeFragmentBinding.img)
+
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "No profile data available",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                        }
+                    } else {
+                        Log.e("TAG", "Error: ${response.code()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    Utils.hideLoading(requireActivity())
+                    Log.d("FERROR", "onFailure: ${t.message}")
+                    Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT)
+                        .show()
+                    call.cancel()
+                }
+            })
+        } catch (e: Exception) {
+
+        }
+    }
+
+    private fun GetProfile() {
+        try {
+
+            Utils.showLoading(requireActivity())
+
+            apiInterface.ProfileData()?.enqueue(object : Callback<RegisterData?> {
+
+                override fun onResponse(
+                    call: Call<RegisterData?>,
+                    response: Response<RegisterData?>
+                ) {
+                    activity?.let {
+                        Utils.hideLoading(it)
+                    }
+                    val resource: RegisterData? = response.body()
+                    val success: Boolean = resource?.status ?: false
+                    val message: String = resource?.message ?: "No message"
+
+                    if (success) {
+                        val imageUrl = resource?.data?.image  // Check if image exists
+
+                        if (!imageUrl.isNullOrEmpty()) {
+                            val transformation: Transformation = RoundedTransformationBuilder()
+                                .borderColor(Color.BLACK)
+                                .borderWidthDp(1f)
+                                .cornerRadiusDp(10f)
+                                .oval(false)
+                                .build()
+
+                            Picasso.get()
+                                .load("https://uat.4trainersapp.com/$imageUrl")
+                                .fit()
+                                .transform(transformation)
+                                .error(R.drawable.app_icon)
+                                .into(homeFragmentBinding.img)
+
+                            Log.d("GetProfile", "Image URL: $imageUrl")
+                        } else {
+                            Log.e("GetProfile", "Image URL is null or empty")
+                        }
+                    } else {
+                        Log.e("GetProfile", "Profile fetch failed: $message")
+                    }
+
+                    Log.d("GetProfile", "Response Code: ${response.code()}")
+                }
+
+                override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
+                    call.cancel()
+                    Utils.hideLoading(requireActivity())
+                }
+            })
+
+        } catch (e: Exception) {
 
         }
     }
@@ -2049,7 +2538,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         homeFragmentBinding.informationLinear.visibility = View.VISIBLE
                         homeFragmentBinding.InstructionLinera.visibility = View.GONE
                         homeFragmentBinding.NewsLinera.visibility = View.GONE
-                        homeFragmentBinding.linerAthlete.visibility = View.VISIBLE
+                        homeFragmentBinding.linerAthlete.visibility = View.GONE
                     }
                 }
             }
@@ -2058,7 +2547,8 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
         if (string == "fav") {
             try {
-                homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+                Utils.showLoading(requireActivity())
+
                 val id: MultipartBody.Part =
                     MultipartBody.Part.createFormData("id", type.toInt().toString())
                 apiInterface.Favourite_lession(id)?.enqueue(object : Callback<RegisterData?> {
@@ -2067,7 +2557,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         call: Call<RegisterData?>,
                         response: Response<RegisterData?>
                     ) {
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Log.d("TAG", response.code().toString() + "")
                         val code = response.code()
                         if (code == 200) {
@@ -2075,16 +2565,17 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                             val Success: Boolean = resource?.status!!
                             val Message: String = resource.message!!
                             if (Success) {
-                                homeFragmentBinding.homeProgress.visibility = View.GONE
-                                loadData()
+                                Utils.hideLoading(requireActivity())
+                                selectedDate?.let { fetchDayDataAthleteDate(it, true) }
                             } else {
-                                homeFragmentBinding.homeProgress.visibility = View.GONE
-                                Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
+                                Utils.hideLoading(requireActivity())
+                                Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         } else if (code == 403) {
                             Utils.setUnAuthDialog(requireContext())
                         } else {
-                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             Toast.makeText(
                                 requireContext(),
                                 "" + response.message(),
@@ -2096,19 +2587,21 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     }
 
                     override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
                             .show()
                         call.cancel()
                     }
                 })
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
             }
         } else if (string == "unfav") {
-            try{
-                homeFragmentBinding.homeProgress.visibility = View.VISIBLE
-                val id: MultipartBody.Part = MultipartBody.Part.createFormData("id", type.toInt().toString())
+            try {
+                Utils.showLoading(requireActivity())
+
+                val id: MultipartBody.Part =
+                    MultipartBody.Part.createFormData("id", type.toInt().toString())
                 apiInterface.DeleteFavourite_lession(type.toInt())
                     ?.enqueue(object : Callback<RegisterData?> {
                         @RequiresApi(Build.VERSION_CODES.O)
@@ -2117,18 +2610,22 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                             response: Response<RegisterData?>
                         ) {
                             Log.d("TAG", response.code().toString() + "")
-                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             val code = response.code()
                             if (code == 200) {
                                 val resource: RegisterData? = response.body()
                                 val Success: Boolean = resource?.status!!
                                 val Message: String = resource.message!!
                                 if (Success) {
-                                    loadData()
-                                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                                    selectedDate?.let { fetchDayDataAthleteDate(it, true) }
+                                    Utils.hideLoading(requireActivity())
                                 } else {
-                                    homeFragmentBinding.homeProgress.visibility = View.GONE
-                                    Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
+                                    Utils.hideLoading(requireActivity())
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "" + Message,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             } else if (code == 403) {
                                 Utils.setUnAuthDialog(requireContext())
@@ -2143,7 +2640,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         }
 
                         override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             Toast.makeText(
                                 requireContext(),
                                 "" + t.message,
@@ -2153,18 +2650,20 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                             call.cancel()
                         }
                     })
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 Log.d("catch", "callGroupApiAthlete: ${e.message.toString()}")
             }
-        } else if (string == "favtest"){
-            homeFragmentBinding.homeProgress.visibility = View.VISIBLE
-            val id: MultipartBody.Part = MultipartBody.Part.createFormData("id", type.toInt().toString())
+        } else if (string == "favtest") {
+            Utils.showLoading(requireActivity())
+
+            val id: MultipartBody.Part =
+                MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.Favourite_Test(id)?.enqueue(object : Callback<RegisterData?> {
                 override fun onResponse(
                     call: Call<RegisterData?>,
                     response: Response<RegisterData?>
                 ) {
-                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
@@ -2172,16 +2671,17 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         val Success: Boolean = resource?.status!!
                         val Message: String = resource.message!!
                         if (Success) {
-                            homeFragmentBinding.homeProgress.visibility = View.GONE
-                            loadData()
+                            Utils.hideLoading(requireActivity())
+                            selectedDate?.let { fetchDayDataAthleteDate(it, true) }
                         } else {
-                            homeFragmentBinding.homeProgress.visibility = View.GONE
-                            Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
+                            Utils.hideLoading(requireActivity())
+                            Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT)
+                                .show()
                         }
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(requireContext())
                     } else {
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(
                             requireContext(),
                             "" + response.message(),
@@ -2192,14 +2692,15 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 }
 
                 override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
                         .show()
                     call.cancel()
                 }
             })
         } else if (string == "unfavtest") {
-            homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
+
             var id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.DeleteFavourite_Test(type.toInt())
@@ -2209,17 +2710,17 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         response: Response<RegisterData?>
                     ) {
                         Log.d("TAG", response.code().toString() + "")
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         val code = response.code()
                         if (code == 200) {
                             val resource: RegisterData? = response.body()
                             val Success: Boolean = resource?.status!!
                             val Message: String = resource.message!!
                             if (Success) {
-                                homeFragmentBinding.homeProgress.visibility = View.GONE
-                                loadData()
+                                Utils.hideLoading(requireActivity())
+                                selectedDate?.let { fetchDayDataAthleteDate(it, true) }
                             } else {
-                                homeFragmentBinding.homeProgress.visibility = View.GONE
+                                Utils.hideLoading(requireActivity())
                                 Toast.makeText(
                                     requireContext(),
                                     "" + Message,
@@ -2240,7 +2741,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     }
 
                     override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(
                             requireContext(),
                             "" + t.message,
@@ -2250,8 +2751,9 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         call.cancel()
                     }
                 })
-        } else if (string == "favevent"){
-            homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+        } else if (string == "favevent") {
+            Utils.showLoading(requireActivity())
+
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.Favourite_Event(id)?.enqueue(object : Callback<RegisterData?> {
@@ -2259,7 +2761,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     call: Call<RegisterData?>,
                     response: Response<RegisterData?>
                 ) {
-                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
@@ -2267,10 +2769,11 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         val Success: Boolean = resource?.status!!
                         val Message: String = resource.message!!
                         if (Success) {
-                            homeFragmentBinding.homeProgress.visibility = View.GONE
-                            loadData()
+                            Utils.hideLoading(requireActivity())
+                            selectedDate?.let { fetchDayDataAthleteDate(it, true) }
+
                         } else {
-                            homeFragmentBinding.homeProgress.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             Toast.makeText(
                                 requireContext(),
                                 "" + Message,
@@ -2281,7 +2784,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(requireContext())
                     } else {
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(
                             requireContext(),
                             "" + response.message(),
@@ -2293,13 +2796,14 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                 }
 
                 override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                    homeFragmentBinding.homeProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT).show()
                     call.cancel()
                 }
             })
         } else if (string == "unfavevent") {
-            homeFragmentBinding.homeProgress.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
+
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.DeleteFavourite_Event(type.toInt())
@@ -2309,18 +2813,20 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                         response: Response<RegisterData?>
                     ) {
                         Log.d("TAG", response.code().toString() + "")
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         val code = response.code()
                         if (code == 200) {
                             val resource: RegisterData? = response.body()
                             val Success: Boolean = resource?.status!!
                             val Message: String = resource.message!!
                             if (Success) {
-                                homeFragmentBinding.homeProgress.visibility = View.GONE
-                                loadData()
+                                Utils.hideLoading(requireActivity())
+                                selectedDate?.let { fetchDayDataAthleteDate(it, true) }
+                                eventadapter.notifyDataSetChanged()
                             } else {
-                                homeFragmentBinding.homeProgress.visibility = View.GONE
-                                Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT).show()
+                                Utils.hideLoading(requireActivity())
+                                Toast.makeText(requireContext(), "" + Message, Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         } else if (code == 403) {
                             Utils.setUnAuthDialog(requireContext())
@@ -2335,7 +2841,7 @@ class HomeFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
                     }
 
                     override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                        homeFragmentBinding.homeProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(
                             requireContext(),
                             "" + t.message,

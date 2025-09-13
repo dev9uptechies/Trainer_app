@@ -24,13 +24,19 @@ class FavoriteeventAdapter(private var user: ArrayList<LessonData.lessionData>?,
         val movie = user!![position].event
 
         holder.date.visibility = View.VISIBLE
+        holder.tvinAthlete.visibility = View.VISIBLE
+        holder.total_time.visibility = View.GONE
+        holder.tv_athlet.visibility = View.GONE
+
 
         holder.total_time.text = "Instrested Athlete:"
         holder.goal.text = "Event type:"
 
         holder.date.text = movie!!.date?.take(10) ?: ""
         holder.tvgoal.text = movie.type ?: ""
-        holder.tv_athlet.text = movie.eventAthletes?.getOrNull(0)?.athlete?.name ?: ""
+        holder.tvinAthlete.text = "Instrested Athlete: " +  movie.eventAthletes
+            ?.mapNotNull { it.athlete?.name }
+            ?.joinToString(", ") ?: ""
 
         holder.tvFname.text = movie!!.title ?:""
         holder.image.setImageResource(R.drawable.ic_favorite_select)
@@ -46,7 +52,7 @@ class FavoriteeventAdapter(private var user: ArrayList<LessonData.lessionData>?,
         var image: ImageView = view.findViewById<View>(R.id.image) as ImageView
         var date: TextView = view.findViewById<View>(R.id.date) as TextView
         var goal: TextView = view.findViewById<View>(R.id.goal) as TextView
-
+        var tvinAthlete: TextView = view.findViewById(R.id.tvinAt)
         var unit: TextView = view.findViewById<View>(R.id.unit) as TextView
         var tvgoal: TextView = view.findViewById<View>(R.id.tvgoal) as TextView
         var total_time: TextView = view.findViewById<View>(R.id.total_time) as TextView

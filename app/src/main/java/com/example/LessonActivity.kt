@@ -559,10 +559,13 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
             val str = arrayOfNulls<Int>(id.size)
             val array = JsonArray()
+            val uniqueIds = HashSet<String>()  // Using a HashSet to track unique IDs
 
             for (i in 0 until id.size) {
-                str[i] = id.get(i)
-                array.add(id.get(i))
+                val currentId = id[i]
+                if (uniqueIds.add(currentId.toString())) {  // HashSet.add() returns false if the item already exists
+                    array.add(currentId)
+                }
             }
 
             val goalArray = JsonArray()
@@ -934,6 +937,8 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                                 lession_data1.clear()
                                 lession_data1.addAll(data)
                                 initRecyclerview(lession_data1)
+
+
                             } else {
                                 // Handle empty or null data
                                 Toast.makeText(
@@ -1448,9 +1453,11 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                     .putExtra("type", type.toString())
                     .putExtra("total_time", lession_data1[position].time)
                     .putExtra("section_time", lession_data1[position].section_time)
+                    .putExtra("section_name", lession_data1[position].section?.name)
                     .putExtra("name", lession_data1[position].name)
                     .putExtra("position", position)
             )
+            Log.d("OKAYYSH", "onItemClicked: ${lession_data1[position].section?.name} -- ${lession_data1[position].id}")
         } else {
             val builder: AlertDialog.Builder
             builder = AlertDialog.Builder(this)
@@ -1719,9 +1726,16 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
                 exercise_list = sectionExercises
                 Log.d("onResume", "Setting exercise list: $exercise_list")
 
-                // Update UI
-                val time = exercise_list[0].time
-                lessonBinding.edtTime.setText(time)
+                    val allTimes = exercise_list.map { it.time }.joinToString(", ")
+                    Log.d("TIMEE", "All times: $allTimes")
+
+
+
+                val totalSeconds = exercise_list.sumOf { parseTimeToSeconds(it.time.toString()) }
+                val totalTimeFormatted = formatSecondsToTime(totalSeconds)
+                Log.d("TIMEE", "Total time: $totalTimeFormatted")
+
+                lessonBinding.edtTime.setText(totalTimeFormatted)
                 lessonBinding.programRecycler.visibility = View.VISIBLE
                 lessonBinding.programRecycler.layoutManager = LinearLayoutManager(
                     this, LinearLayoutManager.HORIZONTAL, false
@@ -1753,6 +1767,23 @@ class LessonActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallb
 
         checkUser()
 
+    }
+
+    fun parseTimeToSeconds(time: String): Int {
+        val parts = time.split(":").map { it.toIntOrNull() ?: 0 }
+        return when (parts.size) {
+            3 -> parts[0] * 3600 + parts[1] * 60 + parts[2]
+            2 -> parts[0] * 60 + parts[1]
+            1 -> parts[0]
+            else -> 0
+        }
+    }
+
+    fun formatSecondsToTime(totalSeconds: Int): String {
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 
     override fun onItemClick(ids: Int, name: String, position: Int) {

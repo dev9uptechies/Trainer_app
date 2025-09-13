@@ -26,6 +26,7 @@ import retrofit2.Response
 class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
     lateinit var viewTimerBinding: ActivityViewTimerBinding
     var id: Int? = null
+    var EXID: String? = null
     lateinit var apiInterface: APIInterface
     lateinit var apiClient: APIClient
     lateinit var Progress: ProgressBar
@@ -48,8 +49,6 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     private var isPaused = false
     private var timeRemainingInMillis: Long = 0
     private var currentCountdownPhase: String? = null
-
-
     private var roundIndex: Int = 0
     private var totalRounds: Int = 0
     private var currentRep: Int = 0
@@ -116,20 +115,18 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         })
         viewTimerBinding.play.setOnClickListener {
-            viewTimerBinding.play.setImageDrawable(resources.getDrawable(R.drawable.ic_pause_1))
+            viewTimerBinding.play.setImageDrawable(resources.getDrawable(R.drawable.ic_pause_timer))
             try {
                 Log.d("Current :-", "$currentCountdownPhase")
                 Log.d("time running :-", "$isTimerRunning")
                 Log.d("is pause running :-", "$isPaused")
                 if (isTimerRunning) {
-                    // If timer is running, pause it
                     pauseCountdown()
                 } else {
-                    // If timer is paused, resume it
                     if (isPaused) {
                         resumeCountdown()
                     } else {
-                        setupTimerData(timerData)  // Start the countdown from the beginning
+                        setupTimerData(timerData)
                     }
                 }
             } catch (e: Exception) {
@@ -151,7 +148,10 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         Progress = viewTimerBinding.Progress
         apiInterface = apiClient.client().create(APIInterface::class.java)
         id = intent.getIntExtra("id", 0)
+        EXID = intent.getStringExtra("EXID")
         timerData = mutableListOf()
+
+        Log.d("KAKAKAKAK", "initViews: $EXID")
     }
 
     private fun setupTimerData(timerData: MutableList<Exercise.Timer>) {
@@ -203,8 +203,8 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             } else {
                 viewTimerBinding.tvDistance.text = timerData.timer_distance
             }
-            viewTimerBinding.tvTimer.text = timerData.timer_time
-            viewTimerBinding.tvPause.text = timerData.timer_pause
+            viewTimerBinding.tvTimer.text = timerData.timer_pause
+            viewTimerBinding.tvPause.text = timerData.timer_pause_timer
             viewTimerBinding.tvPauseBetween.text = timerData.timer_pause_timer
 
             viewTimerBinding.time.setTextColor(
@@ -215,7 +215,7 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 )
             )
 
-            playMusic("https://4trainersapp.com" + audioData!!.audio)
+            playMusic("https://uat.4trainersapp.com" + audioData!!.audio)
 
             countDownTimer = object : CountDownTimer(timeInMillis, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
@@ -267,7 +267,7 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 )
             )
             //viewTimerDetailsBinding.time.setTextColor(Color.RED)
-            playMusic("https://4trainersapp.com" + pauseAudioData!!.pause_time_audio)
+            playMusic("https://uat.4trainersapp.com" + pauseAudioData!!.pause_time_audio)
             // Start the pause countdown
             countDownTimer = object : CountDownTimer(pauseInMillis, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
@@ -368,7 +368,7 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                     )
                 )
             )
-            playMusic("https://4trainersapp.com" + pauseBetweenAudioData!!.pause_between_audio)
+            playMusic("https://uat.4trainersapp.com" + pauseBetweenAudioData!!.pause_between_audio)
 
             countDownTimer = object : CountDownTimer(pauseBetweenInMillis, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
@@ -489,7 +489,7 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 it.pause()  // Pause the music
             }
         }
-        viewTimerBinding.play.setImageDrawable(resources.getDrawable(R.drawable.ic_play_1))
+        viewTimerBinding.play.setImageDrawable(resources.getDrawable(R.drawable.ic_start))
 
     }
 
@@ -499,7 +499,7 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         isPaused = false
         isTimerRunning = true
 
-        viewTimerBinding.play.setImageDrawable(resources.getDrawable(R.drawable.ic_pause_1))
+        viewTimerBinding.play.setImageDrawable(resources.getDrawable(R.drawable.ic_pause_timer))
 
         if (currentCountdownPhase == "mainTimer") {
             resumeMainTimerCountdown()
@@ -587,55 +587,66 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
     private fun GetExercise() {
+        Log.d("GetExercise", "Function called") // Log function entry
 
         Progress.visibility = View.VISIBLE
         try {
+            Log.d("GetExercise", "Making API call to GetExerciseData")
+
             apiInterface.GetExerciseData().enqueue(
                 object : Callback<Exercise> {
                     override fun onResponse(call: Call<Exercise>, response: Response<Exercise>) {
                         val code = response.code()
+                        Log.d("GetExercise", "API Response Code: $code")
+
                         Progress.visibility = View.GONE
                         if (code == 200) {
-                            Log.d("Response :- ", "${response.body()}")
-                            Log.d("Response :- ", "${response.code()}")
-                            Log.d("Response :- ", "${response.body()!!.data!!.size}")
-                            Log.d("Response :- ", "${response.isSuccessful}")
-                            if (response.isSuccessful) {
-                                val data = response.body()!!.data?.filter {
-                                    it.id == id?.toInt()
-                                }
-                                if (data!!.isNotEmpty()) {
+                            Log.d("GetExercise", "Response body: ${response.body()}")
+                            Log.d("GetExercise", "Response isSuccessful: ${response.isSuccessful}")
+
+                            val responseData = response.body()
+                            Log.d("GetExercise", "Response data size: ${responseData?.data?.size ?: 0}")
+
+                            if (response.isSuccessful && responseData != null) {
+                                val finalId: Int = id?.takeIf { it != 0 } ?: EXID?.toIntOrNull() ?: 0
+                                Log.d("GetExercise", "Final ID to filter: $finalId")
+
+                                val data = responseData.data?.filter { it.id == finalId }
+                                Log.d("GetExercise", "Filtered data count: ${data?.size ?: 0}")
+
+                                if (!data.isNullOrEmpty()) {
+                                    Log.d("GetExercise", "Initializing RecyclerView with cycle list")
                                     initRecycler(data[0].cycles!!.toMutableList())
+
+                                    Log.d("GetExercise", "Setting up data")
                                     setUpData(data)
+
                                     timer = data[0].timer_name
+                                    Log.d("GetExercise", "Timer Name: $timer")
+
                                     setData(timer)
                                 }
-                                Progress.visibility = View.GONE
                             }
                         } else if (code == 403) {
+                            Log.e("GetExercise", "Unauthorized access detected (403)")
                             Utils.setUnAuthDialog(this@ViewTimerActivity)
                         } else {
-                            Toast.makeText(
-                                this@ViewTimerActivity,
-                                "" + response.message(),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Log.e("GetExercise", "Unexpected response: ${response.message()}")
+                            Toast.makeText(this@ViewTimerActivity, response.message(), Toast.LENGTH_SHORT).show()
                             call.cancel()
                         }
                     }
 
                     override fun onFailure(call: Call<Exercise>, t: Throwable) {
                         Progress.visibility = View.GONE
-                        Log.d("Response :- ", "${t.message}")
+                        Log.e("GetExercise", "API Call Failed: ${t.message}")
                     }
-
                 }
             )
         } catch (e: Exception) {
             Progress.visibility = View.GONE
-            Log.d("Response :- ", "${e.message}")
+            Log.e("GetExercise", "Exception in API Call: ${e.message}")
         }
-
     }
 
     private fun setData(timer: Exercise.TimerName?) {
@@ -708,7 +719,7 @@ class ViewTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     }
 
     fun resetData() {
-        viewTimerBinding.play.setImageDrawable(resources.getDrawable(R.drawable.ic_play_1))
+        viewTimerBinding.play.setImageDrawable(resources.getDrawable(R.drawable.ic_start))
         countDownTimer?.cancel()
         setupTimerDataBasic(timerData)
         cycleSize = timerData.size

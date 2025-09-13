@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Favorite"
+                android:text="@string/favourite"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_18sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/back"
@@ -68,7 +68,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="All Favorite Items"
+                        android:text="@string/allFavouriteItems"
                         android:textColor="@color/white"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -109,7 +109,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Program"
+                    android:text="@string/program"
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:textSize="@dimen/_16sdp"
@@ -135,7 +135,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Lesson"
+                    android:text="@string/lesson"
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:textSize="@dimen/_16sdp"
@@ -159,7 +159,7 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Event"
+                    android:text="@string/event"
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:textSize="@dimen/_16sdp"
@@ -200,7 +200,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Test"
+                    android:text="@string/test"
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:textSize="@dimen/_16sdp"
@@ -224,7 +224,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Exercise"
+                    android:text="@string/exercise"
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:textSize="@dimen/_16sdp"
@@ -256,7 +256,7 @@
         android:layout_gravity="center"
         android:fontFamily="@font/poppins_medium"
         android:gravity="center"
-        android:text="No Data Found"
+        android:text="@string/noDataFound"
         android:textColor="@color/white"
         android:visibility="gone" />
 

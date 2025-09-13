@@ -21,6 +21,8 @@ import com.example.trainerapp.ApiClass.ExcerciseData
 import com.example.trainerapp.ApiClass.RegisterData
 import com.example.trainerapp.databinding.ActivityViewExerciseBinding
 import com.makeramen.roundedimageview.RoundedTransformationBuilder
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
 import retrofit2.Call
@@ -116,6 +118,7 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
             val intent = Intent(this, ViewTimerActivity::class.java)
             intent.putExtra("position", position)
             intent.putExtra("id", id)
+            intent.putExtra("EXID", EXID)
             startActivity(intent)
         }
         viewExerciseBinding.back.setOnClickListener {
@@ -132,8 +135,11 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
         EXID = intent.getStringExtra("EXID").toString()
         ExerciseLberyid = intent.getIntExtra("ExerciseId",0)
 
+        Log.d("KAKAKAKAK", "onBindViewHolder: ${EXID}")
+
 
         Log.d("PSPSPSPSP", "initViews: $ExerciseLberyid")
+//        Log.d("PSPSPSPSP", "initViews: $EXID   ---   $id")
     }
 
     private fun isYouTubeUrl(url: String): Boolean {
@@ -161,6 +167,7 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
                                     return
                                 }
 
+
                                 val idToUse = if (id == 0 || id == null) {
                                     EXID?.toIntOrNull() ?: 0 // Convert EXID to Int if valid, else default to 0
                                 } else id
@@ -175,7 +182,7 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
                                     // Load image
                                     selectedExercise.image?.let {
-                                        imageString = "https://4trainersapp.com$it"
+                                        imageString = "https://uat.4trainersapp.com$it"
                                         Picasso.get()
                                             .load(imageString)
                                             .placeholder(R.drawable.video_background)
@@ -193,23 +200,23 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
 
                                     // Handle video
                                     selectedExercise.video?.let {
-                                        videoString = "https://4trainersapp.com$it"
+                                        videoString = "https://uat.4trainersapp.com$it"
                                         playNormalVideo(videoString)
                                         Log.d("Video Type :-", videoString)
                                     } ?: selectedExercise.video_link?.let {
                                         videoString = it
                                         if (isYouTubeUrl(videoString)) {
-                                            playYouTubeVideo(videoString)
+                                            playYouTubeVideo2(videoString)
                                         } else {
                                             playNormalVideo(videoString)
                                         }
                                     }
 
                                     // Set exercise details
-                                    viewExerciseBinding.exerciseName.text = selectedExercise.name ?: "N/A"
-                                    viewExerciseBinding.exerciseNotes.text = selectedExercise.notes ?: "N/A"
-                                    viewExerciseBinding.tvSection.text = selectedExercise.section?.section_name ?: "N/A"
-                                    viewExerciseBinding.tvGoal.text = selectedExercise.goal?.goal_name ?: "N/A"
+                                    viewExerciseBinding.exerciseName.text = selectedExercise.name ?: ""
+                                    viewExerciseBinding.exerciseNotes.text = selectedExercise.notes ?: ""
+                                    viewExerciseBinding.tvSection.text = selectedExercise.section?.section_name ?: ""
+                                    viewExerciseBinding.tvGoal.text = selectedExercise.goal?.goal_name ?: ""
 
                                     val equipmentNames = selectedExercise.exercise_equipments?.mapNotNull {
                                         it.exercise_equipment?.equipment_name
@@ -272,6 +279,8 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
             </body>
             </html>
         """.trimIndent()
+
+        Log.d("787878", "playYouTubeVideo: $unencodedHtml   ----  \n $videoString")
         viewExerciseBinding.webView.settings.javaScriptEnabled = true
         viewExerciseBinding.webView.settings.loadWithOverviewMode = true
         viewExerciseBinding.webView.loadData(unencodedHtml, "text/html", "utf-8")
@@ -280,19 +289,54 @@ class View_Exercise_Activity : AppCompatActivity(), OnItemClickListener.OnItemCl
         viewExerciseBinding.videoUpload.visibility = View.GONE
     }
 
+    private fun playYouTubeVideo2(videoString: String) {
+        viewExerciseBinding.youtubePlayerView.visibility = View.VISIBLE
+
+        viewExerciseBinding.youtubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+            override fun onReady(youTubePlayer: YouTubePlayer) {
+                val videoId = extractVideoId(videoString)
+                Log.d("YOUTUBE", "Extracted Video ID: $videoId")
+
+                if (videoId != null) {
+                    youTubePlayer.loadVideo(videoId, 0f)
+                }
+            }
+        })
+
+        viewExerciseBinding.webView.visibility = View.GONE
+        viewExerciseBinding.youtubePlayerView.visibility = View.VISIBLE
+        viewExerciseBinding.exerciseImage.visibility = View.GONE
+        viewExerciseBinding.videoUpload.visibility = View.GONE
+    }
+
+    private fun extractVideoId(url: String): String? {
+        val regex = "(?:v=|/videos/|embed/|youtu\\.be/|/v/|/e/|watch\\?v=|watch\\?.+&v=)([a-zA-Z0-9_-]{11})".toRegex()
+        return regex.find(url)?.groupValues?.get(1)
+    }
+
+
     private fun playNormalVideo(videoString: String) {
         viewExerciseBinding.videoUpload.stopPlayback() // Stop any previous playback
         viewExerciseBinding.videoUpload.setVideoURI(null) // Clear the previous video URI
         viewExerciseBinding.videoUpload.setVideoURI(Uri.parse(videoString)) // Set new video URI
         viewExerciseBinding.videoUpload.requestLayout()
         viewExerciseBinding.videoUpload.invalidate()
+
         mediaControls = MediaController(this)
         mediaControls.setAnchorView(viewExerciseBinding.videoUpload)
         viewExerciseBinding.videoUpload.setMediaController(mediaControls)
         viewExerciseBinding.videoUpload.requestFocus()
+
         viewExerciseBinding.exerciseImage.visibility = View.GONE
         viewExerciseBinding.videoUpload.visibility = View.VISIBLE
+
+        // Start playback automatically once the video is ready
+        viewExerciseBinding.videoUpload.setOnPreparedListener { mediaPlayer ->
+            mediaPlayer.isLooping = false // Optional: loop video if needed
+            viewExerciseBinding.videoUpload.start()
+        }
     }
+
 
     private fun initRecycler(testDataList: MutableList<Exercise.Cycle>?) {
         Progress.visibility = View.GONE

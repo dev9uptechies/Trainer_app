@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20sdp"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="Create"
+            android:text="@string/create"
             android:textColor="@color/splash_text_color"
             android:textSize="@dimen/_16sdp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -56,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/_15sdp"
-                    android:text="Program"
+                    android:text="@string/program"
                     android:fontFamily="@font/poppins_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp" />
@@ -75,7 +75,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/_15sdp"
-                    android:text="Test"
+                    android:text="@string/test"
                     android:fontFamily="@font/poppins_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp" />
@@ -94,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/_15sdp"
-                    android:text="Events"
+                    android:text="@string/event"
                     android:fontFamily="@font/poppins_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp" />
@@ -113,7 +113,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/_15sdp"
-                    android:text="Lesson"
+                    android:text="@string/lesson"
                     android:textColor="@color/white"
                     android:fontFamily="@font/poppins_medium"
                     android:textSize="@dimen/_13sdp" />
@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/_15sdp"
-                    android:text="Exercise"
+                    android:text="@string/exercise"
                     android:textColor="@color/white"
                     android:fontFamily="@font/poppins_medium"
                     android:textSize="@dimen/_13sdp" />
@@ -153,7 +153,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/_15sdp"
-                    android:text="Training Plan"
+                    android:text="@string/planning"
                     android:textColor="@color/white"
                     android:fontFamily="@font/poppins_medium"
                     android:textSize="@dimen/_13sdp" />
@@ -173,7 +173,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/_15sdp"
-                    android:text="Timer"
+                    android:text="@string/timer"
                     android:fontFamily="@font/poppins_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp" />

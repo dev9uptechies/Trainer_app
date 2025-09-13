@@ -64,7 +64,7 @@ class ExcerciseAdapter(
             .build()
 
         Picasso.get()
-            .load("https://4trainersapp.com" + movie.image)
+            .load("https://uat.4trainersapp.com" + movie.image)
             .fit()
             .placeholder(R.drawable.ic_youtube)
             .transform(transformation)

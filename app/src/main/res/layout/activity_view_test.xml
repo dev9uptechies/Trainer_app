@@ -45,7 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="View Test"
+                    android:text="@string/viewTest"
                     android:textColor="@color/splash_text_color"
                     android:textSize="@dimen/_18sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -256,7 +256,7 @@
 
                 </androidx.core.widget.NestedScrollView>
 
-                <androidx.core.widget.NestedScrollView
+                <ScrollView
                     android:id="@+id/nestedScrollView3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -264,15 +264,20 @@
                     android:layout_marginBottom="@dimen/_20sdp"
                     app:layout_constraintTop_toTopOf="parent">
 
-
                     <LinearLayout
-                        android:id="@+id/liner_add"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+                        android:orientation="vertical">
 
+                        <LinearLayout
+                            android:id="@+id/liner_add"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
 
-                </androidx.core.widget.NestedScrollView>
+                    </LinearLayout>
+
+                </ScrollView>
 
 
 
@@ -295,7 +300,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Next"
+                    android:text="@string/next"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_18sdp" />
 

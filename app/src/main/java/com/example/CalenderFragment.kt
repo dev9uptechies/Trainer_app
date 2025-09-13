@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -20,12 +21,14 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.children
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.FavoriteActivity
-import com.example.Adapter.selected_day.LessonAdapter
-import com.example.Adapter.selected_day.eventAdapter
-import com.example.Adapter.selected_day.testAdapter
+import com.example.Adapter.SelectedEvent.SelectedEventEventAdapter
+import com.example.Adapter.SelectedEvent.SelectedEventLessonAdapter
+import com.example.Adapter.SelectedEvent.SelectedEventTestAdapter
 import com.example.model.SelectedDaysModel
+import com.example.model.SelectedEventModel
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
@@ -58,21 +61,27 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.temporal.WeekFields
 import java.util.Locale
+import kotlinx.coroutines.*
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.format.DateTimeParseException
+import kotlin.math.log
 
-class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, NavigationView.OnNavigationItemSelectedListener {
+class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback,
+    NavigationView.OnNavigationItemSelectedListener {
     lateinit var preferenceManager: PreferencesManager
     lateinit var apiInterface: APIInterface
+    private var isScrollAllowed = true // Flag to control scrolling
+
     lateinit var apiClient: APIClient
     private var receivedId: String = ""
     private var receivedGropu_Id: String = ""
-    lateinit var lessonadapter: LessonAdapter
-    lateinit var eventadapter: eventAdapter
-    lateinit var testadapter: testAdapter
+    lateinit var lessonadapter: SelectedEventLessonAdapter
+    lateinit var eventadapter: SelectedEventEventAdapter
+    lateinit var testadapter: SelectedEventTestAdapter
     var date: String = ""
     var actionBarDrawerToggle: ActionBarDrawerToggle? = null
 
@@ -98,9 +107,9 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
         requireContext().getSharedPreferences("RemindMePrefs", MODE_PRIVATE)
     }
 
-    private val datesWithDataTest = mutableSetOf<LocalDate>() // Set to track dates with data
-    private val datesWithDataLesson = mutableSetOf<LocalDate>() // Set to track dates with data
-    private val datesWithDataEvent = mutableSetOf<LocalDate>() // Set to track dates with data
+    private val datesWithDataTest = mutableSetOf<LocalDate>()
+    private val datesWithDataLesson = mutableSetOf<LocalDate>()
+    private val datesWithDataEvent = mutableSetOf<LocalDate>()
 
     private fun checkUser() {
         try {
@@ -186,7 +195,6 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
         calenderBinding.navigationView.setNavigationItemSelectedListener(this)
     }
 
-
     @SuppressLint("NewApi")
     private fun loadData() {
         selectDate(LocalDate.now())
@@ -194,9 +202,9 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
         val userType = preferenceManager.GetFlage()
 
         if (userType == "Athlete") {
-            fetchDayDataAthlete(LocalDate.now())
-        }else {
-            fetchDayData(LocalDate.now())
+            fetchDayDataAthlete(LocalDate.now(), false)
+        } else {
+            fetchDayData(LocalDate.now(), false)
         }
     }
 
@@ -208,9 +216,15 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
             val currentMonth = YearMonth.now()
 
             calendarView!!.apply {
-                setup(currentMonth.minusMonths(100), currentMonth.plusMonths(100), daysOfWeek.first())
+                setup(
+                    currentMonth.minusMonths(100),
+                    currentMonth.plusMonths(100),
+                    daysOfWeek.first()
+                )
                 scrollToMonth(currentMonth)
             }
+
+//            fetchDataForCurrentMonth(currentMonth)
 
             class DayViewContainer(view: View) : ViewContainer(view) {
                 lateinit var day: CalendarDay
@@ -292,13 +306,41 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                 }
             }
 
-            calendarView!!.monthScrollListener = {
+
+            calendarView!!.monthScrollListener = { it ->
+                if (!isScrollAllowed) returnTransition // Stop scrolling if not allowed
+
+                isScrollAllowed = false // Disable further scrolling
+                Utils.showLoading(requireActivity())
+                requireActivity().window.setFlags(
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                )
+
                 if (it.year == today.year) {
                     titleSameYearFormatter.format(it.yearMonth)
                 } else {
                     titleFormatter.format(it.yearMonth)
                 }
-//            selectDate(it.yearMonth.atDay(1))
+                fetchDataForCurrentMonth(it.yearMonth)
+
+                val firstDay = it.weekDays.firstOrNull()?.firstOrNull()?.date
+                firstDay?.let { date ->
+                    lifecycleScope.launch {
+                        val fetch1 = async { fetchDayData(date, false) }
+                        val fetch2 = async { fetchDayDataAthlete(date, false) }
+
+                        fetch1.await()
+                        fetch2.await()
+
+                        delay(1500)
+
+//                        calenderBinding.progressCalender2.visibility = View.GONE // Hide progress bar
+                        Utils.hideLoading(requireActivity())
+                        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE) // Enable touch
+                        isScrollAllowed = true
+                    }
+                }
             }
 
             calendarView!!.monthHeaderBinder =
@@ -344,16 +386,56 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                 tests = listOf(),    // Provide a valid list of tests
                 programs = listOf(),    // Provide a valid list of tests
             )
-            checkDatesForMonth(LocalDate.now(), data)
+//            checkDatesForMonth(LocalDate.now(), data)
 
 
             val userType = preferenceManager.GetFlage()
             if (userType == "Athlete") {
-                fetchDayDataAthlete(date)
-            }else {
-                fetchDayData(date)
+                fetchDayDataAthlete(date, true)
+            } else {
+                fetchDayData(date, true)
+            }
+        }
+    }
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    private fun fetchDataForCurrentMonth(month: YearMonth) {
+//        val startDate = month.atDay(1)
+//        val endDate = month.atEndOfMonth()
+//
+//        var currentDate = startDate
+//        while (!currentDate.isAfter(endDate)) {
+//            fetchDayData(currentDate)
+//            currentDate = currentDate.plusDays(1)
+//        }
+//    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun fetchDataForCurrentMonth(month: YearMonth) {
+        val startDate = month.atDay(1)
+        val endDate = month.atEndOfMonth()
+
+        val deferredList = mutableListOf<Deferred<Unit>>()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            var currentDate = startDate
+            while (!currentDate.isAfter(endDate)) {
+                // Pass LocalDate directly
+                deferredList.add(async {
+//                    fetchDayData(currentDate)  // ✅ Pass LocalDate here
+                })
+
+                currentDate = currentDate.plusDays(1)
             }
 
+            // Await all async calls to finish
+            deferredList.awaitAll()
+
+            // Update the calendar view after all data is collected
+            withContext(Dispatchers.Main) {
+                calendarView?.notifyCalendarChanged()
+            }
         }
     }
 
@@ -363,15 +445,12 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
         val daysInMonth = currentMonth.lengthOfMonth()
 
         for (day in 1..31) {
-            // Skip invalid days for the current month
             if (day > daysInMonth) break
 
             val date = currentMonth.atDay(day)
 
-            // Check and update lessons
             updateDatesList(date, data.lessons.map { it.date }, datesWithDataLesson, "Lesson")
 
-            // Check and update events
             updateDatesList(date, data.events.map { it.date }, datesWithDataEvent, "Event")
 
             // Check and update tests
@@ -403,8 +482,6 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
     }
 
 
-
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun updateAdapterForDate(date: LocalDate) {
         calenderBinding.dateTv.text = selectionFormatter.format(date)
@@ -424,109 +501,129 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("NewApi")
-    private fun fetchDayData(selectedDate: LocalDate) {
+    private fun fetchDayData(selectedDate: LocalDate, ShowData: Boolean) {
+        Utils.showLoading(requireActivity())
+
         try {
             val formattedDate = selectionFormatter.format(selectedDate)
             Log.d("CalendarFragment", "Fetching data for date: $formattedDate with ID: $receivedId")
 
-            apiInterface.GetSelectedDays(formattedDate, receivedId)!!
-                .enqueue(object : Callback<SelectedDaysModel> {
+            apiInterface.GetSelectedEvent(formattedDate, receivedId)!!
+                .enqueue(object : Callback<SelectedEventModel> {
                     override fun onResponse(
-                        call: Call<SelectedDaysModel>,
-                        response: Response<SelectedDaysModel>
+                        call: Call<SelectedEventModel>,
+                        response: Response<SelectedEventModel>
                     ) {
+                        Log.d("RESPONCE'CODE", "onResponse: ${response.code()}")
+                        Utils.hideLoading(requireActivity())
+
                         if (response.isSuccessful && response.body() != null) {
                             val selectedDaysModel = response.body()
                             Log.d("API Response", "Response: $selectedDaysModel")
 
-                            val data = selectedDaysModel?.data
+                            val countData = selectedDaysModel?.data?.count
+                            if (!countData.isNullOrEmpty()) {
+                                processCountData(countData)
+                            } else {
+                                Log.e("API Response", "Count data is empty.")
+                            }
 
+                            val data = selectedDaysModel?.data
                             if (data != null) {
                                 if (::eventadapter.isInitialized) {
                                     eventadapter.clearData()
                                 }
 
-                                if (data.lessons.isNotEmpty()) {
-                                    if (!datesWithDataLesson.contains(selectedDate)) {
-                                        datesWithDataLesson.add(selectedDate)
-                                        // Notify the calendar view to update this data
-                                        calendarView!!.notifyDateChanged(selectedDate)
+                                Log.d("SSKSKSKS", "onResponse: $ShowData")
+                                if (ShowData == true) {
+                                    initEventRecyclerView(emptyList())
+                                    initLessonRecyclerView(emptyList())
+                                    initTestRecyclerView(emptyList())
+
+                                    Log.d("SKKSKSKS", "onResponse: ${data.list.lessons.size}")
+                                    if (data.list.lessons.isNotEmpty()) {
+                                        initLessonRecyclerView(data.list.lessons)
                                     }
-                                } else {
-                                    if (datesWithDataLesson.contains(selectedDate)) {
-                                        datesWithDataLesson.remove(selectedDate)
-                                        // Notify the calendar view to remove the dot
-                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    if (data.list.events.isNotEmpty()) {
+                                        initEventRecyclerView(data.list.events)
+                                    }
+                                    if (data.list.tests.isNotEmpty()) {
+                                        initTestRecyclerView(data.list.tests)
                                     }
                                 }
-
-                                if (data.events.isNotEmpty()) {
-                                    if (!datesWithDataEvent.contains(selectedDate)) {
-                                        datesWithDataEvent.add(selectedDate)
-                                        // Notify the calendar view to update this date
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                } else {
-                                    if (datesWithDataEvent.contains(selectedDate)) {
-                                        datesWithDataEvent.remove(selectedDate)
-                                        // Notify the calendar view to remove the dot
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                }
-
-                                if (data.tests.isNotEmpty()) {
-                                    if (!datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.add(selectedDate)
-                                        // Notify the calendar view to update this date
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                } else {
-                                    if (datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.remove(selectedDate)
-                                        // Notify the calendar view to remove the dot
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                }
-
-
-                                initTestRecyclerView(data.tests)
-                                initLessonRecyclerView(data.lessons)
-                                initEventRecyclerView(data.events)
 
                             } else {
                                 Log.e("API Response", "Data is null. No dot added.")
-                                // Remove any dots for this date if data is null
                             }
-
                         }
                     }
 
-                    override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
+                    override fun onFailure(call: Call<SelectedEventModel>, t: Throwable) {
+                        Utils.hideLoading(requireActivity())
+
                         Log.e("API Response", "Error: ${t.message}")
                     }
                 })
         } catch (e: Exception) {
+            Utils.hideLoading(requireActivity())
             Log.e("Catch", "CatchError :- ${e.message}")
         }
     }
 
+    @SuppressLint("NewApi")
+    private fun processCountData(countList: List<SelectedEventModel.Count>) {
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        countList.forEach { count ->
+            try {
+                val date = LocalDate.parse(count.date, dateFormatter)
+
+                if (count.lessons > 0 && !datesWithDataLesson.contains(date)) {
+                    datesWithDataLesson.add(date)
+                    calendarView!!.notifyDateChanged(date)
+                }
+
+                if (count.events > 0 && !datesWithDataEvent.contains(date)) {
+                    datesWithDataEvent.add(date)
+                    calendarView!!.notifyDateChanged(date)
+                }
+
+                if (count.tests > 0 && !datesWithDataTest.contains(date)) {
+                    datesWithDataTest.add(date)
+                    calendarView!!.notifyDateChanged(date)
+                }
+
+            } catch (e: DateTimeParseException) {
+                Log.e("DateParseError", "Invalid date format or non-leap year: ${count.date}")
+            }
+        }
+    }
 
     @SuppressLint("NewApi")
-    private fun fetchDayDataAthlete(selectedDate: LocalDate) {
+    private fun fetchDayDataAthlete(selectedDate: LocalDate, ShowData: Boolean) {
         try {
             val formattedDate = selectionFormatter.format(selectedDate)
-            Log.d("CalendarFragmentF", "Fetching data for date: $formattedDate with ID: $receivedId")
-            Log.d("CalendarFragmentF", "Fetching data for date: $formattedDate with ID: $receivedGropu_Id")
+            Log.d(
+                "CalendarFragmentF",
+                "Fetching data for date: $formattedDate with ID: $receivedGropu_Id"
+            )
 
-            apiInterface.GetSelectedDaysAthlete(formattedDate, receivedGropu_Id)!!
-                .enqueue(object : Callback<SelectedDaysModel> {
+            apiInterface.GetSelectedEventAthlete(formattedDate, receivedGropu_Id)!!
+                .enqueue(object : Callback<SelectedEventModel> {
                     override fun onResponse(
-                        call: Call<SelectedDaysModel>,
-                        response: Response<SelectedDaysModel>
+                        call: Call<SelectedEventModel>,
+                        response: Response<SelectedEventModel>
                     ) {
                         if (response.isSuccessful && response.body() != null) {
                             val selectedDaysModel = response.body()
                             Log.d("API Response", "Response: $selectedDaysModel")
+
+                            val countData = selectedDaysModel?.data?.count
+                            if (!countData.isNullOrEmpty()) {
+                                processCountData(countData)
+                            } else {
+                                Log.e("API Response", "Count data is empty.")
+                            }
 
                             val data = selectedDaysModel?.data
                             if (data != null) {
@@ -534,65 +631,32 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                                     eventadapter.clearData()
                                 }
 
-                                Log.d("LPL%%%^^FDCDF", "onResponse: ${data.tests}")
+                                if (ShowData == true) {
+                                    initLessonRecyclerView(emptyList())
+                                    initEventRecyclerView(emptyList())
+                                    initTestRecyclerView(emptyList())
 
-                                if (data.lessons.isNotEmpty()) {
-                                    if (!datesWithDataLesson.contains(selectedDate)) {
-                                        datesWithDataLesson.add(selectedDate)
-                                        // Notify the calendar view to update this date
-                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    if (data.list.lessons.isNotEmpty()) {
+                                        initLessonRecyclerView(data.list.lessons)
                                     }
-                                } else {
-                                    if (datesWithDataLesson.contains(selectedDate)) {
-                                        datesWithDataLesson.remove(selectedDate)
-                                        // Notify the calendar view to remove the dot
-                                        calendarView!!.notifyDateChanged(selectedDate)
+                                    if (data.list.events.isNotEmpty()) {
+                                        initEventRecyclerView(data.list.events)
+                                    }
+                                    if (data.list.tests.isNotEmpty()) {
+                                        initTestRecyclerView(data.list.tests)
                                     }
                                 }
 
-                                if (data.events.isNotEmpty()) {
-                                    if (!datesWithDataEvent.contains(selectedDate)) {
-                                        datesWithDataEvent.add(selectedDate)
-                                        // Notify the calendar view to update this date
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                } else {
-                                    if (datesWithDataEvent.contains(selectedDate)) {
-                                        datesWithDataEvent.remove(selectedDate)
-                                        // Notify the calendar view to remove the dot
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                }
-
-                                if (data.tests.isNotEmpty()) {
-                                    if (!datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.add(selectedDate)
-                                        // Notify the calendar view to update this date
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                } else {
-                                    if (datesWithDataTest.contains(selectedDate)) {
-                                        datesWithDataTest.remove(selectedDate)
-                                        // Notify the calendar view to remove the dot
-                                        calendarView!!.notifyDateChanged(selectedDate)
-                                    }
-                                }
-
-
-                                initTestRecyclerView(data.tests)
-                                initLessonRecyclerView(data.lessons)
-                                initEventRecyclerView(data.events)
 
                             } else {
                                 Log.e("API Response", "Data is null. No dot added.")
-                                // Remove any dots for this date if data is null
                             }
                         } else {
                             Log.e("API Response", "Failed to fetch data: ${response.message()}")
                         }
                     }
 
-                    override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
+                    override fun onFailure(call: Call<SelectedEventModel>, t: Throwable) {
                         Log.e("API Response", "Error: ${t.message}")
                     }
                 })
@@ -602,23 +666,23 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
     }
 
 
-    private fun initLessonRecyclerView(programs: List<SelectedDaysModel.Lesson>) {
+    private fun initLessonRecyclerView(programs: List<SelectedEventModel.Lesson>) {
         calenderBinding.rcvlesson.layoutManager = LinearLayoutManager(requireContext())
-        lessonadapter = LessonAdapter(programs, requireContext(), this)
+        lessonadapter = SelectedEventLessonAdapter(programs, requireContext(), this)
         calenderBinding.rcvlesson.adapter = lessonadapter
     }
 
-    private fun initTestRecyclerView(tests: List<SelectedDaysModel.Test>) {
+    private fun initTestRecyclerView(tests: List<SelectedEventModel.Test>) {
         calenderBinding.rcvtest.layoutManager = LinearLayoutManager(requireContext())
-        testadapter = testAdapter(tests, requireContext(), this)
+        testadapter = SelectedEventTestAdapter(tests, requireContext(), this)
         calenderBinding.rcvtest.adapter = testadapter
     }
 
-    private fun initEventRecyclerView(events: List<SelectedDaysModel.Event>) {
+    private fun initEventRecyclerView(events: List<SelectedEventModel.Event>) {
         if (events.isNotEmpty()) {
             Log.d("Event RecyclerView", "Setting up RecyclerView with events.")
             calenderBinding.rcvevent.layoutManager = LinearLayoutManager(requireContext())
-            eventadapter = eventAdapter(events, requireContext(), this)
+            eventadapter = SelectedEventEventAdapter(events, requireContext(), this)
             calenderBinding.rcvevent.adapter = eventadapter
         } else {
             Log.d("Event RecyclerView", "No events available.")
@@ -630,7 +694,8 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
         preferenceManager = PreferencesManager(requireContext())
         apiInterface = apiClient.client().create(APIInterface::class.java)
 
-        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
         receivedId = sharedPreferences.getString("id", "default_value") ?: ""
         receivedGropu_Id = sharedPreferences.getString("group_id", "default_value") ?: ""
 
@@ -642,33 +707,33 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
             val menu = calenderBinding.navigationView.menu
             menu.clear() // Remove existing items
 
-            menu.add(Menu.NONE, R.id.tv_notification, Menu.NONE, "Notification").setIcon(R.drawable.ic_notification)
+            menu.add(Menu.NONE, R.id.tv_notification, Menu.NONE, getString(R.string.notification)).setIcon(R.drawable.ic_notification)
 
-            menu.add(Menu.NONE, R.id.tv_policy, Menu.NONE, "Privacy Policy").setIcon(R.drawable.ic_privacy)
+            menu.add(Menu.NONE, R.id.tv_policy, Menu.NONE, getString(R.string.privacyPolicy)).setIcon(R.drawable.ic_privacy)
 
-            menu.add(Menu.NONE, R.id.tv_favorite, Menu.NONE, "Favorites").setIcon(R.drawable.ic_favorite)
+            menu.add(Menu.NONE, R.id.tv_favorite, Menu.NONE, getString(R.string.favourite)).setIcon(R.drawable.ic_favorite)
 
-            menu.add(Menu.NONE, R.id.tv_profile, Menu.NONE, "Performance Profile").setIcon(R.drawable.ic_perfomance)
+            menu.add(Menu.NONE, R.id.tv_profile, Menu.NONE, getString(R.string.performanceProfile)).setIcon(R.drawable.ic_perfomance)
 
-            menu.add(Menu.NONE, R.id.tv_analysis, Menu.NONE, "Competition Analysis").setIcon(R.drawable.ic_competition)
+            menu.add(Menu.NONE, R.id.tv_analysis, Menu.NONE, getString(R.string.competitionAnalysis)).setIcon(R.drawable.ic_competition)
 
-            menu.add(Menu.NONE, R.id.tv_view_analysis, Menu.NONE, "View Analysis").setIcon(R.drawable.ic_competition)
+            menu.add(Menu.NONE, R.id.tv_view_analysis, Menu.NONE, getString(R.string.viewAnalysis)).setIcon(R.drawable.ic_competition)
 
-            menu.add(Menu.NONE, R.id.tv_personal_diary, Menu.NONE, "Personal Diary").setIcon(R.drawable.ic_diaryy)
+            menu.add(Menu.NONE, R.id.tv_personal_diary, Menu.NONE, getString(R.string.personalDiary)).setIcon(R.drawable.icd)
 
-            menu.add(Menu.NONE, R.id.tv_setting, Menu.NONE, "Settings").setIcon(R.drawable.ic_setting)
+            menu.add(Menu.NONE, R.id.tv_setting, Menu.NONE, getString(R.string.personalDiary)).setIcon(R.drawable.ic_setting)
 
-            menu.add(Menu.NONE, R.id.logout, Menu.NONE, "Logout").setIcon(R.drawable.logout)
+            menu.add(Menu.NONE, R.id.logout, Menu.NONE, getString(R.string.logout)).setIcon(R.drawable.logout)
         } else {
             // Default menu setup for other users
-            calenderBinding.navigationView.inflateMenu(R.menu.activity_main_drawer) // Load menu from XML
+//            calenderBinding.navigationView.inflateMenu(R.menu.activity_main_drawer) // Load menu from XML
         }
 
     }
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
         if (string == "fav") {
-            calenderBinding.progressCalender.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.Favourite_lession(id)?.enqueue(object : Callback<RegisterData?> {
@@ -676,7 +741,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     call: Call<RegisterData?>,
                     response: Response<RegisterData?>
                 ) {
-                    calenderBinding.progressCalender.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
@@ -684,10 +749,10 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                         val Success: Boolean = resource?.status!!
                         val Message: String = resource.message!!
                         if (Success) {
-                            calenderBinding.progressCalender.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             loadData()
                         } else {
-                            calenderBinding.progressCalender.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             Toast.makeText(
                                 requireContext(),
                                 "" + Message,
@@ -698,7 +763,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(requireContext())
                     } else {
-                        calenderBinding.progressCalender.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(
                             requireContext(),
                             "" + response.message(),
@@ -710,14 +775,14 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                 }
 
                 override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                    calenderBinding.progressCalender.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
                         .show()
                     call.cancel()
                 }
             })
         } else if (string == "unfav") {
-            calenderBinding.progressCalender.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.DeleteFavourite_lession(type.toInt())
@@ -727,17 +792,17 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                         response: Response<RegisterData?>
                     ) {
                         Log.d("TAG", response.code().toString() + "")
-                        calenderBinding.progressCalender.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         val code = response.code()
                         if (code == 200) {
                             val resource: RegisterData? = response.body()
                             val Success: Boolean = resource?.status!!
                             val Message: String = resource.message!!
                             if (Success) {
-                                calenderBinding.progressCalender.visibility = View.GONE
+                                Utils.hideLoading(requireActivity())
                                 loadData()
                             } else {
-                                calenderBinding.progressCalender.visibility = View.GONE
+                                Utils.hideLoading(requireActivity())
                                 Toast.makeText(
                                     requireContext(),
                                     "" + Message,
@@ -758,7 +823,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     }
 
                     override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                        calenderBinding.progressCalender.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(
                             requireContext(),
                             "" + t.message,
@@ -769,7 +834,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     }
                 })
         } else if (string == "favevent") {
-            calenderBinding.progressCalender.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.Favourite_Event(id)?.enqueue(object : Callback<RegisterData?> {
@@ -777,7 +842,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     call: Call<RegisterData?>,
                     response: Response<RegisterData?>
                 ) {
-                    calenderBinding.progressCalender.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
@@ -785,10 +850,10 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                         val Success: Boolean = resource?.status!!
                         val Message: String = resource.message!!
                         if (Success) {
-                            calenderBinding.progressCalender.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             loadData()
                         } else {
-                            calenderBinding.progressCalender.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             Toast.makeText(
                                 requireContext(),
                                 "" + Message,
@@ -799,7 +864,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(requireContext())
                     } else {
-                        calenderBinding.progressCalender.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(
                             requireContext(),
                             "" + response.message(),
@@ -811,14 +876,14 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                 }
 
                 override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                    calenderBinding.progressCalender.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
                         .show()
                     call.cancel()
                 }
             })
         } else if (string == "unfavevent") {
-            calenderBinding.progressCalender.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.DeleteFavourite_Event(type.toInt())
@@ -828,17 +893,17 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                         response: Response<RegisterData?>
                     ) {
                         Log.d("TAG", response.code().toString() + "")
-                        calenderBinding.progressCalender.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         val code = response.code()
                         if (code == 200) {
                             val resource: RegisterData? = response.body()
                             val Success: Boolean = resource?.status!!
                             val Message: String = resource.message!!
                             if (Success) {
-                                calenderBinding.progressCalender.visibility = View.GONE
+                                Utils.hideLoading(requireActivity())
                                 loadData()
                             } else {
-                                calenderBinding.progressCalender.visibility = View.GONE
+                                Utils.hideLoading(requireActivity())
                                 Toast.makeText(
                                     requireContext(),
                                     "" + Message,
@@ -859,7 +924,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     }
 
                     override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                        calenderBinding.progressCalender.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(
                             requireContext(),
                             "" + t.message,
@@ -870,7 +935,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     }
                 })
         } else if (string == "favtest") {
-            calenderBinding.progressCalender.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
             val id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.Favourite_Test(id)?.enqueue(object : Callback<RegisterData?> {
@@ -878,7 +943,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     call: Call<RegisterData?>,
                     response: Response<RegisterData?>
                 ) {
-                    calenderBinding.progressCalender.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
@@ -886,10 +951,10 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                         val Success: Boolean = resource?.status!!
                         val Message: String = resource.message!!
                         if (Success) {
-                            calenderBinding.progressCalender.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             loadData()
                         } else {
-                            calenderBinding.progressCalender.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             Toast.makeText(
                                 requireContext(),
                                 "" + Message,
@@ -900,7 +965,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(requireContext())
                     } else {
-                        calenderBinding.progressCalender.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(
                             requireContext(),
                             "" + response.message(),
@@ -912,14 +977,15 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                 }
 
                 override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                    calenderBinding.progressCalender.visibility = View.GONE
+
+                    Utils.hideLoading(requireActivity())
                     Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
                         .show()
                     call.cancel()
                 }
             })
         } else if (string == "unfavtest") {
-            calenderBinding.progressCalender.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
             var id: MultipartBody.Part =
                 MultipartBody.Part.createFormData("id", type.toInt().toString())
             apiInterface.DeleteFavourite_Test(type.toInt())
@@ -929,17 +995,17 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                         response: Response<RegisterData?>
                     ) {
                         Log.d("TAG", response.code().toString() + "")
-                        calenderBinding.progressCalender.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         val code = response.code()
                         if (code == 200) {
                             val resource: RegisterData? = response.body()
                             val Success: Boolean = resource?.status!!
                             val Message: String = resource.message!!
                             if (Success) {
-                                calenderBinding.progressCalender.visibility = View.GONE
-
+                                Utils.hideLoading(requireActivity())
+                                loadData()
                             } else {
-                                calenderBinding.progressCalender.visibility = View.GONE
+                                Utils.hideLoading(requireActivity())
                                 Toast.makeText(
                                     requireContext(),
                                     "" + Message,
@@ -960,7 +1026,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     }
 
                     override fun onFailure(call: Call<RegisterData?>, t: Throwable) {
-                        calenderBinding.progressCalender.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         Toast.makeText(
                             requireContext(),
                             "" + t.message,
@@ -1042,13 +1108,13 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
         } else if (item.itemId == R.id.logout) {
             calenderBinding.drawerLayout.closeDrawer(GravityCompat.START)
 
-            calenderBinding.progressCalender.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
             apiInterface.LogOut()?.enqueue(object : Callback<RegisterData?> {
                 override fun onResponse(
                     call: Call<RegisterData?>,
                     response: Response<RegisterData?>
                 ) {
-                    calenderBinding.progressCalender.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                     Log.d("TAG", response.code().toString() + "")
                     val resource: RegisterData? = response.body()
                     //                    val Success: Boolean = resource?.status!!
@@ -1093,7 +1159,7 @@ class CalenderFragment : Fragment(), OnItemClickListener.OnItemClickCallback, Na
                     Toast.makeText(requireContext(), "" + t.message, Toast.LENGTH_SHORT)
                         .show()
                     call.cancel()
-                    calenderBinding.progressCalender.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                 }
             })
 

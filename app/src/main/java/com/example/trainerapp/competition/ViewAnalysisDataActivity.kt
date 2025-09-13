@@ -55,11 +55,12 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
     lateinit var compAdapter: ViewCompetitionAdapter
     lateinit var analysisData: MutableList<RatingItem>
 
-    var warmupDesc = "Give a score to the following entries pre-competition and during warm-up"
-    var mentalDesc = "Give a score to the following entries."
-    var physicalDesc = "Give a score to the following entries."
-    var strategyDesc = "Give a score to the following entries."
-    var techniqueDesc = "Give a score to the following entries."
+    private lateinit var warmupDesc: String
+    private lateinit var mentalDesc: String
+    private lateinit var physicalDesc: String
+    private lateinit var strategyDesc: String
+    private lateinit var techniqueDesc: String
+
 
     lateinit var title: String
     lateinit var eventId: String
@@ -87,6 +88,11 @@ class ViewAnalysisDataActivity : AppCompatActivity() {
         viewAnalysisBinding = ActivityViewCompetitionAnalysisBinding.inflate(layoutInflater)
         setContentView(viewAnalysisBinding.root)
         initViews()
+        warmupDesc = getString(R.string.warmupDesc)
+        mentalDesc = getString(R.string.mentalDesc)
+        physicalDesc = getString(R.string.physicalDesc)
+        strategyDesc = getString(R.string.strategyDesc)
+        techniqueDesc = getString(R.string.techniqueDesc)
 
         val userType = preferenceManager.GetFlage()
         if (userType == "Athlete") {

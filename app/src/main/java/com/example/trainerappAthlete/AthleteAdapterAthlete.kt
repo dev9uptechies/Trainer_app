@@ -14,7 +14,7 @@ import com.example.trainerappAthlete.model.GroupListAthlete
 
 
 class AthleteAdapterAthlete(
-    private var data: ArrayList<GroupListAthlete.Athlete>?,
+    private var data: ArrayList<GroupListData.Athlete>?,
     private val context: Context,
     private val listener: OnItemClickListener.OnItemClickCallback
 ) : RecyclerView.Adapter<AthleteAdapterAthlete.MyViewHolder>() {

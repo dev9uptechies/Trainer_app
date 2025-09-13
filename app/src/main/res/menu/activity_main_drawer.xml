@@ -4,12 +4,12 @@
     <item
         android:id="@+id/tv_notification"
         android:icon="@drawable/ic_notification"
-        android:title="Notification" />
+        android:title="@string/notification" />
 
     <item
         android:id="@+id/tv_policy"
         android:icon="@drawable/ic_privacy"
-        android:title="Privacy Policy" />
+        android:title="@string/privacyPolicy" />
 
 <!--    <item-->
 <!--        android:id="@+id/tv_invited_friend"-->
@@ -19,52 +19,54 @@
     <item
         android:id="@+id/tv_library"
         android:icon="@drawable/ic_library"
-        android:title="Library" />
+        android:title="@string/library" />
 
     <item
         android:id="@+id/tv_favorite"
         android:icon="@drawable/ic_favorite"
-        android:title="Favorite" />
+        android:title="@string/favourite" />
 
     <item
         android:id="@+id/tv_athletes"
         android:icon="@drawable/ic_athlete"
-        android:title="Athletes" />
+        android:title="@string/athletes" />
 
-    <item
-        android:id="@+id/tv_view_analysis"
-        android:icon="@drawable/ic_competition"
-        android:title="View Analysis" />
 
     <item
         android:id="@+id/tv_profile"
         android:icon="@drawable/ic_perfomance"
-        android:title="Performance Profile" />
+        android:title="@string/performanceProfile" />
 
     <item
         android:id="@+id/tv_analysis"
         android:icon="@drawable/ic_competition"
-        android:title="Competition Analysis" />
+        android:title="@string/competitionAnalysis" />
+
+
+    <item
+        android:id="@+id/tv_view_analysis"
+        android:icon="@drawable/ic_competition"
+        android:title="@string/viewAnalysis" />
 
     <item
         android:id="@+id/tv_personal_diary"
-        android:title="Personal Diary"
+        android:title="@string/personalDairy"
         android:icon="@drawable/icd"
         android:iconTint="@color/white"/>
 
     <item
         android:id="@+id/tv_setting"
         android:icon="@drawable/ic_setting"
-        android:title="Settings" />
+        android:title="@string/settings" />
 
     <item
         android:id="@+id/tv_remind"
         android:icon="@drawable/ic_reminder"
-        android:title="Remind Me" />
+        android:title="@string/remindMe" />
 
     <item
         android:id="@+id/logout"
         android:icon="@drawable/logout"
-        android:title="Logout" />
+        android:title="@string/logout" />
 
 </menu>

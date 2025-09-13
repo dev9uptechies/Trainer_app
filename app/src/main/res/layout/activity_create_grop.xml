@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="Create Group"
+                android:text="@string/createGroups"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_16sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -98,7 +98,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Upload Your image"
+                            android:text="@string/uploadYourImage"
                             android:textColor="#BBBBBB"
                             android:textSize="@dimen/_15sdp" />
 
@@ -124,7 +124,7 @@
                         android:layout_marginEnd="@dimen/_10sdp"
                         android:background="@null"
                         android:fontFamily="@font/poppins_medium"
-                        android:hint="Enter Group Name"
+                        android:hint="@string/enterGroupName"
                         android:maxLines="1"
                         android:singleLine="true"
                         android:textColor="#BBBBBB"
@@ -151,7 +151,7 @@
                         android:layout_marginEnd="@dimen/_10sdp"
                         android:background="@null"
                         android:fontFamily="@font/poppins_medium"
-                        android:hint="Enter Sport"
+                        android:hint="@string/enterSport"
                         android:maxLines="1"
                         android:focusable="false"
                         android:clickable="true"
@@ -187,7 +187,7 @@
                             android:fontFamily="@font/poppins_medium"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:text="Add Planning"
+                            android:text="@string/addPlanning"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_13sdp" />
 
@@ -224,7 +224,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_14sdp"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Training Schedule"
+                        android:text="@string/trainingSchedule"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_15sdp"
                         app:layout_constraintTop_toBottomOf="@+id/ly_planning" />
@@ -476,7 +476,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Add Schedule time"
+                            android:text="@string/addScheduleTime"
                             android:textColor="#BBBBBB"
                             android:textSize="@dimen/_15sdp" />
 
@@ -504,7 +504,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Add Schedule time"
+                            android:text="@string/addScheduleTime"
                             android:textColor="#BBBBBB"
                             android:textSize="@dimen/_15sdp" />
 
@@ -532,7 +532,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Add Schedule time"
+                            android:text="@string/addScheduleTime"
                             android:textColor="#BBBBBB"
                             android:textSize="@dimen/_15sdp" />
 
@@ -560,7 +560,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Add Schedule time"
+                            android:text="@string/addScheduleTime"
                             android:textColor="#BBBBBB"
                             android:textSize="@dimen/_15sdp" />
 
@@ -588,7 +588,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Add Schedule time"
+                            android:text="@string/addScheduleTime"
                             android:textColor="#BBBBBB"
                             android:textSize="@dimen/_15sdp" />
 
@@ -616,7 +616,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Add Schedule time"
+                            android:text="@string/addScheduleTime"
                             android:textColor="#BBBBBB"
                             android:textSize="@dimen/_15sdp" />
 
@@ -644,7 +644,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Add Schedule time"
+                            android:text="@string/addScheduleTime"
                             android:textColor="#BBBBBB"
                             android:textSize="@dimen/_15sdp" />
 
@@ -683,7 +683,7 @@
                                 android:fontFamily="@font/poppins_medium"
                                 android:maxLines="1"
                                 android:singleLine="true"
-                                android:text="Add Lesson"
+                                android:text="@string/addLesson"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_13sdp" />
 
@@ -733,7 +733,7 @@
                                 android:fontFamily="@font/poppins_medium"
                                 android:maxLines="1"
                                 android:singleLine="true"
-                                android:text="Add Test"
+                                android:text="@string/addTest"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_13sdp" />
 
@@ -783,7 +783,7 @@
                                 android:fontFamily="@font/poppins_medium"
                                 android:maxLines="1"
                                 android:singleLine="true"
-                                android:text="Add Event"
+                                android:text="@string/addEvent"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_13sdp" />
 
@@ -834,7 +834,7 @@
                                 android:fontFamily="@font/poppins_medium"
                                 android:maxLines="1"
                                 android:singleLine="true"
-                                android:text="Add Athlete"
+                                android:text="@string/addAthlete"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_13sdp" />
 
@@ -869,7 +869,7 @@
         android:enabled="false"
         android:textAllCaps="false"
         android:fontFamily="@font/poppins_semi_bold"
-        android:text="Save"
+        android:text="@string/save"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"

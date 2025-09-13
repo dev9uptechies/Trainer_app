@@ -16,7 +16,7 @@ import com.example.trainerapp.viewTestActivity
 
 
 class TestAdapterAthlete(
-    private var data: ArrayList<GroupListAthlete.GroupTest>?,
+    private var data: ArrayList<GroupListData.GroupTest>?,
     private val context: Context,
     private val listener: OnItemClickListener.OnItemClickCallback,
     val screen:String
@@ -41,6 +41,9 @@ class TestAdapterAthlete(
         holder.unit.visibility = View.VISIBLE
         holder.unitedt.visibility = View.VISIBLE
 
+        holder.total.setText("Interested Athlete: ")
+
+
         Log.d("KKSKSKSKSK", "onBindViewHolder: ${movie.test?.goal}")
         Log.d("KKSKSKSKSK", "onBindViewHolder: ${movie.test?.test_athletes?.get(0)?.athlete?.id}")
         Log.d("KKSKSKSKSK", "onBindViewHolder: ${movie.test?.test_athletes?.get(0)?.athlete?.name}")
@@ -55,15 +58,15 @@ class TestAdapterAthlete(
             Log.e("Error","ERror:-  ${e.message.toString()}")
         }
 
+        holder.totaltime.text = movie.test?.test_athletes
+            ?.mapNotNull { it.athlete?.name }
+            ?.joinToString(", ") ?: ""
 
         holder.itemView.setOnClickListener(OnItemClickListener(position, listener, movie.id?.toLong() ?: 0L, "test"))
 
-
-
-
         movie.test?.test_athletes?.forEach { athleteData ->
             athleteData.athlete?.name?.let { athleteNames.add(it) }
-            athleteResults.add(athleteData.result ?: "")
+//            athleteResults.add(athleteData.result ?: "")
         }
 
         if(screen == "GroupDetailsScreen") {
@@ -99,6 +102,7 @@ class TestAdapterAthlete(
         val name: TextView = view.findViewById(R.id.tv_program_name)
         val goal: TextView = view.findViewById(R.id.tv_edt_goal)
         val totaltime: TextView = view.findViewById(R.id.tv_edit_total_time)
+        val total: TextView = view.findViewById(R.id.total)
         val date: TextView = view.findViewById(R.id.edt_date)
         val unit: TextView = view.findViewById(R.id.Unit)
         val unitedt: TextView = view.findViewById(R.id.tv_edit_Unit)

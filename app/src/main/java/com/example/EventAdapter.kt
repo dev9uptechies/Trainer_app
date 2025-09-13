@@ -30,19 +30,22 @@ class EventAdapter(
         val event = data?.get(position) ?: return
         val event2 = data?.get(position)!!.event ?: return
         holder.goal.setText("Event Type: ")
+        holder.total.text = "Interested Athlete: "
 
         try {
-            holder.name.text = event!!.event!!.title ?: "" // Use a default if null
+            holder.name.text = event!!.event!!.title ?: ""
             holder.goaledi.text = event!!.event!!.type ?: "" // Use a default if null
-            holder.intrestedA.text = event.event!!.type ?: "" // Use a default if null
+            holder.date.text = event.event?.date?.take(10) ?: "" // Use a default if null
+
+            holder.intrestedA.text = event.event?.event_athletes
+                ?.mapNotNull { it.athlete?.name }
+                ?.joinToString(", ") ?: ""
         }catch (e:Exception){
             Log.e("Error", "onBindViewHolder: Error:-  ${e.message.toString()} ")
         }
-//            holder.intrestedA.text = it.event?.date ?: "No Date" // Use a default if null
             holder.itemView.setOnClickListener {
                 OnItemClickListener(position, listener, it.id?.toLong() ?: 0L, "event")
             }
-
 
         if (event2.is_favourite!! == 1) {
             holder.image.setImageResource(R.drawable.ic_favorite_select)
@@ -67,6 +70,7 @@ class EventAdapter(
         var goal: TextView = view.findViewById(R.id.goal)
         var intrestedA: TextView = view.findViewById(R.id.tv_edit_total_time)
         var image: ImageView = view.findViewById(R.id.image)
+        var total: TextView = view.findViewById(R.id.total)
         var date: TextView = view.findViewById(R.id.edt_date)
         var goaltv: TextView = view.findViewById(R.id.tv_edt_goal)
     }

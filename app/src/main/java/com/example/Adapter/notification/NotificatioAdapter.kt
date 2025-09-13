@@ -2,10 +2,12 @@ package com.example.Adapter.personal_diary
 
 import android.content.Context
 import android.content.Intent
+import android.media.Image
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -37,11 +39,17 @@ class NotificatioAdapter(
         holder.name.text = diaryItem.title
         holder.message.text = diaryItem.message
         holder.status.text = diaryItem.status.toString()
+
+        holder.img_delete.setOnClickListener {
+            Log.d("AKAKAKAKAKKA", "onBindViewHolder: OKOKOKO")
+            listener.onItemClicked(it, position, diaryItem.id.toLong(), "Delete")
+        }
     }
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.training_name)
         val message: TextView = view.findViewById(R.id.start_date)
         val status: TextView = view.findViewById(R.id.end_date)
+        val img_delete: ImageView = view.findViewById(R.id.img_copy)
     }
 }

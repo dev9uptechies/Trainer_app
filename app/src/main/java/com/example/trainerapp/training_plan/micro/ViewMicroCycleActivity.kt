@@ -327,10 +327,7 @@ class ViewMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                 }
             }
         }
-
-
     }
-
 
     private fun setupListeners() {
         viewMicroCycleBinding.addLayout.setOnClickListener {
@@ -342,7 +339,6 @@ class ViewMicroCycleActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             startActivity(intent)
         }
     }
-
 
     override fun onResume() {
         super.onResume()

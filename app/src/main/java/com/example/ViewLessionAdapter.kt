@@ -1,6 +1,7 @@
 package com.example
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,8 @@ class ViewLessionAdapter(
         val movie = splist[position].program
 
         // Null-safe check for movie object and its properties
+
+        Log.d("DDVDVDVDV", "onBindViewHolder: EDDDD")
         movie?.let {
             holder.tvFname.text = it.name ?: "No Name"  // Use default text if name is null
             holder.tv_goal.text = it.goal?.name ?: "No Goal"  // Use default text if goal is null
@@ -42,21 +45,31 @@ class ViewLessionAdapter(
                 holder.click.setBackgroundResource(R.drawable.card_unselect_1)
             }
 
-            // Set favorite image based on `is_favourite`
+            holder.image.setOnClickListener{
+                if (movie.is_favourite.toString() == "1") {
+                    Log.d("DJJDJDJD", "onBindViewHolder: ${movie.id}")
+                    listener.onItemClicked(it, position, movie.id!!.toLong(), "unfav")
+                } else {
+                    Log.d("DJJDJDJD", "onBindViewHolder: ${movie.id}")
+
+                    listener.onItemClicked(it, position, movie.id!!.toLong(), "fav")
+
+                }
+            }
             if (it.is_favourite?.toString() == "1") {
+                Log.d(":AAOAOOAO", "onBindViewHolder: koo")
                 holder.image.setImageResource(R.drawable.ic_favorite_select)
             } else {
                 holder.image.setImageResource(R.drawable.ic_favorite_red)
             }
 
             // Handle click event
-            holder.click.setOnClickListener {
-                selectId = it.id
-                notifyDataSetChanged()
-                listener.onItemClicked(it, position, it.id!!.toLong(), "Click")
-            }
+//            holder.itemView.setOnClickListener {
+//                selectId = it.id
+//                notifyDataSetChanged()
+//                listener.onItemClicked(it, position, it.id!!.toLong(), "Click")
+//            }
         } ?: run {
-            // Handle case when movie is null (optional)
             holder.tvFname.text = "No Program"
             holder.tv_goal.text = "No Goal"
             holder.tv_total_time.text = "No Time"

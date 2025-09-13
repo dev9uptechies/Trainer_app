@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Create/Edit Exercise"
+                android:text="@string/Createeditex"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_18sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -64,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="General"
+                    android:text="@string/general"
                     android:textColor="#F3F3F3"
                     android:textSize="@dimen/_12sdp" />
 
@@ -84,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Specific"
+                    android:text="@string/specific"
                     android:textColor="#F3F3F3"
                     android:textSize="@dimen/_12sdp" />
 
@@ -114,7 +114,7 @@
                 android:layout_marginStart="@dimen/_40sdp"
                 android:background="@null"
                 android:fontFamily="@font/poppins_medium"
-                android:hint="Search Here"
+                android:hint="@string/searchHere"
                 android:textColor="@color/grey"
                 android:textColorHint="@color/grey"
                 android:textSize="@dimen/_14sdp" />
@@ -147,7 +147,7 @@
                     android:clickable="false"
                     android:focusable="false"
                     android:fontFamily="@font/poppins_medium"
-                    android:hint="Select Category"
+                    android:hint="@string/selectCat"
                     android:paddingVertical="@dimen/_9sdp"
                     android:textColor="@color/white"
                     android:textColorHint="#BBBBBB"
@@ -190,7 +190,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/_10sdp"
             android:fontFamily="@font/poppins_medium"
-            android:text="No Data Found"
+            android:text="@string/noDataFound"
             android:textColor="#F3F3F3"
             android:textSize="@dimen/_12sdp"
             android:visibility="gone" />
@@ -226,7 +226,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_medium"
-            android:text="Create Exercise"
+            android:text="@string/createExercise"
             android:textColor="@color/white"
             android:textSize="@dimen/_15sdp" />
 

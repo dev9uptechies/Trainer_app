@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="37dp"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="@string/register_account"
+            android:text="@string/registerAcc"
             android:textColor="@color/splash_text_color"
             android:textSize="27dp"
             app:layout_constraintStart_toStartOf="@+id/ly_line"
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:fontFamily="@font/poppins_medium"
-            android:text="@string/enter_your_user_name_and_password_to_nstart_your_new_account"
+            android:text="@string/startNewAcc"
             android:textColor="@color/white"
             android:textSize="16dp"
             app:layout_constraintStart_toStartOf="@+id/register_account"
@@ -98,7 +98,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_weight="1"
                     android:background="#00000000"
-                    android:hint="@string/enter_user_name"
+                    android:hint="@string/enterUser"
                     android:imeOptions="actionNext"
                     android:maxLength="30"
                     android:maxLines="1"
@@ -155,7 +155,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_weight="1"
                     android:background="#00000000"
-                    android:hint="@string/enter_email"
+                    android:hint="@string/enterEmail"
                     android:imeOptions="actionNext"
                     android:maxLength="30"
                     android:maxLines="1"
@@ -211,7 +211,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_weight="1"
                     android:background="#00000000"
-                    android:hint="@string/enter_password"
+                    android:hint="@string/enterPass"
                     android:imeOptions="actionNext"
                     android:inputType="textPassword"
                     android:maxLength="30"
@@ -275,7 +275,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_weight="1"
                     android:background="#00000000"
-                    android:hint="@string/enter_confirm_password"
+                    android:hint="@string/enterConPass"
                     android:imeOptions="actionNext"
                     android:inputType="textPassword"
                     android:maxLength="30"
@@ -340,7 +340,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_weight="1"
                     android:background="#00000000"
-                    android:hint="@string/add_refferal_code"
+                    android:hint="@string/addRefferalCode"
                     android:inputType="textPassword"
                     android:maxLength="30"
                     android:maxLines="1"
@@ -389,7 +389,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="@string/already_have_account"
+                android:text="@string/alreadyAcc"
                 android:textColor="#6E6D6D"/>
 
             <TextView
@@ -397,7 +397,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5sp"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="@string/sign_in"
+                android:text="@string/signIn"
                 android:textColor="@color/white"
                 android:textSize="15dp"/>
 
@@ -420,7 +420,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="@string/sign_up"
+                android:text="@string/signUp"
                 android:textColor="@color/white"
                 android:textSize="22dp"/>
 
@@ -442,7 +442,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="@string/already_have_account"
+                android:text="@string/alreadyAcc"
                 android:textColor="#6E6D6D"/>
 
             <TextView
@@ -450,7 +450,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5sp"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="@string/sign_in"
+                android:text="@string/signIn"
                 android:textColor="@color/white"
                 android:textSize="15dp"/>
 

@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
@@ -64,12 +65,14 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
     private lateinit var eventAdapter: EventAdapter
     private lateinit var eventAdapterAthlete: EventAdapterAthlete
     private lateinit var athleteAdapter: AthleteAdapter
-    private lateinit var athleteAdapterAthlete: AthleteAdapterAthlete
+    private var athleteAdapterAthlete: AthleteAdapterAthlete? = null
     lateinit var preferenceManager: PreferencesManager
     var userType: String? = null
+    var SavedGroupId:String = ""
+    var SavedGroupIdAthlete:String = ""
 
     private var groupListCall: Call<GroupListData>? = null
-    private var groupListCallAthlete: Call<GroupListAthlete>? = null
+    private var groupListCallAthlete: Call<GroupListData>? = null
 
     override fun onResume() {
         checkUser()
@@ -132,7 +135,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         position = intent.getIntExtra("position", 0)
         group_id = intent.getIntExtra("group_id", 0)
         group_ids = intent.getIntExtra("id", 0)
+        SavedGroupId = intent.getStringExtra("SavedGroupId").toString()
+        SavedGroupIdAthlete = intent.getStringExtra("SavedGroupIdAthlete").toString()
         Log.d("group_id", "onCreate: $group_id")
+
+        Log.d("SJSSJSJJS", "onCreate: $SavedGroupId  ---  $SavedGroupIdAthlete")
 
         if (group_id == 0) {
             group_id = group_ids
@@ -201,7 +208,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                 scanQrprogress.visibility = View.VISIBLE
 
                 Picasso.get()
-                    .load("https://4trainersapp.com" +selectedImageUri)
+                    .load("https://uat.4trainersapp.com/" +selectedImageUri)
                     .fit()
                     .error(R.drawable.group_chate_boarder)
                     .into(scanQr, object : com.squareup.picasso.Callback {
@@ -255,21 +262,28 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
                 groupDetailBinding.progressBarImage.visibility = View.VISIBLE
 
-                Log.d("SLLSLSLSL", "onCreate: $selectedImageUri")
-                Picasso.get()
-                    .load("https://4trainersapp.com" + selectedImageUri)
-                    .fit()
-                    .into(scanQr, object : com.squareup.picasso.Callback {
-                        override fun onSuccess() {
-                            groupDetailBinding.progressBarImage.visibility = View.GONE
-                            Log.d("Picasso", "Image loaded successfully.")
-                        }
+                var fullUrl = "https://uat.4trainersapp.com/" + selectedImageUri
 
-                        override fun onError(e: Exception?) {
-                            groupDetailBinding.progressBarImage.visibility = View.GONE
-                            Log.e("PicassoError", "Image load failed: ${e?.message}")
-                        }
-                    })
+//                Glide.with(this)
+//                    .load(fullUrl)
+//                    .into(scanQr)
+
+                Log.d("SLLSLSLSL", "onCreate: $selectedImageUri")
+
+                    Picasso.get()
+                        .load("https://uat.4trainersapp.com/" + selectedImageUri)
+                        .fit()
+                        .into(scanQr, object : com.squareup.picasso.Callback {
+                            override fun onSuccess() {
+                                groupDetailBinding.progressBarImage.visibility = View.GONE
+                                Log.d("Picasso", "Image loaded successfully.")
+                            }
+
+                            override fun onError(e: Exception?) {
+                                groupDetailBinding.progressBarImage.visibility = View.GONE
+                                Log.e("PicassoError", "Image load failed: ${e?.message}")
+                            }
+                        })
 
                 close.setOnClickListener {
                     groupDetailBinding.main.setBackgroundColor(resources.getColor(R.color.black))
@@ -280,9 +294,12 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
             }
 
         }
+
         groupDetailBinding.cardView4.setOnClickListener {
             val intent = Intent(this, EditGroupActivity::class.java)
             intent.putExtra("id", group_id)
+            intent.putExtra("SavedGroupId", SavedGroupId)
+            intent.putExtra("SavedGroupIdAthlete", SavedGroupIdAthlete)
             startActivity(intent)
             finish()
         }
@@ -386,8 +403,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
                                 groupDetailBinding.progressBarImage.visibility = View.GONE
 
+                                Log.d("MSSMSMSMMS", "onResponse: ${data.qr_code}")
+                                selectedImageUri = data.qr_code
+
                                 Picasso.get()
-                                    .load("https://4trainersapp.com${data.image}")
+                                    .load("https://uat.4trainersapp.com${data.image}")
                                     .fit()
                                     .transform(transformation)
                                     .into(groupDetailBinding.roundedImg, object : com.squareup.picasso.Callback {
@@ -478,10 +498,10 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
             groupDetailBinding.progressDetail.visibility = View.VISIBLE
 
             groupListCallAthlete = apiInterface.GropListAthlete()
-            groupListCallAthlete?.enqueue(object : Callback<GroupListAthlete?> {
+            groupListCallAthlete?.enqueue(object : Callback<GroupListData?> {
                 override fun onResponse(
-                    call: Call<GroupListAthlete?>,
-                    response: Response<GroupListAthlete?>
+                    call: Call<GroupListData?>,
+                    response: Response<GroupListData?>
                 ) {
                     if (isFinishing || isDestroyed) return
 
@@ -491,11 +511,11 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                         if (resource?.status == true) {
                             val position = position ?: return
                             resource.data?.getOrNull(position)?.let { data ->
-                                groupDetailBinding.tvGroupName.text = data.group!!.name
+                                groupDetailBinding.tvGroupName.text = data.name
                                 groupDetailBinding.tvMember.text =
-                                    "${data.group!!.group_members?.size ?: 0} Members"
+                                    "${data.group_members?.size ?: 0} Members"
 
-                                data.group!!.group_plannings?.forEach { groupPlanning ->
+                                data.group_plannings?.forEach { groupPlanning ->
                                     groupPlanning.planning_id?.let {
                                         planningIdList.add(it)
                                     }
@@ -511,9 +531,9 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
                                 groupDetailBinding.progressBarImage.visibility = View.VISIBLE
 
-                                Log.d("SKKSKSKSKSK", "onResponse: ${data.group!!.image}")
+                                Log.d("SKKSKSKSKSK", "onResponse: ${data.image}")
                                 Picasso.get()
-                                    .load("https://4trainersapp.com/${data.group!!.image}")
+                                    .load("https://uat.4trainersapp.com/${data.image}")
                                     .fit()
                                     .transform(transformation)
                                     .error(R.drawable.group_chate_boarder)
@@ -529,17 +549,17 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                                         }
                                     })
 
-                                selectedImageUri = data.group!!.qr_code
+                                selectedImageUri = data.qr_code
 
-                                initPlanningDataAthlete(data.group!!.group_plannings)
-                                initLessonDataAthlete(data.group!!.group_lessions)
-                                initEventDataAthlete(data.group!!.group_events)
-                                initTestDataAthlete(data.group!!.group_tests)
+                                initPlanningDataAthlete(data.group_plannings)
+                                initLessonDataAthlete(data.group_lessions)
+                                initEventDataAthlete(data.group_events)
+                                initTestDataAthlete(data.group_tests)
 
                                 Log.d("iddd", "onResponse:" + data.id)
-                                val groupMembers = data.group!!.group_members
+                                val groupMembers = data.group_members
                                 if (groupMembers != null) {
-                                    val allAthletes = arrayListOf<GroupListAthlete.Athlete>()
+                                    val allAthletes = arrayListOf<GroupListData.Athlete>()
 
                                     groupMembers.forEach { member ->
                                         val athlete = member.athlete
@@ -586,7 +606,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                     }
                 }
 
-                override fun onFailure(call: Call<GroupListAthlete?>, t: Throwable) {
+                override fun onFailure(call: Call<GroupListData?>, t: Throwable) {
                     if (isFinishing || isDestroyed) return
                     groupDetailBinding.progressDetail.visibility = View.GONE
                     Toast.makeText(
@@ -663,10 +683,10 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
     //////////////   Athlete    ////////////
 
-    private fun initAthleteDataAthlete(athleteData: ArrayList<GroupListAthlete.Athlete>?) {
+    private fun initAthleteDataAthlete(athleteData: ArrayList<GroupListData.Athlete>?) {
 
         try {
-            val data = athleteData ?: ArrayList<GroupListAthlete.Athlete>()
+            val data = athleteData ?: ArrayList<GroupListData.Athlete>()
 
             groupDetailBinding.atheleteRly.layoutManager = LinearLayoutManager(this)
             athleteAdapterAthlete = AthleteAdapterAthlete(data, this, this)
@@ -676,9 +696,9 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         }
     }
 
-    private fun initTestDataAthlete(testData: ArrayList<GroupListAthlete.GroupTest>?) {
+    private fun initTestDataAthlete(testData: ArrayList<GroupListData.GroupTest>?) {
         try {
-            val data = testData ?: ArrayList<GroupListAthlete.GroupTest>()
+            val data = testData ?: ArrayList<GroupListData.GroupTest>()
             groupDetailBinding.testRly.layoutManager = LinearLayoutManager(this)
             testAdapterAthlete = TestAdapterAthlete(data, this, this,"GroupDetailsScreen")
             groupDetailBinding.testRly.adapter = testAdapterAthlete
@@ -687,9 +707,9 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         }
     }
 
-    private fun initEventDataAthlete(eventData: ArrayList<GroupListAthlete.GroupEvents>?) {
+    private fun initEventDataAthlete(eventData: ArrayList<GroupListData.GroupEvents>?) {
         try {
-            val data = eventData ?: ArrayList<GroupListAthlete.GroupEvents>()
+            val data = eventData ?: ArrayList<GroupListData.GroupEvents>()
             groupDetailBinding.eventRly.layoutManager = LinearLayoutManager(this)
             eventAdapterAthlete = EventAdapterAthlete(data, this, this)
             groupDetailBinding.eventRly.adapter = eventAdapterAthlete
@@ -698,7 +718,7 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         }
     }
 
-    private fun initPlanningDataAthlete(data: ArrayList<GroupListAthlete.GroupPlanning>?) {
+    private fun initPlanningDataAthlete(data: ArrayList<GroupListData.GroupPlanning>?) {
         try {
             groupDetailBinding.planningRly.layoutManager = LinearLayoutManager(this)
             adapterAthelete = PlanningAdapterAthlete(data, this, this)
@@ -708,9 +728,9 @@ class GroupDetailActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         }
     }
 
-    private fun initLessonDataAthlete(lessonData: ArrayList<GroupListAthlete.GroupLesson>?) {
+    private fun initLessonDataAthlete(lessonData: ArrayList<GroupListData.GroupLesson>?) {
         try {
-            val data = lessonData ?: ArrayList<GroupListAthlete.GroupLesson>()
+            val data = lessonData ?: ArrayList<GroupListData.GroupLesson>()
 
             groupDetailBinding.lessionRly.layoutManager = LinearLayoutManager(this)
             lessonAdapterAthlete = LessonAdapterAthlete(data, this, this,"GroupDetailsScreen")

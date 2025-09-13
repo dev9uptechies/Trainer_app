@@ -76,7 +76,7 @@ class PerformanceProfileAdapterCreate(
                     qualityListener.onQualityClick(
                         position = qualityPosition,
                         catPosition = position,        // Category position
-                        qualId = quality.id!!.toLong(),
+                        qualId = quality.id?.toLong() ?: -1L,
                         type = "edit_quality",
                         catId = movie.id!!.toLong()
                     )
@@ -84,10 +84,11 @@ class PerformanceProfileAdapterCreate(
 
                 delete.setOnClickListener {
                     swipe.close()
+                    Log.d("XRXRRRX", "onBindViewHolder: ${quality.id?.toLong()}")
                     qualityListener.onQualityClick(
                         position = qualityPosition,
                         catPosition = position,        // Category position
-                        qualId = quality.id!!.toLong(),
+                        qualId = quality.id?.toLong() ?: 0,
                         type = "delete_quality",
                         catId = movie.id!!.toLong()
                     )

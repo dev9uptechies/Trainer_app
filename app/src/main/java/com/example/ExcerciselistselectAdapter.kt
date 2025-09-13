@@ -97,7 +97,7 @@ class ExcerciselistselectAdapter(
             .build()
 
         Picasso.get()
-            .load("https://4trainersapp.com" + movie.image)
+            .load("https://uat.4trainersapp.com" + movie.image)
             .fit()
             .transform(transformation)
             .placeholder(R.drawable.ic_youtube)

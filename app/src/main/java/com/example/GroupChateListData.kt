@@ -50,6 +50,38 @@ class GroupChateListData {
 
         @SerializedName("group_members")
         var group_members: ArrayList<GroupMembers>? = null
+
+        @SerializedName("last_message")
+        var last_message: LastMessage? = null
+    }
+
+    class LastMessage{
+        @SerializedName("id")
+        var id: Int? = null
+
+        @SerializedName("group_id")
+        var group_id: String? = null
+
+        @SerializedName("sender_id")
+        var sender_id: String? = null
+
+        @SerializedName("message")
+        var message: String? = null
+
+        @SerializedName("created_at")
+        var created_at: String? = null
+
+        @SerializedName("updated_at")
+        var updated_at: String? = null
+
+        @SerializedName("sender")
+        var sender: Sender? = null
+
+    }
+
+    class Sender{
+        @SerializedName("name")
+        var name: String? = null
     }
 
     class GroupMembers {

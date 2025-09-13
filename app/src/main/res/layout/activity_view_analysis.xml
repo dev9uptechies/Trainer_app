@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_semi_bold"
             android:gravity="center"
-            android:text="View Analysis"
+            android:text="@string/viewAnalysis"
             android:textColor="@color/splash_text_color"
             android:textSize="@dimen/_18sdp" />
     </LinearLayout>
@@ -74,7 +74,7 @@
                 android:visibility="gone"
                 android:focusable="false"
                 android:fontFamily="@font/poppins_medium"
-                android:hint="Select Athletes"
+                android:hint="@string/selectAthlete"
                 android:paddingVertical="@dimen/_9sdp"
                 android:paddingStart="@dimen/_12sdp"
                 android:theme="@style/spinnerTheme"
@@ -95,7 +95,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
                     android:gravity="center"
-                    android:text="No Data Found"
+                    android:text="@string/noDataFound"
                     android:textColor="@color/white"
                     android:visibility="gone" />
 

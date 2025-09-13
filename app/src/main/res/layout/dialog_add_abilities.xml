@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:paddingBottom="8dp"
-        android:text="Add Abilities"
+        android:text="@string/addAthlete"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:gravity="center"
-        android:text="Enter Abilities name in below field \nwhich you want to add"
+        android:text="@string/whichyouwhanttoadd"
         android:textColor="@color/white"
         android:textSize="14sp" />
 
@@ -41,7 +41,7 @@
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_marginEnd="@dimen/_5sdp"
             android:background="@drawable/bg_view_trainingpaln_list"
-            android:hint="Enter Ability"
+            android:hint="@string/enterAbilities"
             android:padding="5dp"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
@@ -65,7 +65,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Cancel"
+                        android:text="@string/cancel"
                         android:textColor="@android:color/holo_blue_light"
                         android:textSize="18sp" />
 
@@ -80,7 +80,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Add"
+                        android:text="@string/add"
                         android:textColor="@android:color/holo_blue_light"
                         android:textSize="18sp" />
                 </LinearLayout>

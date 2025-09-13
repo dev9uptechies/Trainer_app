@@ -28,7 +28,7 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Personal Diary"
+            android:text="@string/personalDairy"
             android:textColor="@color/splash_text_color"
             android:fontFamily="@font/poppins_semi_bold"
             android:textSize="@dimen/_16sdp"
@@ -178,7 +178,7 @@
                                 android:layout_gravity="center"
                                 android:fontFamily="@font/poppins_medium"
                                 android:gravity="center"
-                                android:text="Assess Your \n Level of"
+                                android:text="@string/assessYourLevelof"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_10sdp"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -208,7 +208,7 @@
                                 android:layout_gravity="center"
                                 android:fontFamily="@font/poppins_medium"
                                 android:gravity="center"
-                                android:text="Before \n Training"
+                                android:text="@string/beforeTraining"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_10sdp" />
 
@@ -234,7 +234,7 @@
                                 android:layout_gravity="center"
                                 android:fontFamily="@font/poppins_medium"
                                 android:gravity="center"
-                                android:text="During \n Training"
+                                android:text="@string/duringTraining"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_10sdp"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -264,7 +264,7 @@
                                 android:layout_gravity="center"
                                 android:fontFamily="@font/poppins_medium"
                                 android:gravity="center"
-                                android:text="After \n Training"
+                                android:text="@string/afterTraining"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_10sdp"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -1308,7 +1308,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_medium"
-            android:text="Save"
+            android:text="@string/save"
             android:textColor="@color/white"
             android:textSize="@dimen/_15sdp" />
 

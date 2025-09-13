@@ -630,8 +630,12 @@ class EdiTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                     if (response.isSuccessful) {
                         Progress.visibility = View.GONE
                         val data = response.body()!!.data!!.filter {
+                            Log.d("88451", "onResponse: $timerId  -- ${it.id}")
+
                             it.id.toString() == timerId
                         }
+
+                        Log.d("DEUnunfjf", "onResponse: $data")
                         if (data != null) {
                             timeData = data[0]
                             setTimerData(data)
@@ -653,29 +657,37 @@ class EdiTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                 Log.d("Response :-", t.message.toString())
             }
         })
-
     }
 
     private fun setTimerData(data: List<Timer.TimerData>) {
-        audio_id = data[0].audio!!.id!!
-        val pauseAudioId = data[0].pause_time_audio?.id
-        val pauseBetweenId = data[0].pause_between_time_audio?.id
-
-        if (pauseAudioId == null || pauseBetweenId == null) {
-            Log.e("ViewTimerDetails", "Audio ID is null")
+        if (data.isEmpty()) {
+            Log.e("ViewTimerDetails", "Timer data is empty")
             return
         }
 
-        pause_audio_id = pauseAudioId
-        pause_between_id = pauseBetweenId
+        val timerItem = data[0]
 
+//        audio_id = timerItem.audio?.id ?: run {
+//            Log.e("ViewTimerDetails", "Audio is null")
+//            return
+//        }
+//
+//        pause_audio_id = timerItem.pause_time_audio?.id ?: run {
+//            Log.e("ViewTimerDetails", "Pause time audio is null")
+//            return
+//        }
+//
+//        pause_between_id = timerItem.pause_between_time_audio?.id ?: run {
+//            Log.e("ViewTimerDetails", "Pause between audio is null")
+//            return
+//        }
 
-        editTimerBinding.edtTimerName.setText(data[0].name)
-        editTimerBinding.edtAudio.setText(data[0].audio!!.name)
-        editTimerBinding.edtPauseAudio.setText(data[0].pause_time_audio!!.name)
-        editTimerBinding.edtPauseBetween.setText(data[0].pause_between_time_audio!!.name)
+        editTimerBinding.edtTimerName.setText(timerItem.name ?: "")
+        editTimerBinding.edtAudio.setText(timerItem.audio?.name ?: "")
+        editTimerBinding.edtPauseAudio.setText(timerItem.pause_time_audio?.name ?: "")
+        editTimerBinding.edtPauseBetween.setText(timerItem.pause_between_time_audio?.name ?: "")
 
-        setCycleData(data.get(0).timer)
+        setCycleData(timerItem.timer ?: emptyList())
     }
 
     private fun setCycleData(timer: List<Timer.TimerX>?) {
@@ -711,11 +723,13 @@ class EdiTimerActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         Progress = editTimerBinding.Progress
         apiInterface = apiClient.client().create(APIInterface::class.java)
         preferenceManager = PreferencesManager(this)
-        timerId = intent.getIntExtra("timerId", 0).toString()
+        timerId = intent.getStringExtra("timerId").toString()
         Log.d("Timer Id :-", timerId.toString())
         userId = preferenceManager.getUserId()!!.toInt()
         Log.d("User Id :-", userId.toString())
         id = mutableListOf()
+
+        Log.d("587478418", "initViews: $timerId")
     }
 
     fun setDefaultData() {

@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semi_bold"
-        android:text="Invalid Email"
+        android:text="@string/invalidEmail"
         android:textColor="@color/splash_text_color"
         android:textSize="@dimen/_20sdp" />
 
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/_12sdp"
         android:fontFamily="@font/poppins_semi_bold"
-        android:text="This email address is not available Choose \na different email address."
+        android:text="@string/invalidEmailDesc"
         android:textAlignment="center"
         android:textColor="@color/white" />
 
@@ -47,7 +47,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Close"
+            android:text="@string/close"
             android:textSize="@dimen/_18sdp"
             android:layout_gravity="center"
             android:textColor="@color/white"

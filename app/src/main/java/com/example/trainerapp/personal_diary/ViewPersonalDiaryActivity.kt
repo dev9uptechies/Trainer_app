@@ -2,6 +2,8 @@ package com.example.trainerapp.personal_diary
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -36,13 +38,14 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
     private var mainId: Int = 0
     private var isUserInteraction = false
 
-
-
     override fun onResume() {
-        checkUser()
         super.onResume()
-
-    }
+        checkUser()
+        try {
+            loadData()
+        } catch (e: Exception) {
+            Log.d("error", e.message.toString())
+        }    }
 
     private fun checkUser() {
         try {
@@ -54,7 +57,6 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
                     Log.d("TAG", response.code().toString() + "")
                     val code = response.code()
                     if (code == 200) {
-                        loadData()
                         Log.d("Get Profile Data ", "${response.body()}")
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@ViewPersonalDiaryActivity)
@@ -116,7 +118,11 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
         }
 
         binding.swipeReferesh.setOnRefreshListener {
-            loadData()
+            try {
+                loadData()
+            } catch (e: Exception) {
+                Log.d("error", e.message.toString())
+            }
         }
 
         binding.back.setOnClickListener { finish() }
@@ -140,7 +146,8 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
 
             apiInterface.updateShareStatus(requestBody).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    if (response.isSuccessful) { saveShareStatus(shareValue) // Save only the switch's status
+                    if (response.isSuccessful) {
+                        saveShareStatus(shareValue) // Save only the switch's status
 
                         Log.d("GFGGGFGFGFG", "onResponse: $shareValue")
 
@@ -150,7 +157,11 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
                             } else {
                                 "Now coach can see your personal diary data."
                             }
-                            Toast.makeText(this@ViewPersonalDiaryActivity, message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@ViewPersonalDiaryActivity,
+                                message,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     } else {
                         Toast.makeText(
@@ -223,76 +234,36 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
     }
 
     private fun loadData() {
+        try {
 
-        val userType = preferenceManager.GetFlage()
+            val userType = preferenceManager.GetFlage()
 
-        if (userType == "Athlete") {
-            binding.shareCard.visibility = View.VISIBLE
-            val savedStatus = getShareStatus()
-            getpersonaldiary()
-            binding.switchShare.isChecked = savedStatus == 1
-        } else {
-            binding.shareCard.visibility = View.GONE
-
-            diaryshareData.clear()
-
-            if (mainId != 0) {
-                binding.add.visibility = View.GONE
-                getpersonaldiaryshare(mainId)
-            } else {
+            if (userType == "Athlete") {
+                binding.shareCard.visibility = View.VISIBLE
+                val savedStatus = getShareStatus()
                 getpersonaldiary()
+                binding.switchShare.isChecked = savedStatus == 1
+            } else {
+                binding.shareCard.visibility = View.GONE
+
+                diaryshareData.clear()
+
+                if (mainId != 0) {
+                    binding.add.visibility = View.GONE
+//                getpersonaldiary(mainId)
+                    getpersonalListAthleteSectiondiary(mainId.toString())
+                } else {
+                    getpersonaldiary()
+                }
+
+                binding.swipeReferesh.isRefreshing = false
             }
 
-            binding.swipeReferesh.isRefreshing = false
+        } catch (e: Exception) {
+            binding.progresBar.visibility = View.GONE
         }
     }
 
-//    private fun getpersonaldiary() {
-//        try {
-//            diaryData.clear()
-//            binding.progresBar.visibility = View.VISIBLE
-//
-//            apiInterface.GetPersonalDiaryListData()?.enqueue(object : Callback<GetPersonalDiary> {
-//                override fun onResponse(
-//                    call: Call<GetPersonalDiary>,
-//                    response: Response<GetPersonalDiary>
-//                ) {
-//                    binding.progresBar.visibility = View.GONE
-//                    Log.d("TAG", "Response code: ${response.code()}")
-//
-//                    when (response.code()) {
-//                        200 -> {
-//                            response.body()?.data?.let { data ->
-//                                if (data.isNotEmpty()) {
-//                                    diaryData = data.toMutableList()
-//                                    setAdapter(diaryData)
-//                                } else {
-//                                    Log.d("DATA_TAG", "No Data Available")
-//                                    binding.recyclerView.visibility = View.GONE
-//                                }
-//                            } ?: Log.d("DATA_TAG", "Response body is null")
-//                        }
-//                        403 -> Utils.setUnAuthDialog(this@ViewPersonalDiaryActivity)
-//                        else -> {
-//                            Toast.makeText(
-//                                this@ViewPersonalDiaryActivity,
-//                                "Error: ${response.message()}",
-//                                Toast.LENGTH_SHORT
-//                            ).show()
-//                        }
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<GetPersonalDiary>, t: Throwable) {
-//                    binding.progresBar.visibility = View.GONE
-//                    Log.d("TAG Category", "Error: ${t.message}")
-//                }
-//            })
-//        } catch (e: Exception) {
-//            binding.progresBar.visibility = View.GONE
-//            Log.d("Exception", "Error: ${e.message}")
-//        }
-//    }
 
     private fun getpersonaldiary() {
         try {
@@ -314,7 +285,7 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
                             response.body()?.data?.let { data ->
                                 if (data.isNotEmpty()) {
                                     diaryData = data.toMutableList()
-                                    setAdapter(diaryData)
+                                    setAdapter(diaryData, false)
                                 } else {
                                     binding.swipeReferesh.isRefreshing = false
                                     Log.d("DATA_TAG", "No Data Available")
@@ -347,6 +318,67 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
                     ).show()
                 }
             })
+        } catch (e: Exception) {
+            binding.progresBar.visibility = View.GONE
+            binding.swipeReferesh.isRefreshing = false
+            Log.d("Exception", "Error: ${e.message}")
+        }
+    }
+
+    private fun getpersonalListAthleteSectiondiary(id: String) {
+        try {
+            diaryData.clear()
+            binding.progresBar.visibility = View.VISIBLE
+
+            apiInterface.GetPersonalDiaryListAthleteData(id, "")!!
+                .enqueue(object : Callback<GetPersonalDiary> {
+                    override fun onResponse(
+                        call: Call<GetPersonalDiary>,
+                        response: Response<GetPersonalDiary>
+                    ) {
+                        binding.progresBar.visibility = View.GONE
+                        binding.swipeReferesh.isRefreshing = false  // Stop the refresh animation
+
+                        Log.d("TAG", "Response code: ${response.code()}")
+
+                        when (response.code()) {
+                            200 -> {
+                                response.body()?.data?.let { data ->
+                                    if (data.isNotEmpty()) {
+                                        diaryData = data.toMutableList()
+                                        setAdapter(diaryData, true)
+                                    } else {
+                                        binding.swipeReferesh.isRefreshing = false
+                                        Log.d("DATA_TAG", "No Data Available")
+                                        binding.recyclerView.visibility = View.GONE
+                                        binding.tvNodata.visibility = View.VISIBLE
+                                    }
+                                } ?: Log.d("DATA_TAG", "Response body is null")
+                            }
+
+                            403 -> Utils.setUnAuthDialog(this@ViewPersonalDiaryActivity)
+                            else -> {
+                                Toast.makeText(
+                                    this@ViewPersonalDiaryActivity,
+                                    "Error: ${response.message()}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<GetPersonalDiary>, t: Throwable) {
+                        binding.progresBar.visibility = View.GONE
+                        binding.swipeReferesh.isRefreshing = false  // Stop the refresh animation
+
+                        Log.d("TAG Category", "Error: ${t.message}")
+                        Toast.makeText(
+                            this@ViewPersonalDiaryActivity,
+                            "Error: ${t.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
         } catch (e: Exception) {
             binding.progresBar.visibility = View.GONE
             binding.swipeReferesh.isRefreshing = false
@@ -394,10 +426,8 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
                         call: Call<AthltepersonaldiaryModel>,
                         response: Response<AthltepersonaldiaryModel>
                     ) {
-
-
                         binding.progresBar.visibility = View.GONE
-                        binding.swipeReferesh.isRefreshing = false  // Stop the refresh animation
+                        binding.swipeReferesh.isRefreshing = false
 
                         Log.d("TAG2", "Response code: ${response.code()}")
 
@@ -444,16 +474,26 @@ class ViewPersonalDiaryActivity : AppCompatActivity(), OnItemClickListener.OnIte
     }
 
 
-    private fun setAdapter(data: MutableList<GetPersonalDiary.Data>) {
+
+    private fun setAdapter(data: MutableList<GetPersonalDiary.Data>, FromAthlete: Boolean) {
         try {
             if (data.isNotEmpty()) {
                 binding.recyclerView.visibility = View.VISIBLE
-                binding.tvNodata.visibility = View.GONE  // Hide the "No Data Found" message
-                viewDiary = ViewPersonalDairyListAdapter(data, this, this)
+                binding.tvNodata.visibility = View.GONE
+
+
+                if (::viewDiary.isInitialized) {
+                    viewDiary.updateData(diaryData)  // Update safely
+                } else {
+                    viewDiary = ViewPersonalDairyListAdapter(diaryData, this, FromAthlete, this)
+                    binding.recyclerView.adapter = viewDiary
+                }
+
+                viewDiary = ViewPersonalDairyListAdapter(data, this, FromAthlete, this)
                 binding.recyclerView.adapter = viewDiary
             } else {
                 binding.recyclerView.visibility = View.GONE
-                binding.tvNodata.visibility = View.VISIBLE  // Show "No Data Found" message
+                binding.tvNodata.visibility = View.VISIBLE
             }
         } catch (e: Exception) {
             Log.d("AdapterError", "Error: ${e.message}")

@@ -18,6 +18,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.Manifest
+import android.content.res.Configuration
+import java.util.Locale
 
 
 class SplashActivity : AppCompatActivity() {
@@ -29,20 +31,38 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        loadSavedLanguage()
         // Initialize preferences
         preferenceManager = PreferencesManager(this)
+        preferenceManager.setToken("146ffca2b92ba0595d49b51b5f5abeea")
+        preferenceManager.setUserLogIn(true)
 
         // Check login status
         if (preferenceManager.UserLogIn()) {
             // User is logged in, load MainActivity directly
             navigateToMainActivity()
         } else {
-            // User is not logged in, continue with splash screen
             splashBinding = ActivitySplashBinding.inflate(layoutInflater)
             setContentView(splashBinding.root)
             initViews()
             checkLogin()
         }
+    }
+
+    private fun loadSavedLanguage() {
+        val sharedPreferences = getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val languageCode = sharedPreferences.getString("Selected_Language", "en") ?: "en"
+        applyLocale(languageCode)
+    }
+
+    private fun applyLocale(languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.setLocale(locale)
+
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 
     private fun requestNotificationPermission() {
@@ -85,6 +105,7 @@ class SplashActivity : AppCompatActivity() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             startActivity(Intent(this, MainActivity::class.java))
+            finish()
         } else {
             requestNotificationPermission() // If not granted, request permission
         }
@@ -109,6 +130,7 @@ class SplashActivity : AppCompatActivity() {
                     if (resource?.data?.userSports.isNullOrEmpty()) {
                         val intent = Intent(this@SplashActivity, SelectSportActivity::class.java)
                         startActivity(intent)
+                        finish()
                     } else {
                         navigateToMainActivity()
                     }
@@ -136,6 +158,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun navigateToMainActivity() {
+        preferenceManager.setToken("146ffca2b92ba0595d49b51b5f5abeea")
         val intent = Intent(this@SplashActivity, HomeActivity::class.java)
         startActivity(intent)
         finish()

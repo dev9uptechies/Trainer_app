@@ -18,15 +18,29 @@ class GroupListAthlete {
     var data: List<Data>? = null
 
     class Data {
-
         @SerializedName("id")
         var id: Int? = null
 
-        @SerializedName("group_id")
-        var group_id: String? = null
+        @SerializedName("coach_id")
+        var coach_id: String? = null
 
-        @SerializedName("athlete_id")
-        var athlete_id: String? = null
+        @SerializedName("sport_id")
+        var sport_id: String? = null
+
+        @SerializedName("image")
+        var image: String? = null
+
+        @SerializedName("cycles")
+        var cycles: String? = null
+
+        @SerializedName("days")
+        var days: String? = null
+
+        @SerializedName("schedule")
+        var schedule: ArrayList<Schedule>? = null
+
+        @SerializedName("qr_code")
+        var qr_code: String? = null
 
         @SerializedName("created_at")
         var created_at: String? = null
@@ -34,8 +48,27 @@ class GroupListAthlete {
         @SerializedName("updated_at")
         var updated_at: String? = null
 
-        @SerializedName("group")
-        var group: groupData? = null
+        @SerializedName("group_events")
+        var group_events: ArrayList<GroupEvents>? = null
+
+        @SerializedName("group_lessions")
+        var group_lessions: ArrayList<GroupLesson>? = null
+
+        @SerializedName("group_members")
+        var group_members: ArrayList<GroupMembar>? = null
+
+        @SerializedName("group_tests")
+        var group_tests: ArrayList<GroupTest>? = null
+
+        @SerializedName("group_plannings")
+        var group_plannings: ArrayList<GroupPlanning>? = null
+
+        @SerializedName("group_programs")
+        var group_programs: ArrayList<GroupProgram>? = null
+
+        @SerializedName("sport")
+        var sport: Sport? = null
+
     }
 
     class groupData {
@@ -48,9 +81,6 @@ class GroupListAthlete {
 
         @SerializedName("sport_id")
         var sport_id: String? = null
-
-        @SerializedName("name")
-        var name: String? = null
 
         @SerializedName("image")
         var image: String? = null
@@ -553,8 +583,32 @@ class GroupListAthlete {
         var end_date: String? = null
 
         @SerializedName("mesocycles")
-        var mesocycles: ArrayList<PreSMesocycles>? = null
+        var mesocycles: ArrayList<TraMesocycles>? = null
     }
+
+    class TraMesocycles {
+        @SerializedName("id")
+        var id: Int? = null
+
+        @SerializedName("planning_c_id")
+        var planning_pc_id: String? = null
+
+        @SerializedName("name")
+        var name: String? = null
+
+        @SerializedName("start_date")
+        var start_date: String? = null
+
+        @SerializedName("end_date")
+        var end_date: String? = null
+
+        @SerializedName("periods")
+        var periods: String? = null
+
+        @SerializedName("microcycles")
+        var microcycles: ArrayList<microcycles>? = null
+    }
+
 
 
     class PreSMesocycles {

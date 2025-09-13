@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.GroupListData
@@ -21,7 +22,7 @@ import com.squareup.picasso.Transformation
 
 
 class selectGroupAdapterAthlete(
-    private var splist: List<GroupListAthlete.Data>?,
+    private var splist: List<GroupListData.groupData>?,
     var context: Context,
     val listener: OnItemClickListener.OnItemClickCallback
 ) : RecyclerView.Adapter<selectGroupAdapterAthlete.MyViewHolder>() {
@@ -29,7 +30,7 @@ class selectGroupAdapterAthlete(
     private var selectedPosition = -1
     private var selectedGroupId: String? = null
     private var selectedGroup_Id: String? = null
-    private lateinit var PreSeason: GroupListAthlete.Data
+    private lateinit var PreSeason: GroupListData.groupData
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -40,9 +41,10 @@ class selectGroupAdapterAthlete(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val group = splist!![position]
-        holder.group_name.text = group.group!!.name
+        val groupName = group.name ?: "Unnamed Group"
+        holder.group_name.text = groupName
 
-            PreSeason = group
+        PreSeason = group
 
         val transformation: Transformation = RoundedTransformationBuilder()
             .borderColor(Color.BLACK)
@@ -51,11 +53,25 @@ class selectGroupAdapterAthlete(
             .oval(false)
             .build()
 
+        holder.progressBar.visibility = View.VISIBLE
+
         Picasso.get()
-            .load("https://4trainersapp.com" + group.group!!.image)
+            .load("https://uat.4trainersapp.com" + (group?.image ?: ""))
             .fit()
             .transform(transformation)
-            .into(holder.rounded_image)
+            .into(holder.rounded_image, object : com.squareup.picasso.Callback {
+                override fun onSuccess() {
+                    // Hide ProgressBar when image is loaded
+                    holder.progressBar.visibility = View.GONE
+                }
+
+                override fun onError(e: Exception?) {
+                    // Hide ProgressBar and show error placeholder
+                    holder.progressBar.visibility = View.GONE
+                    holder.rounded_image.setImageResource(R.drawable.app_icon)
+                }
+            })
+
 
         holder.checkBox.isChecked = position == selectedPosition
         holder.checkBox.isClickable = false
@@ -68,14 +84,14 @@ class selectGroupAdapterAthlete(
         holder.checkBox.buttonTintList = colorStateList
 
         holder.itemView.setOnClickListener {
-            Log.d("AMAMMAMAMA", "onBindViewHolder: ${group.group?.group_plannings?.getOrNull(0)?.planning?.pre_season}")
+            Log.d("AMAMMAMAMA", "onBindViewHolder: ${group.group_plannings?.getOrNull(0)?.planning?.pre_season}")
 
             val currentPosition = holder.adapterPosition
             if (selectedPosition != currentPosition) {
                 val previousSelectedPosition = selectedPosition
                 selectedPosition = currentPosition
                 selectedGroupId = group.id.toString()
-                selectedGroup_Id = group.group_id.toString()
+                selectedGroup_Id = group.id.toString()
 
                 Log.d("DDMKDMDM", "onBindViewHolder: $selectedGroup_Id        $selectedGroupId")
                 holder.itemView.post {
@@ -91,7 +107,7 @@ class selectGroupAdapterAthlete(
     }
 
     fun getSelectedGroupData(): Map<String, String?> {
-        val groupPlanning = PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.pre_season
+        val groupPlanning = PreSeason.group_plannings?.getOrNull(0)?.planning?.pre_season
         val mesocycles = groupPlanning?.mesocycles
         val microcycles = mesocycles?.getOrNull(0)?.microcycles
 
@@ -105,7 +121,7 @@ class selectGroupAdapterAthlete(
     }
 
     fun getSelectedPreCompetitiveGroupData(): Map<String, Any?> {
-        val groupPlanning = PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.pre_competitive
+        val groupPlanning = PreSeason.group_plannings?.getOrNull(0)?.planning?.pre_competitive
         val mesocycles = groupPlanning?.mesocycles ?: emptyList()
 
         val workloadColors = mesocycles.flatMap { it.microcycles ?: emptyList() }.mapNotNull { it.workloadColor }
@@ -122,7 +138,7 @@ class selectGroupAdapterAthlete(
 
 
     fun getSelectedCompetitiveGroupData(): Map<String, String?> {
-        val groupPlanning = PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.competitive
+        val groupPlanning = PreSeason.group_plannings?.getOrNull(0)?.planning?.competitive
         val mesocycles = groupPlanning?.mesocycles ?: emptyList()
         val microcycles = mesocycles.firstOrNull()?.microcycles ?: emptyList()
 
@@ -141,7 +157,7 @@ class selectGroupAdapterAthlete(
 
 
     fun getSelectedTransitionGroupData(): Map<String, String?> {
-        val groupPlanning = PreSeason.group?.group_plannings?.getOrNull(0)?.planning?.transition
+        val groupPlanning = PreSeason.group_plannings?.getOrNull(0)?.planning?.transition
         val mesocycles = groupPlanning?.mesocycles ?: emptyList()
         val microcycles = mesocycles.firstOrNull()?.microcycles ?: emptyList()
 
@@ -167,5 +183,6 @@ class selectGroupAdapterAthlete(
         var group_name: TextView = view.findViewById(R.id.start_date_one)
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox)
         var rounded_image: RoundedImageView = view.findViewById(R.id.roundedImageView)
+        val progressBar: ProgressBar = itemView.findViewById(R.id.image_progress)
     }
 }

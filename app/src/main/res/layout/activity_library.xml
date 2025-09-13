@@ -43,7 +43,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_semi_bold"
                 android:gravity="center"
-                android:text="Library"
+                android:text="@string/library"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_18sdp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -80,7 +80,7 @@
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:background="@null"
                 android:fontFamily="@font/poppins_medium"
-                android:hint="Search Here"
+                android:hint="@string/searchHere"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textColor="#BBBBBB"
@@ -124,71 +124,7 @@
                             android:layout_marginStart="@dimen/_20sdp"
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Program"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_13sdp" />
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/card_lesson"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/_30sdp"
-                        android:layout_marginStart="@dimen/_10sdp"
-                        app:cardBackgroundColor="@color/light_grey"
-                        app:cardCornerRadius="@dimen/_5sdp">
-
-                        <TextView
-                            android:id="@+id/lesson_library"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="@dimen/_20sdp"
-                            android:layout_marginEnd="@dimen/_20sdp"
-                            android:fontFamily="@font/poppins_medium"
-                            android:text="Lesson"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_13sdp" />
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/card_event"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/_30sdp"
-                        android:layout_marginStart="@dimen/_10sdp"
-                        app:cardBackgroundColor="@color/light_grey"
-                        app:cardCornerRadius="@dimen/_5sdp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="@dimen/_20sdp"
-                            android:layout_marginEnd="@dimen/_20sdp"
-                            android:fontFamily="@font/poppins_medium"
-                            android:text="Event"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_13sdp" />
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/card_exercise"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/_30sdp"
-                        android:layout_marginStart="@dimen/_10sdp"
-                        app:cardBackgroundColor="@color/light_grey"
-                        app:cardCornerRadius="@dimen/_5sdp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="@dimen/_20sdp"
-                            android:layout_marginEnd="@dimen/_20sdp"
-                            android:fontFamily="@font/poppins_medium"
-                            android:text="Exercise"
+                            android:text="@string/program"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_13sdp" />
 
@@ -209,11 +145,78 @@
                             android:layout_marginStart="@dimen/_20sdp"
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Test"
+                            android:text="@string/test"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_13sdp" />
 
                     </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/card_event"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        app:cardBackgroundColor="@color/light_grey"
+                        app:cardCornerRadius="@dimen/_5sdp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="@dimen/_20sdp"
+                            android:layout_marginEnd="@dimen/_20sdp"
+                            android:fontFamily="@font/poppins_medium"
+                            android:text="@string/event"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_13sdp" />
+
+                    </androidx.cardview.widget.CardView>
+
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/card_lesson"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        app:cardBackgroundColor="@color/light_grey"
+                        app:cardCornerRadius="@dimen/_5sdp">
+
+                        <TextView
+                            android:id="@+id/lesson_library"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="@dimen/_20sdp"
+                            android:layout_marginEnd="@dimen/_20sdp"
+                            android:fontFamily="@font/poppins_medium"
+                            android:text="@string/lesson"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_13sdp" />
+
+                    </androidx.cardview.widget.CardView>
+
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/card_exercise"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        app:cardBackgroundColor="@color/light_grey"
+                        app:cardCornerRadius="@dimen/_5sdp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="@dimen/_20sdp"
+                            android:layout_marginEnd="@dimen/_20sdp"
+                            android:fontFamily="@font/poppins_medium"
+                            android:text="@string/exercise"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_13sdp" />
+
+                    </androidx.cardview.widget.CardView>
+
                 </LinearLayout>
             </HorizontalScrollView>
 
@@ -230,7 +233,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
                     android:gravity="center"
-                    android:text="No Data Found"
+                    android:text="@string/noDataFound"
                     android:textColor="@color/white"
                     android:visibility="gone" />
 

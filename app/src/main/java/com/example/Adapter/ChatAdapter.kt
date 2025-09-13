@@ -1,6 +1,7 @@
 package com.example.Adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,7 +47,10 @@ class ChatAdapter(private val context: Context, private val chatList: List<ChatM
         } else if (holder is ReceiverViewHolder) {
             holder.messageTextView.text = chatMessage.message
             holder.userNameTextView.text = chatMessage.senderName
-            Glide.with(context).load("https://4trainersapp.com"+chatMessage.senderImage).placeholder(R.drawable.app_icon)
+
+            Log.d("SBSBSBSS", "onBindViewHolder: ${chatMessage.senderImage}")
+
+            Glide.with(context).load("https://uat.4trainersapp.com"+chatMessage.senderImage).placeholder(R.drawable.app_icon)
                 .into(holder.userImageView)
         }
     }

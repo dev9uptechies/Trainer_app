@@ -661,7 +661,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
     private fun updateTrainingPlanIndices() {
         hyy = true
         // Define a list of default names
-        val defaultNames = listOf("Enter Pre Season", "Enter Pre Competitive", "Enter Competitive", "Enter Transition")
+        val defaultNames = listOf(getString(R.string.enterPreSeason), getString(R.string.enterPreCompetitive), getString(R.string.entercompetitive), getString(R.string.entertransition))
 
         for (i in trainingPlanLayouts.indices) {
             val layout = trainingPlanLayouts[i]
@@ -1219,7 +1219,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
                         when (i) {
                             0 ->{
                                 if (planName == "" || planName.isNullOrEmpty()){
-                                    planName = "Pre Season"
+                                    planName = getString(R.string.preSeason)
                                 }else{
                                     planName
                                 }
@@ -1235,7 +1235,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
                             1 -> {
                                 if (planName == "" || planName.isNullOrEmpty()){
-                                    planName = "Pre Competitive"
+                                    planName = getString(R.string.preCompetitive)
                                 }else{
                                     planName
                                 }
@@ -1249,7 +1249,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
                             2 -> {
                                 if (planName == "" || planName.isNullOrEmpty()){
-                                    planName = "Competitive"
+                                    planName = getString(R.string.competitive)
                                 }else{
                                     planName
                                 }
@@ -1263,7 +1263,7 @@ class AddTrainingPlanActivity : AppCompatActivity() {
 
                             3 -> {
                                 if (planName == "" || planName.isNullOrEmpty()){
-                                    planName = "Transition"
+                                    planName = getString(R.string.transition)
                                 }else{
                                     planName
                                 }

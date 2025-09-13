@@ -108,6 +108,8 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
     private var isMonViewAdded = false
     private var firstview = false
+    var SavedGroupId:String = ""
+    var SavedGroupIdAthlete:String = ""
 
     var testId: IntArray = intArrayOf()  // Initialize as an empty array or a default value
     var eventId: IntArray = intArrayOf()  // Initialize as an empty array or a default value
@@ -136,13 +138,13 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
     // Data structure example:
     var dayTimes: MutableMap<String, MutableList<DayTime>> = mutableMapOf(
-        "monday" to mutableListOf(),
-        "tuesday" to mutableListOf(),
-        "wednesday" to mutableListOf(),
-        "thursday" to mutableListOf(),
-        "friday" to mutableListOf(),
-        "saturday" to mutableListOf(),
-        "sunday" to mutableListOf()
+        "Mon" to mutableListOf(),
+        "Tue" to mutableListOf(),
+        "Wed" to mutableListOf(),
+        "Thu" to mutableListOf(),
+        "Fri" to mutableListOf(),
+        "Sat" to mutableListOf(),
+        "Sun" to mutableListOf()
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -168,6 +170,9 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         start_error = inflater.findViewById(R.id.start_error)
         end_error = inflater.findViewById(R.id.end_error)
 
+
+        SavedGroupId = intent.getStringExtra("SavedGroupId").toString()
+        SavedGroupIdAthlete = intent.getStringExtra("SavedGroupIdAthlete").toString()
 
 
         loadIdsFromPreferences()
@@ -207,7 +212,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
         if (!isMonViewAdded) {
             toggleDay(
-                "monday",
+                "Mon",
                 createGroupBinding.weekMon,
                 mon_linearLayour,
                 createGroupBinding.monAddScheduleTime
@@ -434,7 +439,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         createGroupBinding.weekMon.setOnClickListener {
 
             toggleDay(
-                "monday",
+                "Mon",
                 createGroupBinding.weekMon,
                 mon_linearLayour,
                 createGroupBinding.monAddScheduleTime
@@ -466,7 +471,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         createGroupBinding.weekTue.setOnClickListener {
 
             toggleDay(
-                "tuesday",
+                "Tue",
                 createGroupBinding.weekTue,
                 tue_linearLayout,
                 createGroupBinding.tueAddScheduleTime
@@ -496,7 +501,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         }
         createGroupBinding.weekWed.setOnClickListener {
             toggleDay(
-                "wednesday",
+                "Wed",
                 createGroupBinding.weekWed,
                 wed_linearLayout,
                 createGroupBinding.wedAddScheduleTime
@@ -527,7 +532,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         createGroupBinding.weekThu.setOnClickListener {
 
             toggleDay(
-                "thursday",
+                "Thu",
                 createGroupBinding.weekThu,
                 thu_linearLayout,
                 createGroupBinding.thuAddScheduleTime
@@ -558,7 +563,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         }
         createGroupBinding.weekFri.setOnClickListener {
             toggleDay(
-                "friday",
+                "Fri",
                 createGroupBinding.weekFri,
                 fri_linearLayout,
                 createGroupBinding.friAddScheduleTime
@@ -588,7 +593,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         }
         createGroupBinding.weekSat.setOnClickListener {
             toggleDay(
-                "saturday",
+                "Sat",
                 createGroupBinding.weekSat,
                 sat_linearLayout,
                 createGroupBinding.satAddScheduleTime
@@ -618,7 +623,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         createGroupBinding.weekSun.setOnClickListener {
 
             toggleDay(
-                "sunday",
+                "Sun",
                 createGroupBinding.weekSun,
                 sun_linearLayout,
                 createGroupBinding.sunAddScheduleTime
@@ -758,7 +763,10 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             clearIdsFromPreferences()
             val intent = Intent(this, HomeActivity::class.java)
             intent.putExtra("group", "addGroup")
+            intent.putExtra("idddd", SavedGroupId.toString())
+            intent.putExtra("group_idddd", SavedGroupIdAthlete.toString())
             startActivity(intent)
+//            finish()
         }
 
         createGroupBinding.nextButtonText.setOnClickListener {
@@ -924,7 +932,6 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
             return
         }
 
-
 //        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), imageFile)
 //        val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
 
@@ -942,12 +949,15 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
 
                 if (response.isSuccessful) {
-                    Toast.makeText(this@CreateGropActivity, "Group Added", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this@CreateGropActivity, "Group Added", Toast.LENGTH_SHORT).show()
                     Log.d("FNFNFNFN", "onResponse: GRoup Added success")
+
+                    Log.d("VYRTPO", "onResponse: $SavedGroupId ---   $SavedGroupIdAthlete")
 
                     val intent = Intent(this@CreateGropActivity, HomeActivity::class.java)
                     intent.putExtra("group", "addGroup")
+                    intent.putExtra("idddd", SavedGroupId.toString())
+                    intent.putExtra("group_idddd", SavedGroupIdAthlete.toString())
                     startActivity(intent)
                     finish()
 
@@ -1115,15 +1125,18 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
 
 
     private fun getLinearLayoutForDay(day: String): LinearLayout {
-        return when (day.lowercase()) { // Convert the input day to lowercase
-            "monday" -> mon_linearLayour
-            "tuesday" -> tue_linearLayout
-            "wednesday" -> wed_linearLayout
-            "thursday" -> thu_linearLayout
-            "friday" -> fri_linearLayout
-            "saturday" -> sat_linearLayout
-            "sunday" -> sun_linearLayout
-            else -> throw IllegalArgumentException("Invalid day: $day")
+        return when (day.trim()) { // Trim to avoid spaces affecting matching
+            "Mon" -> mon_linearLayour
+            "Tue" -> tue_linearLayout
+            "Wed" -> wed_linearLayout
+            "Thu" -> thu_linearLayout
+            "Fri" -> fri_linearLayout
+            "Sat" -> sat_linearLayout
+            "Sun" -> sun_linearLayout
+            else -> {
+                Log.d("SKKSKSK", "Invalid day: $day")
+                LinearLayout(this)
+            }
         }
     }
 
@@ -1172,13 +1185,13 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         val timingList = mutableListOf<List<Map<String, String>>>()
 
         val daysLayout = listOf(
-            mon_linearLayour to "monday",
-            tue_linearLayout to "tuesday",
-            wed_linearLayout to "wednesday",
-            thu_linearLayout to "thursday",
-            fri_linearLayout to "friday",
-            sat_linearLayout to "saturday",
-            sun_linearLayout to "sunday"
+            mon_linearLayour to "Mon",
+            tue_linearLayout to "Tue",
+            wed_linearLayout to "Wed",
+            thu_linearLayout to "Thu",
+            fri_linearLayout to "Fri",
+            sat_linearLayout to "Sat",
+            sun_linearLayout to "Sun"
         )
 
         // Collect timings for each day
@@ -1332,7 +1345,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     private fun restoreLastSelectedDay() {
         val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
         val lastSelectedDay =
-            sharedPreferences.getString("last_selected_day", "monday") // Default to "monday"
+            sharedPreferences.getString("last_selected_day", "Mon") // Default to "monday"
 
         Log.d("RestoreDayyyyyyyyy", "Retrieved last_selected_day: $lastSelectedDay")
 
@@ -2067,7 +2080,7 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         val sharedPreferences = getSharedPreferences("view_state_prefs", MODE_PRIVATE)
 
         val days =
-            listOf("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+            listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
         val startIndex = days.indexOf(selectedDay).takeIf { it >= 0 } ?: 0
         val dayToShow = days.drop(startIndex).firstOrNull { day ->
@@ -2081,53 +2094,53 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         Log.d("ShowDay", "Showing data for day: $dayToShow")
 
         when (dayToShow) {
-            "monday" -> {
+            "Mon" -> {
                 mon_linearLayour.visibility = View.VISIBLE
-                restoreViewsForDay(mon_linearLayour, "monday")
+                restoreViewsForDay(mon_linearLayour, "Mon")
                 createGroupBinding.monAddScheduleTime.visibility = View.VISIBLE
-                resetCardBackgroundsExcept("monday")
+                resetCardBackgroundsExcept("Mon")
             }
 
-            "tuesday" -> {
+            "Tue" -> {
                 tue_linearLayout.visibility = View.VISIBLE
-                restoreViewsForDay(tue_linearLayout, "tuesday")
+                restoreViewsForDay(tue_linearLayout, "Tue")
                 createGroupBinding.tueAddScheduleTime.visibility = View.VISIBLE
-                resetCardBackgroundsExcept("tuesday")
+                resetCardBackgroundsExcept("Tue")
             }
 
-            "wednesday" -> {
+            "Wed" -> {
                 wed_linearLayout.visibility = View.VISIBLE
-                restoreViewsForDay(wed_linearLayout, "wednesday")
+                restoreViewsForDay(wed_linearLayout, "Wed")
                 createGroupBinding.wedAddScheduleTime.visibility = View.VISIBLE
-                resetCardBackgroundsExcept("wednesday")
+                resetCardBackgroundsExcept("Wed")
             }
 
-            "thursday" -> {
+            "Thu" -> {
                 thu_linearLayout.visibility = View.VISIBLE
-                restoreViewsForDay(thu_linearLayout, "thursday")
+                restoreViewsForDay(thu_linearLayout, "Thu")
                 createGroupBinding.thuAddScheduleTime.visibility = View.VISIBLE
-                resetCardBackgroundsExcept("thursday")
+                resetCardBackgroundsExcept("Thu")
             }
 
-            "friday" -> {
+            "Fri" -> {
                 fri_linearLayout.visibility = View.VISIBLE
-                restoreViewsForDay(fri_linearLayout, "friday")
+                restoreViewsForDay(fri_linearLayout, "Fri")
                 createGroupBinding.friAddScheduleTime.visibility = View.VISIBLE
-                resetCardBackgroundsExcept("friday")
+                resetCardBackgroundsExcept("Fri")
             }
 
-            "saturday" -> {
+            "Sat" -> {
                 sat_linearLayout.visibility = View.VISIBLE
-                restoreViewsForDay(sat_linearLayout, "saturday")
+                restoreViewsForDay(sat_linearLayout, "Sat")
                 createGroupBinding.satAddScheduleTime.visibility = View.VISIBLE
-                resetCardBackgroundsExcept("saturday")
+                resetCardBackgroundsExcept("Sat")
             }
 
-            "sunday" -> {
+            "Sun" -> {
                 sun_linearLayout.visibility = View.VISIBLE
-                restoreViewsForDay(sun_linearLayout, "sunday")
+                restoreViewsForDay(sun_linearLayout, "Sun")
                 createGroupBinding.sunAddScheduleTime.visibility = View.VISIBLE
-                resetCardBackgroundsExcept("sunday")
+                resetCardBackgroundsExcept("Sun")
             }
         }
 
@@ -2158,13 +2171,13 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
         createGroupBinding.weekSun.setCardBackgroundColor(defaultColor)
 
         when (selectedDay) {
-            "monday" -> createGroupBinding.weekMon.setCardBackgroundColor(splashColor)
-            "tuesday" -> createGroupBinding.weekTue.setCardBackgroundColor(splashColor)
-            "wednesday" -> createGroupBinding.weekWed.setCardBackgroundColor(splashColor)
-            "thursday" -> createGroupBinding.weekThu.setCardBackgroundColor(splashColor)
-            "friday" -> createGroupBinding.weekFri.setCardBackgroundColor(splashColor)
-            "saturday" -> createGroupBinding.weekSat.setCardBackgroundColor(splashColor)
-            "sunday" -> createGroupBinding.weekSun.setCardBackgroundColor(splashColor)
+            "Mon" -> createGroupBinding.weekMon.setCardBackgroundColor(splashColor)
+            "Tue" -> createGroupBinding.weekTue.setCardBackgroundColor(splashColor)
+            "Wed" -> createGroupBinding.weekWed.setCardBackgroundColor(splashColor)
+            "Thu" -> createGroupBinding.weekThu.setCardBackgroundColor(splashColor)
+            "Fri" -> createGroupBinding.weekFri.setCardBackgroundColor(splashColor)
+            "Sat" -> createGroupBinding.weekSat.setCardBackgroundColor(splashColor)
+            "Sun" -> createGroupBinding.weekSun.setCardBackgroundColor(splashColor)
         }
     }
 
@@ -2179,50 +2192,50 @@ class CreateGropActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     }
 
     fun mon_addView() {
-        addViewForDay(mon_linearLayour, "monday")
+        addViewForDay(mon_linearLayour, "Mon")
 //        saveViewStateForAllDays()
-        saveLastSelectedDay("monday")
+        saveLastSelectedDay("Mon")
     }
 
     fun tue_addView() {
-        addViewForDay(tue_linearLayout, "tuesday")
+        addViewForDay(tue_linearLayout, "Tue")
 //        saveViewStateForAllDays()
-        saveLastSelectedDay("tuesday")
+        saveLastSelectedDay("Tue")
 
     }
 
     fun wed_addView() {
-        addViewForDay(wed_linearLayout, "wednesday")
+        addViewForDay(wed_linearLayout, "Wed")
 //        saveViewStateForAllDays()
-        saveLastSelectedDay("wednesday")
+        saveLastSelectedDay("Wed")
 
     }
 
     fun thu_addView() {
-        addViewForDay(thu_linearLayout, "thursday")
+        addViewForDay(thu_linearLayout, "Thu")
 //        saveViewStateForAllDays()
-        saveLastSelectedDay("thursday")
+        saveLastSelectedDay("Thu")
 
     }
 
     fun fri_addView() {
-        addViewForDay(fri_linearLayout, "friday")
+        addViewForDay(fri_linearLayout, "Fri")
 //        saveViewStateForAllDays()
-        saveLastSelectedDay("friday")
+        saveLastSelectedDay("Fri")
 
     }
 
     fun sat_addView() {
-        addViewForDay(sat_linearLayout, "saturday")
+        addViewForDay(sat_linearLayout, "Sat")
 //        saveViewStateForAllDays()
-        saveLastSelectedDay("saturday")
+        saveLastSelectedDay("Sat")
 
     }
 
     fun sun_addView() {
-        addViewForDay(sun_linearLayout, "sunday")
+        addViewForDay(sun_linearLayout, "Sun")
 //        saveViewStateForAllDays()
-        saveLastSelectedDay("sunday")
+        saveLastSelectedDay("Sun")
 
     }
 

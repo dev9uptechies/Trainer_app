@@ -111,7 +111,6 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_35sdp"
             app:draggedItem="@id/rela_dragged"
-
             app:rightItem="@id/right_view"
             app:swipeDirection="left">
 

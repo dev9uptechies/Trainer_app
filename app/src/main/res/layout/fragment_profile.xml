@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="Profile"
+                android:text="@string/profile"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_16sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/sidemenu"
@@ -40,7 +40,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -117,7 +117,7 @@
                             android:layout_marginEnd="@dimen/_20sdp"
                             android:background="@null"
                             android:textSize="@dimen/_14sdp"
-                            android:hint="@string/enter_email"
+                            android:hint="@string/enterEmail"
                             android:imeOptions="actionNext"
                             android:fontFamily="@font/poppins_medium"
                             android:singleLine="true"
@@ -168,7 +168,7 @@
                             android:layout_weight="1"
                             android:background="@null"
                             android:textSize="@dimen/_14sdp"
-                            android:hint="@string/enter_password"
+                            android:hint="@string/enterPass"
                             android:clickable="false"
                             android:focusable="false"
                             android:fontFamily="@font/poppins_medium"
@@ -222,7 +222,7 @@
                             android:background="@null"
                             android:textSize="@dimen/_14sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:hint="Birth Date"
+                            android:hint="@string/birthDate"
                             android:imeOptions="actionNext"
                             android:inputType="date"
                             android:maxLines="1"
@@ -272,7 +272,7 @@
                             android:layout_weight="1"
                             android:background="@null"
                             android:textSize="@dimen/_14sdp"
-                            android:hint="@string/birth_place"
+                            android:hint="@string/birthPlace"
                             android:imeOptions="actionNext"
                             android:inputType="text"
                             android:fontFamily="@font/poppins_medium"
@@ -323,7 +323,7 @@
                             android:layout_weight="1"
                             android:background="@null"
                             android:textSize="@dimen/_14sdp"
-                            android:hint="Zip code"
+                            android:hint="@string/zipCode"
                             android:imeOptions="actionNext"
                             android:inputType="number"
                             android:fontFamily="@font/poppins_medium"
@@ -351,7 +351,7 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:layout_weight="1"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Select Sport"
+                        android:text="@string/selectSport"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_14sdp" />
 
@@ -391,7 +391,7 @@
                                 android:id="@+id/no_si"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:text="No Sport Information"
+                                android:text="@string/noSportInformation"
                                 android:visibility="gone"
                                 android:layout_gravity="center"
                                 android:gravity="center"
@@ -421,7 +421,7 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:layout_weight="1"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Anthropometric Data"
+                        android:text="@string/anthropometricData"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_14sdp" />
 
@@ -435,7 +435,7 @@
                     android:layout_weight="1"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="underweight in kg"
+                    android:text="@string/underweightinkg"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp" />
 
@@ -461,8 +461,7 @@
                         android:fontFamily="@font/poppins_medium"
                         android:singleLine="true"
                         android:imeOptions="actionNext"
-                        android:clickable="false"
-                        android:focusable="false"
+                        android:inputType="numberDecimal"
                         android:hint="Below -"
                         android:textColorHint="@color/white"
                         android:textColor="@color/white"
@@ -477,7 +476,7 @@
                     android:layout_weight="1"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="fat in percentage"
+                    android:text="@string/fatInPer"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp" />
 
@@ -502,8 +501,7 @@
                         android:fontFamily="@font/poppins_medium"
                         android:hint="Athletes -"
                         android:background="@null"
-                        android:clickable="false"
-                        android:focusable="false"
+                        android:inputType="numberDecimal"
                         android:singleLine="true"
                         android:imeOptions="actionNext"
                         android:textColor="@color/white"
@@ -519,7 +517,7 @@
                     android:layout_weight="1"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="baseline in cm"
+                    android:text="@string/baselineInCm"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp" />
 
@@ -545,8 +543,7 @@
                         android:hint="Baseline -"
                         android:textColorHint="@color/white"
                         android:background="@null"
-                        android:clickable="false"
-                        android:focusable="false"
+                        android:inputType="numberDecimal"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_13sdp" />
 
@@ -559,7 +556,7 @@
                     android:layout_weight="1"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="fatmass in kg"
+                    android:text="@string/fatmassInKg"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp" />
 
@@ -583,11 +580,12 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:fontFamily="@font/poppins_medium"
                         android:hint="Fat mass -"
-                        android:clickable="false"
-                        android:focusable="false"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:inputType="numberDecimal"
                         android:singleLine="true"
                         android:textColorHint="@color/white"
-                        android:imeOptions="actionNext"
+                        android:imeOptions="actionDone"
                         android:background="@null"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_13sdp" />
@@ -611,7 +609,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Edit/save Profile"
+                        android:text="@string/editProfile"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_15sdp" />
 
@@ -646,7 +644,7 @@
                             android:layout_marginTop="@dimen/_7sdp"
                             android:gravity="start"
                             android:paddingStart="@dimen/_10sdp"
-                            android:text="Test List"
+                            android:text="@string/testList"
                             android:fontFamily="@font/poppins_medium"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_15sdp" />
@@ -666,6 +664,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="vertical">
 
 
@@ -822,6 +821,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
                     android:layout_marginStart="@dimen/_10sdp"
+                    android:visibility="gone"
                     android:layout_marginTop="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
@@ -843,18 +843,9 @@
 
             </LinearLayout>
 
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

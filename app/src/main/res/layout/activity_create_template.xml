@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:fontFamily="@font/poppins_semi_bold"
-        android:text="Create Template"
+        android:text="@string/createtemplate"
         android:textColor="@color/splash_text_color"
         android:textSize="@dimen/_16sdp"
         app:layout_constraintEnd_toStartOf="@+id/createTemplate"
@@ -59,7 +59,7 @@
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp"
-            android:hint="Enter Template Name"
+            android:hint="@string/entertemplateName"
             android:paddingVertical="@dimen/_9sdp"
             android:paddingStart="@dimen/_12sdp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -95,7 +95,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_semi_bold"
             android:gravity="center"
-            android:text="Save"
+            android:text="@string/save"
             android:textColor="@color/white"
             android:textSize="@dimen/_20sdp" />
     </androidx.cardview.widget.CardView>

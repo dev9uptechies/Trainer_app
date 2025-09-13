@@ -73,7 +73,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-
 class New_Program_Activity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
     lateinit var newProgramBinding: ActivityNewProgramBinding
     lateinit var adapter: ProgramAdapter

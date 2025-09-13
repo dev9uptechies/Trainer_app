@@ -128,6 +128,15 @@ class Timer : Parcelable {
         @SerializedName("pause")
         val pause: String? = null
 
+        @SerializedName("audio")
+        val audio: Audio? = null
+
+        @SerializedName("pause_between_time_audio")
+        val pause_between_time_audio: PauseBetweenTimeAudio? = null
+
+        @SerializedName("pause_time_audio")
+        val pause_time_audio: PauseTimeAudio? = null
+
         @SerializedName("pause_between_time_audio_id")
         val pause_between_time_audio_id: String? = null
 

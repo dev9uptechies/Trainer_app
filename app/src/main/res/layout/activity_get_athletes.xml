@@ -53,6 +53,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.64"
             app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="@dimen/_8sdp"
             app:layout_constraintTop_toBottomOf="@id/cbSelectAll"
             app:layout_constraintVertical_bias="0.0"
             tools:listitem="@layout/item_list_athletes" />
@@ -65,7 +66,7 @@
             android:layout_marginHorizontal="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_15sdp"
             android:layout_marginBottom="@dimen/_15sdp"
-            android:text="@string/action_save"
+            android:text="@string/save"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

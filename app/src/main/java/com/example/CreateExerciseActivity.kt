@@ -433,6 +433,7 @@ class CreateExerciseActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
                         }
                     }
 
+                    Log.d("SJSJSJSJ", "onCreate: $video")
                     apiInterface.CreateExercise1(
                         name = nameString,
                         sectionId = sectionString,

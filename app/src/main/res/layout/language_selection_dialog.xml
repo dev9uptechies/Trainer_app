@@ -1,0 +1,66 @@
+<!-- res/layout/language_selection_dialog.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_black_round_corner_10"
+    android:elevation="@dimen/_10sdp"
+    android:padding="20dp">
+
+    <RadioGroup
+        android:id="@+id/language_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radio_english"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_medium"
+            android:checked="true"
+            android:textColor="@color/white"
+            android:text="English" />
+
+        <RadioButton
+            android:id="@+id/radio_spanish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Español" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_30sdp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCancel"
+            style="@style/Btn_Text_13_Round_10_Light_Grey"
+            android:layout_width="@dimen/_115sdp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:gravity="center"
+            android:text="@string/cancel"
+            app:layout_constraintEnd_toStartOf="@id/btnApply"
+            app:layout_constraintStart_toStartOf="@+id/mint_num"
+            app:layout_constraintTop_toBottomOf="@id/second_num" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnApply"
+            style="@style/Btn_Round_10_Red"
+            android:layout_width="@dimen/_115sdp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:text="@string/apply"
+            app:layout_constraintBottom_toBottomOf="@id/btnCancel"
+            app:layout_constraintEnd_toEndOf="@+id/second_num"
+            app:layout_constraintStart_toEndOf="@id/btnCancel"
+            app:layout_constraintTop_toTopOf="@id/btnCancel"/>
+    </LinearLayout>
+
+</LinearLayout>

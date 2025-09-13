@@ -3,6 +3,7 @@ package com.example.Adapter.program
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -89,7 +90,10 @@ class View_Program_Adapter(
             }
         }
 
+
+
         holder.itemView.setOnClickListener {
+            Log.d("KAKAKAKAK", "onBindViewHolder: ${movie.exercise_id} ---  ${movie.id}")
             val intent = Intent(context, View_Exercise_Activity::class.java)
             intent.putExtra("EXID",movie.exercise_id)
             context.startActivity(intent)
@@ -129,7 +133,7 @@ class View_Program_Adapter(
             .build()
 
         Picasso.get()
-            .load("https://4trainersapp.com" + movie.exercise!!.image)
+            .load("https://uat.4trainersapp.com" + movie.exercise!!.image)
             .fit()
             .transform(transformation)
             .placeholder(R.drawable.ic_youtube)

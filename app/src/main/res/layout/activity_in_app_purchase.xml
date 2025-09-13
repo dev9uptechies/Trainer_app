@@ -31,7 +31,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/profile_premium_plan"
+                android:text="@string/premiumPlan"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_20sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/back"
@@ -59,7 +59,7 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Basic"
+                    android:text="@string/basic"
                     android:textColor="#BBBBBB"
                     android:textSize="@dimen/_14sdp" />
 
@@ -76,13 +76,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_10sdp"
-                    android:text="-Scheduling just for yourself."
+                    android:text="@string/basicDesc"
                     android:textColor="#BBBBBB" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_10sdp"
+                    android:visibility="gone"
                     android:text="-Competition Analysis and P.P (also History) "
                     android:textColor="#BBBBBB" />
 
@@ -90,12 +91,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_10sdp"
+                    android:visibility="gone"
                     android:text="-Competition Analysis and P.P (also History)"
                     android:textColor="#BBBBBB" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:layout_marginStart="@dimen/_10sdp"
                     android:text="-Create lessons and programs just for yourself."
                     android:textColor="#BBBBBB" />
@@ -104,6 +107,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_10sdp"
+                    android:visibility="gone"
                     android:text="-Limited Number of Exercise and programs (TBS) "
                     android:textColor="#BBBBBB" />
 
@@ -111,6 +115,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_10sdp"
+                    android:visibility="gone"
                     android:text="-Event booking (Lessons,Tests, Competitions, ETC) (Free)"
                     android:textColor="#BBBBBB" />
 
@@ -118,12 +123,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_10sdp"
+                    android:visibility="gone"
                     android:text="-Competition Analysis and P.P (only filling in) and Diary (Free)"
                     android:textColor="#BBBBBB" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:layout_marginStart="@dimen/_10sdp"
                     android:text="-Can join a group through QR Code and see the lessons shared by coach (Free)"
                     android:textColor="#BBBBBB" />

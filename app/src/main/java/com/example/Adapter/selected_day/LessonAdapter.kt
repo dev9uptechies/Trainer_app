@@ -1,6 +1,7 @@
 package com.example.Adapter.selected_day
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.OnItemClickListener
+import com.example.ViewLessonActivity
 import com.example.model.SelectedDaysModel
 import com.example.trainerapp.R
 
@@ -38,6 +40,13 @@ class LessonAdapter(
             holder.tvFname.text = ""
             holder.tvgoal.text = ""
             holder.tvAthlete.text = ""
+        }
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, ViewLessonActivity::class.java)
+            intent.putExtra("LessonLibraryId", lesson.id.toInt())
+            intent.putExtra("GroupAttends", "GroupAttends")
+            context.startActivity(intent)
         }
 
 

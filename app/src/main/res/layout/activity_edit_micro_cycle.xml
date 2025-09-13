@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_semi_bold"
             android:textSize="@dimen/_16sdp"
-            android:text="Edit Microcycle"
+            android:text="@string/editMicrocycle"
             android:textColor="@color/splash_text_color"
             app:layout_constraintBottom_toBottomOf="@+id/back"
             app:layout_constraintEnd_toEndOf="parent"
@@ -160,7 +160,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_10sdp"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Abilities and Technique"
+                            android:text="@string/abilitiesAndTechnique"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_14sdp" />
 
@@ -178,7 +178,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginStart="@dimen/_10sdp"
                                 android:fontFamily="@font/poppins_medium"
-                                android:text="Select Abilities and Technique"
+                                android:text="@string/selectAbility"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_15sdp" />
 
@@ -242,7 +242,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Save"
+                android:text="@string/save"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_15sdp" />
 

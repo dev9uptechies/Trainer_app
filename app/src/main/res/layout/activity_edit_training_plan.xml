@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_medium"
-            android:text="Edit Traning Plan"
+            android:text="@string/editPlanning"
             android:textColor="@color/splash_text_color"
             android:textSize="@dimen/_18sdp"
             app:layout_constraintBottom_toBottomOf="@+id/back"
@@ -69,7 +69,7 @@
             android:layout_marginStart="@dimen/_12sdp"
             android:background="@null"
             android:fontFamily="@font/poppins_medium"
-            android:hint="Enter Program Name"
+            android:hint="@string/enterPlanningName"
             android:maxLines="1"
             android:singleLine="true"
             android:textColor="@color/white"
@@ -110,7 +110,7 @@
             android:clickable="false"
             android:focusable="false"
             android:fontFamily="@font/poppins_medium"
-            android:hint="Enter Start Date"
+            android:hint="@string/enterStartDate"
             android:textColor="@color/white"
             android:textColorHint="@color/dark_text"
             android:textSize="@dimen/_13sdp" />
@@ -168,7 +168,7 @@
             android:clickable="false"
             android:focusable="false"
             android:fontFamily="@font/poppins_medium"
-            android:hint="Enter End Date"
+            android:hint="@string/enterEndDate"
             android:textColor="@color/white"
             android:textColorHint="@color/dark_text"
             android:textSize="@dimen/_13sdp" />
@@ -219,7 +219,7 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_weight="1"
             android:fontFamily="@font/poppins_medium"
-            android:text="Days of Training Plan:"
+            android:text="@string/totalMasocycleDays"
             android:textColor="@color/white"
             android:textSize="@dimen/_14sdp" />
 
@@ -274,7 +274,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_medium"
-            android:text="Save"
+            android:text="@string/save"
             android:textColor="@color/white"
             android:textSize="@dimen/_15sdp" />
 

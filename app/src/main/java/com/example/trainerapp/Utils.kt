@@ -5,16 +5,22 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.Dialog
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.app.Activity
+
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -265,22 +271,98 @@ class Utils {
             ).show()
         }
 
+        private fun getActivityFromContext(context: Context?): Activity? {
+            var ctx = context
+            while (ctx is ContextWrapper) {
+                if (ctx is Activity) {
+                    return ctx
+                }
+                ctx = ctx.baseContext
+            }
+            return null
+        }
+        private val overlayMap = mutableMapOf<Activity, FrameLayout>()
+
+        fun showLoading(activity: Activity) {
+            Log.d("Utils", "showLoading called for ${activity.localClassName}")
+
+            val overlay = overlayMap.getOrPut(activity) {
+                Log.d("Utils", "Creating new loading overlay for ${activity.localClassName}")
+                createOverlay(activity).also {
+                    (activity.window.decorView as ViewGroup).addView(
+                        it,
+                        ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                    )
+                }
+            }
+
+            overlay.visibility = View.VISIBLE
+            Log.d("Utils", "Loading overlay set to VISIBLE")
+        }
+
+        fun hideLoading(activity: Activity) {
+            Log.d("Utils", "hideLoading called for ${activity.localClassName}")
+            overlayMap[activity]?.visibility = View.GONE
+            Log.d("Utils", "Loading overlay set to GONE")
+        }
+
+        private fun createOverlay(activity: Activity): FrameLayout {
+            Log.d("Utils", "createOverlay called for ${activity.localClassName}")
+            val overlay = FrameLayout(activity).apply {
+                setBackgroundColor(Color.parseColor("#80000000")) // 50% black
+                visibility = View.GONE
+                isClickable = true
+                isFocusable = true
+            }
+
+            val progressBar = ProgressBar(activity).apply {
+                val size = (50 * activity.resources.displayMetrics.density).toInt()
+                layoutParams = FrameLayout.LayoutParams(size, size).apply {
+                    gravity = Gravity.CENTER
+                }
+            }
+
+            overlay.addView(progressBar)
+            return overlay
+        }
+
+
         fun setUnAuthDialog(context: Context?) {
-            val preferenceManager: PreferencesManager = PreferencesManager(context!!)
+            val preferenceManager = PreferencesManager(context!!)
             val dialogLayout = Dialog(context)
             dialogLayout.setContentView(R.layout.unauth_dialog)
             dialogLayout.window?.setBackgroundDrawableResource(android.R.color.transparent)
-//            dialogLayout.window?.setLayout(
-//                WindowManager.LayoutParams.MATCH_PARENT,  // Set width to match parent
-//                WindowManager.LayoutParams.WRAP_CONTENT   // Set height to wrap content
-//            )
+
             val btnOk = dialogLayout.findViewById<TextView>(R.id.btnOk)
             btnOk.setOnClickListener {
                 preferenceManager.setUserLogIn(false)
-                val intent = Intent(context, MainActivity::class.java)
-                context.startActivity(intent)
+
+                val activity = getActivityFromContext(context)
+                if (activity != null && !activity.isFinishing) {
+                    val intent = Intent(activity, MainActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                Intent.FLAG_ACTIVITY_NEW_TASK or
+                                Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    }
+                    activity.startActivity(intent)
+                    activity.finishAffinity()
+                } else {
+                    // Fallback if no valid Activity found
+                    val appContext = context.applicationContext
+                    val intent = Intent(appContext, MainActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or
+                                Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    }
+                    appContext.startActivity(intent)
+                }
+
                 dialogLayout.dismiss()
             }
+
+
             dialogLayout.show()
         }
 

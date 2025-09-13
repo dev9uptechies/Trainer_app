@@ -10,6 +10,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.Create_Event_Activity
 import com.example.OnItemClickListener
@@ -59,6 +60,8 @@ class AddSelectedDayEventApater(
                 athletesNames.append(athleteName)
             }
         }
+        holder.swipe.setOnTouchListener { _, _ -> true } // Disables swipe
+
 
         holder.tvgoal.text = "Event Type: " + movie.type
         holder.tvFname.text = movie.title ?: ""
@@ -70,7 +73,7 @@ class AddSelectedDayEventApater(
         holder.checkBox.isChecked = position == selectedPosition
         holder.checkBox.isClickable = false
 
-        holder.itemView.setOnClickListener {
+        holder.card.setOnClickListener {
             val currentPosition = holder.adapterPosition
             if (selectedPosition != currentPosition) {
                 val previousSelectedPosition = selectedPosition
@@ -152,5 +155,9 @@ class AddSelectedDayEventApater(
         var tvDate: TextView = view.findViewById(R.id.tv_date)
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox)
         var editImage: ImageView = view.findViewById(R.id.img_edit)
+        var swipe: SwipeLayout = view.findViewById(R.id.swipe_layout)
+        var card: CardView = view.findViewById(R.id.rela_dragged)
+
+
     }
 }

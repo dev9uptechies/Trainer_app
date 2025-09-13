@@ -71,7 +71,7 @@ class Library_AudioAdapter(
                 pauseAudio()
                 holder.img_play.setImageResource(R.drawable.ic_play)
             } else {
-                playNewAudio(holder, position, "https://4trainersapp.com" + movie.audio)
+                playNewAudio(holder, position, "https://uat.4trainersapp.com" + movie.audio)
             }
 
         }

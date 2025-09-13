@@ -1,6 +1,7 @@
 package com.example
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,6 +73,7 @@ class LessionAdapter(
                 movie.id!!.toLong(),
                 "View"
             )
+
         )
 
         holder.image.setOnClickListener(
@@ -81,6 +83,8 @@ class LessionAdapter(
                 OnItemClickListener(position, listener, movie.id.toLong(), "fav")
             }
         )
+
+
 
 
 //        val movie = splist!![position]

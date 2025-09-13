@@ -45,7 +45,7 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
     lateinit var lessonadapter: FavoritelessonAdapter
     lateinit var eventadapter: FavoriteeventAdapter
     lateinit var testadapter: FavoritetestAdapter
-    var type = arrayOf("All Favorite Items", "Program", "Lesson", "Test", "Event", "Exercise")
+    private lateinit var type: Array<String>
 
     private fun checkUser() {
         try {
@@ -64,7 +64,8 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                         Toast.makeText(
                             this@FavoriteActivity,
                             "" + response.message(),
-                            Toast.LENGTH_SHORT)
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                         call.cancel()
                     }
@@ -101,6 +102,14 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
         favoriteBinding.lyLesson.visibility = View.VISIBLE
         favoriteBinding.lyEvent.visibility = View.VISIBLE
         favoriteBinding.lyTest.visibility = View.VISIBLE
+        type = arrayOf(
+            getString(R.string.allFavouriteItems),
+            getString(R.string.program),
+            getString(R.string.lesson),
+            getString(R.string.test),
+            getString(R.string.event),
+            getString(R.string.exercise)
+        )
 
         callApi()
         showAll()
@@ -134,19 +143,21 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
 
             val listView = popupView.findViewById<ListView>(R.id.listView)
 
-            val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
-                override fun getView(
-                    position: Int,
-                    convertView: View?,
-                    parent: ViewGroup
-                ): View {
-                    val view = super.getView(position, convertView, parent) as TextView
-                    val typeface = ResourcesCompat.getFont(this@FavoriteActivity, R.font.poppins_medium)
-                    view.typeface = typeface
-                    view.setTextColor(Color.WHITE) // Set text color to white
-                    return view
+            val adapter =
+                object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list) {
+                    override fun getView(
+                        position: Int,
+                        convertView: View?,
+                        parent: ViewGroup
+                    ): View {
+                        val view = super.getView(position, convertView, parent) as TextView
+                        val typeface =
+                            ResourcesCompat.getFont(this@FavoriteActivity, R.font.poppins_medium)
+                        view.typeface = typeface
+                        view.setTextColor(Color.WHITE) // Set text color to white
+                        return view
+                    }
                 }
-            }
             listView.adapter = adapter
 
             listView.setOnItemClickListener { _, _, position, _ ->
@@ -179,22 +190,27 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
 
     private fun handleTypeSelection(selectedType: String) {
         when (selectedType) {
-            "All Favorite Items" -> {
+            "All Favorite Items", "Todos los Elementos Favoritos" -> {
                 showAll()
             }
-            "Program" -> {
-               showProgram()
+
+            "Program", "Programa" -> {
+                showProgram()
             }
-            "Lesson" -> {
-               showLesson()
+
+            "Lesson", "Lección" -> {
+                showLesson()
             }
-            "Test" -> {
+
+            "Test", "Prueba" -> {
                 showTest()
             }
-            "Event" -> {
+
+            "Event", "Evento" -> {
                 showEvent()
             }
-            "Exercise" -> {
+
+            "Exercise", "Ejercicio" -> {
                 showExercise()
             }
         }
@@ -215,13 +231,13 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                         if (Success) {
 //                            favoriteBinding.lyProgram.visibility = View.VISIBLE
 
-                            for (data in resource.data!!){
-                                Log.d("DATA_PROGRAM","program :- ${data.program!!.name}")
+                            for (data in resource.data!!) {
+                                Log.d("DATA_PROGRAM", "program :- ${data.program!!.name}")
                             }
                             if (resource.data!!.isNotEmpty()) {
                                 initProgramRecyclerView(resource.data)
                             } else {
-                                    // Show RecyclerView and hide "No Data Found" message
+                                // Show RecyclerView and hide "No Data Found" message
                                 NoData()
                                 Toast.makeText(
                                     this@FavoriteActivity,
@@ -270,12 +286,13 @@ class FavoriteActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCal
                             val data = resource.data
 
                             if (data != null) {
-                                for (datas in data){
-                                    Log.d("DATA_PROGRAM","program :- ${datas.lesson!!.name}")
+                                for (datas in data) {
+                                    Log.d("DATA_PROGRAM", "program :- ${datas.lesson!!.name}")
                                 }
                             }
                             if (data!!.isNotEmpty()) {
                                 initLessonRecyclerView(resource.data)
+                                Log.d("DJDJDJ", "onResponse: ${data.get(0).goal?.get(0)?.name}")
                             } else {
                                 Toast.makeText(
                                     this@FavoriteActivity,

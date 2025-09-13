@@ -1,5 +1,6 @@
 package com.example.model.AthleteDataPackage
 
+import com.example.trainerappAthlete.model.GroupListAthlete.Test_Athletes
 import com.google.gson.annotations.SerializedName
 
 class AthleteDetails {
@@ -212,6 +213,9 @@ class AthleteDetails {
 
                 @SerializedName("is_favourite")
                 val is_favourite: String? = null
+
+                @SerializedName("test_athletes")
+                var test_athletes: ArrayList<Test_Athletes>? = null
 
             }
 

@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="Add Training Plan"
+            android:text="@string/addPlanning"
             android:textColor="@color/splash_text_color"
             android:textSize="@dimen/_16sdp"
             app:layout_constraintBottom_toBottomOf="@+id/back"
@@ -66,7 +66,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/_12sdp"
                 android:background="@null"
-                android:hint="Enter Planning Name"
+                android:hint="@string/enterPlanningName"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textColor="@color/white"
@@ -108,7 +108,7 @@
                 android:fontFamily="@font/poppins_medium"
                 android:clickable="false"
                 android:focusable="false"
-                android:hint="Enter Start Date"
+                android:hint="@string/enterStartDate"
                 android:textColor="@color/white"
                 android:textColorHint="@color/dark_text"
                 android:textSize="@dimen/_13sdp" />
@@ -166,7 +166,7 @@
                 android:background="@null"
                 android:clickable="false"
                 android:focusable="false"
-                android:hint="Enter End Date"
+                android:hint="@string/enterEndDate"
                 android:textColor="@color/white"
                 android:textColorHint="@color/dark_text"
                 android:textSize="@dimen/_13sdp" />
@@ -218,7 +218,7 @@
                 android:layout_marginStart="@dimen/_13sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_weight="1"
-                android:text="Days of Training Plan:"
+                android:text="@string/totalMasocycleDays"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_14sdp" />
 
@@ -275,7 +275,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Save"
+                android:text="@string/save"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_15sdp" />
 

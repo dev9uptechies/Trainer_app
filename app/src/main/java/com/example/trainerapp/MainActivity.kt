@@ -28,12 +28,14 @@ class MainActivity : AppCompatActivity() {
     private fun checkButtonClick() {
         mainBinding.btnSignIn.setOnClickListener {
             startActivity(Intent(this, SignInActivity::class.java))
+            finish()
             preferencesManager.SetFlage("Coach")
 
         }
 
         mainBinding.btnSignUp.setOnClickListener {
             startActivity(Intent(this, SignInActivity::class.java))
+            finish()
             preferencesManager.SetFlage("Athlete")
         }
 

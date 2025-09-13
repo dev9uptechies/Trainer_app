@@ -54,7 +54,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="50dp"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="@string/select_sport"
+            android:text="@string/selectSport"
             android:textColor="@color/splash_text_color"
             android:textSize="30dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="@string/first_up_which_sport_do_you_enjoy_the_most"
+            android:text="@string/sportDesc"
             android:textColor="@color/white"
             android:textSize="16dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -90,7 +90,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="@string/select_sport"
+                android:text="@string/selectSport"
                 android:textColor="@color/white"
                 android:textSize="18dp"/>
 
@@ -137,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="@string/select_sport"
+                    android:text="@string/selectSport"
                     android:textColor="@color/white"
                     android:textSize="16dp"
                     app:layout_constraintBottom_toBottomOf="@+id/img_plus"
@@ -187,7 +187,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="Next"
+                android:text="@string/next"
                 android:textColor="@color/white"
                 android:textSize="20dp" />
         </androidx.cardview.widget.CardView>

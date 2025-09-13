@@ -64,7 +64,7 @@
         android:layout_width="0dp"
         style="@style/Btn_Text_13_Round_10_Light_Grey"
         android:layout_height="wrap_content"
-        android:text="@string/action_cancel"
+        android:text="@string/cancel"
         android:layout_marginEnd="@dimen/_10sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnApply"
@@ -74,7 +74,7 @@
     <androidx.appcompat.widget.AppCompatButton
         android:layout_width="0dp"
         style="@style/Btn_Round_10_Red"
-        android:text="@string/action_apply"
+        android:text="@string/apply"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/btnCancel"
         app:layout_constraintEnd_toEndOf="parent"

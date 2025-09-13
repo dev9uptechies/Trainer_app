@@ -230,7 +230,7 @@ class CreateTemplateActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             addButton.setCardBackgroundColor(resources.getColor(R.color.splash_text_color)) // Change to your desired color
         } else {
             addButton.isEnabled = false
-            addButton.setCardBackgroundColor(resources.getColor(R.color.grey)) // Disabled color
+            addButton.setCardBackgroundColor(resources.getColor(R.color.grey))
         }
     }
 

@@ -12,6 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
         android:elevation="@dimen/_10sdp"
+        android:clickable="true"
+        android:focusable="true"
         app:cardBackgroundColor="#313131"
         app:cardCornerRadius="@dimen/_10sdp"
         tools:ignore="MissingConstraints">
@@ -146,6 +148,7 @@
                                 android:layout_width="@dimen/_17sdp"
                                 android:layout_height="@dimen/_17sdp"
                                 android:layout_marginEnd="@dimen/_10sdp"
+                                android:layout_marginBottom="3dp"
                                 android:layout_gravity="center_vertical"
                                 android:src="@drawable/img_edit"
                                 app:tint="@color/splash_text_color" />

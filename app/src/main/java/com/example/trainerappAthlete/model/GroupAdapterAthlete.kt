@@ -28,7 +28,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class GroupAdapterAthlete(
-    private var splist: List<GroupListAthlete.Data>?,
+    private var splist: List<GroupListData.groupData>?,
     private val context: Context,
     private val listener: OnItemClickListener.OnItemClickCallback
 ) : RecyclerView.Adapter<GroupAdapterAthlete.MyViewHolder>() {
@@ -42,8 +42,13 @@ class GroupAdapterAthlete(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val movie = splist?.get(position)
         movie?.let {
-            holder.group_name.text = it.group?.name ?: "Unknown Group"
-            holder.tv_sport.text = it.group?.sport?.title ?: "Unknown Sport"
+            holder.group_name.text = it.name ?: "Unknown Group"
+            holder.tv_sport.text = it.sport?.title ?: "Unknown Sport"
+            holder.days_txt.text = it.schedule?.joinToString(", ") { schedule -> schedule.day ?: "" }
+
+            Log.d("CCRCRCRCRC", "onBindViewHolder: ${it.schedule?.get(0)?.day}")
+            Log.d("CCRCRCRCRC", "onBindViewHolder: ${it.days}")
+
 
             val transformation: Transformation = RoundedTransformationBuilder()
                 .borderColor(Color.BLACK)
@@ -56,7 +61,7 @@ class GroupAdapterAthlete(
             holder.progressBar.visibility = View.VISIBLE
 
             Picasso.get()
-                .load("https://4trainersapp.com${it.group?.image}")
+                .load("https://uat.4trainersapp.com${it.image}")
                 .fit()
                 .transform(transformation)
                 .error(R.drawable.group_chate_boarder)
@@ -73,10 +78,10 @@ class GroupAdapterAthlete(
                 })
 
             holder.card.setOnClickListener {
-                Log.d("S::S::S:S", "onBindViewHolder: ${movie.group_id}")
+                Log.d("S::S::S:S", "onBindViewHolder: ${movie.id}")
                 val intent = Intent(context, GroupDetailActivity::class.java).apply {
                     putExtra("id", movie.id)
-                    putExtra("group_id", movie.group_id?.toInt() ?: -1)
+                    putExtra("group_id", movie.id?.toInt() ?: -1)
                     putExtra("position", position)
                 }
                 context.startActivity(intent)
@@ -93,6 +98,7 @@ class GroupAdapterAthlete(
         var tv_sport: TextView = view.findViewById(R.id.tv_sport)
         var card: CardView = view.findViewById(R.id.card)
         var rounded_image: RoundedImageView = view.findViewById(R.id.round_image)
+        var days_txt: TextView = view.findViewById<View>(R.id.days_txt) as TextView
         var progressBar: ProgressBar = view.findViewById(R.id.progressBar) // Add this to your XML
     }
 }

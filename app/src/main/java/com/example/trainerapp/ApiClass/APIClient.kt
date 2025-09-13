@@ -23,14 +23,17 @@ class APIClient(context: Context) {
             val newRequest = chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer "+token)
                 .build()
+
             chain.proceed(newRequest)
+
         }.build()
 
         val gson = GsonBuilder()
             .setLenient()
             .create()
+
         retrofit = Retrofit.Builder()
-            .baseUrl("https://4trainersapp.com/api/")
+            .baseUrl("https://uat.4trainersapp.com/api/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(client)
             .build()

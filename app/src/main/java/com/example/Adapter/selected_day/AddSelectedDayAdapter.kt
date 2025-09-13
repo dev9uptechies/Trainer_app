@@ -10,6 +10,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.Create_Event_Activity
 import com.example.LessonActivity
@@ -36,34 +37,52 @@ class AddSelectedDayAdapter(
         return MyViewHolder(itemView)
     }
 
+
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val movie = filterList[position]
         holder.tv_unit.visibility = View.GONE
         holder.tv_athlet.visibility = View.VISIBLE
         holder.checkBox.visibility = View.VISIBLE
 
+
         holder.tvFname.text = movie.name
         holder.tvTime1.text = movie.date
         holder.tv_athlet.text = "Time: " + movie.time
 
+        val goalsText = movie.lesson_programs?.joinToString(", ") { it.program?.goal?.goal_name.toString() } ?: ""
+        Log.d("GoalsLog", "Goals: $goalsText") // Log the goals data
+        holder.tvgoal.text = "Goal: $goalsText"
+
+
+
         holder.checkBox.isChecked = position == selectedPosition
         holder.checkBox.isClickable = false
 
-        holder.itemView.setOnClickListener {
+        holder.card.setOnClickListener {
+
+            Log.d("SSJSJJSJS", "onBindViewHolder: ooko")
             val currentPosition = holder.adapterPosition
-            if (selectedPosition != currentPosition) {
+            if (currentPosition != RecyclerView.NO_POSITION) { // Ensure valid position
                 val previousSelectedPosition = selectedPosition
                 selectedPosition = currentPosition
                 selectedGroupId = movie.id.toString()
                 selectedDate = movie.date // Store the selected date
 
+                notifyItemChanged(previousSelectedPosition) // Deselect previous
+                notifyItemChanged(selectedPosition) // Select new
+                Log.d("SSJSJJSJS", "onBindViewHolder: ooko")
 
-                holder.itemView.post {
-                    notifyItemChanged(previousSelectedPosition)
-                    notifyItemChanged(selectedPosition)
-                }
             }
         }
+
+//        holder.card.setOnClickListener {
+//            Log.d("CardClick", "Card clicked at position: $position")
+//        }
+
+
+        holder.checkBox.isChecked = (position == selectedPosition)
+
+
 
         holder.editImage.setOnClickListener {
 
@@ -91,9 +110,10 @@ class AddSelectedDayAdapter(
                 putExtra("lessonId", lessonIdList)
             }
 
-            // Start the activity
-            context.startActivity(intent)
+                      context.startActivity(intent)
         }
+
+        holder.swipe.setOnTouchListener { _, _ -> true } // Disables swipe
 
     }
 
@@ -125,6 +145,7 @@ class AddSelectedDayAdapter(
         var tvTime1: TextView = view.findViewById(R.id.tv_date)
         var checkBox: CheckBox = view.findViewById(R.id.myCheckBox)
         var editImage: ImageView = view.findViewById(R.id.img_edit)
-        var favimage: ImageView = view.findViewById(R.id.img_edit)
+        var swipe: SwipeLayout = view.findViewById(R.id.swipe_layout)
+        var card: CardView = view.findViewById(R.id.rela_dragged)
     }
 }

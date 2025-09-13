@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="Timer"
+                android:text="@string/timer"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_16sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -90,9 +90,10 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:background="@null"
                     android:fontFamily="@font/poppins_medium"
-                    android:hint="Enter Timer Name"
+                    android:hint="@string/enterTimer"
                     android:textSize="@dimen/_12sdp"
                     android:maxLines="1"
+                    android:imeOptions="actionDone"
                     android:singleLine="true"
                     android:textColor="#BBBBBB"
                     android:textColorHint="#BBBBBB" />
@@ -136,7 +137,7 @@
                         android:clickable="false"
                         android:focusable="false"
                         android:fontFamily="@font/poppins_medium"
-                        android:hint="Select Audio"
+                        android:hint="@string/selectAudio"
                         android:paddingVertical="@dimen/_9sdp"
                         android:textColor="@color/white"
                         android:textColorHint="#BBBBBB"
@@ -173,7 +174,7 @@
                         android:clickable="false"
                         android:focusable="false"
                         android:fontFamily="@font/poppins_medium"
-                        android:hint="Select Pause Audio"
+                        android:hint="@string/selectPauseAudio"
                         android:paddingVertical="@dimen/_9sdp"
                         android:textColor="@color/white"
                         android:textColorHint="#BBBBBB"
@@ -211,7 +212,7 @@
                         android:clickable="false"
                         android:focusable="false"
                         android:fontFamily="@font/poppins_medium"
-                        android:hint="Select Pause Between Cycle Audio"
+                        android:hint="@string/selectPauseBetweenCycleAudio"
                         android:paddingVertical="@dimen/_9sdp"
                         android:textColor="@color/white"
                         android:textColorHint="#BBBBBB"
@@ -257,8 +258,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="Add Cycle"
             android:textColor="@color/white"
+            android:text="@string/addCycle"
             android:textSize="@dimen/_15sdp" />
 
     </androidx.cardview.widget.CardView>
@@ -280,7 +281,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="Save"
+            android:text="@string/save"
             android:textColor="@color/white"
             android:textSize="@dimen/_15sdp" />
 

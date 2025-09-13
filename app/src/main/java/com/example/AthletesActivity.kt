@@ -42,7 +42,6 @@ class AthletesActivity : AppCompatActivity() {
     private var Name: String = ""
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         athleteActivitybinding = ActivityAthletesBinding.inflate(layoutInflater)
@@ -161,7 +160,7 @@ class AthletesActivity : AppCompatActivity() {
                 Log.d("AthletesActivity", "Attempting to load image: $imageUrl")
 
                 Picasso.get()
-                    .load("https://4trainersapp.com$imageUrl")
+                    .load("https://uat.4trainersapp.com$imageUrl")
                     .fit()
                     .placeholder(R.drawable.app_icon)
                     .error(R.drawable.background_splash_image)
@@ -182,6 +181,8 @@ class AthletesActivity : AppCompatActivity() {
             trainingPlanView.setOnClickListener {
                 mainId = athlete.id ?: 0
                 Name = athlete.name ?: ""
+
+                Log.d("QWQWWQWQ", "addAthleteNames: $mainId")
                 Log.d("name","Name:- ${Name}")
                 val intent = Intent(this, ViewAetleteActivity::class.java)
                 intent.putExtra("MainId", mainId)

@@ -15,6 +15,7 @@ import com.example.model.competition.create.RatingDataAthlete
 import com.example.model.newClass.competition.Competition
 import com.example.model.newClass.competition.GetCompetition
 import com.example.model.newClass.competition.GetCompetitionAll
+import com.example.model.newClass.competition.GetCompetitionAthlete
 import com.example.model.newClass.competition.GetCompetitionRequest
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
@@ -38,6 +39,7 @@ import com.highsoft.highcharts.common.hichartsclasses.HIOptions
 import com.highsoft.highcharts.common.hichartsclasses.HIPane
 import com.highsoft.highcharts.common.hichartsclasses.HIPlotOptions
 import com.highsoft.highcharts.common.hichartsclasses.HISeries
+import com.highsoft.highcharts.common.hichartsclasses.HIStyle
 import com.highsoft.highcharts.common.hichartsclasses.HITitle
 import com.highsoft.highcharts.common.hichartsclasses.HIXAxis
 import com.highsoft.highcharts.common.hichartsclasses.HIYAxis
@@ -81,11 +83,11 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
     lateinit var analysisData: MutableList<RatingItem>
 
 
-    var warmupDesc = "Give a score to the following entries pre-competition and during warm-up"
-    var mentalDesc = "Give a score to the following entries."
-    var physicalDesc = "Give a score to the following entries."
-    var strategyDesc = "Give a score to the following entries."
-    var techniqueDesc = "Give a score to the following entries."
+    private lateinit var warmupDesc: String
+    private lateinit var mentalDesc: String
+    private lateinit var physicalDesc: String
+    private lateinit var strategyDesc: String
+    private lateinit var techniqueDesc: String
 
     var arrWarmup = arrayOf(
         "Activation",
@@ -170,9 +172,13 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         setContentView(viewCompetitionAnalysisBinding.root)
         initViews()
         checkButtonClick()
-        getCompetitionDataAthlete()
 
-
+        val userType = preferenceManager.GetFlage()
+        if (userType == "Athlete"){
+            getCompetitionDataAthlete()
+        }else {
+            getCompetitionData()
+        }
 
     }
 
@@ -192,8 +198,6 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                 val userType = preferenceManager.GetFlage()
                 preferenceManager.GetFlage()
 
-
-
                 if (userType == "Athlete"){
                     if (i.athleteRating != 0) {
                         viewCompetitionAnalysisBinding.save.setBackgroundResource(R.drawable.card_select_1)
@@ -201,6 +205,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(this, "Please Rating Athlete All Fields", Toast.LENGTH_SHORT).show()
                         break
+                        return@setOnClickListener
                     }
                 }else{
                     if (i.coachRating != 0) {
@@ -209,6 +214,8 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(this, "Please Rating Coach All Fields", Toast.LENGTH_SHORT).show()
                         break
+                        return@setOnClickListener
+
                     }
                 }
             }
@@ -235,6 +242,71 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         }
 
         viewCompetitionAnalysisBinding.back.setOnClickListener { finish() }
+    }
+
+    private fun getCompetitionData() {
+        try {
+            viewCompetitionAnalysisBinding.progressBar.visibility = View.VISIBLE
+
+            val request = GetCompetitionAthlete(
+                athlete_id = athleteId.id?.toInt() ?: 0,
+                eventId = eventId.id!!.toInt(),
+                category = catName,
+                date = compDate,
+                areaId = areaId.id!!.toInt()
+            )
+
+            apiInterface.GetCompetitionAnalysisDataAll(request)
+                .enqueue(object : Callback<GetCompetitionAll> {
+                    override fun onResponse(call: Call<GetCompetitionAll>, response: Response<GetCompetitionAll>) {
+                        viewCompetitionAnalysisBinding.progressBar.visibility = View.GONE
+
+                        if (response.isSuccessful) {
+                            val responseBody = response.body()
+                            val gson = Gson()
+                            val jsonResponse = gson.toJson(responseBody)
+                            Log.d("API Response JSON", jsonResponse)
+
+                            if (responseBody?.status == true) {
+                                val compData = responseBody.data
+
+                                if (compData != null) {
+                                    Log.d("Event ID:", "Item Event ID: ${compData.event_id}")
+                                    Log.d("Category:", "Item Category: ${compData.category}")
+                                    Log.d("Date:", "Item Date: ${compData.date}")
+                                    Log.d("Area ID:", "Item Area ID: ${compData.competition_analysis_area?.id}")
+                                    Log.d("Athlete Name:", "Athlete: ${compData.athlete?.name}")
+
+                                    competitionData.clear()
+                                    competitionData.add(compData)
+
+                                    Log.d("Final Competition Data", "$competitionData")
+
+                                    setRatingData(competitionData,true,false)
+                                    competitionData.get(0).competition_progress?.let {
+                                        setChartData(
+                                            it
+                                        )
+                                    }
+                                } else {
+                                    Log.e("API Error", "Data is null in response: $jsonResponse")
+                                }
+                            } else {
+                                Log.e("API Error", "Status is false, response: $jsonResponse")
+                            }
+                        } else {
+                            Log.e("API Failure", "Response code: ${response.code()}, message: ${response.message()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<GetCompetitionAll>, t: Throwable) {
+                        viewCompetitionAnalysisBinding.progressBar.visibility = View.GONE
+                        Log.d("API Failure", "Error: ${t.message}")
+                    }
+                })
+        } catch (e: Exception) {
+            Log.d("Error :-", "${e.message}")
+        }
     }
 
     private fun getCompetitionDataAthlete() {
@@ -269,15 +341,14 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                                     Log.d("Area ID:", "Item Area ID: ${compData.competition_analysis_area?.id}")
                                     Log.d("Athlete Name:", "Athlete: ${compData.athlete?.name}")
 
-                                    // Directly set the data without filtering or checking for duplicates
                                     competitionData.clear()
                                     competitionData.add(compData)
 
                                     Log.d("Final Competition Data", "$competitionData")
 
-                                    setRatingData(competitionData)
+                                    setRatingData(competitionData,false,true)
                                     competitionData.get(0).competition_progress?.let {
-                                        setChartOnlineData(
+                                        setChartData(
                                             it
                                         )
                                     }
@@ -302,7 +373,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         }
     }
 
-    private fun setRatingData(competition: MutableList<Competition.CompetitionData>) {
+    private fun setRatingData(competition: MutableList<Competition.CompetitionData>,isCoach:Boolean, isAthlete:Boolean) {
         analysisData.clear()
         for (i in competition) {
             for (j in i.competition_progress!!) {
@@ -315,8 +386,8 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                         name = j.title,
                         coachRating = coachRating,
                         athleteRating = athleteRating,
-                        isByCoach = false,
-                        isByAthlete = false
+                        isByCoach = isCoach,
+                        isByAthlete = isAthlete
                     )
                 )
 
@@ -332,7 +403,7 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         } else {
             if ("false" == "false"){
                 viewCompetitionAnalysisBinding.performanceRly.visibility = View.VISIBLE
-                compAdapter = ViewCompetitionAdapter(analysisData, this, false, false)
+                compAdapter = ViewCompetitionAdapter(analysisData, this, true, false)
                 viewCompetitionAnalysisBinding.performanceRly.adapter = compAdapter
             }else{
                 viewCompetitionAnalysisBinding.performanceRly.visibility = View.VISIBLE
@@ -343,8 +414,6 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         }
 
     }
-
-
 
     private fun saveCompetitionData(data: MutableList<RatingData>) {
         try {
@@ -375,18 +444,17 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                             val data = response.body()!!
                             Log.d("Athlete :- Data ", "${data}")
                             val message = data.message ?: "Success"
-                            Toast.makeText(
-                                this@ViewCompetitionAnalysisActivity,
-                                message,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@ViewCompetitionAnalysisActivity, message, Toast.LENGTH_SHORT).show()
 //                            val chartData = data.data!!
                             if (data.data!!.competition_progress != null) {
                                 val chartData = data.data.competition_progress
+
+                                Log.d("CTTTCTCTT", "onResponse: $chartData")
                                 if (chartData!!.isNotEmpty()) {
-                                    setChartOnlineData(chartData)
+                                    setChartData(chartData)
                                 }
                             }
+//                            finish()
                             //setRadarChart(rangeData)
                         }
                     } else if (code == 403) {
@@ -449,9 +517,10 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                             if (data.data!!.competition_progress != null) {
                                 val chartData = data.data.competition_progress
                                 if (chartData!!.isNotEmpty()) {
-                                    setChartOnlineData(chartData)
+                                    setChartData(chartData)
                                 }
                             }
+//                            finish()
                             //setRadarChart(rangeData)
                         }
                     } else if (code == 403) {
@@ -477,15 +546,29 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun setChartOnlineData(chartData: List<Competition.CompetitionProgress>) {
+    private fun setChartData(competitionProgress: List<Competition.CompetitionProgress>?) {
         viewCompetitionAnalysisBinding.chartView.visibility = View.VISIBLE
+        viewCompetitionAnalysisBinding.chartView.addFont(R.font.poppins_medium)
+
         val options = HIOptions()
 
-        val chart = HIChart()
-        chart.polar = true
-        chart.height = "100%"
-        options.chart = chart
+//        val options = HIOptions()
+
+        // Set chart configuration
+        options.chart = HIChart().apply {
+            polar = true
+            height = "100%"
+            style = HICSSObject().apply {
+                fontFamily = "poppins_medium"
+                fontSize = "12px"
+                color = "#FFFFFF"
+            }
+        }
+
+//        val chart = HIChart()
+//        chart.polar = true
+//        chart.height = "100%"
+//        options.chart = chart
         chartView.theme = "dark"
 
         val pane = HIPane()
@@ -496,13 +579,30 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         val xAxis = HIXAxis()
 //        xAxis.tickInterval = 45
         xAxis.min = 0
-        xAxis.max = chartData.size
-        xAxis.labels = HILabels()
-        xAxis.labels.style = HICSSObject().apply { color = "#FFFFFF" }
-        xAxis.categories =
-            chartData.mapIndexed { index, data -> (index + 1).toString() } as ArrayList
+        xAxis.max = competitionProgress!!.size
+//        xAxis.labels = HILabels()
+        xAxis.labels = HILabels().apply {
+            style = HICSSObject().apply {
+                fontFamily = "poppins_medium"
+                fontSize = "12px"
+                fontWeight = "bold"
+                color = "#FFFFFF"
+            }
+            distance = 2
+            rotation = 0
+        }
+        xAxis.categories = competitionProgress.mapIndexed { index, data -> (index + 1).toString() } as ArrayList
         xAxis.labels.distance = 10
-        xAxis.labels.rotation = 0
+        xAxis.labels.rotation = 10
+
+        xAxis.title = HITitle().apply {
+            text = ""
+            style = HICSSObject().apply {
+                fontFamily = "poppins_medium"
+                fontSize = "16px"
+                color = "#333333"
+            }
+        }
 
         xAxis.labels.formatter = HIFunction(
             HIFunctionInterface { f: HIChartContext ->
@@ -510,7 +610,9 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
                     "value"
                 ).toString() + ""
             }, arrayOf("value")
+
         )
+
         options.xAxis = object : ArrayList<HIXAxis?>() {
             init {
                 add(xAxis)
@@ -530,11 +632,12 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         plotOptions.column.pointPadding = 0
         plotOptions.column.groupPadding = 0
         options.plotOptions = plotOptions
-        chart.backgroundColor = HIColor.initWithRGB(0, 0, 0)
+        options.chart.backgroundColor = HIColor.initWithRGB(0, 0, 0)
 
         val athleteData =
-            chartData.mapNotNull { it.athlete_star?.toFloat() }.ifEmpty { emptyList() }
-        val coachData = chartData.mapNotNull { it.coach_star?.toFloat() }.ifEmpty { emptyList() }
+            competitionProgress.mapNotNull { it.athlete_star?.toFloat() }.ifEmpty { emptyList() }
+        val coachData =
+            competitionProgress.mapNotNull { it.coach_star?.toFloat() }.ifEmpty { emptyList() }
 
         Log.d("Series Data :-", "athlete :- $athleteData")
         Log.d("Series Data :-", "athlete :- $coachData")
@@ -562,12 +665,15 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         val legend = HILegend()
         legend.enabled = true
         val itemstyle = HICSSObject()
-        itemstyle.fontSize = "14px"
+        itemstyle.fontSize = "12px"
         itemstyle.fontWeight = "regular"
         itemstyle.color = "#FFFFFF"
+        itemstyle.fontFamily = "poppins_medium"
+
         legend.itemStyle = itemstyle
         options.legend = legend
         options.series = ArrayList(Arrays.asList(series1, series3))
+
 
         val exporting = HIExporting()
         exporting.enabled = false
@@ -577,9 +683,21 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         credits.enabled = false
         options.credits = credits
 
+//        legend = HILegend().apply {
+//            enabled = true
+//            itemStyle = HICSSObject().apply {
+//                fontSize = "14px"
+//                fontWeight = "regular"
+//                color = "#FFFFFF"
+//                fontFamily = "poppins_medium"
+//            }
+//        }
 
         chartView.options = options
+        chartView.invalidate() // Request a layout update
+        chartView.requestLayout()
     }
+
 
     private fun initViews() {
         preferenceManager = PreferencesManager(this)
@@ -591,6 +709,11 @@ class ViewCompetitionAnalysisActivity : AppCompatActivity() {
         competition = mutableListOf()
         competitionData = mutableListOf()
 
+        warmupDesc = getString(R.string.warmupDesc)
+        mentalDesc = getString(R.string.mentalDesc)
+        physicalDesc = getString(R.string.physicalDesc)
+        strategyDesc = getString(R.string.strategyDesc)
+        techniqueDesc = getString(R.string.techniqueDesc)
         getEventData()
         getIntData()
 

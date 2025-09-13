@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:text="LUN"
-                android:textAllCaps="true"
+                android:fontFamily="@font/poppins_medium"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_13sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -36,6 +36,7 @@
                 android:layout_marginStart="@dimen/_10sdp"
                 android:text="2"
                 android:textAllCaps="true"
+                android:fontFamily="@font/poppins_medium"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_13sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -46,20 +47,39 @@
                 android:id="@+id/time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium"
                 android:text="20:30"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
+                android:layout_marginEnd="@dimen/_15sdp"
                 android:textSize="@dimen/_13sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/endtime"
                 app:layout_constraintStart_toEndOf="@+id/count"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/endtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium"
+                android:text="20:30"
+                android:textAllCaps="true"
+                android:layout_marginEnd="@dimen/_25sdp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="@dimen/_60sdp"
+                android:id="@+id/card_view"
                 android:layout_height="@dimen/_28sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
                 app:cardBackgroundColor="@color/splash_text_color"
                 app:cardCornerRadius="@dimen/_10sdp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -69,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="View"
+                    android:text="@string/view"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sdp" />
             </androidx.cardview.widget.CardView>

@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/poppins_semi_bold"
-        android:text="Performance Profile"
+        android:text="@string/performanceProfile"
         android:textColor="@color/splash_text_color"
         android:textSize="@dimen/_16sdp"
         app:layout_constraintEnd_toStartOf="@+id/createPerformance"
@@ -96,7 +96,7 @@
             android:clickable="false"
             android:focusable="false"
             android:fontFamily="@font/poppins_medium"
-            android:hint="Select Athletes"
+            android:hint="@string/selectAthlete"
             android:paddingVertical="@dimen/_9sdp"
             android:paddingStart="@dimen/_12sdp"
             android:theme="@style/spinnerTheme"
@@ -117,7 +117,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_medium"
                 android:gravity="center"
-                android:text="No Data Found"
+                android:text="@string/noDataFound"
                 android:textColor="@color/white"
                 android:visibility="gone" />
 
@@ -174,7 +174,7 @@
                     android:enabled="false"
                     android:clickable="false"
                     android:background="@drawable/btn_sel_bg_color"
-                    android:text="View All Quality graph"
+                    android:text="@string/viewAllQualityGraph"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_12sdp" />
@@ -210,7 +210,7 @@
                     android:enabled="false"
                     android:clickable="false"
                     android:background="@drawable/btn_sel_bg_color"
-                    android:text="View Average graph"
+                    android:text="@string/viewAverageGraph"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_12sdp" />
             </androidx.cardview.widget.CardView>
@@ -235,7 +235,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Save"
+            android:text="@string/save"
             android:textColor="@color/white" />
     </androidx.cardview.widget.CardView>
 

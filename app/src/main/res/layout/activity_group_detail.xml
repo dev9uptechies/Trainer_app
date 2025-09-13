@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semi_bold"
-                android:text="Groups Details"
+                android:text="@string/groupsDetails"
                 android:textColor="@color/splash_text_color"
                 android:textSize="@dimen/_16sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/img_back"
@@ -103,7 +103,6 @@
                             app:layout_constraintStart_toStartOf="@+id/rounded_img"
                             app:layout_constraintTop_toTopOf="@+id/rounded_img" />
 
-
                         <TextView
                             android:id="@+id/tv_group_name"
                             android:layout_width="wrap_content"
@@ -133,16 +132,17 @@
                             android:layout_height="@dimen/_22sdp"
                             android:layout_marginBottom="@dimen/_5sdp"
                             app:cardBackgroundColor="#1AFFFFFF"
+                            android:elevation="0dp"
                             app:cardCornerRadius="@dimen/_5sdp"
                             app:layout_constraintBottom_toBottomOf="@+id/rounded_img"
                             app:layout_constraintStart_toStartOf="@+id/tv_group_name">
 
                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:gravity="center"
-                                android:text="Edit Profile"
+                                android:background="@android:color/transparent"
+                                android:text="@string/editProfile"
                                 android:fontFamily="@font/poppins_medium"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_8sdp" />
@@ -174,7 +174,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Training Plan"
+                        android:text="@string/planning"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_14sdp"/>
 
@@ -182,6 +182,7 @@
                         android:id="@+id/planning_add"
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
+                        android:visibility="gone"
                         android:src="@drawable/ic_plus"/>
                 </LinearLayout>
 
@@ -201,7 +202,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Lesson"
+                        android:text="@string/lesson"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_14sdp"/>
 
@@ -209,6 +210,8 @@
                         android:id="@+id/Lesson_add"
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
+                        android:visibility="gone"
+
                         android:src="@drawable/ic_plus"/>
                 </LinearLayout>
 
@@ -228,7 +231,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Event"
+                        android:text="@string/event"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_14sdp"/>
 
@@ -236,6 +239,8 @@
                         android:id="@+id/Event_add"
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
+                        android:visibility="gone"
+
                         android:src="@drawable/ic_plus"/>
                 </LinearLayout>
 
@@ -255,7 +260,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Test"
+                        android:text="@string/test"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_14sdp"/>
 
@@ -263,6 +268,7 @@
                         android:id="@+id/Test_add"
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
+                        android:visibility="gone"
                         android:src="@drawable/ic_plus"/>
                 </LinearLayout>
 
@@ -283,7 +289,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Athlete"
+                        android:text="@string/athletes"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_14sdp"/>
 

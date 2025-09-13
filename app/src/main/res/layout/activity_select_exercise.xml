@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Exercise List"
+                    android:text="@string/exerciseList"
                     android:textColor="@color/splash_text_color"
                     android:textSize="@dimen/_18sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/back"
@@ -70,7 +70,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="General"
+                        android:text="@string/general"
                         android:textColor="#F3F3F3"
                         android:textSize="@dimen/_12sdp"/>
 
@@ -90,7 +90,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Specific"
+                        android:text="@string/specific"
                         android:textColor="#F3F3F3"
                         android:textSize="@dimen/_12sdp"/>
 
@@ -136,7 +136,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="save"
+            android:text="@string/save"
             android:textColor="@color/white"
             android:textSize="@dimen/_16sdp"/>
     </androidx.cardview.widget.CardView>

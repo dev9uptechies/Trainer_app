@@ -92,7 +92,7 @@ class GetAthletesActivity : AppCompatActivity() {
             finish()
         }
 
-        getAthletesBinding.icTopMarkAttendance.tvTitleTopHeader.text = "Mark Attendance"
+        getAthletesBinding.icTopMarkAttendance.tvTitleTopHeader.text = getString(R.string.markAttendance)
 
 //        getAthletesBinding.cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
 //            ath_adapter.selectAll(isChecked)

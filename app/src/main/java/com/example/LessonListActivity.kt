@@ -87,66 +87,66 @@ class LessonListActivity : AppCompatActivity(), OnItemClickListener.OnItemClickC
     private fun lordData() {
         when (type) {
             "lesson" -> {
-                binding.tvCredit.text = "Lesson List"
+                binding.tvCredit.text = getString(R.string.lessonList)
                 GetLessonList()
             }
 
             "test" -> {
-                binding.tvCredit.text = "Test List"
+                binding.tvCredit.text = getString(R.string.testList)
                 GetTestList()
             }
 
             "event" -> {
-                binding.tvCredit.text = "Event List"
+                binding.tvCredit.text = getString(R.string.eventList)
                 geteventlist()
             }
 
             "planning" -> {
-                binding.tvCredit.text = "planning List"
+                binding.tvCredit.text = getString(R.string.planningList)
                 binding.addLayout.visibility = View.VISIBLE
                 getTrainingData()
             }
 
             "athlete" -> {
-                binding.tvCredit.text = "Athlete List"
+                binding.tvCredit.text = getString(R.string.athleteList)
                 getAthleteData()
             }
 
             "ConfirmAttendance" -> {
-                binding.tvCredit.text = "Select Athlete"
+                binding.tvCredit.text = getString(R.string.selectAthlete)
                 getAthleteData()
             }
         }
 
         when (typeEdit) {
             "lesson" -> {
-                binding.tvCredit.text = "Lesson List"
+                binding.tvCredit.text = getString(R.string.lessonList)
                 GetLessonList()
             }
 
             "test" -> {
-                binding.tvCredit.text = "Test List"
+                binding.tvCredit.text = getString(R.string.testList)
                 GetTestList()
             }
 
             "event" -> {
-                binding.tvCredit.text = "Event List"
+                binding.tvCredit.text = getString(R.string.eventList)
                 geteventlist()
             }
 
             "planning" -> {
-                binding.tvCredit.text = "planning List"
+                binding.tvCredit.text = getString(R.string.planningList)
                 binding.addLayout.visibility = View.VISIBLE
                 getTrainingData()
             }
 
             "athlete" -> {
-                binding.tvCredit.text = "Athlete List"
+                binding.tvCredit.text = getString(R.string.athleteList)
                 getAthleteData()
             }
 
             "ConfirmAttendance" -> {
-                binding.tvCredit.text = "Select Athlete"
+                binding.tvCredit.text = getString(R.string.selectAthlete)
                 getAthleteData()
             }
 

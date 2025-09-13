@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:fontFamily="@font/poppins_medium"
-        android:text="Notes"
+        android:text="@string/notes"
         android:layout_gravity="center"
         android:textColor="@color/white"
         android:textSize="@dimen/_15sdp"
@@ -59,7 +59,7 @@
                 android:paddingTop="@dimen/_5sdp"
                 android:fontFamily="@font/poppins_medium"
                 android:singleLine="true"
-                android:hint="Enter Title"
+                android:hint="@string/enterTitle"
                 android:background="@null"
                 android:textColor="#BBBBBB"
                 android:gravity="top"
@@ -109,7 +109,7 @@
                 android:gravity="top"
                 android:singleLine="true"
                 android:fontFamily="@font/poppins_medium"
-                android:hint="Enter Description"
+                android:hint="@string/enterDescription"
                 android:textColorHint="#BBBBBB"
                 android:textColor="#BBBBBB"
                 android:textSize="@dimen/_12sdp" />
@@ -142,7 +142,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Cancel"
+                android:text="@string/cancel"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_14sdp" />
 
@@ -162,7 +162,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Add"
+                android:text="@string/add"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_14sdp" />
 

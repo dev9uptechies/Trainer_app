@@ -170,6 +170,7 @@ class AddPersonalDIaryActivity : AppCompatActivity() {
             )
 
             val personalDiaryData = TrainingSession(
+                id = 0,
                 date = date.ifEmpty { "" },
                 sleep_hours = sleepHours.ifEmpty { "00:00:00" },
                 nutrition_and_hydration = nutritionAndHydration.ifEmpty { "" },

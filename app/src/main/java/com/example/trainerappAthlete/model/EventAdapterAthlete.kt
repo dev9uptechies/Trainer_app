@@ -13,7 +13,7 @@ import com.example.OnItemClickListener
 import com.example.trainerapp.R
 
 class EventAdapterAthlete(
-    private var data: ArrayList<GroupListAthlete.GroupEvents>?,
+    private var data: ArrayList<GroupListData.GroupEvents>?,
     var context: Context,
     val listener: OnItemClickListener.OnItemClickCallback
 ) : RecyclerView.Adapter<EventAdapterAthlete.MyViewHolder>() {
@@ -29,11 +29,16 @@ class EventAdapterAthlete(
         val event2 = data?.get(position)!!.event ?: return
         holder.goal.setText("Event Type: ")
 
+        holder.total.text = "Interested Athlete: "
+
         try {
             holder.name.text = event!!.event!!.title ?: ""
             holder.goaledi.text = event!!.event!!.type ?: ""
             holder.intrestedA.text = event.event!!.type ?: ""
             holder.date.text = event.event?.date?.take(10) ?: ""
+            holder.intrestedA.text = event.event?.event_athletes
+                ?.mapNotNull { it.athlete?.name }
+                ?.joinToString(", ") ?: ""
         }catch (e:Exception){
             Log.e("Error", "onBindViewHolder: Error:-  ${e.message.toString()} ")
         }
@@ -65,6 +70,7 @@ class EventAdapterAthlete(
         var goaledi: TextView = view.findViewById(R.id.tv_edt_goal)
         var goal: TextView = view.findViewById(R.id.goal)
         var intrestedA: TextView = view.findViewById(R.id.tv_edit_total_time)
+        var total: TextView = view.findViewById(R.id.total)
         var image: ImageView = view.findViewById(R.id.image)
         var date: TextView = view.findViewById(R.id.edt_date)
         var goaltv: TextView = view.findViewById(R.id.tv_edt_goal)

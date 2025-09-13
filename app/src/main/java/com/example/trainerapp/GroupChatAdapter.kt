@@ -41,6 +41,12 @@ class GroupChatAdapter (private var splist: ArrayList<GroupChateListData.groupDa
     override fun onBindViewHolder(holder: GroupChatAdapter.MyViewHolder, position: Int) {
         val movie = splist!![position]
         holder.group_name.text = movie.name
+        if (movie.last_message != null) {
+            holder.chat_description.text =
+                movie.last_message?.sender?.name + ": ${movie.last_message?.message}"
+        }else{
+            holder.chat_description.text = ""
+        }
 
         Log.d("56555656", "onBindViewHolder: ${movie.cycles}")
 
@@ -59,7 +65,7 @@ class GroupChatAdapter (private var splist: ArrayList<GroupChateListData.groupDa
             .build()
 
         Picasso.get()
-            .load("https://4trainersapp.com"+movie.image)
+            .load("https://uat.4trainersapp.com"+movie.image)
             .fit()
             .transform(transformation)
             .into(holder.rounded_image)

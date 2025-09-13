@@ -121,7 +121,6 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                         putExtras(bundleCompetitive)
                         putExtras(bundleTransition)
                     }
-
                     startActivity(intent)
                     finish()
                 } catch (e: Exception) {
@@ -247,23 +246,23 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
 
     private fun callGroupApiAthlete() {
         binding.groupProgress.visibility = View.VISIBLE
-        apiInterface.GropListAthlete()?.enqueue(object : Callback<GroupListAthlete?> {
+        apiInterface.GropListAthlete()?.enqueue(object : Callback<GroupListData?> {
             override fun onResponse(
-                call: Call<GroupListAthlete?>,
-                response: Response<GroupListAthlete?>
+                call: Call<GroupListData?>,
+                response: Response<GroupListData?>
             ) {
 
                 val code = response.code()
                 if (code == 200) {
-                    val resource: GroupListAthlete? = response.body()
+                    val resource: GroupListData? = response.body()
                     val Success: Boolean = resource?.status!!
                     val Message: String = resource.message!!
 
                     if (Success) {
                         binding.groupProgress.visibility = View.GONE
-                        initrecyclerAthlee(resource.data!!)
+                        initrecyclerAthlee(ArrayList(resource?.data ?: emptyList()))
 
-                        Log.d("DMKMMMDMKDKD", "onResponse: ${resource.data!!.get(0).group_id}")
+
                     } else {
                         binding.groupProgress.visibility = View.GONE
                         Toast.makeText(this@SelectGroupActivity, "" + Message, Toast.LENGTH_SHORT)
@@ -297,7 +296,7 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
                 }
             }
 
-            override fun onFailure(call: Call<GroupListAthlete?>, t: Throwable) {
+            override fun onFailure(call: Call<GroupListData?>, t: Throwable) {
                 Toast.makeText(this@SelectGroupActivity, "" + t.message, Toast.LENGTH_SHORT)
                     .show()
                 call.cancel()
@@ -313,7 +312,7 @@ class SelectGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClick
         binding.recylerSelectGroup.adapter = groupadapter
     }
 
-    private fun initrecyclerAthlee(data: List<GroupListAthlete.Data>) {
+    private fun initrecyclerAthlee(data: List<GroupListData.groupData>) {
         binding.recylerSelectGroup.setLayoutManager(LinearLayoutManager(this))
         groupadapterAthlete = selectGroupAdapterAthlete(data, this, this)
         binding.recylerSelectGroup.adapter = groupadapterAthlete

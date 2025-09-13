@@ -3,7 +3,10 @@ package com.example.trainerapp
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.media.Image
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -46,7 +49,8 @@ import kotlin.math.log
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var homeBinding: ActivityHomeBinding
     lateinit var fm: FragmentManager
-    lateinit var active: Fragment
+    private var activeFragment: Fragment? = null
+    private var isReplacingFragment = false  // Prevent multiple clicks
     lateinit var fragment1: Fragment
     lateinit var fragment2: Fragment
     lateinit var fragment3: Fragment
@@ -65,26 +69,25 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mesocycle: String? = null
     private var workloadColor: String? = null
 
+    private var preCompetitiveName: String? = null
+    private var preCompetitiveStartDate: String? = null
+    private var preCompetitiveEndDate: String? = null
+    private var preCompetitiveMesocycle: String? = null
+    private var preCompetitiveWorkloadColor: String? = null
 
-        private var preCompetitiveName: String? = null
-        private var preCompetitiveStartDate: String? = null
-        private var preCompetitiveEndDate: String? = null
-        private var preCompetitiveMesocycle: String? = null
-        private var preCompetitiveWorkloadColor: String? = null
+    // competitive
+    private var CompetitiveName: String? = null
+    private var CompetitiveStartDate: String? = null
+    private var CompetitiveEndDate: String? = null
+    private var CompetitiveMesocycle: String? = null
+    private var CompetitiveWorkloadColor: String? = null
 
-        // competitive
-        private var CompetitiveName: String? = null
-        private var CompetitiveStartDate: String? = null
-        private var CompetitiveEndDate: String? = null
-        private var CompetitiveMesocycle: String? = null
-        private var CompetitiveWorkloadColor: String? = null
-
-        // Transition
-        private var TransitionName: String? = null
-        private var TransitionStartDate: String? = null
-        private var TransitionEndDate: String? = null
-        private var TransitionMesocycle: String? = null
-        private var TransitionWorkloadColor: String? = null
+    // Transition
+    private var TransitionName: String? = null
+    private var TransitionStartDate: String? = null
+    private var TransitionEndDate: String? = null
+    private var TransitionMesocycle: String? = null
+    private var TransitionWorkloadColor: String? = null
 
 
     private val sharedPreferences by lazy {
@@ -99,10 +102,12 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setFragments()
         setDrawerToggle()
 
+
         val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("id", id)
         editor.putString("group_id", group_id)
+        editor.putString("SouldSave", group_id)
         editor.putString("name", name)
         editor.putString("start_date", startDate)
         editor.putString("end_date", endDate)
@@ -131,9 +136,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         editor.putString("TransitionMesocycle", TransitionMesocycle)
         editor.putString("TransitionWorkloadColor", TransitionWorkloadColor)
 
-
         editor.apply()
-
 
     }
 
@@ -277,15 +280,15 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val addGroupBack = intent.getStringExtra("group") ?: ""
         Log.d("addGroupBack", "Value received: $addGroupBack")
         if (addGroupBack == "addGroup") {
-            active = fragment3
+            activeFragment = fragment3
 
         } else {
-            active = fragment1
+            activeFragment = fragment1
             Log.d("addGroupBack", "Condition not met. Received value: $addGroupBack")
         }
 
         ft = supportFragmentManager.beginTransaction()
-        ft.replace(R.id.main_container, active)
+        ft.replace(R.id.main_container, activeFragment!!)
         ft.commit()
     }
 
@@ -361,25 +364,25 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val menu = homeBinding.navigationView.menu
             menu.clear() // Remove existing items
 
-            menu.add(Menu.NONE, R.id.tv_notification, Menu.NONE, "Notification").setIcon(R.drawable.ic_notification)
+            menu.add(Menu.NONE, R.id.tv_notification, Menu.NONE, getString(R.string.notification)).setIcon(R.drawable.ic_notification)
 
-            menu.add(Menu.NONE, R.id.tv_policy, Menu.NONE, "Privacy Policy").setIcon(R.drawable.ic_privacy)
+            menu.add(Menu.NONE, R.id.tv_policy, Menu.NONE, getString(R.string.privacyPolicy)).setIcon(R.drawable.ic_privacy)
 
-            menu.add(Menu.NONE, R.id.tv_favorite, Menu.NONE, "Favorites").setIcon(R.drawable.ic_favorite)
+            menu.add(Menu.NONE, R.id.tv_favorite, Menu.NONE, getString(R.string.favourite)).setIcon(R.drawable.ic_favorite)
 
-            menu.add(Menu.NONE, R.id.tv_profile, Menu.NONE, "Performance Profile").setIcon(R.drawable.ic_perfomance)
+            menu.add(Menu.NONE, R.id.tv_profile, Menu.NONE, getString(R.string.performanceProfile)).setIcon(R.drawable.ic_perfomance)
 
-            menu.add(Menu.NONE, R.id.tv_analysis, Menu.NONE, "Competition Analysis").setIcon(R.drawable.ic_competition)
+            menu.add(Menu.NONE, R.id.tv_analysis, Menu.NONE, getString(R.string.competitionAnalysis)).setIcon(R.drawable.ic_competition)
 
-            menu.add(Menu.NONE, R.id.tv_view_analysis, Menu.NONE, "View Analysis").setIcon(R.drawable.ic_competition)
+            menu.add(Menu.NONE, R.id.tv_view_analysis, Menu.NONE, getString(R.string.viewAnalysis)).setIcon(R.drawable.ic_competition)
 
-            menu.add(Menu.NONE, R.id.tv_personal_diary, Menu.NONE, "Personal Diary").setIcon(R.drawable.ic_diaryy)
+            menu.add(Menu.NONE, R.id.tv_personal_diary, Menu.NONE, getString(R.string.personalDiary)).setIcon(R.drawable.icd)
 
-            menu.add(Menu.NONE, R.id.tv_setting, Menu.NONE, "Settings").setIcon(R.drawable.ic_setting)
+            menu.add(Menu.NONE, R.id.tv_setting, Menu.NONE, getString(R.string.settings)).setIcon(R.drawable.ic_setting)
 
-            menu.add(Menu.NONE, R.id.logout, Menu.NONE, "Logout").setIcon(R.drawable.logout)
+            menu.add(Menu.NONE, R.id.logout, Menu.NONE, getString(R.string.logout)).setIcon(R.drawable.logout)
         } else {
-            homeBinding.navigationView.inflateMenu(R.menu.activity_main_drawer) // Load menu from XML
+//            homeBinding.navigationView.inflateMenu(R.menu.activity_main_drawer)
         }
 
 
@@ -411,7 +414,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val groupImage = homeBinding.navView.findViewById<LinearLayout>(R.id.group_image)
         val chatImage = homeBinding.navView.findViewById<LinearLayout>(R.id.chat_image)
 
-
         val addGroupBack = intent.getStringExtra("group") ?: ""
         Log.d("addGroupBack", "Value received: $addGroupBack")
         if (addGroupBack == "addGroup") {
@@ -430,35 +432,50 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Log.d("addGroupBack","Condition not met. Received value")
         }
 
-
         createImage.setOnClickListener {
             startActivity(Intent(this, CrateActivity::class.java))
         }
 
         homeImage.setOnClickListener {
-            setNavigationSelection(imgHome, imgCalendar, imgGroup, imgChat)
-            replaceFragment(HomeFragment())
+            if (activeFragment !is HomeFragment) {
+                setNavigationSelection(imgHome, imgCalendar, imgGroup, imgChat)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    replaceFragment(HomeFragment())
+                }, 0)
+            }
         }
 
         calendarImage.setOnClickListener {
             if (id.isNullOrEmpty() || id == "0") {
                 Toast.makeText(this, "Select Group First", Toast.LENGTH_SHORT).show()
-                replaceFragment(HomeFragment())
                 return@setOnClickListener
             }
-            setNavigationSelection(imgCalendar, imgHome, imgGroup, imgChat)
-            replaceFragment(CalenderFragment())
+            if (activeFragment !is CalenderFragment) {
+                setNavigationSelection(imgCalendar, imgHome, imgGroup, imgChat)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    replaceFragment(CalenderFragment())
+                }, 0)
+            }
         }
 
         groupImage.setOnClickListener {
-            setNavigationSelection(imgGroup, imgHome, imgCalendar, imgChat)
-            replaceFragment(GroupFragment())
+            if (activeFragment !is GroupFragment) {
+                setNavigationSelection(imgGroup, imgHome, imgCalendar, imgChat)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    replaceFragment(GroupFragment())
+                }, 0)
+            }
         }
 
         chatImage.setOnClickListener {
-            setNavigationSelection(imgChat, imgHome, imgCalendar, imgGroup)
-            replaceFragment(ChatFragment())
+            if (activeFragment !is ChatFragment) {
+                setNavigationSelection(imgChat, imgHome, imgCalendar, imgGroup)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    replaceFragment(ChatFragment())
+                }, 0)
+            }
         }
+
     }
 
     private fun initAthleteViews() {
@@ -480,13 +497,21 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
 
         homeImageAthlete.setOnClickListener {
-            setNavigationSelection(imgHomeAthlete, imgCalendarAthlete, imgGroupAthlete, imgChatAthlete, imgProfileAthlete)
-            replaceFragment(HomeFragment())
+            if (activeFragment !is HomeFragment) {
+                setNavigationSelection(imgHomeAthlete, imgCalendarAthlete, imgGroupAthlete, imgChatAthlete, imgProfileAthlete)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    replaceFragment(HomeFragment())
+                }, 0)
+            }
         }
 
         calendarImageAthlete.setOnClickListener {
-            setNavigationSelection(imgCalendarAthlete, imgHomeAthlete, imgGroupAthlete, imgChatAthlete, imgProfileAthlete)
-            replaceFragment(GroupFragment())
+            if (activeFragment !is GroupFragment) {
+                setNavigationSelection(imgCalendarAthlete, imgHomeAthlete, imgGroupAthlete, imgChatAthlete, imgProfileAthlete)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    replaceFragment(GroupFragment())
+                }, 0)
+            }
         }
 
         groupImageAthlete.setOnClickListener {
@@ -494,17 +519,30 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Toast.makeText(this, "Select Group First", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            setNavigationSelection(imgGroupAthlete, imgHomeAthlete, imgCalendarAthlete, imgChatAthlete, imgProfileAthlete)
-            replaceFragment(CalenderFragment())
+            if (activeFragment !is CalenderFragment) {
+                setNavigationSelection(imgGroupAthlete, imgHomeAthlete, imgCalendarAthlete, imgChatAthlete, imgProfileAthlete)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    replaceFragment(CalenderFragment())
+                }, 0)
+            }
         }
 
         chatImageAthlete.setOnClickListener {
-            setNavigationSelection(imgChatAthlete, imgHomeAthlete, imgCalendarAthlete, imgGroupAthlete, imgProfileAthlete)
-            replaceFragment(ChatFragment())
+            if (activeFragment !is ChatFragment) {
+                setNavigationSelection(imgChatAthlete, imgHomeAthlete, imgCalendarAthlete, imgGroupAthlete, imgProfileAthlete)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    replaceFragment(ChatFragment())
+                }, 0)
+            }
         }
+
         ProfileImageAthlete.setOnClickListener {
-            setNavigationSelection(imgProfileAthlete, imgChatAthlete, imgHomeAthlete, imgCalendarAthlete, imgGroupAthlete)
-            replaceFragment(ProfileFragment())
+            if (activeFragment !is ProfileFragment) {
+                setNavigationSelection(imgProfileAthlete, imgChatAthlete, imgHomeAthlete, imgCalendarAthlete, imgGroupAthlete)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    replaceFragment(ProfileFragment())
+                }, 0)
+            }
         }
     }
 
@@ -525,13 +563,16 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun replaceFragment(fragment: Fragment) {
-        active = fragment
-        val ft = supportFragmentManager.beginTransaction()
-        ft.replace(R.id.main_container, active)
-        ft.commit()
+        if (activeFragment != fragment && !isReplacingFragment) {
+            isReplacingFragment = true
+            activeFragment = fragment
+
+            val ft = supportFragmentManager.beginTransaction()
+            ft.replace(R.id.main_container, activeFragment!!)
+            ft.runOnCommit { isReplacingFragment = false }
+            ft.commit()
+        }
     }
-
-
 
     override fun onBackPressed() {
         super.onBackPressed()

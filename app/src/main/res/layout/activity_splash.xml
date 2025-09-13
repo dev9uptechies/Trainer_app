@@ -45,7 +45,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/for_excellence"
+                    android:text="@string/yourLife"
                     android:textSize="@dimen/_22sdp"
                     android:layout_marginStart="@dimen/_20sdp"
                     android:textColor="@color/splash_text_color"
@@ -55,7 +55,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:text="@string/splash_text_dummy"
+                    android:text="@string/registerAcc"
                     android:textColor="@color/white"
                     android:layout_marginStart="@dimen/_20sdp"
                     android:visibility="gone"

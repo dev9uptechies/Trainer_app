@@ -1,6 +1,7 @@
 package com.example
 
 import android.app.Dialog
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -16,6 +17,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
@@ -28,6 +30,7 @@ import com.budiyev.android.codescanner.CodeScannerView
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
+import com.example.GroupListData
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
@@ -52,7 +55,9 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
     lateinit var groupadapterAthlete: GroupAdapterAthlete
     private var receivedId: String = ""
     private var groupList: ArrayList<GroupListData.groupData> = ArrayList()
-    private var groupListAthlete: List<GroupListAthlete.Data>? = null
+    private var groupListAthlete: List<GroupListData.groupData>? = null
+    private var receivedIds: String = ""
+    private var receivedGroup_Ids: String = ""
 
     override fun onResume() {
         checkUser()
@@ -121,6 +126,10 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         apiInterface = apiClient.client().create(APIInterface::class.java)
         userType = preferenceManager.GetFlage()
 
+        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        receivedIds = sharedPreferences.getString("id", "default_value") ?: ""
+        receivedGroup_Ids = sharedPreferences.getString("group_id", "default_value") ?: ""
+        Log.e("CVVVCVCVCVCVVC", "onCreateView: " + receivedIds   + receivedGroup_Ids)
 
         ButtonClick()
         loadData()
@@ -152,7 +161,11 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
         } else {
             groupBinding.createGroup.setOnClickListener {
-                startActivity(Intent(requireContext(), CreateGropActivity::class.java))
+//                startActivity(Intent(requireContext(), CreateGropActivity::class.java))
+                val intent = Intent(requireContext(),CreateGropActivity::class.java)
+                intent.putExtra("SavedGroupId", receivedIds.toString())
+                intent.putExtra("SavedGroupIdAthlete", receivedGroup_Ids.toString())
+                requireActivity().startActivity(intent)
             }
         }
 
@@ -310,51 +323,50 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
     private fun callGroupApiAthlete() {
         try {
-            groupBinding.groupProgress.visibility = View.VISIBLE
-            apiInterface.GropListAthlete().enqueue(object : Callback<GroupListAthlete?> {
+
+            Utils.showLoading(requireActivity())
+            apiInterface.GropListAthlete().enqueue(object : Callback<GroupListData?> {
                 override fun onResponse(
-                    call: Call<GroupListAthlete?>,
-                    response: Response<GroupListAthlete?>
+                    call: Call<GroupListData?>,
+                    response: Response<GroupListData?>
                 ) {
                     val code = response.code()
                     if (code == 200) {
-                        val resource: GroupListAthlete? = response.body()
+                        val resource: GroupListData? = response.body()
                         val success: Boolean = resource?.status ?: false
                         val message: String = resource?.message ?: "Unknown"
 
                         if (success) {
-                            groupBinding.groupProgress.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             // Store the list of GroupListAthlete.Data items
-                            groupListAthlete =
-                                resource?.data // No need for toList() since it's already a list
+                            groupListAthlete = resource?.data // No need for toList() since it's already a list
                             initrecyclerAthlete(groupListAthlete!!) // Pass the list to the RecyclerView
 
                         } else if (response.code() == 429) {
                             Toast.makeText(requireContext(), "Too Many Request", Toast.LENGTH_SHORT)
                                 .show()
                         } else {
-                            groupBinding.groupProgress.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                             // Handle failure case
                         }
                     } else if (response.code() == 403) {
-                        groupBinding.groupProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         val message = response.message()
                         call.cancel()
                         preferenceManager.setUserLogIn(false)
                         startActivity(Intent(requireContext(), SignInActivity::class.java))
                         requireActivity().finish()
                     } else {
-                        groupBinding.groupProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         call.cancel()
                     }
                 }
 
-                override fun onFailure(call: Call<GroupListAthlete?>, t: Throwable) {
+                override fun onFailure(call: Call<GroupListData?>, t: Throwable) {
                     Toast.makeText(requireContext(), t.message, Toast.LENGTH_SHORT).show()
                     call.cancel()
                     Log.d("GROOOOOOOP", t.message.toString())
-                    groupBinding.groupProgress.visibility = View.GONE
-                    groupBinding.groupProgress.visibility
+                    Utils.hideLoading(requireActivity())
                 }
             })
         } catch (e: Exception) {
@@ -365,7 +377,7 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
 
     private fun callGroupApi() {
         try {
-            groupBinding.groupProgress.visibility = View.VISIBLE
+            Utils.showLoading(requireActivity())
             apiInterface.GropList()?.enqueue(object : Callback<GroupListData?> {
                 override fun onResponse(
                     call: Call<GroupListData?>,
@@ -379,16 +391,18 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                         val Message: String = resource.message!!
 
                         if (Success) {
-                            groupBinding.groupProgress.visibility = View.GONE
+                            activity?.let {
+                                Utils.hideLoading(it)
+                            }
                             groupList = resource.data!!
                             initrecycler(resource.data!!)
 
 
                         } else {
-                            groupBinding.groupProgress.visibility = View.GONE
+                            Utils.hideLoading(requireActivity())
                         }
                     } else if (response.code() == 403) {
-                        groupBinding.groupProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         val message = response.message()
                         call.cancel()
                         preferenceManager.setUserLogIn(false)
@@ -400,7 +414,7 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                         )
                         requireActivity().finish()
                     } else {
-                        groupBinding.groupProgress.visibility = View.GONE
+                        Utils.hideLoading(requireActivity())
                         val message = response.message()
                         //                    Toast.makeText(requireContext(), "" + message, Toast.LENGTH_SHORT)
                         //                        .show()
@@ -414,7 +428,7 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                         .show()
                     call.cancel()
                     Log.d("GROOOOOOOP", t.message.toString() + "")
-                    groupBinding.groupProgress.visibility = View.GONE
+                    Utils.hideLoading(requireActivity())
                 }
             })
         } catch (e: Exception) {
@@ -437,7 +451,7 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
         }
     }
 
-    private fun initrecyclerAthlete(data: List<GroupListAthlete.Data>) {
+    private fun initrecyclerAthlete(data: List<GroupListData.groupData>) {
         try {
             if (!isAdded) {
                 Log.e("GroupFragment", "Fragment is not attached to an activity.")
@@ -465,6 +479,8 @@ class GroupFragment : Fragment(), OnItemClickListener.OnItemClickCallback {
                     putExtra("id", groupList[position].id)
                     putExtra("group_id", groupId)
                     putExtra("position", position)
+                    putExtra("SavedGroupId", receivedIds)
+                    putExtra("SavedGroupIdAthlete", receivedGroup_Ids)
                 }
 
             )

@@ -2,113 +2,122 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/bg_black_round_corner_10"
-    android:elevation="@dimen/_10sdp"
-    android:padding="@dimen/_10sdp">
+    android:elevation="@dimen/_10sdp">
 
     <LinearLayout
-        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_margin="10dp"
+        android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/mint"
-            style="@style/Text_15_White_Poppins_Medium"
-            android:layout_width="@dimen/_80sdp"
-            android:layout_height="@dimen/_50sdp"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:gravity="center"
-            android:text="Minute"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/second"
-            style="@style/Text_15_White_Poppins_Medium"
-            android:layout_width="@dimen/_80sdp"
-            android:layout_height="@dimen/_50sdp"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:gravity="center"
-            android:text="Second"
-            app:layout_constraintStart_toEndOf="@+id/mint"
-            app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/title1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title">
-
-        <NumberPicker
-            android:id="@+id/mint_num"
-            android:layout_width="@dimen/_80sdp"
+        <LinearLayout
+            android:id="@+id/title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:divider="@color/white"
-            android:showDividers="beginning"
-            android:theme="@style/AppTheme.Picker"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mint" />
-
-        <NumberPicker
-            android:id="@+id/second_num"
-            android:layout_width="@dimen/_80sdp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:divider="@color/white"
-            android:showDividers="beginning"
-            android:theme="@style/AppTheme.Picker"
-            app:layout_constraintStart_toEndOf="@+id/mint_num"
-            app:layout_constraintTop_toBottomOf="@+id/second" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/title2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title1">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCancel"
-            style="@style/Btn_Text_13_Round_10_Light_Grey"
-            android:layout_width="@dimen/_115sdp"
-            android:layout_height="@dimen/_35sdp"
-            android:layout_marginEnd="@dimen/_5sdp"
             android:gravity="center"
-            android:text="@string/action_cancel"
-            app:layout_constraintEnd_toStartOf="@id/btnApply"
-            app:layout_constraintStart_toStartOf="@+id/mint_num"
-            app:layout_constraintTop_toBottomOf="@id/second_num" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnApply"
-            style="@style/Btn_Round_10_Red"
-            android:layout_width="@dimen/_115sdp"
-            android:layout_height="@dimen/_35sdp"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:text="@string/action_apply"
-            app:layout_constraintBottom_toBottomOf="@id/btnCancel"
-            app:layout_constraintEnd_toEndOf="@+id/second_num"
-            app:layout_constraintStart_toEndOf="@id/btnCancel"
-            app:layout_constraintTop_toTopOf="@id/btnCancel"
-            app:layout_constraintVertical_bias="1.0" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/mint"
+                style="@style/Text_15_White_Poppins_Medium"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="@dimen/_50sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:gravity="center"
+                android:text="@string/minute"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/second"
+                style="@style/Text_15_White_Poppins_Medium"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="@dimen/_50sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:gravity="center"
+                android:text="@string/second"
+                app:layout_constraintStart_toEndOf="@+id/mint"
+                app:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/title1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title">
+
+            <NumberPicker
+                android:id="@+id/mint_num"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:divider="@color/white"
+                android:showDividers="beginning"
+                android:theme="@style/AppTheme.Picker"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/mint" />
+
+            <NumberPicker
+                android:id="@+id/second_num"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:divider="@color/white"
+                android:showDividers="beginning"
+                android:theme="@style/AppTheme.Picker"
+                app:layout_constraintStart_toEndOf="@+id/mint_num"
+                app:layout_constraintTop_toBottomOf="@+id/second" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/title2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title1">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnCancel"
+                style="@style/Btn_Text_13_Round_10_Light_Grey"
+                android:layout_width="@dimen/_115sdp"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:gravity="center"
+                android:text="@string/cancel"
+                app:layout_constraintEnd_toStartOf="@id/btnApply"
+                app:layout_constraintStart_toStartOf="@+id/mint_num"
+                app:layout_constraintTop_toBottomOf="@id/second_num" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnApply"
+                style="@style/Btn_Round_10_Red"
+                android:layout_width="@dimen/_115sdp"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:text="@string/apply"
+                app:layout_constraintBottom_toBottomOf="@id/btnCancel"
+                app:layout_constraintEnd_toEndOf="@+id/second_num"
+                app:layout_constraintStart_toEndOf="@id/btnCancel"
+                app:layout_constraintTop_toTopOf="@id/btnCancel"
+                app:layout_constraintVertical_bias="1.0" />
+
+        </LinearLayout>
     </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

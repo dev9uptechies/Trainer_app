@@ -1,6 +1,7 @@
 package com.example.model.personal_diary
 
 data class TrainingSession(
+    val id: Int,
     val date: String? = null,
     val sleep_hours: String? = null,
     val nutrition_and_hydration: String? = null,

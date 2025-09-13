@@ -69,7 +69,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_10sdp"
-                        android:text="@string/invite_frnds"
+                        android:text="@string/inviteFriend"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_12sdp"/>
                     <LinearLayout

@@ -32,7 +32,9 @@ class LessonAdapter(
         holder.name.text = lesson.lession?.name ?: ""
         holder.totaltime.text = lesson.lession?.time ?: ""
         holder.date.text = lesson.lession?.date ?: ""
-        holder.goal.text = lesson.lession?.lesson_programs?.getOrNull(0)?.program?.goal?.name ?: ""
+        holder.goal.text = lesson.lession?.lesson_programs
+            ?.mapNotNull { it.program?.goal?.name }
+            ?.joinToString(", ") ?: ""
 
         holder.itemView.setOnClickListener {
             val lessonId = lesson.lession?.id?.toInt() ?: 0

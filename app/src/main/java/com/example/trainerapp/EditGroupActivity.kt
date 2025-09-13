@@ -108,7 +108,7 @@ import kotlin.math.log
 class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
 
     private lateinit var binding: ActivityEditGroupBinding
-    val selectedDays = mutableListOf<String>()
+//    val selectedDays = mutableListOf<String>()
     private var selectedImageUri: Uri? = null
     private var selectedImageUri2: Uri? = null
     lateinit var apiInterface: APIInterface
@@ -122,7 +122,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     private var firstTimeId: Int = -1
     var datecheckstart:Boolean = false
     var datecheckend:Boolean = false
-
+    private val selectedDays = mutableSetOf<String>() // Use a Set to prevent duplicates
 
     private val PREF_NAME = "MyPreferences"
     val KEY_SELECTED_IMAGE_URI = "selectedImageUri"
@@ -149,6 +149,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
     private var shouldSaveData = true
 
     lateinit var sharedPreferences: SharedPreferences
+    var SavedGroupId:String = ""
+    var SavedGroupIdAthlete:String = ""
 
 
     // ids
@@ -188,13 +190,13 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
     //
     var dayTimes: MutableMap<String, MutableList<DayTime>> = mutableMapOf(
-        "monday" to mutableListOf(),
-        "tuesday" to mutableListOf(),
-        "wednesday" to mutableListOf(),
-        "thursday" to mutableListOf(),
-        "friday" to mutableListOf(),
-        "saturday" to mutableListOf(),
-        "sunday" to mutableListOf()
+        "Mon" to mutableListOf(),
+        "Tue" to mutableListOf(),
+        "Wed" to mutableListOf(),
+        "Thu" to mutableListOf(),
+        "Fri" to mutableListOf(),
+        "Sat" to mutableListOf(),
+        "Sun" to mutableListOf()
     )
 
 
@@ -282,8 +284,10 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             clearIdFromSharedPreferences(this)
             val intent = Intent(this@EditGroupActivity, HomeActivity::class.java)
             intent.putExtra("group", "addGroup")
+            intent.putExtra("idddd", SavedGroupId.toString())
+            intent.putExtra("group_idddd", SavedGroupIdAthlete.toString())
             startActivity(intent)
-            finish()
+//            finish()
 
         }
 
@@ -430,7 +434,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         binding.weekMon.setOnClickListener {
 
             toggleDay(
-                "monday",
+                "Mon",
                 binding.weekMon,
                 mon_linearLayour,
                 binding.monAddScheduleTime
@@ -462,7 +466,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         binding.weekTue.setOnClickListener {
 
             toggleDay(
-                "tuesday",
+                "Tue",
                 binding.weekTue,
                 tue_linearLayout,
                 binding.tueAddScheduleTime
@@ -492,7 +496,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
         binding.weekWed.setOnClickListener {
             toggleDay(
-                "wednesday",
+                "Wed",
                 binding.weekWed,
                 wed_linearLayout,
                 binding.wedAddScheduleTime
@@ -523,7 +527,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         binding.weekThu.setOnClickListener {
 
             toggleDay(
-                "thursday",
+                "Thu",
                 binding.weekThu,
                 thu_linearLayout,
                 binding.thuAddScheduleTime
@@ -554,7 +558,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
         binding.weekFri.setOnClickListener {
             toggleDay(
-                "friday",
+                "Fri",
                 binding.weekFri,
                 fri_linearLayout,
                 binding.friAddScheduleTime
@@ -584,7 +588,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
         binding.weekSat.setOnClickListener {
             toggleDay(
-                "saturday",
+                "Sat",
                 binding.weekSat,
                 sat_linearLayout,
                 binding.satAddScheduleTime
@@ -614,7 +618,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         binding.weekSun.setOnClickListener {
 
             toggleDay(
-                "sunday",
+                "Sun",
                 binding.weekSun,
                 sun_linearLayout,
                 binding.sunAddScheduleTime
@@ -889,6 +893,9 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         firstTimeId = getFirstTimeIdFromSharedPreferences(this)
 
+        SavedGroupId = intent.getStringExtra("SavedGroupId").toString()
+        SavedGroupIdAthlete = intent.getStringExtra("SavedGroupIdAthlete").toString()
+
 
         if (firstTimeId == -1) {
             firstTimeId = receivedId
@@ -1072,7 +1079,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                             Log.e("SelectedGroup", "onResponse: " + selectedGroup.image)
                             Log.e("SelectedGroup", "onResponse: " + selectedGroup.coach_id)
 
-                            val imageUrl = "https://4trainersapp.com" + (selectedGroup.image ?: "")
+                            val imageUrl = "https://uat.4trainersapp.com" + (selectedGroup.image ?: "")
                             Log.d("ImageURL", "URL: $imageUrl")
 
                             // Save the image URL in SharedPreferences
@@ -1112,11 +1119,11 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                             selectedGroup.schedule?.forEach { schedule ->
                                 schedule.day?.let { day ->
                                     when (day.lowercase()) {
-                                        "monday" -> {
+                                        "Mon" -> {
                                             showDefaultDay()
 
                                             toggleDay(
-                                                "monday",
+                                                "Mon",
                                                 binding.weekMon,
                                                 mon_linearLayour,
                                                 binding.monAddScheduleTime
@@ -1132,9 +1139,9 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                             datecheckend = true
                                         }
 
-                                        "tue", "tuesday" -> {
+                                        "tue", "Tue" -> {
                                             toggleDay(
-                                                "tuesday",
+                                                "Tue",
                                                 binding.weekMon,
                                                 mon_linearLayour,
                                                 binding.monAddScheduleTime
@@ -1150,9 +1157,9 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                             datecheckstart = true
                                             datecheckend = true                                        }
 
-                                        "wed", "wednesday" -> {
+                                        "wed", "Wed" -> {
                                             toggleDay(
-                                                "wednesday",
+                                                "Wed",
                                                 binding.weekMon,
                                                 mon_linearLayour,
                                                 binding.monAddScheduleTime
@@ -1169,9 +1176,9 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                             datecheckend = true
                                         }
 
-                                        "thu", "thursday" -> {
+                                        "thu", "Thu" -> {
                                             toggleDay(
-                                                "thursday",
+                                                "Thu",
                                                 binding.weekMon,
                                                 mon_linearLayour,
                                                 binding.monAddScheduleTime
@@ -1188,9 +1195,9 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                             datecheckend = true
                                         }
 
-                                        "fri", "friday" -> {
+                                        "fri", "Fri" -> {
                                             toggleDay(
-                                                "friday",
+                                                "Fri",
                                                 binding.weekMon,
                                                 mon_linearLayour,
                                                 binding.monAddScheduleTime
@@ -1207,9 +1214,9 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                             datecheckend = true
                                         }
 
-                                        "sat", "saturday" -> {
+                                        "sat", "Sat" -> {
                                             toggleDay(
-                                                "saturday",
+                                                "Sat",
                                                 binding.weekMon,
                                                 mon_linearLayour,
                                                 binding.monAddScheduleTime
@@ -1226,9 +1233,9 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                             datecheckend = true
                                         }
 
-                                        "sun", "sunday" -> {
+                                        "sun", "Sun" -> {
                                             toggleDay(
-                                                "sunday",
+                                                "Sun",
                                                 binding.weekMon,
                                                 mon_linearLayour,
                                                 binding.monAddScheduleTime
@@ -1280,7 +1287,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         binding.SatLinearLayout.visibility = View.GONE
         binding.SunLinearLayout.visibility = View.GONE
 
-        // Optional: Update background color for Monday
+        // Optional: Update background color for Mon
         binding.weekMon.setCardBackgroundColor(resources.getColor(R.color.splash_text_color))
     }
 
@@ -1532,7 +1539,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         val timingFormatted = collectTimings().toString()
 
-
         Log.d("DDHHDHDHHD", "editGroupWithImageApiCall: $timingFormatted")
 
         val daysids = selectedDays.joinToString(prefix = "[", postfix = "]", separator = ", ") { "\"$it\"" }
@@ -1584,6 +1590,8 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
                     val intent = Intent(context, HomeActivity::class.java)
                     intent.putExtra("group", "addGroup")
+                    intent.putExtra("idddd", SavedGroupId.toString())
+                    intent.putExtra("group_idddd", SavedGroupIdAthlete.toString())
                     context.startActivity(intent)
                     finish()
                 } else {
@@ -1856,7 +1864,7 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                 binding.imageUpload.visibility = View.VISIBLE
                 Log.d("GroupData999", "Image successfully loaded into ImageView")
             } else if (!imageUri.isAbsolute) {
-                val completeUrl = "https://4trainersapp.com$imageUriString"
+                val completeUrl = "https://uat.4trainersapp.com$imageUriString"
                 Picasso.get()
                     .load(completeUrl)
                     .error(R.drawable.app_icon) // Fallback image in case of error
@@ -1966,13 +1974,13 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         // Iterate through the days
         val daysLayout = listOf(
-            mon_linearLayour to "monday",
-            tue_linearLayout to "tuesday",
-            wed_linearLayout to "wednesday",
-            thu_linearLayout to "thursday",
-            fri_linearLayout to "friday",
-            sat_linearLayout to "saturday",
-            sun_linearLayout to "sunday"
+            mon_linearLayour to "Mon",
+            tue_linearLayout to "Tue",
+            wed_linearLayout to "Wed",
+            thu_linearLayout to "Thu",
+            fri_linearLayout to "Fri",
+            sat_linearLayout to "Sat",
+            sun_linearLayout to "Sun"
         )
 
         for ((layout, day) in daysLayout) {
@@ -2031,7 +2039,6 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
             hasChanges = true // Track changes when selecting a day
         }
 
-        // Log the selected days
         Log.d("SelectedDays", selectedDays.toString())
     }
 
@@ -2072,32 +2079,32 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 //    }
 
     fun mon_addView() {
-        addViewForDay(mon_linearLayour, "monday", "", "")
+        addViewForDay(mon_linearLayour, "Mon", "", "")
     }
 
     fun tue_addView() {
-        addViewForDay(tue_linearLayout, "tuesday", "", "")
+        addViewForDay(tue_linearLayout, "Tue", "", "")
     }
 
     // Similarly for other days
     fun wed_addView() {
-        addViewForDay(wed_linearLayout, "wednesday", "", "")
+        addViewForDay(wed_linearLayout, "Wed", "", "")
     }
 
     fun thu_addView() {
-        addViewForDay(thu_linearLayout, "thursday", "", "")
+        addViewForDay(thu_linearLayout, "Thu", "", "")
     }
 
     fun fri_addView() {
-        addViewForDay(fri_linearLayout, "friday", "", "")
+        addViewForDay(fri_linearLayout, "Fri", "", "")
     }
 
     fun sat_addView() {
-        addViewForDay(sat_linearLayout, "saturday", "", "")
+        addViewForDay(sat_linearLayout, "Sat", "", "")
     }
 
     fun sun_addView() {
-        addViewForDay(sun_linearLayout, "sunday", "", "")
+        addViewForDay(sun_linearLayout, "Sun", "", "")
     }
 
     // Initialize the layout with saved times
@@ -2110,13 +2117,13 @@ class EditGroupActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         dayTimesData.forEach { (dayKey, times) ->
             val linearLayout = when (dayKey.lowercase()) {
-                "monday" -> binding.MonLinearLayout
-                "tuesday" -> binding.TueLinearLayout
-                "wednesday" -> binding.WedLinearLayout
-                "thursday" -> binding.ThuLinearLayout
-                "friday" -> binding.FriLinearLayout
-                "saturday" -> binding.SatLinearLayout
-                "sunday" -> binding.SunLinearLayout
+                "Mon" -> binding.MonLinearLayout
+                "Tue" -> binding.TueLinearLayout
+                "Wed" -> binding.WedLinearLayout
+                "Thu" -> binding.ThuLinearLayout
+                "Fri" -> binding.FriLinearLayout
+                "Sat" -> binding.SatLinearLayout
+                "Sun" -> binding.SunLinearLayout
                 else -> null
             }
 

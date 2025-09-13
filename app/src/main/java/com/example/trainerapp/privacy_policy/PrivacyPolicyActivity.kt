@@ -107,7 +107,7 @@ class PrivacyPolicyActivity : AppCompatActivity() {
 
         val descriptionPlainText = HtmlCompat.fromHtml(descriptionHtml, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
 
-        binding.textView3.text = title
+//        binding.textView3.text = title
         binding.descriptionPp.text = descriptionPlainText
     }
 }

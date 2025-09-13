@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_medium"
                 android:gravity="center"
-                android:text="@string/end_date"
+                android:text="@string/endDate"
                 android:textColor="#BBBBBB"
                 android:textSize="@dimen/_11sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/start_date_one"

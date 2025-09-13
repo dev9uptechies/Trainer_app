@@ -41,7 +41,8 @@ class GroupAdapter(
     override fun onBindViewHolder(holder: GroupAdapter.MyViewHolder, position: Int) {
         val movie = splist!![position]
         holder.group_name.text = movie.name
-        holder.tv_sport.text = movie.sport?.title ?: "Unknown" // Default to "Unknown" if sport or title is null
+        holder.tv_sport.text = movie.sport?.title ?: "Unknown"
+        holder.days_txt.text = movie.schedule?.joinToString(", ") { schedule -> schedule.day ?: "" }
 
         val transformation: Transformation = RoundedTransformationBuilder()
             .borderColor(Color.BLACK)
@@ -51,7 +52,7 @@ class GroupAdapter(
             .build()
 
         Picasso.get()
-            .load("https://4trainersapp.com" + movie.image)
+            .load("https://uat.4trainersapp.com" + movie.image)
             .fit()
             .transform(transformation)
             .into(holder.rounded_image)
@@ -74,6 +75,7 @@ class GroupAdapter(
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var group_name: TextView = view.findViewById<View>(R.id.group_name) as TextView
         var tv_sport: TextView = view.findViewById<View>(R.id.tv_sport) as TextView
+        var days_txt: TextView = view.findViewById<View>(R.id.days_txt) as TextView
         var rounded_image: RoundedImageView =
             view.findViewById<View>(R.id.round_image) as RoundedImageView
     }

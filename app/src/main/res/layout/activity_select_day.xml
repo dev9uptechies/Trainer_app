@@ -28,18 +28,44 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_creditit"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_medium"
-                android:text="Selected Day"
-                android:textColor="@color/splash_text_color"
-                android:textSize="@dimen/_18sdp"
+                android:orientation="horizontal"
+                android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="@+id/back"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/back" />
+                app:layout_constraintTop_toTopOf="@+id/back" >
+
+                <ImageView
+                    android:id="@+id/previous_date"
+                    android:layout_width="@dimen/_14sdp"
+                    android:layout_height="@dimen/_14sdp"
+                    android:src="@drawable/backnexticon"/>
+
+                <TextView
+                    android:id="@+id/tv_creditit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="Selected Day"
+                    android:textColor="@color/splash_text_color"
+                    android:textSize="@dimen/_18sdp" />
+
+                <ImageView
+                    android:id="@+id/next_date"
+                    android:layout_width="@dimen/_14sdp"
+                    android:layout_height="@dimen/_14sdp"
+                    android:src="@drawable/backnexticon"
+                    android:rotation="180"/>
+
+
+            </LinearLayout>
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -73,7 +99,7 @@
                                 android:layout_marginTop="@dimen/_20sdp"
                                 android:layout_weight="1"
                                 android:fontFamily="@font/poppins_semi_bold"
-                                android:text="Lesson List"
+                                android:text="@string/lessonList"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_16sdp" />
 
@@ -117,7 +143,7 @@
                                 android:layout_marginTop="@dimen/_20sdp"
                                 android:layout_weight="1"
                                 android:fontFamily="@font/poppins_semi_bold"
-                                android:text="Event List"
+                                android:text="@string/eventList"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_16sdp" />
 
@@ -145,7 +171,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -160,7 +186,7 @@
                             android:layout_marginTop="@dimen/_20sdp"
                             android:layout_weight="1"
                             android:fontFamily="@font/poppins_semi_bold"
-                            android:text="Program List"
+                            android:text="@string/programList"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_16sdp" />
 
@@ -205,7 +231,7 @@
                                 android:layout_marginTop="@dimen/_20sdp"
                                 android:layout_weight="1"
                                 android:fontFamily="@font/poppins_semi_bold"
-                                android:text="Test List"
+                                android:text="@string/testList"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_16sdp" />
 
@@ -249,7 +275,7 @@
                                 android:layout_marginTop="@dimen/_20sdp"
                                 android:layout_weight="1"
                                 android:fontFamily="@font/poppins_semi_bold"
-                                android:text="Personal Diary"
+                                android:text="@string/personalDairy"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_16sdp" />
 
@@ -278,7 +304,7 @@
                                     android:layout_gravity="center"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
-                                    android:text="Assess Your \n Level of"
+                                    android:text="@string/assessYourLevelof"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10sdp"
                                     app:layout_constraintBottom_toBottomOf="parent"
@@ -308,7 +334,7 @@
                                     android:layout_gravity="center"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
-                                    android:text="Before \n Training"
+                                    android:text="@string/beforeTraining"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10sdp" />
 
@@ -334,7 +360,7 @@
                                     android:layout_gravity="center"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
-                                    android:text="During \n Training"
+                                    android:text="@string/duringTraining"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10sdp"
                                     app:layout_constraintBottom_toBottomOf="parent"
@@ -364,7 +390,7 @@
                                     android:layout_gravity="center"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
-                                    android:text="After \n Training"
+                                    android:text="@string/afterTraining"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10sdp"
                                     app:layout_constraintBottom_toBottomOf="parent"
@@ -431,6 +457,8 @@
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
                                     android:inputType="number"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:maxLength="1"
                                     android:text=""
                                     android:textColor="@color/white"
@@ -462,6 +490,8 @@
                                     android:gravity="center"
                                     android:inputType="number"
                                     android:maxLength="1"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:text=""
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10sdp" />
@@ -493,6 +523,8 @@
                                     android:inputType="number"
                                     android:maxLength="1"
                                     android:text=""
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10sdp" />
 
@@ -554,6 +586,8 @@
                                     android:background="@null"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:inputType="number"
                                     android:maxLength="1"
                                     android:text=""
@@ -584,6 +618,8 @@
                                     android:background="@null"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:inputType="number"
                                     android:maxLength="1"
                                     android:text=""
@@ -613,6 +649,8 @@
                                     android:background="@null"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:inputType="number"
                                     android:maxLength="1"
                                     android:text=""
@@ -677,6 +715,8 @@
                                     android:background="@null"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:inputType="number"
                                     android:maxLength="1"
                                     android:text=""
@@ -705,6 +745,8 @@
                                     android:layout_height="match_parent"
                                     android:layout_gravity="center"
                                     android:background="@null"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
                                     android:inputType="number"
@@ -735,6 +777,8 @@
                                     android:layout_height="match_parent"
                                     android:layout_gravity="center"
                                     android:background="@null"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
                                     android:inputType="number"
@@ -802,6 +846,8 @@
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
                                     android:inputType="number"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:maxLength="1"
                                     android:text=""
                                     android:textColor="@color/white"
@@ -831,6 +877,8 @@
                                     android:background="@null"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:inputType="number"
                                     android:maxLength="1"
                                     android:text=""
@@ -862,6 +910,8 @@
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
                                     android:inputType="number"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:maxLength="1"
                                     android:text=""
                                     android:textColor="@color/white"
@@ -923,6 +973,8 @@
                                     android:layout_height="match_parent"
                                     android:layout_gravity="center"
                                     android:background="@null"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
                                     android:inputType="number"
@@ -958,6 +1010,8 @@
                                     android:inputType="number"
                                     android:maxLength="1"
                                     android:text=""
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10sdp" />
 
@@ -989,6 +1043,8 @@
                                     android:inputType="number"
                                     android:maxLength="1"
                                     android:text=""
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10sdp" />
 
@@ -1053,6 +1109,8 @@
                                     android:gravity="center"
                                     android:inputType="number"
                                     android:maxLength="1"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:text=""
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10sdp" />
@@ -1081,6 +1139,8 @@
                                     android:layout_gravity="center"
                                     android:background="@null"
                                     android:fontFamily="@font/poppins_medium"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:gravity="center"
                                     android:inputType="number"
                                     android:maxLength="1"
@@ -1108,6 +1168,8 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_gravity="center"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:background="@null"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
@@ -1175,6 +1237,8 @@
                                     android:background="@null"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:inputType="number"
                                     android:maxLength="1"
                                     android:text=""
@@ -1206,6 +1270,8 @@
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"
                                     android:inputType="number"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:maxLength="1"
                                     android:text=""
                                     android:textColor="@color/white"
@@ -1237,6 +1303,8 @@
                                     android:gravity="center"
                                     android:inputType="number"
                                     android:maxLength="1"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:text=""
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10sdp" />
@@ -1269,6 +1337,8 @@
                                     android:gravity="center"
                                     android:text="Nutrition And Hydration"
                                     android:textColor="@color/white"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:textSize="@dimen/_10sdp"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
@@ -1309,6 +1379,8 @@
                                     android:gravity="center"
                                     android:text=""
                                     android:textColor="@color/white"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:textSize="@dimen/_10sdp" />
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -1375,6 +1447,8 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_gravity="center"
+                                    android:focusable="false"
+                                    android:clickable="false"
                                     android:background="@null"
                                     android:fontFamily="@font/poppins_medium"
                                     android:gravity="center"

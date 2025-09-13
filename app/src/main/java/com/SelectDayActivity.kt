@@ -1,9 +1,17 @@
 package com
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,12 +25,17 @@ import com.example.model.personal_diary.GetDiaryDataForEdit
 import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.RegisterData
+import com.example.trainerapp.PreferencesManager
+import com.example.trainerapp.R
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivitySelectDayBinding
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCallback {
 
@@ -36,6 +49,7 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
     var groupId: Int = 0
     var date: String? = null
+    lateinit var preferenceManager: PreferencesManager
 
     private fun checkUser() {
         try {
@@ -48,7 +62,8 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                     val code = response.code()
                     if (code == 200) {
                         Log.d("Get Profile Data ", "${response.body()}")
-                        fetchDayData()
+//                        fetchDayData(date.toString())
+                        loadData()
                     } else if (code == 403) {
                         Utils.setUnAuthDialog(this@SelectDayActivity)
                     } else {
@@ -82,12 +97,16 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         super.onResume()
     }
 
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private var currentDate: LocalDate? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySelectDayBinding.inflate(layoutInflater)
         setContentView(binding.root)
         apiClient = APIClient(this)
         apiInterface = apiClient.client().create(APIInterface::class.java)
+        preferenceManager = PreferencesManager(this)
 
         groupId = intent.getIntExtra("id", 0)
         date = intent.getStringExtra("date")
@@ -98,12 +117,61 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
         ButtonCLick()
         loadData()
+
+        date?.let {
+            currentDate = LocalDate.parse(it, dateFormatter)
+            binding.tvCreditit.text = date
+        }
+
+        binding.previousDate.setOnClickListener {
+            currentDate = currentDate?.minusDays(1)   // ⬅️ Go back one day
+            updateDate()
+        }
+
+        binding.nextDate.setOnClickListener {
+            currentDate = currentDate?.plusDays(1)   // ➡️ Go forward one day
+            updateDate()
+        }
+        binding.tvCreditit.setOnClickListener {
+            showDatePickerDialog { year, month, dayOfMonth ->
+                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                currentDate = selectedDate
+                binding.tvCreditit.text = selectedDate.format(dateFormatter)
+                updateDate()
+            }
+        }
+
         getPersonalDiaryData(date.toString())
 
     }
 
     private fun loadData() {
-        fetchDayData()
+        val userType = preferenceManager.GetFlage()
+        Log.d("DJUEHFN", "updateDate: $userType")
+        if (userType == "Athlete"){
+            fetchDayDataAthlete(date.toString())
+        }else{
+            fetchDayData(date.toString())
+        }
+    }
+
+    private fun updateDate() {
+        currentDate?.let {
+            val formatted = it.format(dateFormatter)
+            binding.tvCreditit.text = formatted
+
+            val userType = preferenceManager.GetFlage()
+
+            Log.d("TAG", "updateDate: $userType")
+            if (userType == "Athlete"){
+                fetchDayDataAthlete(formatted)
+
+            }else{
+                fetchDayData(formatted)
+
+            }
+            getPersonalDiaryData(formatted)
+        }
     }
 
     private fun ButtonCLick() {
@@ -135,8 +203,9 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
         }
     }
 
-    private fun fetchDayData() {
+    private fun fetchDayData(date:String) {
         try {
+            Log.d("DJDHE", "fetchDayData: $date")
             binding.progresBar.visibility = View.VISIBLE
             apiInterface.GetSelectedDays(date, groupId.toString())!!
                 .enqueue(object : Callback<SelectedDaysModel> {
@@ -165,10 +234,10 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
                                 initTestRecyclerView(data.tests)
                                 initLessonRecyclerView(data.lessons)
+                                initEventRecyclerView(data.events)
 
                                 Log.d("Event Data", "Events: ${data.events}")
 
-                                initEventRecyclerView(data.events)
                             } else {
                                 Log.e("API Response", "Data is null.")
                                 Toast.makeText(
@@ -179,6 +248,77 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                             }
                         } else {
                             Log.e("API Response", "Failed to fetch data: ${response.message()}")
+                            Toast.makeText(
+                                this@SelectDayActivity,
+                                "Failed to fetch data",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<SelectedDaysModel>, t: Throwable) {
+                        binding.progresBar.visibility = View.GONE
+                        Log.e("API Response", "Error: ${t.message}")
+                        Toast.makeText(
+                            this@SelectDayActivity,
+                            "Error: ${t.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+        } catch (e: Exception) {
+            binding.progresBar.visibility = View.GONE
+            Log.e("Catch", "CatchError :- ${e.message}")
+        }
+    }
+
+    private fun fetchDayDataAthlete(date:String) {
+        try {
+            Log.d("DJDHEsss", "fetchDayData: $date - $groupId")
+            binding.progresBar.visibility = View.VISIBLE
+            apiInterface.GetSelectedDaysAthlete(date, groupId.toString())!!
+                .enqueue(object : Callback<SelectedDaysModel> {
+                    override fun onResponse(
+                        call: Call<SelectedDaysModel>,
+                        response: Response<SelectedDaysModel>
+                    ) {
+                        if (response.isSuccessful && response.body() != null) {
+
+                            binding.progresBar.visibility = View.GONE
+
+                            val selectedDaysModel = response.body()
+
+                            Log.d("API Response", "Response: $selectedDaysModel")
+
+                            val data = selectedDaysModel?.data
+                            if (data != null) {
+                                if (data.tests.isNotEmpty()) {
+                                    Log.d(
+                                        "First Test",
+                                        "Test ID: ${data.tests[0].id}, Title: ${data.tests[0].title}"
+                                    )
+                                } else {
+                                    Log.d("First Test", "No tests available.")
+                                }
+
+                                initTestRecyclerView(data.tests)
+                                initLessonRecyclerView(data.lessons)
+                                initEventRecyclerView(data.events)
+
+                                Log.d("Event Data", "Events: ${data.events}")
+
+                            } else {
+                                Log.e("API Response", "Data is null.")
+                                Toast.makeText(
+                                    this@SelectDayActivity,
+                                    "Data is null",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            binding.progresBar.visibility = View.GONE
+
+                            Log.e("Pldnc", "Failed to fetch data: ${response.message()}")
                             Toast.makeText(
                                 this@SelectDayActivity,
                                 "Failed to fetch data",
@@ -214,9 +354,10 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
                     when (response.code()) {
                         200 -> {
-                            // Check if the response is successful and the body is not null
+
                             response.body()?.let { responseBody ->
                                 val diaryData = responseBody.data
+
 
                                 if (diaryData != null) {
                                     Log.d("DATA", "Date: ${diaryData.date}")
@@ -237,11 +378,7 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
                                     SetData(diaryData)
                                 } else {
                                     Log.e("ERROR", "Data is null")
-                                    Toast.makeText(
-                                        this@SelectDayActivity,
-                                        "No diary data available",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+
                                 }
                             } ?: run {
                                 Log.e("ERROR", "Response body is null")
@@ -382,14 +519,54 @@ class SelectDayActivity : AppCompatActivity(), OnItemClickListener.OnItemClickCa
 
     private fun initEventRecyclerView(events: List<SelectedDaysModel.Event>) {
         if (events.isNotEmpty()) {
-            Log.d("Event RecyclerView", "Setting up RecyclerView with events.")
             binding.favEventRly.layoutManager = LinearLayoutManager(this)
             eventadapter = eventAdapter(events, this, this)
             binding.favEventRly.adapter = eventadapter
         } else {
+            // Clear old data
+            binding.favEventRly.adapter = null
             Log.d("Event RecyclerView", "No events available.")
         }
     }
+
+
+    private fun showDatePickerDialog(onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit) {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.custom_date_picker)
+
+        // Set dialog width to 90% of screen width
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val width = (displayMetrics.widthPixels * 0.9f).toInt()
+        dialog.window?.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val datePicker = dialog.findViewById<DatePicker>(R.id.datePicker)
+        val cancelButton = dialog.findViewById<Button>(R.id.btnCancel)
+        val applyButton = dialog.findViewById<Button>(R.id.btnApply)
+
+
+        // Default date (today)
+        val calendar = Calendar.getInstance()
+        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(
+            Calendar.DAY_OF_MONTH), null)
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+
+        applyButton.setOnClickListener {
+            val selectedYear = datePicker.year
+            val selectedMonth = datePicker.month
+            val selectedDay = datePicker.dayOfMonth
+            onDateSelected(selectedYear, selectedMonth, selectedDay)
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
         if (string == "fav") {

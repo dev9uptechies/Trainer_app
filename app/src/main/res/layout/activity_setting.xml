@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/main"
     android:background="@color/black"
     tools:context="com.example.trainerapp.SettingActivity">
 
@@ -29,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20sdp"
             android:fontFamily="@font/poppins_medium"
-            android:text="Setting"
+            android:text="@string/settings"
             android:textColor="@color/splash_text_color"
             android:textSize="@dimen/_18sdp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -85,13 +86,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/poppins_medium"
-                                android:text="Translate"
+                                android:text="@string/translate"
                                 android:layout_marginTop="@dimen/_2sdp"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_13sdp"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
+                                android:id="@+id/sub_tran"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="@dimen/_5sdp"
@@ -136,7 +138,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="@dimen/_40sdp"
-                        android:text="Update Version"
+                        android:text="@string/updateVersion"
                         android:fontFamily="@font/poppins_medium"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_13sdp"/>
@@ -149,6 +151,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:visibility="gone"
                 android:layout_marginTop="@dimen/_8sdp">
 
                 <androidx.cardview.widget.CardView

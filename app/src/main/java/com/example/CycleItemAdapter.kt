@@ -29,7 +29,7 @@ class CycleItemAdapter(
         val movie = splist!![position]
         holder.cycle_count.text = "Cycle " + (position + 1)
         if (movie.set.isNullOrEmpty()) {
-            holder.edt_name.setHint(R.string.set)
+            holder.edt_name.setHint(R.string.settings)
         } else {
             holder.edt_name.text = movie.set
         }
@@ -47,7 +47,7 @@ class CycleItemAdapter(
         }
 
         if (movie.pause.isNullOrEmpty()) {
-            holder.tv_pause_time.setHint(R.string.pause_time)
+            holder.tv_pause_time.setHint(R.string.pauseTime)
         } else {
             holder.tv_pause_time.text = movie.pause
         }
@@ -65,7 +65,7 @@ class CycleItemAdapter(
         }
 
         if (movie.pause_timer.isNullOrEmpty()) {
-            holder.tv_pause_cycle.setHint(R.string.pause_between)
+            holder.tv_pause_cycle.setHint(R.string.pauseBetweenCycles)
         } else {
             holder.tv_pause_cycle.text = movie.pause_timer
         }

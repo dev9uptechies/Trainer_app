@@ -45,6 +45,7 @@ class ViewAnalysisAdapter(
 
         holder.sub_title_1.text = movie.category
         holder.date_name.text = movie.date
+
         if (competition.toString() != null || competition.toString() != "") {
             holder.sub_title_2.text = competition!!.title
         }

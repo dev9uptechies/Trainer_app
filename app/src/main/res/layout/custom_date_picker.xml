@@ -35,7 +35,7 @@
             android:layout_width="@dimen/_115sdp"
             android:layout_height="@dimen/_35sdp"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:text="@string/action_cancel"
+            android:text="@string/cancel"
             app:layout_constraintEnd_toStartOf="@id/btnApply"
             app:layout_constraintStart_toStartOf="@+id/hour_num"
             app:layout_constraintTop_toBottomOf="@id/mint_num" />
@@ -46,7 +46,7 @@
             android:layout_width="@dimen/_115sdp"
             android:layout_height="@dimen/_35sdp"
             android:layout_marginStart="@dimen/_5sdp"
-            android:text="@string/action_apply"
+            android:text="@string/apply"
             app:layout_constraintBottom_toBottomOf="@id/btnCancel"
             app:layout_constraintEnd_toEndOf="@+id/second_num"
             app:layout_constraintStart_toEndOf="@id/btnCancel"

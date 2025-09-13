@@ -8,19 +8,18 @@
 
     <!-- Top Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cc_main_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/cc_main_top"
         android:padding="10dp">
 
         <ImageView
             android:id="@+id/back"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:padding="5dp"
             android:src="@drawable/back"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/user_name"
@@ -30,12 +29,11 @@
             android:textColor="@color/red"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/back"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/back" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Chat Messages RecyclerView -->
 
     <!-- Message Input Layout -->
     <androidx.recyclerview.widget.RecyclerView
@@ -43,9 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="10dp"
-        android:layout_marginBottom="540dp"
-        android:paddingBottom="70dp"
-        app:layout_constraintBottom_toTopOf="@id/messageInputLayout"
+        app:layout_constraintBottom_toTopOf="@+id/messageInputLayout"
         app:layout_constraintTop_toBottomOf="@+id/cc_main_top"
         tools:layout_editor_absoluteX="9dp"
         tools:listitem="@layout/chat_item" />
@@ -64,8 +60,9 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@drawable/bg_chat_input"
-            android:hint="Start Typing..."
+            android:hint="@string/startTyping"
             android:padding="10dp"
+            android:textSize="12dp"
             android:fontFamily="@font/poppins_medium"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/darker_gray"
@@ -74,18 +71,39 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <Button
+        <ImageView
+            android:id="@+id/ic_emoji"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_emoji"
+            app:layout_constraintBottom_toBottomOf="@+id/etMessage"
+            app:layout_constraintEnd_toEndOf="@+id/etMessage"
+            app:layout_constraintTop_toTopOf="@+id/etMessage" />
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnSend"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:background="@drawable/bg_send_button"
-            android:text="Send"
+            android:text="@string/send"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             android:fontFamily="@font/poppins_medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/group_chat_progress"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,8 +10,10 @@ import com.example.model.AthleteDataPackage.AthleteDatass
 import com.example.model.AthleteDataPackage.AthleteDetails
 import com.example.model.AthleteDataPackage.AthltepersonaldiaryModel
 import com.example.model.HomeFragment.NewsModel
+import com.example.model.MessageRequest
 import com.example.model.PrivacyPolicy.privacypolicy
 import com.example.model.SelectedDaysModel
+import com.example.model.SelectedEventModel
 import com.example.model.base_class.BaseClass
 import com.example.model.base_class.PerformanceBase
 import com.example.model.competition.CompetitionData
@@ -26,6 +28,7 @@ import com.example.model.newClass.competition.Competition
 import com.example.model.newClass.competition.EditeAnalsisData
 import com.example.model.newClass.competition.GetCompetition
 import com.example.model.newClass.competition.GetCompetitionAll
+import com.example.model.newClass.competition.GetCompetitionAthlete
 import com.example.model.newClass.competition.GetCompetitionRequest
 import com.example.model.newClass.cycle.AddTimerBody
 import com.example.model.newClass.delete.DeleteBase
@@ -38,12 +41,14 @@ import com.example.model.newClass.test.TestRequest
 import com.example.model.newClass.test.TestResultRequest
 import com.example.model.newClass.timer.Timer
 import com.example.model.notification.NotificationModel
+import com.example.model.notification.ReadNotificationModel
 import com.example.model.performance_profile.PerformanceProfileData
 import com.example.model.performance_profile.performance.category.PerformanceCategory
 import com.example.model.performance_profile.performance.category.add_cat_response.PerformanceCategoryAdd
 import com.example.model.performance_profile.performance.quality.PerformanceQuality
 import com.example.model.performance_profile.performance.quality.add.AddQuality
 import com.example.model.performance_profile.performance.quality.add_qual_response.PerformanceQualityAdd
+import com.example.model.performance_profile.performance.quality.update.TemplateRequest
 import com.example.model.performance_profile.performance.quality.update.UpdateQuality
 import com.example.model.performance_profile.template.CreateTemplate
 import com.example.model.personal_diary.GetDiaryDataForEdit
@@ -208,7 +213,6 @@ interface APIInterface {
 
     @GET("group")
     fun GropList(): Call<GroupListData>?
-
 
     @GET("chat/group_chat")
     fun GropChateList(
@@ -764,20 +768,37 @@ interface APIInterface {
     @GET("personal_diary/list")
     fun GetPersonalDiaryListData(): Call<GetPersonalDiary>?
 
+    @GET("personal_diary/list")
+    fun GetPersonalDiaryListAthleteData(
+        @Query("athlete_id") athlete_id: String?,
+        @Query("date") date: String?
+    ): Call<GetPersonalDiary>?
+
     @POST("personal_diary/share/detail")
     fun GetPersonalDiaryListShareData(@Query("athlete_id") id: Int): Call<AthltepersonaldiaryModel>?
 
     @GET("personal_diary")
     fun GetPersonalDiaryData(@Query("date") date: String): Call<GetDiaryDataForEdit>?
 
-    //privacy policy
-    @GET("privacy_policy")
+    @FormUrlEncoded
+    @POST("personal_diary")
+    fun GetPersonalDiaryDataAthlete(
+        @Field("athlete_id") athlete_id: String,
+        @Field("date") date: String
+    ): Call<GetDiaryDataForEdit>?
+
+        @GET("privacy_policy")
     fun GetPrivacyPolicy(): Call<privacypolicy>?
 
     //notification
     @GET("notification")
     fun GetNewNotification(): Call<NotificationModel>?
 
+    @POST("notification")
+    fun ReadNotification(@Query("id") id:Int): Call<ReadNotificationModel>?
+
+    @DELETE("notification")
+    fun DeleteNotification(@Query("id") id:Int): Call<NotificationModel>?
 
     //instraction
     @GET("instruction")
@@ -787,12 +808,18 @@ interface APIInterface {
     @GET("news")
     fun GetNews(): Call<NewsModel>?
 
-    //selected Days
+    //selected Days0
     @POST("select-day")
     fun GetSelectedDays(
         @Query("date") date: String?,
         @Query("group_id") gid: String?
     ): Call<SelectedDaysModel>?
+
+    @GET("date_event")
+    fun GetSelectedEvent(
+        @Query("date") date: String?,
+        @Query("group_id") gid: String?
+    ): Call<SelectedEventModel>?
 
     @POST("select-day/add")
     fun AddSelectedDayData(@Body addSelectDayModel: AddSelectDayModel): Call<SelectedDaysModel>?
@@ -812,10 +839,13 @@ interface APIInterface {
     @POST("test/repeat")  // Replace with actual endpoint
     fun sendTestData(@Body request: TestRequest): Call<ApiResponse>
 
+    @POST("chat")
+    fun sendMessage(@Body request: MessageRequest): Call<Void>
+
     //////////////// Athlete ////////////////
 
     @GET("Athlete/group")
-    fun GropListAthlete(): Call<GroupListAthlete>
+    fun GropListAthlete(): Call<GroupListData>
 
     @GET("Athlete/performance_category")
     fun GetPerformanceCategoryAthlete(): Call<PerformanceCategory>
@@ -824,6 +854,11 @@ interface APIInterface {
     fun GetPerformanceQualityAthlete(
         @Query("performance_category_id") performId: Int? = null
     ): Call<PerformanceQuality>
+
+    @PUT("performance_template")  // Adjust endpoint as needed
+    fun updateTemplate(
+        @Body requestBody: TemplateRequest
+    ): Call<ApiResponse> // Define response model
 
 //    @GET("Athlete/personal_diary/share")
 //    fun updateShareStatus(): Call<Void>
@@ -842,6 +877,12 @@ interface APIInterface {
         @Query("group_id") gid: String?
     ): Call<SelectedDaysModel>?
 
+    @POST("Athlete/date_event")
+    fun GetSelectedEventAthlete(
+        @Query("date") date: String?,
+        @Query("group_id") gid: String?
+    ): Call<SelectedEventModel>?
+
     @GET("Athlete/event")
     fun GetEventAthlete(): Call<EventListData>?
 
@@ -851,6 +892,11 @@ interface APIInterface {
     @POST("Athlete/competition_analysis")
     fun GetCompetitionAnalysisDataAthleteAll(
         @Body request: GetCompetitionRequest
+    ): Call<GetCompetitionAll>
+
+    @POST("competition_analysis")
+    fun GetCompetitionAnalysisDataAll(
+        @Body request: GetCompetitionAthlete
     ): Call<GetCompetitionAll>
 
 

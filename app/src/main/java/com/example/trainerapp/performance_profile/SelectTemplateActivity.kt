@@ -37,6 +37,9 @@ class SelectTemplateActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
     lateinit var performanceData: MutableList<PerformanceProfileData.PerformanceProfile>
     lateinit var profileTemplateAdapter: ProfileTemplateAdapter
     private var selectedOptionId: Long? = null
+    var athlete_id:Int ?= null
+    var From:String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         selectTemplateBinding = ActivitySelectTemplateBinding.inflate(layoutInflater)
@@ -138,6 +141,12 @@ class SelectTemplateActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
         if (selectedOptionId.toString().isNotEmpty()) {
             updateUI(selectTemplateBinding.saveCard)
         }
+
+        athlete_id = intent.getIntExtra("athlete_id",0)
+        From =  intent.getStringExtra("From").toString()
+
+        Log.d("SMSMMSMSMS", "initViews: $athlete_id")
+
     }
 
     fun resetData() {
@@ -202,6 +211,9 @@ class SelectTemplateActivity : AppCompatActivity(), OnItemClickListener.OnItemCl
             "Edit" -> {
                 val intent = Intent(this, EditTemplateActivity::class.java).apply {
                     putExtra("TempId", type.toString())
+                    putExtra("CatId", selectedOptionId.toString())
+                    putExtra("From", From)
+                    putExtra("athlete_id",athlete_id)
                 }
                 startActivity(intent)
             }

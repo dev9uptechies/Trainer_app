@@ -17,6 +17,7 @@ import com.example.trainerapp.ApiClass.APIClient
 import com.example.trainerapp.ApiClass.APIInterface
 import com.example.trainerapp.ApiClass.EventListData
 import com.example.trainerapp.ApiClass.RegisterData
+import com.example.trainerapp.R
 import com.example.trainerapp.TestListData
 import com.example.trainerapp.Utils
 import com.example.trainerapp.databinding.ActivityAddSelectedBinding
@@ -102,15 +103,15 @@ class AddSelectedActivity : AppCompatActivity(),OnItemClickListener.OnItemClickC
     private fun lordData() {
         when(type){
             "lesson" -> {
-                binding.tvCredit.text = "Lesson List"
+                binding.tvCredit.text = getString(R.string.lessonList)
                 GetLessionList()
             }
             "test" -> {
-                binding.tvCredit.text = "Test List"
+                binding.tvCredit.text = getString(R.string.testList)
                 GetTestList()
             }
             "event" -> {
-                binding.tvCredit.text = "Event List"
+                binding.tvCredit.text = getString(R.string.eventList)
                 geteventlist()
             }
         }
@@ -126,7 +127,7 @@ class AddSelectedActivity : AppCompatActivity(),OnItemClickListener.OnItemClickC
                 binding.cardSave.setOnClickListener {
                     selectedLessonID = adapter.getSelectedLessonData().first.toString()
                     selectedLessonDATE = adapter.getSelectedLessonData().second.toString().take(10)
-                    Log.d("SelectedGroup", "Selected Group ID: $selectedLessonID")
+                    Log.d("SelectedGroup", "Selected Group ID: $selectedLessonID ---  $selectedLessonDATE")
 
                     AddSelectDayData()
 

@@ -15,11 +15,12 @@ data class PerformanceProfileBase(
 )
 
 data class PerformanceStar(
+
     @SerializedName("id")
     val id: Int? = null,
 
     @SerializedName("title")
-    val title: String? = null,
+    var title: String? = null,
 
     @SerializedName("coachStar")
     val coachStar: String? = null,

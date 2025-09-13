@@ -52,7 +52,7 @@ class Library_programAdapter(
         holder.tvFname.text = movie.name
         holder.tvgoal.text = movie.goal!!.name
         holder.time.text = movie.time
-        holder.tvDate.text = movie.date ?: "Invalid Date"
+        holder.tvDate.text = movie.date ?: ""
 
         holder.img_edit.setOnClickListener {
             listener.onItemClicked(it, position, movie.id!!.toLong(), "EditProgram")

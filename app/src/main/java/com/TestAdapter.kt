@@ -39,6 +39,10 @@ class TestAdapter(
             holder.goal.text = movie.test?.goal.toString() ?: ""
             holder.date.text = movie.test?.date?.take(10) ?: ""
             holder.unitedt.text = movie.test!!.unit ?: ""
+            holder.totaltime.text = movie.test?.test_athletes
+                ?.mapNotNull { it.athlete?.name }
+                ?.joinToString(", ") ?: ""
+
 
         }catch (e:Exception){
             Log.e("Error","ERror:-  ${e.message.toString()}")

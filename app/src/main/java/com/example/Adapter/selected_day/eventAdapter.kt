@@ -1,12 +1,14 @@
 package com.example.Adapter.selected_day
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.Create_Event_Activity
 import com.example.OnItemClickListener
 import com.example.model.SelectedDaysModel
 import com.example.trainerapp.R
@@ -43,6 +45,14 @@ class eventAdapter(
             holder.tvAthlete.text = ""
         }
 
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, Create_Event_Activity::class.java)
+            intent.putExtra("EventLibraryPosition", position)
+            intent.putExtra("EventLibraryId", event.id.toInt())
+            intent.putExtra("From","ViewOnly")
+            context.startActivity(intent)
+        }
 
 
         if (event.is_favourite!! == 1) {

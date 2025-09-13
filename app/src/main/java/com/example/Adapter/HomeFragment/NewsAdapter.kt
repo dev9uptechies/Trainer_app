@@ -45,7 +45,7 @@ class NewsAdapter(
         holder.tvimage
 
         Glide.with(holder.itemView.context)
-            .load("https://4trainersapp.com" + news.image)
+            .load("https://uat.4trainersapp.com" + news.image)
             .error(R.drawable.app_icon)
             .into(holder.tvimage)
 

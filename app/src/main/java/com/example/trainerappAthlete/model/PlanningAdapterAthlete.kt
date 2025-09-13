@@ -16,16 +16,16 @@ import com.example.trainerapp.training_plan.ViewTrainingPlanActivity
 import com.google.gson.Gson
 
 class PlanningAdapterAthlete(
-    data: ArrayList<GroupListAthlete.GroupPlanning>?,
+    data: ArrayList<GroupListData.GroupPlanning>?,
     private var context: Context,
     val listener: OnItemClickListener.OnItemClickCallback
 ) : RecyclerView.Adapter<PlanningAdapterAthlete.MyViewHolder>() {
 
-    private var filteredData: ArrayList<GroupListAthlete.GroupPlanning> = ArrayList()
+    private var filteredData: ArrayList<GroupListData.GroupPlanning> = ArrayList()
 
     init {
         data?.let { list ->
-            filteredData = list.filter { isValidItem(it) } as ArrayList<GroupListAthlete.GroupPlanning>
+            filteredData = list.filter { isValidItem(it) } as ArrayList<GroupListData.GroupPlanning>
         }
     }
 
@@ -115,7 +115,7 @@ class PlanningAdapterAthlete(
 
     override fun getItemCount(): Int = filteredData.size
 
-    private fun isValidItem(item: GroupListAthlete.GroupPlanning): Boolean {
+    private fun isValidItem(item: GroupListData.GroupPlanning): Boolean {
         return item.planning?.let {
             !it.name.isNullOrEmpty() &&
                     !it.start_date.isNullOrEmpty() &&

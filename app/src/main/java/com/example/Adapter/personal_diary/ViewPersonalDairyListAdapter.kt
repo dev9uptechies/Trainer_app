@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.OnItemClickListener
 import com.example.model.personal_diary.GetPersonalDiary
@@ -17,6 +18,7 @@ import com.example.trainerapp.personal_diary.EditPersonalDiaryDataActivity
 class ViewPersonalDairyListAdapter(
     private val diaryList: MutableList<GetPersonalDiary.Data>,
     private val context: Context,
+    var FromAthlete:Boolean,
     private val listener: OnItemClickListener.OnItemClickCallback
 ) : RecyclerView.Adapter<ViewPersonalDairyListAdapter.MyViewHolder>() {
 
@@ -34,13 +36,38 @@ class ViewPersonalDairyListAdapter(
         holder.sleepHours.text = "SleepHours - ${diaryItem.sleepHours ?: "00:00:00"}"
 
         Log.d("Date","${diaryItem.date}")
+
         holder.card.setOnClickListener {
             val intent = Intent(context, EditPersonalDiaryDataActivity::class.java).apply {
+                putExtra("DiaryId", diaryItem.id)
                 putExtra("Date", diaryItem.date)
+                putExtra("AthleteId", diaryItem.userId)
+                putExtra("FromAthlete", FromAthlete)
             }
             context.startActivity(intent)
         }
     }
+
+    fun updateData(newList: MutableList<GetPersonalDiary.Data>) {
+        val diffCallback = object : DiffUtil.Callback() {
+            override fun getOldListSize() = diaryList.size
+            override fun getNewListSize() = newList.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                diaryList[oldItemPosition].id == newList[newItemPosition].id
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                diaryList[oldItemPosition] == newList[newItemPosition]
+        }
+
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        diaryList.clear()
+        diaryList.addAll(newList)
+
+        diffResult.dispatchUpdatesTo(this) // Move this after modifying diaryList
+    }
+
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val date: TextView = view.findViewById(R.id.training_name_one)

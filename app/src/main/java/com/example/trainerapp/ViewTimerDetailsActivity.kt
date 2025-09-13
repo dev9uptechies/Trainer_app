@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Adapter.CycleTimerAdapter
+import com.example.CycleTimerManager
 import com.example.OnItemClickListener
 import com.example.model.newClass.timer.Timer
 import com.example.trainerapp.ApiClass.APIClient
@@ -48,13 +49,15 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
     private var timeRemainingInMillis: Long = 0
     private var currentCountdownPhase: String? = null
 
-
     private var roundIndex: Int = 0
     private var totalRounds: Int = 0
     private var currentRep: Int = 0
     private var totalRep: Int = 0
 
     private var isTimerRunning = false
+
+    lateinit var manager: CycleTimerManager
+
 
     private fun checkUser() {
         try {
@@ -100,10 +103,12 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
         super.onResume()
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewTimerDetailsBinding = ActivityViewTimerBinding.inflate(layoutInflater)
         setContentView(viewTimerDetailsBinding.root)
+        manager = CycleTimerManager(viewTimerDetailsBinding)
         initViews()
         GetTimerData()
 
@@ -116,40 +121,64 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
 
         })
 
+
+        viewTimerDetailsBinding.play.setOnClickListener {
+            when {
+                manager.isPaused() -> {
+                    manager.play() // resume
+                    Log.d("fnyertyv", "▶️ Resumed")
+                }
+                manager.isRunning() -> {
+                    manager.pause() // pause
+                    Log.d("fnyertyv", "⏸️ Paused")
+                }
+                else -> {
+                    manager.play() // first-time start
+                    Log.d("fnyertyv", "▶️ Started")
+                }
+            }
+        }
+
+        viewTimerDetailsBinding.reset.setOnClickListener {
+            manager.resetToDefault()
+        }
+
+
         viewTimerDetailsBinding.back.setOnClickListener {
             countDownTimer?.cancel()
             stopMusic()
             finish()
         }
 
-        viewTimerDetailsBinding.play.setOnClickListener {
-            viewTimerDetailsBinding.play.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.ic_pause_1,
-                    null
-                )
-            )
-
-            try {
-                Log.d("Current :-", "$currentCountdownPhase")
-                Log.d("time running :-", "$isTimerRunning")
-                Log.d("is pause running :-", "$isPaused")
-                if (isTimerRunning) {
-                    // If timer is running, pause it
-                    pauseCountdown()
-                } else {
-                    // If timer is paused, resume it
-                    if (isPaused) {
-                        resumeCountdown()
-                    } else {
-                        setupTimerData(timerData)  // Start the countdown from the beginning
-                    }
-                }
-            } catch (e: Exception) {
-                Log.d("TAG", "onResponse: $e")
-            }
-        }
+//        viewTimerDetailsBinding.play.setOnClickListener {
+//            viewTimerDetailsBinding.play.setImageDrawable(
+//                ResourcesCompat.getDrawable(
+//                    resources,
+//                    R.drawable.ic_pause_1,
+//                    null
+//                )
+//            )
+//
+//            try {
+//                Log.d("Current :-", "$currentCountdownPhase")
+//                Log.d("time running :-", "$isTimerRunning")
+//                Log.d("is pause running :-", "$isPaused")
+//                if (isTimerRunning) {
+//                    // If timer is running, pause it
+//
+//                    pauseCountdown()
+//                } else {
+//                    // If timer is paused, resume it
+//                    if (isPaused) {
+//                        resumeCountdown()
+//                    } else {
+//                        setupTimerData(timerData)  // Start the countdown from the beginning
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                Log.d("TAG", "onResponse: $e")
+//            }
+//        }
 
 //            try {
 ////                play = true
@@ -165,10 +194,10 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
 //                Log.d("TAG", "onResponse:$e")
 //            }
 //        }
-
-        viewTimerDetailsBinding.reset.setOnClickListener {
-            resetData()
-        }
+//
+//        viewTimerDetailsBinding.reset.setOnClickListener {
+//            resetData()
+//        }
     }
 
     fun pauseCountdown() {
@@ -196,7 +225,6 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
     }
 
     fun resumeCountdown() {
-        // Resume the correct countdown phase based on the current phase (timer, pause, cycle pause)
 
         isPaused = false
         isTimerRunning = true
@@ -294,40 +322,42 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
                     override fun onResponse(call: Call<Timer>, response: Response<Timer>) {
                         Progress.visibility = View.GONE
                         val code = response.code()
-                        if (code == 200) {
-                            if (response.isSuccessful) {
-                                Progress.visibility = View.GONE
-                                val data = response.body()!!.data!!.filter {
-                                    it.id == id
-                                }
-                                if (data != null) {
-                                    audioData = data[0].audio!!
-                                    pauseAudioData = data[0].pause_time_audio!!
-                                    pauseBetweenAudioData = data[0].pause_between_time_audio!!
+                        if (code == 200 && response.isSuccessful) {
+                            val responseData = response.body()
+                            val timerList = responseData?.data
 
-                                    for (i in data) {
-                                        for (j in i.timer!!) {
+                            if (!timerList.isNullOrEmpty()) {
+                                val filteredData = timerList.filter { it.id == id }
+
+                                if (filteredData.isNotEmpty()) {
+                                    val item = filteredData[0]
+
+                                    audioData = item.audio
+                                    pauseAudioData = item.pause_time_audio
+                                    pauseBetweenAudioData = item.pause_between_time_audio
+
+                                    item.timer?.let { timerItems ->
+                                        for (j in timerItems) {
                                             timerData.add(j)
-                                            Log.d(
-                                                "TAG",
-                                                "onResponse: ${j.set} \t ${j.time} \t ${j.reps} \t ${j.pause_timer} \t ${j.weight} \t ${j.distance} \t ${j.pause}"
-                                            )
+                                            Log.d("SSSWWD", "onResponse: ${j.set} \t ${j.time} \t ${j.reps} \t ${j.pause_timer} \t ${j.weight} \t ${j.distance} \t ${j.pause}")
                                         }
                                     }
-                                    initRecycler()
-                                    setupTimerDataBasic(timerData)
-                                }
-                                //setupTimerData(timerData)
 
+                                    manager.loadCycles(timerData)
+
+                                    initRecycler()
+//                                    setupTimerDataBasic(timerData)
+                                } else {
+                                    Toast.makeText(this@ViewTimerDetailsActivity, "No timer found with given ID", Toast.LENGTH_SHORT).show()
+                                }
+                            } else {
+                                Toast.makeText(this@ViewTimerDetailsActivity, "Timer data is empty", Toast.LENGTH_SHORT).show()
                             }
+
                         } else if (code == 403) {
                             Utils.setUnAuthDialog(this@ViewTimerDetailsActivity)
                         } else {
-                            Toast.makeText(
-                                this@ViewTimerDetailsActivity,
-                                "" + response.message(),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@ViewTimerDetailsActivity, "${response.message()}", Toast.LENGTH_SHORT).show()
                             call.cancel()
                         }
                     }
@@ -347,7 +377,7 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
     private fun setupTimerDataBasic(timerData: MutableList<Timer.TimerX>) {
         viewTimerDetailsBinding.tvRound.text = "01 Round"
         viewTimerDetailsBinding.tvCycle.text = "1"
-        viewTimerDetailsBinding.tvTimer.text = timerData[0].time
+        viewTimerDetailsBinding.tvTimer.text = timerData[0].pause
         viewTimerDetailsBinding.time.text = timerData[0].time
         if (timerData[0].weight == "null" || timerData[0].weight == "" || timerData[0].weight == null) {
             viewTimerDetailsBinding.tvWeight.text = "weight"
@@ -360,7 +390,7 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
         } else {
             viewTimerDetailsBinding.tvDistance.text = timerData[0].distance
         }
-        viewTimerDetailsBinding.tvPause.text = timerData[0].pause
+        viewTimerDetailsBinding.tvPause.text = timerData[0].pause_timer
         viewTimerDetailsBinding.tvPauseBetween.text = timerData[0].pause_timer
     }
 
@@ -388,12 +418,9 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
 
     private fun setupTimerData(timerData: MutableList<Timer.TimerX>) {
         cycleSize = timerData.size
-
-        for (i in timerData) {
-            startRound(cycleIndex, 1, roundSize, i)
-        }
         startCycle(1)
     }
+
 
     private fun playMusic(musicPath: String?) {
         // Stop any currently playing music
@@ -469,8 +496,8 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
             } else {
                 viewTimerDetailsBinding.tvDistance.text = timerData.distance
             }
-            viewTimerDetailsBinding.tvTimer.text = timerData.time
-            viewTimerDetailsBinding.tvPause.text = timerData.pause
+            viewTimerDetailsBinding.tvTimer.text = timerData.pause
+            viewTimerDetailsBinding.tvPause.text = timerData.pause_timer
             viewTimerDetailsBinding.tvPauseBetween.text = timerData.pause_timer
 
 
@@ -483,7 +510,7 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
                 )
             )
 
-            playMusic("https://4trainersapp.com" + audioData!!.audio)
+            playMusic("https://uat.4trainersapp.com" + audioData!!.audio)
 
             countDownTimer = object : CountDownTimer(timeInMillis, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
@@ -574,7 +601,7 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
 
 
             //viewTimerDetailsBinding.time.setTextColor(Color.RED)
-            playMusic("https://4trainersapp.com" + pauseAudioData!!.audio)
+            playMusic("https://uat.4trainersapp.com" + pauseAudioData!!.audio)
             // Start the pause countdown
             countDownTimer = object : CountDownTimer(pauseInMillis, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
@@ -678,7 +705,7 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
                 )
             )
 
-            playMusic("https://4trainersapp.com" + pauseBetweenAudioData!!.audio)
+            playMusic("https://uat.4trainersapp.com" + pauseBetweenAudioData!!.audio)
 
             countDownTimer = object : CountDownTimer(pauseBetweenInMillis, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
@@ -979,6 +1006,11 @@ class ViewTimerDetailsActivity : AppCompatActivity(), OnItemClickListener.OnItem
 
     override fun onItemClicked(view: View, position: Int, type: Long, string: String) {
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        manager.resetToDefault()
     }
 
 

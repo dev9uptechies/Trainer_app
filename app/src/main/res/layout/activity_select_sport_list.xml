@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
-                android:text="@string/select_sport"
+                android:text="@string/selectSport"
                 android:textColor="@color/splash_text_color"
                 android:textSize="22dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +108,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:layout_weight="1"
-                android:text="Add Sport"
+                android:text="@string/addSport"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_15sdp"/>
 
@@ -130,7 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="Done"
+            android:text="@string/done"
             android:textColor="@color/white"
             android:textSize="@dimen/_17sdp" />
 

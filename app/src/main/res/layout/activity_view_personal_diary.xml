@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_semi_bold"
-            android:text="Personal Diary"
+            android:text="@string/personalDairy"
             android:textColor="@color/splash_text_color"
             android:textSize="@dimen/_16sdp"
             app:layout_constraintBottom_toBottomOf="@+id/back"
@@ -65,7 +65,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_medium"
                 android:gravity="center"
-                android:text="No Data Found"
+                android:text="@string/noDataFound"
                 android:textColor="@color/white"
                 android:visibility="gone" />
 
@@ -93,7 +93,7 @@
                         android:layout_marginVertical="@dimen/_10sdp"
                         android:layout_weight="1"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Whant to share personal diary to coach"
+                        android:text="@string/whant_to_share"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_11sdp" />
 
